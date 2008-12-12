@@ -757,7 +757,7 @@ OSyncClientProxy *osync_client_proxy_new(OSyncFormatEnv *formatenv, OSyncMember 
     goto error;
   proxy->ref_count = 1;
   proxy->type = OSYNC_START_TYPE_UNKNOWN;
-  proxy->formatenv = formatenv;
+  proxy->formatenv = osync_format_env_ref(formatenv);
 	
   /* TODO: Is member optional parameter? */
   if (member) {
@@ -802,6 +802,9 @@ void osync_client_proxy_unref(OSyncClientProxy *proxy)
 		
     if (proxy->context)
       g_main_context_unref(proxy->context);
+
+    if (proxy->formatenv)
+      osync_format_env_unref(proxy->formatenv);
 		
     osync_free(proxy);
   }
