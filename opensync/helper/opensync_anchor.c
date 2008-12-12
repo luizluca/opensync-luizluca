@@ -24,6 +24,13 @@
 #include "opensync-helper.h"
 #include "opensync-db.h"
 
+/**
+ * @defgroup OSyncAnchorPrivateAPI OpenSync Anchor Internals
+ * @ingroup OSyncPrivate
+ * @brief Internal functions to deal with anchors
+ * 
+ */
+
 /*! @brief Create the anchor table in the specified database
  * 
  * @param db Pointer to the database
@@ -167,22 +174,6 @@ static void _osync_anchor_db_update(OSyncDB *db, const char *key, const char *an
   osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/**
- * @defgroup OSyncAnchorAPI OpenSync Anchor
- * @ingroup OSyncPublic
- * @brief Functions to deal with anchors
- * 
- */
-/*@{*/
-
-/*! @brief Compares the value of an anchor with the supplied value
- * 
- * @param anchordb the full path to the anchor database file
- * @param key the key of the anchor to look up
- * @param new_anchor the value to compare with the stored value
- * @returns TRUE if the anchor matches, FALSE otherwise
- * 
- */
 osync_bool osync_anchor_compare(const char *anchordb, const char *key, const char *new_anchor)
 {
   OSyncDB *db = NULL;
@@ -212,13 +203,6 @@ osync_bool osync_anchor_compare(const char *anchordb, const char *key, const cha
   return retval;
 }
 
-/*! @brief Updates the value of an anchor
- * 
- * @param anchordb the full path to the anchor database file
- * @param key the key of the anchor to look up
- * @param new_anchor the new value to set
- * 
- */
 void osync_anchor_update(const char *anchordb, const char *key, const char *new_anchor)
 {
   OSyncDB *db = NULL;
@@ -237,13 +221,6 @@ void osync_anchor_update(const char *anchordb, const char *key, const char *new_
   return;
 }
 
-/*! @brief Retrieves the value of an anchor
- * 
- * @param anchordb the full path to the anchor database file
- * @param key the key of the anchor to look up
- * @returns the value of the anchor if it was found, otherwise NULL
- * 
- */
 char *osync_anchor_retrieve(const char *anchordb, const char *key)
 {
   OSyncDB *db = NULL;
