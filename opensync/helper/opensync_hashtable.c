@@ -28,7 +28,7 @@
 #include "opensync-db.h"
 
 /**
- * @defgroup OSyncHashtableAPI OpenSync Hashtables
+ * @defgroup OSyncHashtablePrivateAPI OpenSync Hashtables
  * @ingroup OSyncPrivate
  * @brief A Hashtable can be used to detect changes
  */
@@ -462,3 +462,5 @@ const char *osync_hashtable_get_hash(OSyncHashTable *table, const char *uid)
 
   return (const char *)  g_hash_table_lookup(table->db_entries, uid);
 }
+
+/*@}*/
