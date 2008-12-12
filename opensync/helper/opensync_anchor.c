@@ -31,6 +31,8 @@
  * 
  */
 
+/*@{*/
+
 /*! @brief Create the anchor table in the specified database
  * 
  * @param db Pointer to the database
