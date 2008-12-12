@@ -84,6 +84,51 @@ CODE DOCUMENTATION
 * Add simple READMEs and pictures as needed, but concentrate
   on doxygen.
 
+* Recommended to watch for leading and trailing empty spaces on comments
+(vim and emacs can be set to display them).
+
+* Try to describe the *why* of a function and not just the *what* (e.g.
+'This function is required by module foo because of protocol X. It does
+something'
+
+Some examples:
+
+a) Say that you have a function (e.g. foo) and its declaration in a header
+file (foo.h), a good way to document that would be:
+
+ - in foo.h
+
+ /** @brief This functions does something funny.
+  *
+  * Here you can put further details.
+  *
+  * @todo something is missing
+  *
+  * @param bar This is the parameter, please refer \ref bar_func to create
+  * this value.
+  * @return Returns -1 for failure, 0 for success.
+  */
+char foo(int bar);
+
+
+- Implementation must be almost free of comments, because it helps to read the
+code. Only really trick parts should be commented (even better, re-written
+to be more simple). The wise use of XXX/FIXME/TODO can help a lot to
+identify hot spots in the code. So, say in foo.c
+
+void foo(int bar)
+{
+	/* TODO: write a unit test */
+
+	/* XXX: a dirt trick to workaround a bug in protocol */
+	/* here goes the code */
+
+
+	/* FIXME: this should be moved to another module */
+	/* here goes the code */
+}
+
+
 CODE INSTRUMENTATION
 -----------------------------------------------------------------
 
