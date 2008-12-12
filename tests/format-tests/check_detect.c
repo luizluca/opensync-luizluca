@@ -36,7 +36,7 @@ START_TEST (conv_env_detect_smart)
 	fail_unless(osync_data_get_objformat(data) == format2);
 	
 	osync_data_unref(data);
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 }
 END_TEST
 
@@ -67,7 +67,7 @@ START_TEST (conv_env_detect_different_objtype)
 	fail_unless(osync_data_get_objformat(data) == format2);
 	
 	osync_data_unref(data);
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 }
 END_TEST
 
@@ -98,7 +98,7 @@ START_TEST (conv_env_detect_smart_no)
 	fail_unless(osync_data_get_objformat(data) == format2);
 	
 	osync_data_unref(data);
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 }
 END_TEST
 

@@ -49,6 +49,8 @@ struct OSyncFormatEnv {
 	
 	GList *modules;
 	GModule *current_module;
+
+	int ref_count;
 };
 
 /**

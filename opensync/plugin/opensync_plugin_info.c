@@ -76,6 +76,9 @@ void osync_plugin_info_unref(OSyncPluginInfo *info)
 			
     if (info->capabilities)
       osync_capabilities_unref(info->capabilities);
+
+    if (info->formatenv)
+      osync_format_env_unref(info->formatenv);
 		
     g_free(info);
   }
@@ -225,7 +228,10 @@ void osync_plugin_info_set_format_env(OSyncPluginInfo *info, OSyncFormatEnv *env
 {
   osync_assert(info);
   osync_assert(env);
-  info->formatenv = env;
+  if (info->formatenv)
+    osync_format_env_unref(info->formatenv);
+
+  info->formatenv = osync_format_env_ref(env);
 }
 
 void osync_plugin_info_set_version(OSyncPluginInfo *info, OSyncVersion *version)

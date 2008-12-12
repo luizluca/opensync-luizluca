@@ -13,7 +13,7 @@ START_TEST (conv_env_create)
 	fail_unless(env != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	destroy_testbed(testbed);
 }
@@ -36,7 +36,7 @@ START_TEST (conv_env_register_objformat)
 	
 	osync_objformat_unref(format);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	destroy_testbed(testbed);
 }
@@ -63,7 +63,7 @@ START_TEST (conv_env_register_objformat_count)
 	fail_unless(osync_format_env_num_objformats(env) == 1, NULL);
 	fail_unless(osync_format_env_nth_objformat(env, 0) == format, NULL);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	destroy_testbed(testbed);
 }
@@ -87,7 +87,7 @@ START_TEST (conv_env_objformat_find)
 	
 	fail_unless(osync_format_env_find_objformat(env, "format") == format, NULL);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	destroy_testbed(testbed);
 }
@@ -111,7 +111,7 @@ START_TEST (conv_env_objformat_find_false)
 	
 	fail_unless(osync_format_env_find_objformat(env, "format2") == NULL, NULL);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	destroy_testbed(testbed);
 }
@@ -149,7 +149,7 @@ START_TEST (conv_env_register_converter)
 
 	osync_converter_unref(converter);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	osync_objformat_unref(format1);
 	osync_objformat_unref(format2);
@@ -190,7 +190,7 @@ START_TEST (conv_env_register_converter_count)
 	
 	osync_converter_unref(converter);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	osync_objformat_unref(format1);
 	osync_objformat_unref(format2);
@@ -227,7 +227,7 @@ START_TEST (conv_env_converter_find)
 
 	fail_unless(osync_format_env_find_converter(env, format1, format2) == converter, NULL);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	osync_objformat_unref(format1);
 	osync_objformat_unref(format2);
@@ -270,7 +270,7 @@ START_TEST (conv_env_converter_find_false)
 	fail_unless(osync_format_env_find_converter(env, format1, format3) == NULL, NULL);
 	fail_unless(osync_format_env_find_converter(env, format2, format1) == NULL, NULL);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	osync_objformat_unref(format1);
 	osync_objformat_unref(format2);
@@ -302,7 +302,7 @@ START_TEST (conv_env_register_filter)
 
 	osync_custom_filter_unref(filter);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	destroy_testbed(testbed);
 }
@@ -330,7 +330,7 @@ START_TEST (conv_env_register_filter_count)
 	
 	osync_custom_filter_unref(filter);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	destroy_testbed(testbed);
 }
@@ -350,7 +350,7 @@ START_TEST (conv_env_load_plugins)
 	fail_unless(error == NULL, NULL);
 	g_free(curdir);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	destroy_testbed(testbed);
 }
@@ -385,7 +385,7 @@ START_TEST (conv_env_plugin)
 	fail_unless(osync_format_env_num_objformats(env) == 3, NULL);
 	fail_unless(osync_format_env_num_converters(env) == 2, NULL);
 	
-	osync_format_env_free(env);
+	osync_format_env_unref(env);
 	
 	osync_module_free(module);
 	

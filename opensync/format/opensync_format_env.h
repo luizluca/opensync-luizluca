@@ -48,14 +48,28 @@
  */
 OSYNC_EXPORT OSyncFormatEnv *osync_format_env_new(OSyncError **error);
 
-/** @brief Frees a osync environment
+/*! @brief Increases the reference counton an opensync plugin environment
  * 
- * Frees a osync environment and all resources.
+ * When storing a reference to an OSyncFormatEnv the reference count must be
+ * manually incremented. When the reference is no longer needed it should
+ * be removed with  osync_plugin_env_unref
  * 
- * @param env Pointer to the environment to free
+ * @param env Pointer to the environment to reference
+ * @returns The environment passed in
  * 
  */
-OSYNC_EXPORT void osync_format_env_free(OSyncFormatEnv *env);
+OSYNC_EXPORT OSyncFormatEnv *osync_format_env_ref(OSyncFormatEnv *env);
+
+/** @brief Decreases the reference count on an OSyncFormatEnv
+ * 
+ * Decrements the reference count on an osync format environment.  If
+ * the reference count reaches zero the environment is freed and all
+ * resources are unreferenced
+ * 
+ * @param env Pointer to the environment
+ * 
+ */
+OSYNC_EXPORT void osync_format_env_unref(OSyncFormatEnv *env);
 
 /** @brief Loads all format and conversion plugins
  * 

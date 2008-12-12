@@ -683,45 +683,59 @@ OSyncFormatEnv *osync_format_env_new(OSyncError **error)
     osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
     return NULL;
   }
+  env->ref_count = 1;
 	
   osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
   return env;
 }
 
-void osync_format_env_free(OSyncFormatEnv *env)
+OSyncFormatEnv *osync_format_env_ref(OSyncFormatEnv *env)
 {
   osync_trace(TRACE_ENTRY, "%s(%p)", __func__, env);
   osync_assert(env);
 	
-  /* Free the formats */
-  while (env->objformats) {
-    osync_trace(TRACE_INTERNAL, "FORMAT: %s", osync_objformat_get_name(env->objformats->data));
-    osync_objformat_unref(env->objformats->data);
-    env->objformats = g_list_remove(env->objformats, env->objformats->data);
+  g_atomic_int_inc(&(env->ref_count));
+	
+  osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
+  return env;
+}
+
+void osync_format_env_unref(OSyncFormatEnv *env)
+{
+  osync_trace(TRACE_ENTRY, "%s(%p)", __func__, env);
+  osync_assert(env);
+
+  if (g_atomic_int_dec_and_test(&(env->ref_count))) {  
+    /* Free the formats */
+    while (env->objformats) {
+      osync_trace(TRACE_INTERNAL, "FORMAT: %s", osync_objformat_get_name(env->objformats->data));
+      osync_objformat_unref(env->objformats->data);
+      env->objformats = g_list_remove(env->objformats, env->objformats->data);
+    }
+	
+    osync_format_env_converter_finalize(env);
+	
+    /* Free the converters */
+    while (env->converters) {
+      osync_converter_unref(env->converters->data);
+      env->converters = g_list_remove(env->converters, env->converters->data);
+    }
+	
+    /* Free the filters */
+    while (env->custom_filters) {
+      osync_custom_filter_unref(env->custom_filters->data);
+      env->custom_filters = g_list_remove(env->custom_filters, env->custom_filters->data);
+    }
+	
+    /* Free the modules */
+    while (env->modules) {
+      osync_module_free(env->modules->data);
+      env->modules = g_list_remove(env->modules, env->modules->data);
+    }
+	
+    osync_free(env);
   }
-	
-  osync_format_env_converter_finalize(env);
-	
-  /* Free the converters */
-  while (env->converters) {
-    osync_converter_unref(env->converters->data);
-    env->converters = g_list_remove(env->converters, env->converters->data);
-  }
-	
-  /* Free the filters */
-  while (env->custom_filters) {
-    osync_custom_filter_unref(env->custom_filters->data);
-    env->custom_filters = g_list_remove(env->custom_filters, env->custom_filters->data);
-  }
-	
-  /* Free the modules */
-  while (env->modules) {
-    osync_module_free(env->modules->data);
-    env->modules = g_list_remove(env->modules, env->modules->data);
-  }
-	
-  g_free(env);
-	
+
   osync_trace(TRACE_EXIT, "%s", __func__);
 }
 

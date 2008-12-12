@@ -426,7 +426,7 @@ static osync_bool init(OSyncError **error) {
  error_free_plugininfo:
   osync_plugin_info_unref(plugin_info);
  error_free_formatenv:
-  osync_format_env_free(format_env);
+  osync_format_env_unref(format_env);
   format_env = NULL;
  error_free_pluginenv:
   osync_plugin_env_unref(plugin_env);
@@ -1215,7 +1215,7 @@ static osync_bool plugin_list(OSyncError **error) {
   return TRUE;
 	
  error_free_formatenv:
-  osync_format_env_free(format_env);
+  osync_format_env_unref(format_env);
   format_env = NULL;
  error_free_pluginenv:
   osync_plugin_env_unref(plugin_env);

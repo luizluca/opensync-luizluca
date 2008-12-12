@@ -708,7 +708,7 @@ static osync_bool _osync_client_handle_finalize(OSyncClient *client, OSyncMessag
   }
 	
   if (client->format_env) {
-    osync_format_env_free(client->format_env);
+    osync_format_env_unref(client->format_env);
     client->format_env = NULL;
   }
 	

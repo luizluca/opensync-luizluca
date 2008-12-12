@@ -654,7 +654,7 @@ OSyncObjEngine *osync_obj_engine_new(OSyncEngine *parent, const char *objtype, O
   engine->parent = parent;
 	
   engine->objtype = g_strdup(objtype);
-  engine->formatenv = formatenv;
+  engine->formatenv = osync_format_env_ref(formatenv);
 	
   engine->mapping_table = osync_mapping_table_new(error);
   if (!engine->mapping_table)
@@ -708,6 +708,9 @@ void osync_obj_engine_unref(OSyncObjEngine *engine)
 		
     if (engine->mapping_table)
       osync_mapping_table_unref(engine->mapping_table);
+
+    if (engine->formatenv)
+      osync_format_env_unref(engine->formatenv);
 		
     g_free(engine);
   }

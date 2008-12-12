@@ -1169,7 +1169,7 @@ static osync_bool _osync_engine_initialize_formats(OSyncEngine *engine, OSyncErr
   return TRUE;
 
  error_free:
-  osync_format_env_free(engine->formatenv);
+  osync_format_env_unref(engine->formatenv);
   engine->formatenv = NULL;
 
  error:
@@ -1296,7 +1296,7 @@ osync_bool osync_engine_finalize(OSyncEngine *engine, OSyncError **error)
   _osync_engine_stop(engine);
 	
   if (engine->formatenv) {
-    osync_format_env_free(engine->formatenv);
+    osync_format_env_unref(engine->formatenv);
     engine->formatenv = NULL;
   }
 	
