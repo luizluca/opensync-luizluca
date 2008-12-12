@@ -636,16 +636,16 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 		osync_objtype_sink_set_functions(sink, functions, dir);
 
 		//Lets reduce the timeouts a bit so the checks work faster
-		osync_objtype_sink_set_connect_timeout(sink, 5);
-		osync_objtype_sink_set_getchanges_timeout(sink, 5);
-		osync_objtype_sink_set_commit_timeout(sink, 10);
-		osync_objtype_sink_set_committedall_timeout(sink, 10);
-		osync_objtype_sink_set_batchcommit_timeout(sink, 10);
-		osync_objtype_sink_set_syncdone_timeout(sink, 5);
-		osync_objtype_sink_set_disconnect_timeout(sink, 5);
+		osync_objtype_sink_set_connect_timeout(sink, 2);
+		osync_objtype_sink_set_getchanges_timeout(sink, 2);
+		osync_objtype_sink_set_commit_timeout(sink, 4);
+		osync_objtype_sink_set_committedall_timeout(sink, 4);
+		osync_objtype_sink_set_batchcommit_timeout(sink, 4);
+		osync_objtype_sink_set_syncdone_timeout(sink, 2);
+		osync_objtype_sink_set_disconnect_timeout(sink, 2);
 
-		osync_objtype_sink_set_read_timeout(sink, 5);
-		osync_objtype_sink_set_write_timeout(sink, 5);
+		osync_objtype_sink_set_read_timeout(sink, 2);
+		osync_objtype_sink_set_write_timeout(sink, 2);
 
 
 /* XXX No testcase is currently using this at all! */
