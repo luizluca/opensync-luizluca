@@ -35,15 +35,13 @@
 
 /*@{*/
 
-/*! @brief Creates the database table for the hashtable 
+/** @brief Creates the database table for the hashtable 
  * 
  * @param table The hashtable
- * @param ame The name of the hastable inside the database 
  * @param error An error struct
  * @returns TRUE on success, or FALSE if an error occurred.
  * 
  */
-
 static osync_bool osync_hashtable_create(OSyncHashTable *table, OSyncError **error)
 {
   char *query = NULL;
@@ -63,7 +61,7 @@ static osync_bool osync_hashtable_create(OSyncHashTable *table, OSyncError **err
 }
 
 #if !GLIB_CHECK_VERSION(2,12,0)
-/*! \brief g_hash_table_foreach_remove foreach function
+/** \brief g_hash_table_foreach_remove foreach function
  */
 static gboolean remove_entry(gpointer key, gpointer val, gpointer data)
 {
@@ -71,7 +69,7 @@ static gboolean remove_entry(gpointer key, gpointer val, gpointer data)
 }
 #endif
 
-/*! @brief Makes a hashtable forget reported entries
+/** @brief Makes a hashtable forget reported entries
  * 
  * You can ask the hashtable to detect the changes. In the end you can
  * ask the hashtable for all items that have been deleted since the last sync.
@@ -99,7 +97,7 @@ static void osync_hashtable_reset_reports(OSyncHashTable *table)
   osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/*! @brief Makes hashtable in memory forget, not the persistent one
+/** @brief Makes hashtable in memory forget, not the persistent one
  * 
  * @param table The hashtable
  * 
@@ -122,7 +120,7 @@ static void osync_hashtable_reset(OSyncHashTable *table)
 }
 
 
-/*! @brief Report a item
+/** @brief Report a item
  * 
  * When you use this function the item is marked as reported, so it will not get
  * listed as deleted. Use this function if there are problems accessing an object for
@@ -167,75 +165,6 @@ static void _osync_hashtable_prepare_insert_query(const char *uid, const char *h
 
 /*@}*/
 
-/**
- * @defgroup OSyncHashtableAPI OpenSync Hashtables
- * @ingroup OSyncPublic
- * @brief A Hashtable can be used to detect changes
- * 
- * Hashtables can be used to detect changes since the last invocation. They do this
- * by keeping track of all reported uids and the hashes of the objects.
- * 
- * A hash is a string that changes when an object is updated or when the content of
- * the object changes. So hashes can either be a real hash like an MD5, or something 
- * like a timestamp. The only important thing is that the hash changes when the item
- * gets updated.
- * 
- * The hashtable is created from a .db file using the osync_hashtable_new() function.
- *
- * With osync_hashtable_load() the persinent database gets read and loads all hashtable
- * entries into memory.
- * 
- * Now you can query and alter the hashtable in memory. You can ask if a item has changed 
- * by doing:
- *
- * - osync_hashtable_get_changetype() 
- *   To get the changetype of a certain OSyncChange object. Don't forget to update the hash for 
- *   the change in advance. Update your OSyncChange with this detect changetype with
- *   osync_change_set_changetype()
- *
- * - osync_hashtable_update_change()
- *   When the changetype got updated for the OSyncChange object, update the hash entry with
- *   calling osync_hashtable_update_change(). Call this function even if the entry has changetype
- *   unmodified. Otherwise the hashtable will report this entry later as deleted.
- *  
- * - osync_hashtable_get_deleted()
- *   Once all available changes got reported call osync_hashtable_get_deleted() to get an OSyncList
- *   of changes which got deleted since last sync. Entries get determined as deleted if they
- *   got not reported as osync_hashtable_update_change(), independent of the changetype.
- *
- * - osync_hashtable_save()
- *   For performance reason the hashtable in memory got only stored persistence with calling
- *   osync_hashtable_save(). Call this function everytime when the synchronization finished.
- *   This is usually inside the sync_done() function.
- * 
- * After you are finished using the hashtable, call:
- * - osync_hashtable_unref()
- * 
- * The hashtable works like this:
- * 
- * First the items are reported with a certain uid or hash. If the uid does not yet
- * exist in the database it is reported as ADDED. If the uid exists and the hash is different
- * it is reported as MODIFIED. If the uid exists but the hash is the same it means that the
- * object is UNMODIFIED.
- * 
- * To be able to report deleted objects the hashtables keeps track of the uids you reported.
- * After you are done with asking the hashtable for changes you can ask it for deleted objects.
- * All items that are in the hashtable but where not reported by you have to be DELETED.
- * 
- */
-/*@{*/
-
-/*! @brief Loads or creates a hashtable
- * 
- * Hashtables can be used to detect what has been changed since
- * the last sync
- * 
- * @param path the full path and file name of the hashtable .db file to load from or create
- * @param objtype the object type of the hashtable
- * @param error An error struct
- * @returns A new hashtable, or NULL if an error occurred.
- * 
- */
 OSyncHashTable *osync_hashtable_new(const char *path, const char *objtype, OSyncError **error)
 {
   OSyncHashTable *table = NULL;
@@ -285,11 +214,6 @@ OSyncHashTable *osync_hashtable_new(const char *path, const char *objtype, OSync
 
 }
 
-/*! @brief Increase the refernece count of the hashtable.
- *
- * @param table The hashtable to increase the reference count
- * @returns Pointer to increased hashtable object
- */
 OSyncHashTable *osync_hashtable_ref(OSyncHashTable *table)
 {
   osync_assert(table);
@@ -299,12 +223,6 @@ OSyncHashTable *osync_hashtable_ref(OSyncHashTable *table)
   return table;
 }
 
-/*! @brief Decrease the reference count of the hastable. Hashtable
- *         gets freed if the reference count get less then one. 
- * 
- * @param table The hashtable to decrease the reference count 
- * 
- */
 void osync_hashtable_unref(OSyncHashTable *table)
 {
   osync_assert(table);
@@ -399,17 +317,6 @@ osync_bool osync_hashtable_save(OSyncHashTable *table, OSyncError **error)
 }
 
 
-/*! @brief Prepares the hashtable for a slowsync and flush the entire hashtable
- * 
- * This function should be called to prepare the hashtable for a slowsync.
- * The entire database, which stores the values of the hashtable beyond the
- * synchronization, gets flushed.
- * 
- * @param table The hashtable
- * @param error An error struct
- * @returns TRUE on success, or FALSE if an error occurred.
- * 
- */
 osync_bool osync_hashtable_slowsync(OSyncHashTable *table, OSyncError **error)
 {
   osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, table, error);
@@ -432,16 +339,6 @@ osync_bool osync_hashtable_slowsync(OSyncHashTable *table, OSyncError **error)
 
 }
 
-/*! @brief Update the an entry
- * 
- * Updates the entry in the hashtable. Use this even if the change entry
- * is unmodified! Usually this function get called in get_changes(). In some
- * rare cases this get even called inside of the commit() plugin functions,
- * to update the UID inside the hashtable of a changed entry.
- * 
- * @param table The hashtable
- * @param type The type of change (added, modified, etc.)
- */
 void osync_hashtable_update_change(OSyncHashTable *table, OSyncChange *change)
 {
   const char *uid = NULL;
@@ -493,13 +390,6 @@ void osync_hashtable_update_change(OSyncHashTable *table, OSyncChange *change)
   osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/*! @brief Get a list of uids which deleted 
- * 
- * @param table The hashtable
- * @returns OSyncList containing UIDs of deleted entries. Caller is responsible for freeing the ist,
- *          not the content, with osync_list_free() .
- * 
- */
 struct callback_data {
   OSyncList *deleted_entries;
   OSyncHashTable *table;
@@ -524,19 +414,6 @@ OSyncList *osync_hashtable_get_deleted(OSyncHashTable *table)
   return cbdata.deleted_entries;
 }
 
-/*! @brief Gets the changetype for the given OSyncChange object, by comparing the hashs
- *         of the hashtable and OSyncChange object.
- * 
- * This function does not report the object so if you only use this function then
- * the object will get reported as deleted! Please use osync_hashtable_report() for reporting
- * an object.
- * 
- * @param table The hashtable
- * @param uid The uid to lookup
- * @param newhash The new hash to compare with the stored hash
- * @returns The changetype
- * 
- */
 OSyncChangeType osync_hashtable_get_changetype(OSyncHashTable *table, OSyncChange *change)
 {
   OSyncChangeType retval = OSYNC_CHANGE_TYPE_UNKNOWN;
@@ -585,5 +462,3 @@ const char *osync_hashtable_get_hash(OSyncHashTable *table, const char *uid)
 
   return (const char *)  g_hash_table_lookup(table->db_entries, uid);
 }
-
-/*@}*/
