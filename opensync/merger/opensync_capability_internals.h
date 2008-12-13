@@ -23,8 +23,37 @@
 #ifndef OPENSYNC_CAPABILITY_INTERNALS_H_
 #define OPENSYNC_CAPABILITY_INTERNALS_H_
 
+/**
+ * @defgroup OSyncCapabilityPrivateAPI OpenSync Capability Internals
+ * @ingroup OSyncPrivate
+ * @brief The private part of the OSyncCapability
+ * 
+ */
+/*@{*/
+
+/**
+ * @brief Creates a new capability object which will be added to the end of capabilities of the capabilities object.
+ *  The returned object will be freed with the capabilities object.
+ * @param capabilitiesobjtype The pointer to a capabilitiesobjtype object
+ * @param node The node must be already inserted at the end of childs of the objtype xml node
+ * @param error The error which will hold the info in case of an error
+ * @return The pointer to the newly allocated capability object or NULL in case of error
+ */
 OSyncCapability *osync_capability_new_node(OSyncCapabilitiesObjType *objtype, xmlNodePtr node, OSyncError **error);
+
+/**
+ * @brief Frees a capability object 
+ * @param capability The pointer to a capability object
+ */
 void osync_capability_free(OSyncCapability *capability);
+
+/**
+ * @brief Compare the names of two capabilities
+ * @param capability1 The pointer to a capability object
+ * @param capability2 The pointer to a capability object
+ */
 int osync_capability_compare_stdlib(const void *capability1, const void *capability2);
+
+/*@}*/
 
 #endif /*OPENSYNC_CAPABILITY_INTERNALS_H_*/

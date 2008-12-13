@@ -30,22 +30,6 @@
 
 #include "opensync_capability_private.h"
 
-/**
- * @defgroup OSyncCapabilityPrivateAPI OpenSync Capability Internals
- * @ingroup OSyncPrivate
- * @brief The private part of the OSyncCapability
- * 
- */
-/*@{*/
-
-/**
- * @brief Creates a new capability object which will be added to the end of capabilities of the capabilities object.
- *  The returned object will be freed with the capabilities object.
- * @param capabilitiesobjtype The pointer to a capabilitiesobjtype object
- * @param node The node must be already inserted at the end of childs of the objtype xml node
- * @param error The error which will hold the info in case of an error
- * @return The pointer to the newly allocated capability object or NULL in case of error
- */
 OSyncCapability *osync_capability_new_node(OSyncCapabilitiesObjType *capabilitiesobjtype, xmlNodePtr node, OSyncError **error)
 {
 	OSyncCapability *capability = NULL;
@@ -73,10 +57,6 @@ OSyncCapability *osync_capability_new_node(OSyncCapabilitiesObjType *capabilitie
 	return capability;
 }
 
-/**
- * @brief Frees a capability object 
- * @param capability The pointer to a capability object
- */
 void osync_capability_free(OSyncCapability *capability)
 {
 	osync_assert(capability);
@@ -84,35 +64,11 @@ void osync_capability_free(OSyncCapability *capability)
 	g_free(capability);
 }
 
-/**
- * @brief Compare the names of two capabilities
- * @param capability1 The pointer to a capability object
- * @param capability2 The pointer to a capability object
- */
 int osync_capability_compare_stdlib(const void *capability1, const void *capability2)
 {
 	return strcmp(osync_capability_get_name(*(OSyncCapability **)capability1), osync_capability_get_name(*(OSyncCapability **)capability2));
 }
 
-/*@}*/
-
-/**
- * @defgroup OSyncCapabilityAPI OpenSync Capability
- * @ingroup OSyncPublic
- * @brief The public part of the OSyncCapability
- * 
- */
-/*@{*/
-
-/**
- * @brief Creates a new capability object which will be added to the end of capabilities of the capabilities object.
- *  The returned object will be freed with the capabilities object.
- * @param capabilities The pointer to a capabilities object
- * @param objtype The name of the objtype (e.g.: contact)
- * @param name The name of the capability
- * @param error The error which will hold the info in case of an error
- * @return The pointer to the newly allocated capability object or NULL in case of error
- */
 OSyncCapability *osync_capability_new(OSyncCapabilities *capabilities, const char *objtype, const char *name, OSyncError **error)
 {
 	OSyncCapabilitiesObjType *capabilitiesobjtype = NULL;
@@ -148,11 +104,6 @@ OSyncCapability *osync_capability_new(OSyncCapabilities *capabilities, const cha
 	return capability;
 }
 
-/**
- * @brief Get the name of the capability
- * @param capability The pointer to a capability object
- * @return The name of the capability
- */
 const char *osync_capability_get_name(OSyncCapability *capability)
 {
 	osync_assert(capability);
@@ -160,11 +111,6 @@ const char *osync_capability_get_name(OSyncCapability *capability)
 	return (const char *) capability->node->name;
 }
 
-/**
- * @brief Get the next capability
- * @param capability The pointer to a capability object
- * @return The pointer to the next capability or NULL if there is no more capability
- */
 OSyncCapability *osync_capability_get_next(OSyncCapability *capability)
 {
 	osync_assert(capability);
@@ -172,11 +118,6 @@ OSyncCapability *osync_capability_get_next(OSyncCapability *capability)
 	return capability->next;
 }
 
-/**
- * @brief Check if the capability has a key
- * @param capability The pointer to a capability object
- * @return TRUE if the capability has a key otherwise FALSE
- */
 osync_bool osync_capability_has_key(OSyncCapability *capability)
 {
 	osync_assert(capability);
@@ -187,11 +128,6 @@ osync_bool osync_capability_has_key(OSyncCapability *capability)
 		return FALSE;	
 }
 
-/**
- * @brief Get the count of keys of a capability
- * @param capability The pointer to a capability object
- * @return The count of keys of the capability
- */
 int osync_capability_get_key_count(OSyncCapability *capability)
 {
 	int count;
@@ -207,12 +143,6 @@ int osync_capability_get_key_count(OSyncCapability *capability)
 	return count;
 }
 
-/**
- * @brief Get the name of the nth key of a capability
- * @param capability The pointer to a capability object
- * @param nth The number of the key
- * @return The name of the nth key of the capability or NULL in case of error
- */
 const char *osync_capability_get_nth_key(OSyncCapability *capability, int nth)
 {
 	int count = 0;
@@ -231,11 +161,6 @@ const char *osync_capability_get_nth_key(OSyncCapability *capability, int nth)
 	return NULL;
 }
 
-/**
- * @brief Add the key to capability
- * @param capability The pointer to a capability object
- * @param name The name of the key
- */
 void osync_capability_add_key(OSyncCapability *capability, const char *name)
 {
 	osync_assert(capability);
@@ -243,5 +168,3 @@ void osync_capability_add_key(OSyncCapability *capability, const char *name)
 	
 	xmlNewTextChild(capability->node, NULL, (xmlChar*)name, NULL);
 }
-
-/*@}*/

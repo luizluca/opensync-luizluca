@@ -25,13 +25,71 @@
 
 typedef struct OSyncCapabilitiesObjType OSyncCapabilitiesObjType;
 
+/**
+ * @defgroup OSyncCapabilitiesPrivateAPI OpenSync Capabilities Internals
+ * @ingroup OSyncPrivate
+ * @brief The private part of the OSyncCapabilities
+ * 
+ */
+/*@{*/
+
+/**
+ * @brief Get the first capability for a given objtype from the capabilities
+ * @param capabilities The pointer to a capabilities object
+ * @param objtype The name of the objtype (e.g.: contact)
+ * @return The first capability for a given objtype from the capabilities
+ */
 OSyncCapability *osync_capabilities_get_first(OSyncCapabilities *capabilities, const char *objtype);
 
+
+/**
+ * @brief Sort all the capabilities of every objtype of the capabilities object. This function has to
+ *  be called after a capability was added to the capabilities.
+ * @param capabilities The pointer to a capabilities object
+ */
 OSYNC_TEST_EXPORT void osync_capabilities_sort(OSyncCapabilities *capabilities);
 
+
+/**
+ * @brief Load a capabilities object from a prepackaged file 
+ * @param file The name of the file
+ * @param error The error which will hold the info in case of an error
+ * @return The pointer to the newly allocated capabilities object or NULL in case of error
+ */
 OSyncCapabilities *osync_capabilities_load(const char *file, OSyncError **error);
+
+/**
+ * @brief Checks if the capabilities are already cached 
+ * @param member The member which should be tested for cached capabilities
+ * @return TRUE if the capabilities for this member are cached otherwise FALSE
+ */
 osync_bool osync_capabilities_member_has_capabilities(OSyncMember *member);
+
+/**
+ * @brief Get the cached capabilities of a member. The cache capabilities is stored as
+ *        "capabilities.xml" in the member directory. This function should be only used
+ *        internal. To get the current capabilities of a member please use:
+ *        osync_member_get_capabilities()
+ *
+ * @param member The pointer to a member object
+ * @param error The error which will hold the info in case of an error
+ * @return The objtype of the xmlformat
+ */
 OSyncCapabilities* osync_capabilities_member_get_capabilities(OSyncMember *member, OSyncError** error);
+
+/**
+ * @brief Set the capabilities of a member. The capabilities get cached in the member directory
+ *        as "capabilities.xml". This function should be only used internal. To set member
+ *        capabilities, please use:
+ *        osync_member_set_capabilities()
+ *
+ * @param member The pointer to a member object
+ * @param capabilities The pointer to a capabilities object
+ * @param error The error which will hold the info in case of an error
+ * @return TRUE on success otherwise FALSE
+ */
 osync_bool osync_capabilities_member_set_capabilities(OSyncMember *member, OSyncCapabilities* capabilities, OSyncError** error);
+
+/*@}*/
 
 #endif /*OPENSYNC_CAPABILITIES_INTERNAL_H_*/

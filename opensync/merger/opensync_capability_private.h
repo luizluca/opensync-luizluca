@@ -24,7 +24,7 @@
 #define OPENSYNC_CAPABILITY_PRIVATE_H_
 
 /**
- * @brief Represent a Capabilitiy object
+ * @brief Represents a Capability object
  * @ingroup OSyncCapabilityPrivateAPI
  */
 struct OSyncCapability {

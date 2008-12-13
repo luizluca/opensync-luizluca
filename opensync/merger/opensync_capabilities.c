@@ -97,19 +97,6 @@ OSyncCapabilitiesObjType *osync_capabilitiesobjtype_get(OSyncCapabilities *capab
 
 /*@}*/
 
-/**
- * @defgroup OSyncCapabilitiesAPI OpenSync Capabilities
- * @ingroup OSyncPublic
- * @brief The public part of the OSyncCapabilities
- * 
- */
-/*@{*/
-
-/**
- * @brief Creates a new capabilities object
- * @param error The error which will hold the info in case of an error
- * @return The pointer to the newly allocated capabilities object or NULL in case of error
- */
 OSyncCapabilities *osync_capabilities_new(OSyncError **error)
 {
 	OSyncCapabilities *capabilities = NULL;
@@ -132,13 +119,6 @@ OSyncCapabilities *osync_capabilities_new(OSyncError **error)
 	return capabilities;
 }
 
-/**
- * @brief Creates a new capabilities object from a xml document. 
- * @param buffer The pointer to the xml document
- * @param size The size of the xml document
- * @param error The error which will hold the info in case of an error
- * @return The pointer to the newly allocated capabilities object or NULL in case of error
- */
 OSyncCapabilities *osync_capabilities_parse(const char *buffer, unsigned int size, OSyncError **error)
 {
 	OSyncCapabilities *capabilities = NULL;
@@ -196,10 +176,6 @@ OSyncCapabilities *osync_capabilities_parse(const char *buffer, unsigned int siz
 	return capabilities;
 }
 
-/**
- * @brief Increments the reference counter
- * @param capabilities The pointer to a capabilities object
- */
 OSyncCapabilities *osync_capabilities_ref(OSyncCapabilities *capabilities)
 {
 	osync_assert(capabilities);
@@ -209,11 +185,6 @@ OSyncCapabilities *osync_capabilities_ref(OSyncCapabilities *capabilities)
 	return capabilities;
 }
 
-/**
- * @brief Decrement the reference counter. The xmlformat object will 
- *  be freed if there is no more reference to it.
- * @param capabilities The pointer to a capabilities object
- */
 void osync_capabilities_unref(OSyncCapabilities *capabilities)
 {
 	osync_assert(capabilities);
@@ -241,12 +212,6 @@ void osync_capabilities_unref(OSyncCapabilities *capabilities)
 	}
 }
 
-/**
- * @brief Get the first capability for a given objtype from the capabilities
- * @param capabilities The pointer to a capabilities object
- * @param objtype The name of the objtype (e.g.: contact)
- * @return The first capability for a given objtype from the capabilities
- */
 OSyncCapability *osync_capabilities_get_first(OSyncCapabilities *capabilities, const char *objtype)
 {
 	OSyncCapability *res = NULL;
@@ -260,14 +225,6 @@ OSyncCapability *osync_capabilities_get_first(OSyncCapabilities *capabilities, c
 	return res;
 }	
 
-/**
- * @brief Dump the capabilities into the memory.
- * @param capabilities The pointer to a capabilities object 
- * @param buffer The pointer to the buffer which will hold the xml document
- * @param size The pointer to the buffer which will hold the size of the xml document
- * @return The xml document and the size of it. It's up to the caller to free
- *  the buffer. Always it return TRUE.
- */
 osync_bool osync_capabilities_assemble(OSyncCapabilities *capabilities, char **buffer, int *size)
 {
 	osync_assert(capabilities);
@@ -278,11 +235,6 @@ osync_bool osync_capabilities_assemble(OSyncCapabilities *capabilities, char **b
 	return TRUE;
 }
 
-/**
- * @brief Sort all the capabilities of every objtype of the capabilities object. This function has to
- *  be called after a capability was added to the capabilities.
- * @param capabilities The pointer to a capabilities object
- */
 void osync_capabilities_sort(OSyncCapabilities *capabilities)
 {
 	int index;
@@ -330,12 +282,6 @@ void osync_capabilities_sort(OSyncCapabilities *capabilities)
 		}
 }
 
-/**
- * @brief Load a capabilities object from a prepackaged file 
- * @param file The name of the file
- * @param error The error which will hold the info in case of an error
- * @return The pointer to the newly allocated capabilities object or NULL in case of error
- */
 OSyncCapabilities *osync_capabilities_load(const char *file, OSyncError **error)
 {
 	unsigned int size;
@@ -366,11 +312,6 @@ OSyncCapabilities *osync_capabilities_load(const char *file, OSyncError **error)
 	return capabilities;
 }
 
-/**
- * @brief Checks if the capabilities are already cached 
- * @param member The member which should be tested for cached capabilities
- * @return TRUE if the capabilities for this member are cached otherwise FALSE
- */
 osync_bool osync_capabilities_member_has_capabilities(OSyncMember *member)
 {
 	char *filename = NULL;
@@ -387,16 +328,6 @@ osync_bool osync_capabilities_member_has_capabilities(OSyncMember *member)
 	return res;
 }
 
-/**
- * @brief Get the cached capabilities of a member. The cache capabilities is stored as
- *        "capabilities.xml" in the member directory. This function should be only used
- *        internal. To get the current capabilities of a member please use:
- *        osync_member_get_capabilities()
- *
- * @param member The pointer to a member object
- * @param error The error which will hold the info in case of an error
- * @return The objtype of the xmlformat
- */
 OSyncCapabilities* osync_capabilities_member_get_capabilities(OSyncMember *member, OSyncError** error)
 {
 	unsigned int size;
@@ -430,17 +361,6 @@ OSyncCapabilities* osync_capabilities_member_get_capabilities(OSyncMember *membe
 	return capabilities;
 }
 
-/**
- * @brief Set the capabilities of a member. The capabilities get cached in the member directory
- *        as "capabilities.xml". This function should be only used internal. To set member
- *        capabilities, please use:
- *        osync_member_set_capabilities()
- *
- * @param member The pointer to a member object
- * @param capabilities The pointer to a capabilities object
- * @param error The error which will hold the info in case of an error
- * @return TRUE on success otherwise FALSE
- */
 osync_bool osync_capabilities_member_set_capabilities(OSyncMember *member, OSyncCapabilities* capabilities, OSyncError** error)
 {
 	int size;
@@ -465,4 +385,3 @@ osync_bool osync_capabilities_member_set_capabilities(OSyncMember *member, OSync
 	return res;
 }
 
-/*@}*/
