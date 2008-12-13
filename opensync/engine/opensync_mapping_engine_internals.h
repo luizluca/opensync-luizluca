@@ -28,7 +28,7 @@ struct OSyncMappingEngine {
 	int ref_count;
 	OSyncMapping *mapping;
 	OSyncMappingEntryEngine *master;
-	GList *entries;
+	GList *entries; /* OSyncMappingEntryEngine */
 	OSyncObjEngine *parent;
 	osync_bool conflict;
 	osync_bool synced;

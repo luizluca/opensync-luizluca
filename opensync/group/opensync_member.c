@@ -540,6 +540,8 @@ osync_bool osync_member_load(OSyncMember *member, const char *path, OSyncError *
 		if (str) {
 			if (!xmlStrcmp(cur->name, (const xmlChar *)"pluginname")) {
 				member->pluginname = osync_strdup(str);
+			} else if (!xmlStrcmp(cur->name, BAD_CAST "name")) {
+				osync_member_set_name(member, str);
 			} else if (!xmlStrcmp(cur->name, (const xmlChar *)"objtype")) {
 				OSyncObjTypeSink *sink = _osync_member_parse_objtype(cur->xmlChildrenNode, error);
 				if (!sink)
@@ -670,6 +672,7 @@ static osync_bool _osync_member_save_sink(xmlDoc *doc, OSyncObjTypeSink *sink, O
  */
 osync_bool osync_member_save(OSyncMember *member, OSyncError **error)
 {
+	const char *membername = NULL;
 	char *filename = NULL;
 	xmlDocPtr doc = NULL;
 	char *version_str = NULL;
@@ -696,6 +699,10 @@ osync_bool osync_member_save(OSyncMember *member, OSyncError **error)
 
 	//The plugin name
 	xmlNewChild(doc->children, NULL, (xmlChar*)"pluginname", (xmlChar*)member->pluginname);
+
+	/* The member name (optional) */
+	if ((membername = osync_member_get_name(member)))
+		xmlNewChild(doc->children, NULL, BAD_CAST "name", BAD_CAST membername);
 
 	//The main sink
 	if (member->main_sink && !_osync_member_save_sink(doc, member->main_sink, error)) {

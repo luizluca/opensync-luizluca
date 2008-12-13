@@ -4,6 +4,7 @@
   <xsd:element name="syncmember">
     <xsd:complexType>
       <xsd:sequence>
+        <xsd:element maxOccurs="1" minOccurs="0" name="name" type="xsd:string"/>
         <xsd:element maxOccurs="1" minOccurs="0" name="pluginname" type="xsd:string"/>
         <xsd:element maxOccurs="unbounded" minOccurs="0" name="objtype" type="ObjType"/>
       </xsd:sequence>
