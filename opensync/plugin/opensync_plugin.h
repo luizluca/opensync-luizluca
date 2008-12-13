@@ -125,7 +125,7 @@ OSYNC_EXPORT OSyncConfigurationType osync_plugin_get_config_type(OSyncPlugin *pl
 /*! @brief Sets whether or not the plugin requires configuration
  *
  * @param plugin Pointer to the plugin
- * @param config_type The configuration requirement type of the plugin
+ * @param type The configuration requirement type of the plugin
  */
 OSYNC_EXPORT void osync_plugin_set_config_type(OSyncPlugin *plugin, OSyncConfigurationType type);
 
@@ -140,7 +140,7 @@ OSYNC_EXPORT OSyncStartType osync_plugin_get_start_type(OSyncPlugin *plugin);
 /*! @brief Sets the start type of the plugin 
  *
  * @param plugin Pointer to the plugin
- * @param start_type The start type of the plugin
+ * @param type The start type of the plugin
  */
 OSYNC_EXPORT void osync_plugin_set_start_type(OSyncPlugin *plugin, OSyncStartType type);
 

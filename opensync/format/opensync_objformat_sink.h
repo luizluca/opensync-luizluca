@@ -68,7 +68,7 @@ OSYNC_EXPORT const char *osync_objformat_sink_get_config(OSyncObjFormatSink *for
 /**
  * @brief Set the conversion path config of an object format sink
  * @param format Pointer to the object format sink
- * @param config Format specific configuration 
+ * @param format_config Format specific configuration 
  * @return The conversion config of the specified object format sink
  */
 OSYNC_EXPORT void osync_objformat_sink_set_config(OSyncObjFormatSink *format, const char *format_config);

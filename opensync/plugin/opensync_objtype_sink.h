@@ -117,7 +117,7 @@ OSYNC_EXPORT const char *osync_objtype_sink_get_preferred_format(OSyncObjTypeSin
 /*! @brief Set the preferred format for the conversion
  * 
  * @param sink Pointer to the sink
- * @param name the name of the preferred format to set
+ * @param preferred_format the name of the preferred format to set
  * 
  */
 OSYNC_EXPORT void osync_objtype_sink_set_preferred_format(OSyncObjTypeSink *sink, const char *preferred_format);
@@ -160,7 +160,7 @@ OSYNC_EXPORT OSyncList *osync_objtype_sink_get_objformat_sinks(OSyncObjTypeSink 
 /** @brief Adds an object format sink to the sink
  * 
  * @param sink Pointer to the sink
- * @param objformat The object format sink to add 
+ * @param objformatsink The object format sink to add 
  * 
  */
 OSYNC_EXPORT void osync_objtype_sink_add_objformat_sink(OSyncObjTypeSink *sink, OSyncObjFormatSink *objformatsink);
@@ -168,7 +168,7 @@ OSYNC_EXPORT void osync_objtype_sink_add_objformat_sink(OSyncObjTypeSink *sink, 
 /** @brief Removes an object format from the sink
  * 
  * @param sink Pointer to the sink
- * @param format name of the object format to remove
+ * @param objformatsink the object format sink to remove
  * 
  */
 OSYNC_EXPORT void osync_objtype_sink_remove_objformat_sink(OSyncObjTypeSink *sink, OSyncObjFormatSink *objformatsink);
