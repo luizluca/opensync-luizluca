@@ -270,7 +270,7 @@ OSYNC_EXPORT osync_bool osync_objtype_sink_get_getchanges(OSyncObjTypeSink *sink
  * @param getchanges Set TRUE if the sink is allowed to get latest changes, FALSE otherwise
  *
  */
-OSYNC_EXPORT void osync_objtype_sink_set_getchanges(OSyncObjTypeSink *sink, osync_bool write);
+OSYNC_EXPORT void osync_objtype_sink_set_getchanges(OSyncObjTypeSink *sink, osync_bool getchanges);
 
 
 /*! @brief Checks if sink is allowed to read single entries

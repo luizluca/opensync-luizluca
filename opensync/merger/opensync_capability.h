@@ -85,7 +85,7 @@ OSYNC_EXPORT const char *osync_capability_get_nth_key(OSyncCapability *capabilit
  * @param capability The pointer to a capability object
  * @param name The name of the key
  */
-OSYNC_EXPORT void osync_capability_add_key(OSyncCapability *capabilitiy, const char *name);
+OSYNC_EXPORT void osync_capability_add_key(OSyncCapability *capability, const char *name);
 
 /*@}*/
 
