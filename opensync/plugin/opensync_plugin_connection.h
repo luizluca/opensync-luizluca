@@ -34,18 +34,18 @@
  *
  **/
 typedef enum {
-  /** Unknown */
-  OSYNC_PLUGIN_CONNECTION_UNKNOWN	= 0,
-  /** Bluetooth */
-  OSYNC_PLUGIN_CONNECTION_BLUETOOTH	= (1 << 0),
-  /** USB */
-  OSYNC_PLUGIN_CONNECTION_USB		= (1 << 1),
-  /** Network */ 
-  OSYNC_PLUGIN_CONNECTION_NETWORK	= (1 << 2), 
-  /** Serial */
-  OSYNC_PLUGIN_CONNECTION_SERIAL	= (1 << 3),
-  /** IrDA */
-  OSYNC_PLUGIN_CONNECTION_IRDA		= (1 << 4)
+	/** Unknown */
+	OSYNC_PLUGIN_CONNECTION_UNKNOWN	= 0,
+	/** Bluetooth */
+	OSYNC_PLUGIN_CONNECTION_BLUETOOTH	= (1 << 0),
+	/** USB */
+	OSYNC_PLUGIN_CONNECTION_USB		= (1 << 1),
+	/** Network */ 
+	OSYNC_PLUGIN_CONNECTION_NETWORK	= (1 << 2), 
+	/** Serial */
+	OSYNC_PLUGIN_CONNECTION_SERIAL	= (1 << 3),
+	/** IrDA */
+	OSYNC_PLUGIN_CONNECTION_IRDA		= (1 << 4)
 } OSyncPluginConnectionType;
 
 /*! @brief Connection type
@@ -62,32 +62,32 @@ typedef unsigned int OSyncPluginConnectionSupportedFlags;
  * 
  */
 typedef enum {
-  /** Bluetooth (MAC) address */
-  OSYNC_PLUGIN_CONNECTION_BLUETOOTH_ADDRESS	= (1 << 0),
-  /** Bluetooth RFCOMM channel */
-  OSYNC_PLUGIN_CONNECTION_BLUETOOTH_RFCOMM	= (1 << 1),
-  /** Bluetooth SDP UUID */
-  OSYNC_PLUGIN_CONNECTION_BLUETOOTH_SDPUUID	= (1 << 2),
-  /** USB Vendor ID */
-  OSYNC_PLUGIN_CONNECTION_USB_VENDORID		= (1 << 3),
-  /** USB Product ID */
-  OSYNC_PLUGIN_CONNECTION_USB_PRODUCTID		= (1 << 4),
-  /** USB interface ??? */
-  OSYNC_PLUGIN_CONNECTION_USB_INTERFACE		= (1 << 5),
-  /** Network address (IP/hostname) */
-  OSYNC_PLUGIN_CONNECTION_NETWORK_ADDRESS	= (1 << 6),
-  /** Network port */
-  OSYNC_PLUGIN_CONNECTION_NETWORK_PORT		= (1 << 7),
-  /** Network protocol */
-  OSYNC_PLUGIN_CONNECTION_NETWORK_PROTOCOL	= (1 << 8),
-  /** Network DNS-SD service type */
-  OSYNC_PLUGIN_CONNECTION_NETWORK_DNSSD		= (1 << 9),
-  /** Serial port speed (bps) eg. 115200 */
-  OSYNC_PLUGIN_CONNECTION_SERIAL_SPEED		= (1 << 10),
-  /** Serial device node (e.g. /dev/ttyS0, /dev/ttyUSB0, ...) */
-  OSYNC_PLUGIN_CONNECTION_SERIAL_DEVICENODE	= (1 << 11),
-  /** IrDA Identifier (Service) String */
-  OSYNC_PLUGIN_CONNECTION_IRDA_SERVICE		= (1 << 12)
+	/** Bluetooth (MAC) address */
+	OSYNC_PLUGIN_CONNECTION_BLUETOOTH_ADDRESS	= (1 << 0),
+	/** Bluetooth RFCOMM channel */
+	OSYNC_PLUGIN_CONNECTION_BLUETOOTH_RFCOMM	= (1 << 1),
+	/** Bluetooth SDP UUID */
+	OSYNC_PLUGIN_CONNECTION_BLUETOOTH_SDPUUID	= (1 << 2),
+	/** USB Vendor ID */
+	OSYNC_PLUGIN_CONNECTION_USB_VENDORID		= (1 << 3),
+	/** USB Product ID */
+	OSYNC_PLUGIN_CONNECTION_USB_PRODUCTID		= (1 << 4),
+	/** USB interface ??? */
+	OSYNC_PLUGIN_CONNECTION_USB_INTERFACE		= (1 << 5),
+	/** Network address (IP/hostname) */
+	OSYNC_PLUGIN_CONNECTION_NETWORK_ADDRESS	= (1 << 6),
+	/** Network port */
+	OSYNC_PLUGIN_CONNECTION_NETWORK_PORT		= (1 << 7),
+	/** Network protocol */
+	OSYNC_PLUGIN_CONNECTION_NETWORK_PROTOCOL	= (1 << 8),
+	/** Network DNS-SD service type */
+	OSYNC_PLUGIN_CONNECTION_NETWORK_DNSSD		= (1 << 9),
+	/** Serial port speed (bps) eg. 115200 */
+	OSYNC_PLUGIN_CONNECTION_SERIAL_SPEED		= (1 << 10),
+	/** Serial device node (e.g. /dev/ttyS0, /dev/ttyUSB0, ...) */
+	OSYNC_PLUGIN_CONNECTION_SERIAL_DEVICENODE	= (1 << 11),
+	/** IrDA Identifier (Service) String */
+	OSYNC_PLUGIN_CONNECTION_IRDA_SERVICE		= (1 << 12)
 } OSyncPluginConnectionOptionSupportedFlag;
 
 /*! @brief Set of OSyncPluginConnectionOptionSupportedFlag values
