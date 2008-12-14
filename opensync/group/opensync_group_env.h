@@ -68,7 +68,7 @@ OSYNC_EXPORT void osync_group_env_free(OSyncGroupEnv *env);
  * @returns TRUE on success, FALSE otherwise
  * 
  */
-OSYNC_EXPORT osync_bool osync_group_env_load_groups(OSyncGroupEnv *env, const char *p, OSyncError **error);
+OSYNC_EXPORT osync_bool osync_group_env_load_groups(OSyncGroupEnv *env, const char *path, OSyncError **error);
 
 /** @brief Finds the group with the given name
  * 

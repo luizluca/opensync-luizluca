@@ -357,7 +357,7 @@ OSYNC_EXPORT osync_bool osync_group_get_merger_enabled(OSyncGroup *group);
  * @param group The group
  * @param merger_enabled TRUE enables the merger. FALSE disables the merger. 
  */
-OSYNC_EXPORT void osync_group_set_merger_enabled(OSyncGroup *group, osync_bool enable_merger);
+OSYNC_EXPORT void osync_group_set_merger_enabled(OSyncGroup *group, osync_bool merger_enabled);
 
 
 /** @brief Get group configured status of converter use. 
@@ -372,7 +372,7 @@ OSYNC_EXPORT osync_bool osync_group_get_converter_enabled(OSyncGroup *group);
  * @param group The group
  * @param converter_enabled TRUE enables the converter. FALSE disables the converter. 
  */
-OSYNC_EXPORT void osync_group_set_converter_enabled(OSyncGroup *group, osync_bool enable_converter);
+OSYNC_EXPORT void osync_group_set_converter_enabled(OSyncGroup *group, osync_bool converter_enabled);
 
 
 /** @brief Check if group configuration is up to date. 
