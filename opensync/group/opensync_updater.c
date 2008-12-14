@@ -41,14 +41,14 @@
 #include "opensync_updater_internals.h"
 
 /**
- * @defgroup OSyncPrivateUpdaterAPI OpenSync Updater 
+ * @defgroup OSyncPrivateUpdaterAPI OpenSync Updater Internals
  * @ingroup OSyncPrivate
  * @brief OpenSync update facilities
  * 
  */
 /*@{*/
 
-/*! @brief Stacks errors on top of the Updater error stack.
+/** @brief Stacks errors on top of the Updater error stack.
  *
  * @param updater Pointer to the OSyncUpdater 
  * @param error Pointer to OSyncError which get stacked
@@ -67,7 +67,7 @@ static void osync_updater_set_error(OSyncUpdater *updater, OSyncError *error)
 		osync_error_ref(&error);
 }
 
-/*! @brief Apply stylesheet on configuration.
+/** @brief Apply stylesheet on configuration.
  *
  * @param updater Pointer to the OSyncUpdater 
  * @param config Path to configuration which gets processed 
@@ -155,7 +155,7 @@ static osync_bool osync_updater_stylesheet_process(OSyncUpdater *updater, const 
 	return FALSE;
 }
 
-/*! @brief Process update on plugin configuration of a certain member.
+/** @brief Process update on plugin configuration of a certain member.
  *
  * @param updater Pointer to the OSyncUpdater 
  * @param member Pointer to OSyncMember who gets updated
@@ -229,7 +229,7 @@ static osync_bool osync_updater_process_plugin_config(OSyncUpdater *updater, OSy
 }
 
 
-/*! @brief Process update on member configuration.
+/** @brief Process update on member configuration.
  *
  * @param updater Pointer to the OSyncUpdater 
  * @param member Pointer to OSyncMember who gets updated
@@ -298,7 +298,7 @@ static osync_bool osync_updater_process_member_config(OSyncUpdater *updater, OSy
 	return FALSE;
 }
 
-/*! @brief Process update on member. 
+/** @brief Process update on member. 
  *
  * @param updater Pointer to the OSyncUpdater 
  * @param nthmember Nth member in the group, who gets updated
@@ -333,7 +333,7 @@ static osync_bool osync_updater_process_member(OSyncUpdater *updater, int nthmem
 	return FALSE;
 }
 
-/*! @brief Process update on group configuration.
+/** @brief Process update on group configuration.
  *
  * @param updater Pointer to the OSyncUpdater 
  * @param error Pointer to OSyncError which get stacked
@@ -402,7 +402,7 @@ static osync_bool osync_updater_process_group(OSyncUpdater *updater, OSyncError 
 	return FALSE;
 }
 
-/*! @brief Create group backup.
+/** @brief Create group backup.
  *
  * The entire group directory got moved to to groupN.bak.
  * If already backups present further .bak prefixes got appended.
@@ -583,7 +583,7 @@ static char *osync_updater_create_backup(OSyncUpdater *updater, OSyncError **err
 
 }
 
-/*! @brief Restore group backup.
+/** @brief Restore group backup.
  *
  * This function is intended to get called if update process failed.
  *
@@ -648,7 +648,7 @@ static osync_bool osync_updater_restore_backup(OSyncUpdater *updater, const char
 
 }
 
-/*! @brief Updater thread function 
+/** @brief Updater thread function 
  *
  *  #1 Lock group
  *  #2 Check version of group configuration
@@ -735,33 +735,18 @@ static void *osync_updater_run(void *userdata)
 	return 0;
 }
 
-/*! @brief Change version of group configuration. Only for testing.
- *
- * @param updater Pointer to the OSyncUpdater 
- * @param major Major Version number to set
- */
 void osync_updater_set_group_version(OSyncUpdater *updater, int major)
 {
 	osync_assert(updater);
 	updater->group_version = major;
 }
 
-/*! @brief Change version of member configuration. Only for testing.
- *
- * @param updater Pointer to the OSyncUpdater 
- * @param major Major Version number to set
- */
 void osync_updater_set_member_version(OSyncUpdater *updater, int major)
 {
 	osync_assert(updater);
 	updater->member_version = major;
 }
 
-/*! @brief Change version of plugin configuration. Only for testing.
- *
- * @param updater Pointer to the OSyncUpdater 
- * @param major Major Version number to set
- */
 void osync_updater_set_plugin_version(OSyncUpdater *updater, int major)
 {
 	osync_assert(updater);
@@ -770,21 +755,6 @@ void osync_updater_set_plugin_version(OSyncUpdater *updater, int major)
 
 /*@}*/
 
-/**
- * @defgroup OSyncUpdaterAPI OpenSync Updater 
- * @ingroup OSyncPublic
- * @brief OpenSync update facilities
- * 
- */
-/*@{*/
-
-
-/*! @brief Registers a new updater
- *
- * @param group Pointer to the OSyncGroup to update
- * @param error Pointer to an error struct
- * @returns the newly created updater
- */
 OSyncUpdater *osync_updater_new(OSyncGroup *group, OSyncError **error)
 {
 	OSyncUpdater *updater = osync_try_malloc0(sizeof(OSyncUpdater), error);
@@ -808,11 +778,6 @@ OSyncUpdater *osync_updater_new(OSyncGroup *group, OSyncError **error)
 	return updater;
 }
 
-/*! @brief Increase the reference count on a plugin
- * 
- * @param updater Pointer to the plugin
- * 
- */
 OSyncUpdater *osync_updater_ref(OSyncUpdater *updater)
 {
 	osync_assert(updater);
@@ -822,11 +787,6 @@ OSyncUpdater *osync_updater_ref(OSyncUpdater *updater)
 	return updater;
 }
 
-/*! @brief Decrease the reference count on a updater 
- * 
- * @param updater Pointer to the updater 
- * 
- */
 void osync_updater_unref(OSyncUpdater *updater)
 {
 	osync_assert(updater);
@@ -846,24 +806,12 @@ void osync_updater_unref(OSyncUpdater *updater)
 	}
 }
 
-/*! @brief Register OSyncUpdater callback
- * 
- * @param updater Pointer to the updater 
- * @param callback The callback function which get called on updater events 
- * 
- */
 void osync_updater_set_callback(OSyncUpdater *updater, osync_updater_cb callback)
 {
 	osync_assert(updater);
 	updater->status_callback = callback;
 }
 
-/*! @brief Check if an update is required for the group
- * 
- * @param updater Pointer to the updater 
- * @returns TRUE if update is required on that group, FALSE if no update is required.
- * 
- */
 osync_bool osync_updater_action_required(OSyncUpdater *updater)
 {
 	int i, num_members;
@@ -894,13 +842,6 @@ osync_bool osync_updater_action_required(OSyncUpdater *updater)
 	return FALSE;
 }
 
-/*! @brief Process update on the group. This function is not blocking. 
- * 
- * @param updater Pointer to the updater 
- * @param error Pointer to OSyncError
- * @returns TRUE if updating process started successfully, FALSE on error.
- * 
- */
 osync_bool osync_updater_process(OSyncUpdater *updater, OSyncError **error)
 {
 	osync_assert(updater);
@@ -921,13 +862,6 @@ osync_bool osync_updater_process(OSyncUpdater *updater, OSyncError **error)
 
 }
 
-/*! @brief Process update on the group. This function is blocking. 
- * 
- * @param updater Pointer to the updater 
- * @param error Pointer to OSyncError
- * @returns TRUE if updating process was successfully, FALSE on error.
- * 
- */
 osync_bool osync_updater_process_and_block(OSyncUpdater *updater, OSyncError **error)
 {
 	osync_assert(updater);
@@ -954,12 +888,6 @@ osync_bool osync_updater_process_and_block(OSyncUpdater *updater, OSyncError **e
 	return FALSE;
 }
 
-/*! @brief Set path of Updates directory, which inlcudes the update stylesheets. 
- * 
- * @param updater Pointer to the updater 
- * @param path Path to updates directory 
- * 
- */
 void osync_updater_set_updates_directory(OSyncUpdater *updater, const char *path)
 {
 	osync_assert(updater);
@@ -971,16 +899,8 @@ void osync_updater_set_updates_directory(OSyncUpdater *updater, const char *path
 	updater->updatesdir = osync_strdup(path);
 }
 
-/*! @brief Get path of Updates directory. 
- * 
- * @param updater Pointer to the updater 
- * @returns Path of Updates directory.
- * 
- */
 const char *osync_updater_get_updates_directory(OSyncUpdater *updater)
 {
 	return updater->updatesdir; 
 }
-
-/*@}*/
 

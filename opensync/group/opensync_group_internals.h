@@ -23,6 +23,16 @@
 #ifndef _OPENSYNC_GROUP_INTERNALS_H_
 #define _OPENSYNC_GROUP_INTERNALS_H_
 
+/**
+ * @defgroup OSyncGroupPrivateAPI OpenSync Group Internals
+ * @ingroup OSyncPrivate
+ * @brief The private API of opensync
+ * 
+ * This gives you an insight in the private API of opensync.
+ * 
+ */
+/*@{*/
+
 /*! @brief Represent a group of members that should be synchronized */
 struct OSyncGroup {
 	/** The name of the group */
@@ -53,7 +63,17 @@ struct OSyncGroup {
 };
 
 #ifdef OPENSYNC_UNITTESTS
+/** @brief Set the schemadir for configuration validation to a custom directory.
+ *  This is actually only inteded for UNITTESTS to run tests without 
+ *  having OpenSync installed.
+ * 
+ * @param group Pointer to group
+ * @param schemadir Custom schemadir path
+ * 
+ */
 OSYNC_TEST_EXPORT void osync_group_set_schemadir(OSyncGroup *group, const char *schemadir);
 #endif /* OPENSYNC_UNITTESTS*/
+
+/*@}*/
 
 #endif /* _OPENSYNC_GROUP_INTERNALS_H_ */

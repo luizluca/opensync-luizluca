@@ -82,7 +82,7 @@ static int flock(int fd, int operation)
  */
 /*@{*/
 
-/*! @brief Creates a new unique member if in this group
+/** @brief Creates a new unique member if in this group
  * 
  * @param group The group
  * @returns A new unique member id
@@ -104,7 +104,7 @@ static long long int _osync_group_create_member_id(OSyncGroup *group)
 	return i;
 }
 
-/*! @brief Loads all members of a group
+/** @brief Loads all members of a group
  * 
  * Loads all members of a group
  * 
@@ -189,7 +189,7 @@ static void _add_one(gpointer key, gpointer value, gpointer user_data)
 	g_hash_table_replace(table, key, GINT_TO_POINTER(num + 1));
 }
 
-/*! @brief Get list of supported object types of the group 
+/** @brief Get list of supported object types of the group 
  * 
  * @param group The group
  * @returns List of supported object types 
@@ -237,14 +237,6 @@ static GList *_osync_group_get_supported_objtypes(OSyncGroup *group)
 }
 
 #ifdef OPENSYNC_UNITTESTS
-/** @brief Set the schemadir for configuration validation to a custom directory.
- *  This is actually only inteded for UNITTESTS to run tests without 
- *  having OpenSync installed.
- * 
- * @param group Pointer to group
- * @param schemadir Custom schemadir path
- * 
- */
 void osync_group_set_schemadir(OSyncGroup *group, const char *schemadir)
 {
 	osync_assert(group);
@@ -259,22 +251,6 @@ void osync_group_set_schemadir(OSyncGroup *group, const char *schemadir)
 
 /*@}*/
 
-/**
- * @defgroup OSyncGroupAPI OpenSync Groups
- * @ingroup OSyncPublic
- * @brief A groups represent several device or application that should be synchronized
- * 
- */
-/*@{*/
-
-/*! @brief Creates a new group for the given environment
- * 
- * Creates a newly allocated group
- * 
- * @param error Pointer to an error struct
- * @returns Pointer to a new group
- * 
- */
 OSyncGroup *osync_group_new(OSyncError **error)
 {
 	OSyncGroup *group = NULL;
@@ -299,13 +275,6 @@ OSyncGroup *osync_group_new(OSyncError **error)
 	return NULL;
 }
 
-
-/** @brief Increase the reference count of the group
- * 
- * @param group The group
- * @returns The referenced group pointer
- * 
- */
 OSyncGroup *osync_group_ref(OSyncGroup *group)
 {
 	osync_assert(group);
@@ -315,11 +284,6 @@ OSyncGroup *osync_group_ref(OSyncGroup *group)
 	return group;
 }
 
-/** @brief Decrease the reference count of the group
- * 
- * @param group The group
- * 
- */
 void osync_group_unref(OSyncGroup *group)
 {
 	osync_assert(group);
@@ -344,24 +308,6 @@ void osync_group_unref(OSyncGroup *group)
 	}
 }
 
-/*! @brief Locks a group
- * 
- * Tries to acquire a lock for the given group.
- * 
- * If the lock was successfully acquired, OSYNC_LOCK_OK will
- * be returned.
- * 
- * If the lock was acquired, but a old lock file was detected,
- * OSYNC_LOCK_STALE will be returned. Use this to detect if the
- * last sync of this group was successful, or if this something crashed.
- * If you get this answer you should perform a slow-sync
- * 
- * If the group is locked, OSYNC_LOCKED is returned
- * 
- * @param group The group
- * @returns if the lockfile was acquired
- * 
- */
 OSyncLockState osync_group_lock(OSyncGroup *group)
 {
 	char *lockfile = NULL;
@@ -442,11 +388,6 @@ OSyncLockState osync_group_lock(OSyncGroup *group)
 	return OSYNC_LOCK_OK;
 }
 
-/*! @brief Unlocks a group
- * 
- * @param group The group to unlock
- * 
- */
 void osync_group_unlock(OSyncGroup *group)
 {
 	char *lockfile = NULL;
@@ -477,14 +418,6 @@ void osync_group_unlock(OSyncGroup *group)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/*! @brief Sets the name for the group
- * 
- * Sets the name for a group
- * 
- * @param group The group
- * @param name The name to set
- * 
- */
 void osync_group_set_name(OSyncGroup *group, const char *name)
 {
 	g_assert(group);
@@ -493,29 +426,12 @@ void osync_group_set_name(OSyncGroup *group, const char *name)
 	group->name = osync_strdup(name);
 }
 
-/*! @brief Returns the name of a group
- * 
- * Returns the name of a group
- * 
- * @param group The group
- * @returns Name of the group
- * 
- */
 const char *osync_group_get_name(OSyncGroup *group)
 {
 	g_assert(group);
 	return group->name;
 }
 
-/*! @brief Saves the group to disc
- * 
- * Saves the group to disc possibly creating the configdirectory
- * 
- * @param group The group
- * @param error Pointer to an error struct
- * @returns TRUE on success, FALSE otherwise
- * 
- */
 osync_bool osync_group_save(OSyncGroup *group, OSyncError **error)
 {
 	char *filename = NULL;
@@ -610,15 +526,6 @@ osync_bool osync_group_save(OSyncGroup *group, OSyncError **error)
 	return FALSE;
 }
 
-/*! @brief Deletes a group from disc
- * 
- * Deletes to group directories
- * 
- * @param group The group
- * @param error Pointer to an error struct
- * @returns TRUE on success, FALSE otherwise
- * 
- */
 osync_bool osync_group_delete(OSyncGroup *group, OSyncError **error)
 {
 	char *delcmd = NULL;
@@ -638,13 +545,6 @@ osync_bool osync_group_delete(OSyncGroup *group, OSyncError **error)
 	return TRUE;
 }
 
-/*! @brief Reset all databases of a group (anchor, hashtable and archive) 
- * 
- * @param group The group
- * @param error Pointer to an error struct
- * @returns TRUE on success, FALSE otherwise
- * 
- */
 osync_bool osync_group_reset(OSyncGroup *group, OSyncError **error)
 {
 	OSyncDB *db = NULL;
@@ -705,16 +605,6 @@ osync_bool osync_group_reset(OSyncGroup *group, OSyncError **error)
 	return FALSE;
 }
 
-/*! @brief Loads a group from a directory
- * 
- * Loads a group from a directory
- * 
- * @param group The group object to load into
- * @param path The path to the config directory of the group
- * @param error Pointer to an error struct
- * @returns TRUE on success, FALSE otherwise
- * 
- */
 osync_bool osync_group_load(OSyncGroup *group, const char *path, OSyncError **error)
 {
 	char *filename = NULL;
@@ -853,14 +743,6 @@ osync_bool osync_group_load(OSyncGroup *group, const char *path, OSyncError **er
 	return FALSE;
 }
 
-/*! @brief Appends a member to the group
- * 
- * Appends a member to the group
- * 
- * @param group The group to which to append
- * @param member The member to append
- * 
- */
 void osync_group_add_member(OSyncGroup *group, OSyncMember *member)
 {
 	g_assert(group);
@@ -875,12 +757,6 @@ void osync_group_add_member(OSyncGroup *group, OSyncMember *member)
 	osync_member_ref(member);
 }
 
-/*! @brief Removes a member from the group
- * 
- * @param group The group from which to remove
- * @param member The member to remove
- * 
- */
 void osync_group_remove_member(OSyncGroup *group, OSyncMember *member)
 {
 	osync_assert(group);
@@ -888,13 +764,6 @@ void osync_group_remove_member(OSyncGroup *group, OSyncMember *member)
 	osync_member_unref(member);
 }
 
-/** @brief Searches for a member by its id
- * 
- * @param group The group in which to search
- * @param id The id of the member
- * @returns The member, or NULL if not found
- * 
- */
 OSyncMember *osync_group_find_member(OSyncGroup *group, int id)
 {
 	GList *m = NULL;
@@ -906,56 +775,24 @@ OSyncMember *osync_group_find_member(OSyncGroup *group, int id)
 	return NULL;
 }
 
-/*! @brief Returns the nth member of the group
- * 
- * Returns a pointer to the nth member of the group
- * 
- * @param group The group
- * @param nth Which member to return
- * @returns Pointer to the member
- * 
- */
 OSyncMember *osync_group_nth_member(OSyncGroup *group, int nth)
 {
 	osync_assert(group);
 	return (OSyncMember *)g_list_nth_data(group->members, nth);
 }
 
-/*! @brief Counts the members of the group
- * 
- * Returns the number of members in the group
- * 
- * @param group The group
- * @returns Number of members
- * 
- */
 int osync_group_num_members(OSyncGroup *group)
 {
 	osync_assert(group);
 	return g_list_length(group->members);
 }
 
-/*! @brief Returns the configdir for the group
- * 
- * Returns the configdir for the group
- * 
- * @param group The group
- * @returns String with the path of the config directory
- * 
- */
 const char *osync_group_get_configdir(OSyncGroup *group)
 {
 	osync_assert(group);
 	return group->configdir;
 }
 
-/*! @brief Sets the configdir of the group
- * 
- * @param group The group
- * @param directory The new configdir
- * @returns String with the path of the config directory
- * 
- */
 void osync_group_set_configdir(OSyncGroup *group, const char *directory)
 {
 	osync_assert(group);
@@ -964,12 +801,6 @@ void osync_group_set_configdir(OSyncGroup *group, const char *directory)
 	group->configdir = osync_strdup(directory);
 }
 
-/*! @brief The number of object types of the group
- * 
- * @param group The group
- * @returns Number of object types of the group 
- * 
- */
 int osync_group_num_objtypes(OSyncGroup *group)
 {
 	GList *objs = NULL;
@@ -981,13 +812,6 @@ int osync_group_num_objtypes(OSyncGroup *group)
 	return len;
 }
 
-/*! @brief The nth object type of the group
- * 
- * @param group The group
- * @param nth The nth position of the object type list
- * @returns Name of the nth object type of the group
- * 
- */
 const char *osync_group_nth_objtype(OSyncGroup *group, int nth)
 {
 	GList *objs = NULL;
@@ -1000,13 +824,6 @@ const char *osync_group_nth_objtype(OSyncGroup *group, int nth)
 	
 }
 
-/*! @brief Change the status of an object type in the group.
- * 
- * @param group The group
- * @param objtype Name of the object type
- * @param enabled The status of the object type to set. TRUE enable, FALSE diable objtype. 
- * 
- */
 void osync_group_set_objtype_enabled(OSyncGroup *group, const char *objtype, osync_bool enabled)
 {
 	GList *m = NULL;
@@ -1018,13 +835,6 @@ void osync_group_set_objtype_enabled(OSyncGroup *group, const char *objtype, osy
 	}
 }
 
-/*! @brief Get the status of an object type in the group 
- * 
- * @param group The group
- * @param objtype The name of the object type 
- * @returns TRUE if object type is enabled in this group, otherwise FALSE
- * 
- */
 int osync_group_objtype_enabled(OSyncGroup *group, const char *objtype)
 {
 	GList *m = NULL;
@@ -1069,12 +879,6 @@ int osync_group_objtype_enabled(OSyncGroup *group, const char *objtype)
 	return enabled;
 }
 
-/*! @brief Add filter to the group 
- * 
- * @param group The group
- * @param filter The filter to add 
- * 
- */
 void osync_group_add_filter(OSyncGroup *group, OSyncFilter *filter)
 {
 	osync_assert(group);
@@ -1082,12 +886,6 @@ void osync_group_add_filter(OSyncGroup *group, OSyncFilter *filter)
 	osync_filter_ref(filter);
 }
 
-/*! @brief Remove filter from the group 
- * 
- * @param group The group
- * @param filter The filter to remove
- * 
- */
 void osync_group_remove_filter(OSyncGroup *group, OSyncFilter *filter)
 {
 	osync_assert(group);
@@ -1095,41 +893,18 @@ void osync_group_remove_filter(OSyncGroup *group, OSyncFilter *filter)
 	osync_filter_unref(filter);
 }
 
-/*! @brief Returns the number of filters registered in a group
- * 
- * @param group The group
- * @returns The number of filters
- * 
- */
 int osync_group_num_filters(OSyncGroup *group)
 {
 	osync_assert(group);
 	return g_list_length(group->filters);
 }
 
-/*! @brief Gets the nth filter of a group
- * 
- * Note that you should not add or delete filters while
- * iterating over them
- * 
- * @param group The group
- * @param nth Which filter to return
- * @returns The filter or NULL if not found
- * 
- */
 OSyncFilter *osync_group_nth_filter(OSyncGroup *group, int nth)
 {
 	osync_assert(group);
 	return g_list_nth_data(group->filters, nth);
 }
 
-/*! @brief Sets the last synchronization date of this group
- * 
- * The information will be stored on disc after osync_group_save()
- * 
- * @param group The group in which to save
- * @param last_sync The time info to set
- */
 void osync_group_set_last_synchronization(OSyncGroup *group, time_t last_sync)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %i)", __func__, group, last_sync);
@@ -1140,26 +915,12 @@ void osync_group_set_last_synchronization(OSyncGroup *group, time_t last_sync)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/*! @brief Gets the last synchronization date from this group
- * 
- * The information will available on the group after osync_group_load()
- * 
- * @param group The group
- * @return The synchronization info
- */
 time_t osync_group_get_last_synchronization(OSyncGroup *group)
 {
 	osync_assert(group);
 	return group->last_sync;
 }
 
-/*! @brief Set fixed conflict resolution for the group for all appearing conflicts 
- * 
- * @param group The group
- * @param res The conflict resolution
- * @param num The Member ID which solves the conflict (winner)
- * 
- */
 void osync_group_set_conflict_resolution(OSyncGroup *group, OSyncConflictResolution res, int num)
 {
 	osync_assert(group);
@@ -1167,13 +928,6 @@ void osync_group_set_conflict_resolution(OSyncGroup *group, OSyncConflictResolut
 	group->conflict_winner = num;
 }
 
-/*! @brief Get fixed conflict resolution for the group for all appearing conflicts 
- * 
- * @param group The group
- * @param res Pointer to set conflict resolution value
- * @param num Pointer to set Member ID value which solves the conflict (winner)
- * 
- */
 void osync_group_get_conflict_resolution(OSyncGroup *group, OSyncConflictResolution *res, int *num)
 {
 	osync_assert(group);
@@ -1184,11 +938,6 @@ void osync_group_get_conflict_resolution(OSyncGroup *group, OSyncConflictResolut
 	*num = group->conflict_winner;
 }
 
-/*! @brief Get group configured status of merger use. 
- * 
- * @param group The group
- * @return TRUE if merger is enabled. FALSE if merger is disabled.
- */
 osync_bool osync_group_get_merger_enabled(OSyncGroup *group)
 {
 	osync_assert(group);
@@ -1196,11 +945,6 @@ osync_bool osync_group_get_merger_enabled(OSyncGroup *group)
 	return group->merger_enabled;
 }
 
-/*! @brief Configure status of merger use. 
- * 
- * @param group The group
- * @param merger_enabled TRUE enables the merger. FALSE disables the merger. 
- */
 void osync_group_set_merger_enabled(OSyncGroup *group, osync_bool merger_enabled)
 {
 	osync_assert(group);
@@ -1208,11 +952,6 @@ void osync_group_set_merger_enabled(OSyncGroup *group, osync_bool merger_enabled
 	group->merger_enabled = merger_enabled;
 }
 
-/*! @brief Get group configured status of converter use. 
- * 
- * @param group The group
- * @return TRUE if converter is enabled. FALSE if converter is disabled.
- */
 osync_bool osync_group_get_converter_enabled(OSyncGroup *group)
 {
 	osync_assert(group);
@@ -1220,11 +959,6 @@ osync_bool osync_group_get_converter_enabled(OSyncGroup *group)
 	return group->converter_enabled;
 }
 
-/*! @brief Configure status of converter use. 
- * 
- * @param group The group
- * @param converter_enabled TRUE enables the converter. FALSE disables the converter. 
- */
 void osync_group_set_converter_enabled(OSyncGroup *group, osync_bool converter_enabled)
 {
 	osync_assert(group);
@@ -1232,11 +966,6 @@ void osync_group_set_converter_enabled(OSyncGroup *group, osync_bool converter_e
 	group->converter_enabled = converter_enabled;
 }
 
-/*! @brief Check if group configuration is up to date. 
- * 
- * @param group The group
- * @returns TRUE if the group configuration is up to date, FALSE otherwise. 
- */
 osync_bool osync_group_is_uptodate(OSyncGroup *group)
 {
 	xmlDocPtr doc = NULL;
@@ -1295,5 +1024,3 @@ osync_bool osync_group_is_uptodate(OSyncGroup *group)
 	osync_trace(TRACE_EXIT, "%s(%p)", __func__, group);
 	return uptodate;
 }
-
-/*@}*/

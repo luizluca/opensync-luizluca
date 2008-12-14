@@ -21,6 +21,14 @@
 #ifndef _OPENSYNC_MEMBER_INTERNALS_H_
 #define _OPENSYNC_MEMBER_INTERNALS_H_
 
+/**
+ * @defgroup OSyncMemberPrivateAPI OpenSync Member Internals
+ * @ingroup OSyncPrivate
+ * @brief The private part of the OSyncMember
+ * 
+ */
+/*@{*/
+
 /*! @brief A member of a group which represent a single device */
 struct OSyncMember {
 	long long int id;
@@ -49,7 +57,17 @@ struct OSyncMember {
 };
 
 #ifdef OPENSYNC_UNITTESTS
+/** @brief Set the schemadir for configuration validation to a custom directory.
+ *  This is actually only inteded for UNITTESTS to run tests without 
+ *  having OpenSync installed.
+ * 
+ * @param member Pointer to member 
+ * @param schemadir Custom schemadir path
+ * 
+ */
 OSYNC_TEST_EXPORT void osync_member_set_schemadir(OSyncMember *member, const char *schemadir);
 #endif
+
+/*@}*/
 
 #endif /* _OPENSYNC_MEMBER_INTERNALS_H_ */

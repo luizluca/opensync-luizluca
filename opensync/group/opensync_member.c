@@ -44,6 +44,7 @@
 /** @brief Set Merger of Member 
  * 
  * @param member The Member pointer 
+ * @param merger Pointer to the merger object to set
  * 
  */
 static void _osync_member_set_merger(OSyncMember *member, OSyncMerger *merger)
@@ -155,14 +156,6 @@ static OSyncObjTypeSink *_osync_member_parse_objtype(xmlNode *cur, OSyncError **
 }
 
 #ifdef OPENSYNC_UNITTESTS
-/** @brief Set the schemadir for configuration validation to a custom directory.
- *  This is actually only inteded for UNITTESTS to run tests without 
- *  having OpenSync installed.
- * 
- * @param member Pointer to member 
- * @param schemadir Custom schemadir path
- * 
- */
 void osync_member_set_schemadir(OSyncMember *member, const char *schemadir)
 {
 	osync_assert(member);
@@ -177,20 +170,6 @@ void osync_member_set_schemadir(OSyncMember *member, const char *schemadir)
 
 /*@}*/
 
-/**
- * @defgroup OSyncMemberAPI OpenSync Member
- * @ingroup OSyncPublic
- * @brief Used to manipulate members, which represent one device or application in a group
- * 
- */
-/*@{*/
-
-/** @brief Creates a new member for a group
- * 
- * @param error Pointer to a error-struct
- * @returns A newly allocated member
- * 
- */
 OSyncMember *osync_member_new(OSyncError **error)
 {
 	OSyncMember *member = NULL;
@@ -210,11 +189,6 @@ OSyncMember *osync_member_new(OSyncError **error)
 	return NULL;
 }
 
-/** @brief Increase the reference count of the member
- * 
- * @param member The member
- * 
- */
 OSyncMember *osync_member_ref(OSyncMember *member)
 {
 	osync_assert(member);
@@ -224,11 +198,6 @@ OSyncMember *osync_member_ref(OSyncMember *member)
 	return member;
 }
 
-/** @brief Decrease the reference count of the member
- * 
- * @param member The member
- * 
- */
 void osync_member_unref(OSyncMember *member)
 {
 	osync_assert(member);
@@ -265,24 +234,12 @@ void osync_member_unref(OSyncMember *member)
 	}
 }
 
-/** @brief Returns the name of the default plugin of the member
- * 
- * @param member The member
- * @returns The name of the plugin
- * 
- */
 const char *osync_member_get_pluginname(OSyncMember *member)
 {
 	osync_assert(member);
 	return member->pluginname;
 }
 
-/** @brief Sets the name of the default plugin of a member
- * 
- * @param member The member
- * @param pluginname The name of the default plugin
- * 
- */
 void osync_member_set_pluginname(OSyncMember *member, const char *pluginname)
 {
 	osync_assert(member);
@@ -291,24 +248,12 @@ void osync_member_set_pluginname(OSyncMember *member, const char *pluginname)
 	member->pluginname = osync_strdup(pluginname);
 }
 
-/** @brief Returns the inidividual name of the member
- * 
- * @param member The member
- * @returns The name of the plugin
- * 
- */
 const char *osync_member_get_name(OSyncMember *member)
 {
 	osync_assert(member);
 	return member->name;
 }
 
-/** @brief Sets an individual name of the member
- * 
- * @param member The member
- * @param name The individual name of the member 
- * 
- */
 void osync_member_set_name(OSyncMember *member, const char *name)
 {
 	osync_assert(member);
@@ -317,24 +262,12 @@ void osync_member_set_name(OSyncMember *member, const char *name)
 	member->name = osync_strdup(name);
 }
 
-/** @brief Returns the configuration directory where this member is stored
- * 
- * @param member The member
- * @returns The configuration directory
- * 
- */
 const char *osync_member_get_configdir(OSyncMember *member)
 {
 	osync_assert(member);
 	return member->configdir;
 }
 
-/** @brief Sets the directory where a member is supposed to be stored
- * 
- * @param member The member
- * @param configdir The name of the directory
- * 
- */
 void osync_member_set_configdir(OSyncMember *member, const char *configdir)
 {
 	osync_assert(member);
@@ -343,21 +276,6 @@ void osync_member_set_configdir(OSyncMember *member, const char *configdir)
 	member->configdir = osync_strdup(configdir);
 }
 
-/** @brief Gets the configuration data of this member
- * 
- * The config file is read in this order:
- * - If there is a configuration in memory that is not yet saved
- * this is returned
- * - If there is a config file in the member directory this is read
- * and returned
- * - Otherwise the default config file is loaded from one the opensync
- * directories
- * 
- * @param member The member
- * @param error Pointer to a error
- * @returns The member configuration of the plugin default configuration if the member isn't configuered already 
- * 
- */
 OSyncPluginConfig *osync_member_get_config_or_default(OSyncMember *member, OSyncError **error)
 {
 	char *filename = NULL;
@@ -408,33 +326,12 @@ OSyncPluginConfig *osync_member_get_config_or_default(OSyncMember *member, OSync
 	return NULL;
 }
 
-/** @brief Checks if Member has configuration
- *
- * @param member The member
- * @returns TURE if member has configuration, FALSE otherwise
- */
 osync_bool osync_member_has_config(OSyncMember *member)
 {
 	osync_assert(member);
 	return member->config ? TRUE : FALSE;
 }
 
-/** @brief Gets the configuration data of this member
- * 
- * The config file is read in this order:
- * - If there is a configuration in memory that is not yet saved
- * this is returned
- * - If there is a config file in the member directory this is read
- * and returned
- * - Otherwise the default config file is loaded from one the opensync
- * directories (but only if the plugin specified that it can use the default
- * configuration)
- * 
- * @param member The member
- * @param error Pointer to a error
- * @returns Member configuration 
- * 
- */
 OSyncPluginConfig *osync_member_get_config(OSyncMember *member, OSyncError **error)
 {
 	char *filename = NULL;
@@ -485,14 +382,6 @@ OSyncPluginConfig *osync_member_get_config(OSyncMember *member, OSyncError **err
 	return NULL;
 }
 
-/** @brief Sets the config data for a member
- * 
- * Note that this does not save the config data
- * 
- * @param member The member
- * @param data The new config data
- * 
- */
 void osync_member_set_config(OSyncMember *member, OSyncPluginConfig *config)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, member, config);
@@ -506,14 +395,6 @@ void osync_member_set_config(OSyncMember *member, OSyncPluginConfig *config)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/** @brief Loads a member from a directory where it has been saved
- * 
- * @param member The Member pointer of the member which gets loaded
- * @param path The path of the member
- * @param error Pointer to a error
- * @returns TRUE on success, FALSE if error
- * 
- */
 osync_bool osync_member_load(OSyncMember *member, const char *path, OSyncError **error)
 {	xmlDocPtr doc;
 	xmlNodePtr cur;
@@ -663,13 +544,6 @@ static osync_bool _osync_member_save_sink(xmlDoc *doc, OSyncObjTypeSink *sink, O
 }
 
 
-/** @brief Saves a member to it config directory
- * 
- * @param member The member to save
- * @param error Pointer to a error
- * @returns TRUE if the member was saved successfully, FALSE otherwise
- * 
- */
 osync_bool osync_member_save(OSyncMember *member, OSyncError **error)
 {
 	const char *membername = NULL;
@@ -755,13 +629,6 @@ osync_bool osync_member_save(OSyncMember *member, OSyncError **error)
 	return FALSE;
 }
 
-/** @brief Delete a member
- * 
- * @param member The member to delete 
- * @param error Pointer to a error
- * @returns TRUE if the member was deleted successfully, FALSE otherwise
- * 
- */
 osync_bool osync_member_delete(OSyncMember *member, OSyncError **error)
 {
 	char *delcmd = NULL;
@@ -781,26 +648,12 @@ osync_bool osync_member_delete(OSyncMember *member, OSyncError **error)
 	return TRUE;
 }
 
-/** @brief Gets the unique id of a member
- * 
- * @param member The member
- * @returns The id of the member thats unique in its group
- * 
- */
 long long int osync_member_get_id(OSyncMember *member)
 {
 	osync_assert(member);
 	return member->id;
 }
 
-/** @brief Find the object type sink (OSyncObjTypeSink) for the given object type of
- *         a certain member.
- * 
- * @param member The member pointer
- * @param objtype The searched object type 
- * @returns OSyncObjTypeSink pointer if object type sink is avaliable, otherwise NULL 
- * 
- */
 OSyncObjTypeSink *osync_member_find_objtype_sink(OSyncMember *member, const char *objtype)
 {
 	GList *o;
@@ -816,13 +669,6 @@ OSyncObjTypeSink *osync_member_find_objtype_sink(OSyncMember *member, const char
 	return NULL;
 }
 
-/** @brief Add a specifc Object Format to member 
- * 
- * @param member The member pointer
- * @param objtype The searched object type 
- * @param format The name of the Object Format 
- * 
- */
 void osync_member_add_objformat(OSyncMember *member, const char *objtype, const char *format)
 {
 	OSyncObjTypeSink *sink = osync_member_find_objtype_sink(member, objtype);
@@ -836,14 +682,6 @@ void osync_member_add_objformat(OSyncMember *member, const char *objtype, const 
 	osync_objformat_sink_unref(format_sink);
 }
 
-/** @brief Add a specifc Object Format with a conversion path config to member 
- * 
- * @param member The member pointer
- * @param objtype The searched object type 
- * @param format The name of the Object Format 
- * @param format_config The Object Format specific configuration
- * 
- */
 void osync_member_add_objformat_with_config(OSyncMember *member, const char *objtype, const char *format, const char *format_config)
 {
 	OSyncObjTypeSink *sink = osync_member_find_objtype_sink(member, objtype);
@@ -857,14 +695,6 @@ void osync_member_add_objformat_with_config(OSyncMember *member, const char *obj
 	osync_objformat_sink_unref(format_sink);
 }
 
-/** @brief List of all available object formats for a specifc object type of this member 
- * 
- * @param member The member pointer
- * @param objtype The searched object type 
- * @param error Pointer to a error
- * @return List of all object formats of a specific object type of the member
- * 
- */
 const OSyncList *osync_member_get_objformats(OSyncMember *member, const char *objtype, OSyncError **error)
 {
 	OSyncObjTypeSink *sink = osync_member_find_objtype_sink(member, objtype);
@@ -883,12 +713,6 @@ const OSyncList *osync_member_get_objformats(OSyncMember *member, const char *ob
 	return osync_objtype_sink_get_objformat_sinks(sink);
 }
 
-/** @brief Add an OSyncObjTypeSink object to the member list of supported object types of this member
- * 
- * @param member The member pointer
- * @param sink The OSyncObjTypeSink object to add 
- * 
- */
 void osync_member_add_objtype_sink(OSyncMember *member, OSyncObjTypeSink *sink)
 {
 	osync_assert(member);
@@ -898,6 +722,7 @@ void osync_member_add_objtype_sink(OSyncMember *member, OSyncObjTypeSink *sink)
 	osync_objtype_sink_ref(sink);
 }
 
+// FIXME this procedure does not seem to be referred to anywhere...
 /** @brief Remove an OSyncObjTypeSink object to the member list of supported object types of this member
  * 
  * @param member The member pointer
@@ -913,25 +738,12 @@ void osync_member_remove_objtype_sink(OSyncMember *member, OSyncObjTypeSink *sin
 	osync_objtype_sink_unref(sink);
 }
 
-/** @brief The number of supported object types of this member
- * 
- * @param member The member pointer
- * @returns Number of supported object type of this member
- * 
- */
 int osync_member_num_objtypes(OSyncMember *member)
 {
 	osync_assert(member);
 	return g_list_length(member->objtypes);
 }
 
-/** @brief The name of the nth supported object type of this member
- * 
- * @param member The member pointer
- * @param nth The nth position of the list of supported object types of this member
- * @returns Name of the nth supported object type
- * 
- */
 const char *osync_member_nth_objtype(OSyncMember *member, int nth)
 {
 	OSyncObjTypeSink *sink = NULL;
@@ -940,13 +752,6 @@ const char *osync_member_nth_objtype(OSyncMember *member, int nth)
 	return osync_objtype_sink_get_name(sink);
 }
 
-/** @brief Returns if a certain object type is enabled on this member
- * 
- * @param member The member
- * @param objtype The name of the object type to check
- * @returns TRUE if the object type is enabled, FALSE otherwise
- * 
- */
 osync_bool osync_member_objtype_enabled(OSyncMember *member, const char *objtype)
 {
 	OSyncObjTypeSink *sink = NULL;
@@ -957,18 +762,6 @@ osync_bool osync_member_objtype_enabled(OSyncMember *member, const char *objtype
 	return osync_objtype_sink_is_enabled(sink);
 }
 
-/** @brief Enables or disables a object type on a member
- * 
- * @param member The member
- * @param objtype The name of the object type to change
- * @param enabled Set to TRUE if you want to sync the object type, FALSE otherwise
- * 
- * Note: this function should be called only after sink information for the member
- *       is available (osync_member_require_sink_info())
- *
- * @todo Change function interface to not require the plugin to be instanced manually.
- *       See comments on osync_group_set_objtype_enabled()
- */
 void osync_member_set_objtype_enabled(OSyncMember *member, const char *objtype, osync_bool enabled)
 {
 	OSyncObjTypeSink *sink = NULL;
@@ -985,24 +778,12 @@ void osync_member_set_objtype_enabled(OSyncMember *member, const char *objtype, 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/** @brief Get the capabilities of the member 
- * 
- * @param member The member
- * @returns The capabilities of this member, NULL if no capabilities are set
- */
 OSyncCapabilities *osync_member_get_capabilities(OSyncMember *member)
 {
 	osync_assert(member);
 	return member->capabilities;
 }
 
-/** @brief Set the capabilities of the member 
- * 
- * @param member The member
- * @param capabilities The capabilities
- * @param error Pointer to a error
- * @returns TRUE if the capabilities got set successfully, otherwise FALSE 
- */
 osync_bool osync_member_set_capabilities(OSyncMember *member, OSyncCapabilities *capabilities, OSyncError **error)
 {
 	osync_assert(member);
@@ -1022,25 +803,12 @@ osync_bool osync_member_set_capabilities(OSyncMember *member, OSyncCapabilities 
 	return TRUE;
 }
 
-/** @brief Get pointer of the Merger 
- * 
- * @param member The member
- * @returns The pointer of the Merger, NULL if merger is disabled
- */
 OSyncMerger *osync_member_get_merger(OSyncMember *member)
 {
 	osync_assert(member);
 	return member->merger;
 }
 
-/** @brief Remove all object types from member. 
- * 
- * @param member The member
- *
- * Note: this function should be called to flush the member before discovering.
- *       To detect if something isn't supported anymore.
- *
- */
 void osync_member_flush_objtypes(OSyncMember *member)
 {
 	osync_assert(member);
@@ -1057,24 +825,12 @@ void osync_member_flush_objtypes(OSyncMember *member)
 	}
 }
 
-/** @brief Get the main sink of member. 
- * 
- * @param member The member
- * @returns OSyncObjTypeSink pointer of the main sink.
- *
- */
 OSyncObjTypeSink *osync_member_get_main_sink(OSyncMember *member)
 {
 	osync_assert(member);
 	return member->main_sink;
 }
 
-/** @brief Checks if the member configuration is up to date. 
- * 
- * @param member The member
- * @returns TRUE if member configuration is up to date. 
- *
- */
 osync_bool osync_member_config_is_uptodate(OSyncMember *member)
 {
 	xmlDocPtr doc;
@@ -1122,12 +878,6 @@ osync_bool osync_member_config_is_uptodate(OSyncMember *member)
 	return uptodate;
 }
 
-/** @brief Checks if the plugin configuration is up to date. 
- * 
- * @param member The member
- * @returns TRUE if plugin configuration is up to date. 
- *
- */
 osync_bool osync_member_plugin_is_uptodate(OSyncMember *member)
 {
 	xmlDocPtr doc = NULL;
@@ -1177,5 +927,3 @@ osync_bool osync_member_plugin_is_uptodate(OSyncMember *member)
 	osync_trace(TRACE_EXIT, "%s(%p)", __func__, member);
 	return uptodate;
 }
-
-/*@}*/

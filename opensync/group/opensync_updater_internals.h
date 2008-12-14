@@ -21,9 +21,36 @@
 #ifndef _OPENSYNC_UPDATER_INTERNALS_H
 #define _OPENSYNC_UPDATER_INTERNALS_H 
 
+/**
+ * @defgroup OSyncPrivateUpdaterAPI OpenSync Updater Internals
+ * @ingroup OSyncPrivate
+ * @brief OpenSync update facilities
+ * 
+ */
+/*@{*/
+
+/** @brief Change version of group configuration. Only for testing.
+ *
+ * @param updater Pointer to the OSyncUpdater 
+ * @param major Major Version number to set
+ */
 OSYNC_TEST_EXPORT void osync_updater_set_group_version(OSyncUpdater *updater, int major);
+
+/** @brief Change version of member configuration. Only for testing.
+ *
+ * @param updater Pointer to the OSyncUpdater 
+ * @param major Major Version number to set
+ */
 OSYNC_TEST_EXPORT void osync_updater_set_member_version(OSyncUpdater *updater, int major);
+
+/** @brief Change version of plugin configuration. Only for testing.
+ *
+ * @param updater Pointer to the OSyncUpdater 
+ * @param major Major Version number to set
+ */
 OSYNC_TEST_EXPORT void osync_updater_set_plugin_version(OSyncUpdater *updater, int major);
+
+/*@}*/
 
 #endif /*  _OPENSYNC_UPDATER_INTERNALS_H */
 
