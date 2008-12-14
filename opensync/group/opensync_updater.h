@@ -31,22 +31,22 @@
  * XSLT stylesheets (libxslt / libexslt). To make configuration updates work
  * we just have to place some XSLT stylesheets into the OPENSYNC_UPDATESDIR.
  * 
- * Naming of update stylesheets look like this:
+ * Naming of update stylesheets looks like this:
  * 
  * - syncmember-$memberapi.xsl
  * - syncgroup-$groupapi.xsl
  * - $plugin-$pluginapi.xsl
  * 
  * This Updater interface should be used by any "rich" OpenSync frontend.
- * By calling osync_updater_action_required() for each group. If the return
- * value is TRUE, the user should be notified that an update of the
- * configuration is required. Later the update process gets started with
+ * Frontends should call osync_updater_action_required() for each group. If 
+ * the return value is TRUE, the user should be notified that an update of 
+ * the configuration is required. Later the update process gets started by
  * calling:
  * 
  * - (non blocking) osync_updater_process()
  * - (blocking) osync_updater_process_and_block()
  * 
- * The update process work like this:
+ * The update process works like this:
  * 
  * -# Lock group
  * -# Check version of group configuration
@@ -93,7 +93,7 @@ OSYNC_EXPORT OSyncUpdater *osync_updater_ref(OSyncUpdater *updater);
 /** @brief Register OSyncUpdater callback
  * 
  * @param updater Pointer to the updater 
- * @param callback The callback function which get called on updater events 
+ * @param callback The callback function to be called on updater events 
  * 
  */
 OSYNC_EXPORT void osync_updater_set_callback(OSyncUpdater *updater, osync_updater_cb callback);
@@ -112,7 +112,7 @@ OSYNC_EXPORT osync_bool osync_updater_action_required(OSyncUpdater *updater);
  * 
  * @param updater Pointer to the updater 
  * @param error Pointer to OSyncError
- * @returns TRUE if updating process started successfully, FALSE on error.
+ * @returns TRUE if the updater process started successfully, FALSE on error.
  * 
  */
 OSYNC_EXPORT osync_bool osync_updater_process(OSyncUpdater *updater, OSyncError **error);
@@ -121,7 +121,7 @@ OSYNC_EXPORT osync_bool osync_updater_process(OSyncUpdater *updater, OSyncError 
  * 
  * @param updater Pointer to the updater 
  * @param error Pointer to OSyncError
- * @returns TRUE if updating process was successfully, FALSE on error.
+ * @returns TRUE if the updater process was successful, FALSE on error.
  * 
  */
 OSYNC_EXPORT osync_bool osync_updater_process_and_block(OSyncUpdater *updater, OSyncError **error);
