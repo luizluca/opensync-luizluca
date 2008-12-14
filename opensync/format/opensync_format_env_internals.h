@@ -53,11 +53,6 @@ struct OSyncFormatEnv {
 	int ref_count;
 };
 
-/**
- * @ingroup OSyncConvPrivate
- */
-/*@{*/
-
 /*! @brief search tree for format converters
  */
 typedef struct OSyncFormatConverterTree {

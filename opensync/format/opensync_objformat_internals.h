@@ -156,5 +156,7 @@ osync_bool osync_objformat_validate(OSyncObjFormat *format, const char *data, un
  */
 osync_bool osync_objformat_must_validate(OSyncObjFormat *format);
 
+/*@}*/
+
 #endif /* _OPENSYNC_OBJFORMAT_INTERNALS_H_ */
 

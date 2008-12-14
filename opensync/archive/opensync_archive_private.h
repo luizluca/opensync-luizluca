@@ -47,5 +47,7 @@ struct OSyncArchive {
 	/**  */
 };
 
+/*@}*/
+
 #endif /* OPENSYNC_ARCHIVE_PRIVATE_H_ */
 
