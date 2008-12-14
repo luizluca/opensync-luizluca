@@ -7,6 +7,7 @@
         <xsd:element maxOccurs="1" minOccurs="0" name="name" type="xsd:string"/>
         <xsd:element maxOccurs="1" minOccurs="0" name="pluginname" type="xsd:string"/>
         <xsd:element maxOccurs="unbounded" minOccurs="0" name="objtype" type="ObjType"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="timeout" type="Timeout"/>
       </xsd:sequence>
       <xsd:attribute name="version" type="xsd:string"/>
     </xsd:complexType>
@@ -20,6 +21,21 @@
       <xsd:element maxOccurs="1" minOccurs="0" name="write" type="xsd:integer" />
       <xsd:element maxOccurs="1" minOccurs="0" name="name" type="xsd:string" />
       <xsd:element maxOccurs="1" minOccurs="0" name="objformat" type="ObjFormat" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="timeout" type="Timeout" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Timeout">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="0" name="connect" type="xsd:integer" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="disconnect" type="xsd:integer" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="get_changes" type="xsd:integer" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="commit" type="xsd:integer" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="batch_commit" type="xsd:integer" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="committed_all" type="xsd:integer" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="sync_done" type="xsd:integer" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="write" type="xsd:integer" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="read" type="xsd:integer" />
     </xsd:sequence>
   </xsd:complexType>
 
