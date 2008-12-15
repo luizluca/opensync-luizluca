@@ -167,7 +167,7 @@ typedef struct {} FormatEnv;
 	}
 
 	~FormatEnv() {
-		osync_format_env_free(self);
+		osync_format_env_unref(self);
 	}
 
 	void load_plugins(const char *path = NULL) {

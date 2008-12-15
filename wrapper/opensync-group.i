@@ -10,7 +10,7 @@ typedef struct {} GroupEnv;
 	}
 
 	~GroupEnv() {
-		osync_group_env_free(self);
+		osync_group_env_unref(self);
 	}
 
 	void load_groups(const char *path = NULL) {
