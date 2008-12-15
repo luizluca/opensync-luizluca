@@ -34,7 +34,7 @@ START_TEST (group_last_sync)
 	
 	fail_unless(osync_group_save(group, &error), NULL);
 	
-	osync_group_env_free(group_env);
+	osync_group_env_unref(group_env);
 	
 	group_env = osync_group_env_new(&error);
 	fail_unless(error == NULL, NULL);
@@ -57,7 +57,7 @@ START_TEST (group_last_sync)
 	
 	fail_unless((int)osync_group_get_last_synchronization(group) == 1000, NULL);
 	
-	osync_group_env_free(group_env);
+	osync_group_env_unref(group_env);
 	destroy_testbed(testbed);
 }
 END_TEST

@@ -27,6 +27,8 @@
 struct OSyncGroupEnv {
 	GList *groups;
 	char *groupsdir;
+
+	int ref_count;
 };
 
 #endif /* _OPENSYNC_GROUP_ENV_INTERNALS_H_ */

@@ -75,27 +75,43 @@ OSyncGroupEnv *osync_group_env_new(OSyncError **error)
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 		return NULL;
 	}
+	env->ref_count = 1;
+
+	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
+	return env;
+
+}
+
+
+OSyncGroupEnv *osync_group_env_ref(OSyncGroupEnv *env)
+{
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, env);
+	osync_assert(env);
+
+	g_atomic_int_inc(&(env->ref_count));
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
 	return env;
 }
 
-void osync_group_env_free(OSyncGroupEnv *env)
+void osync_group_env_unref(OSyncGroupEnv *env)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, env);
-	g_assert(env);
+	osync_assert(env);
+
+	if (g_atomic_int_dec_and_test(&(env->ref_count))) {
+		if (env->groupsdir)
+			osync_free(env->groupsdir);
 	
-	if (env->groupsdir)
-		osync_free(env->groupsdir);
+		/* Free the groups */
+		while (env->groups) {
+			osync_group_unref(env->groups->data);
+			env->groups = g_list_remove(env->groups, env->groups->data);
+		}
 	
-	/* Free the groups */
-	while (env->groups) {
-		osync_group_unref(env->groups->data);
-		env->groups = g_list_remove(env->groups, env->groups->data);
+		osync_free(env);
 	}
-	
-	osync_free(env);
-	
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 

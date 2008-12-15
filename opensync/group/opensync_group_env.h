@@ -47,14 +47,25 @@
  */
 OSYNC_EXPORT OSyncGroupEnv *osync_group_env_new(OSyncError **error);
 
-/** @brief Frees a osync environment
+/** @brief Increase the reference count on an OSyncGroupEnv
  * 
- * Frees a osync environment and all resources.
+ * Use when storing a reference to the group environment.  When the
+ * reference is no longer needed use osync_group_env_unref
+ * 
+ * @returns the passed environment
+ * 
+ */
+OSYNC_EXPORT OSyncGroupEnv *osync_group_env_ref(OSyncGroupEnv *env);
+
+/** @brief Decrements the reference count on an OSyncGroupEnv
+ * 
+ * If the reference count reaches zero then the environment is freed and
+ * all resources are freed or unrefed
  * 
  * @param env Pointer to the environment to free
  * 
  */
-OSYNC_EXPORT void osync_group_env_free(OSyncGroupEnv *env);
+OSYNC_EXPORT void osync_group_env_unref(OSyncGroupEnv *env);
 
 
 /** @brief Loads the plugins from a given directory

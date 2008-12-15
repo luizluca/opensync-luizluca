@@ -229,10 +229,12 @@ int main (int argc, char *argv[])
     reset(env, groupname);
     break;
   }
-	
+  osync_group_env_unref(env);
   return 0;
 
  error:
+  if (env)
+    osync_group_env_unref(env);
   printf("ERROR: %s", osync_error_print(&error));
   osync_error_unref(&error);
   return 1;
