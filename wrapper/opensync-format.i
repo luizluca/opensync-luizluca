@@ -338,6 +338,38 @@ typedef struct {} ObjFormat;
 %pythoncode %{
 	name = property(get_name)
 	objtype = property(get_objtype)
-	must_marshal = property(must_marshal)
+%}
+}
+
+typedef struct {} ObjFormatSink;
+%extend ObjFormatSink {
+	ObjFormatSink(const char *name) {
+		Error *err = NULL;
+		ObjFormatSink *format_sink = osync_objformat_sink_new(name,  &err);
+		if (raise_exception_on_error(err))
+			return NULL;
+		else
+			return format_sink;
+	}
+
+	~ObjFormatSink() {
+		osync_objformat_sink_unref(self);
+	}
+
+	const char *get_objformat() {
+		return osync_objformat_sink_get_objformat(self);
+	}
+
+	const char *get_config() {
+		return osync_objformat_sink_get_config(self);
+	}
+
+	void set_config(const char *config) {
+		osync_objformat_sink_set_config(self, config);
+	}
+
+%pythoncode %{
+	config = property(get_config)
+	objformat = property(get_objformat)
 %}
 }
