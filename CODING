@@ -234,7 +234,17 @@ UNIT TESTS
   http://check.sourceforge.net/.
 
   The build-system infra-structure provides a configure option to
-  allow check usage.
+  allow check usage. If possible use the CMake macro ADD_CHECK_TEST
+  to introduce new tests, for building and integration as testrun
+  in the build-enviroment.
+
+  When using Make, the test can be locally run via:
+  $ make test
+
+  Results can also be sent to central testing dasharboard cdash at
+  http://opensync.org/testing. Command to run tests and send results
+  to CDash:
+  $ make Experimental
 
   The tests must be implemented inside a sub-directory called test
   with the following modules:
