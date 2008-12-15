@@ -372,16 +372,22 @@ typedef struct {} ObjTypeSink;
 		return osync_objtype_sink_num_objformat_sinks(self);
 	}
 
-	const char *nth_objformat(int nth) {
-		return osync_objtype_sink_nth_objformat(self, nth);
+	ObjFormatSink *nth_objformat(int nth) {
+		return osync_objtype_sink_nth_objformat_sink(self, nth);
 	}
 
-	void add_objformat(const char *format) {
-		osync_objtype_sink_add_objformat(self, format);
+        ObjFormatSink *find_objformat(ObjFormat *objformat) {
+                return osync_objtype_sink_find_objformat_sink(self, objformat);
+        }
+
+        /* TODO: osync_objtype_sink_get_objformat_sinks with OSyncList */
+
+	void add_objformat(ObjFormatSink *format_sink) {
+		osync_objtype_sink_add_objformat_sink(self, format_sink);
 	}
 
-	void remove_objformat(const char *format) {
-		osync_objtype_sink_remove_objformat(self, format);
+	void remove_objformat(ObjFormatSink *format_sink) {
+		osync_objtype_sink_remove_objformat_sink(self, format_sink);
 	}
 
 	/* TODO: set_functions */
