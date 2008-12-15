@@ -928,7 +928,7 @@ osync_bool osync_queue_disconnect(OSyncQueue *queue, OSyncError **error)
 	g_mutex_lock(queue->disconnectLock);
 	if (queue->thread) {
 		osync_thread_stop(queue->thread);
-		osync_thread_free(queue->thread);
+		osync_thread_unref(queue->thread);
 		queue->thread = NULL;
 	}
 	

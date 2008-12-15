@@ -134,7 +134,7 @@ START_TEST (proxy_init)
 	g_free(plugindir);
 	
 	osync_thread_stop(thread);
-	osync_thread_free(thread);
+	osync_thread_unref(thread);
 	
 	destroy_testbed(testbed);
 }
@@ -200,7 +200,7 @@ START_TEST (proxy_discover)
 	g_free(plugindir);
 	
 	osync_thread_stop(thread);
-	osync_thread_free(thread);
+	osync_thread_unref(thread);
 	
 	destroy_testbed(testbed);
 }
@@ -258,7 +258,7 @@ START_TEST (proxy_connect)
 	g_free(plugindir);
 	
 	osync_thread_stop(thread);
-	osync_thread_free(thread);
+	osync_thread_unref(thread);
 	
 	destroy_testbed(testbed);
 }

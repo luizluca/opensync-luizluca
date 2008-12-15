@@ -1106,7 +1106,7 @@ START_TEST (ipc_loop_payload)
 		osync_assert(error == NULL);
 		
 		osync_thread_stop(thread);
-		osync_thread_free(thread);
+		osync_thread_unref(thread);
 		
 		osync_queue_unref(client_queue);
 		
@@ -1150,7 +1150,7 @@ START_TEST (ipc_loop_payload)
 		fail_unless(error == NULL, NULL);
 		
 		osync_thread_stop(thread);
-		osync_thread_free(thread);
+		osync_thread_unref(thread);
 		
 		int status = 0;
 		wait(&status);
@@ -1292,7 +1292,7 @@ START_TEST (ipc_loop_stress)
 		osync_assert(error == NULL);
 		
 		osync_thread_stop(thread);
-		osync_thread_free(thread);
+		osync_thread_unref(thread);
 		
 		osync_queue_unref(client_queue);
 		
@@ -1339,7 +1339,7 @@ START_TEST (ipc_loop_stress)
 		fail_unless(error == NULL, NULL);
 		
 		osync_thread_stop(thread);
-		osync_thread_free(thread);
+		osync_thread_unref(thread);
 		
 		int status = 0;
 		wait(&status);
@@ -1470,7 +1470,7 @@ START_TEST (ipc_loop_callback)
 		osync_assert(error == NULL);
 		
 		osync_thread_stop(thread);
-		osync_thread_free(thread);
+		osync_thread_unref(thread);
 		
 		osync_queue_unref(client_queue);
 		
@@ -1522,7 +1522,7 @@ START_TEST (ipc_loop_callback)
 		fail_unless(error == NULL, NULL);
 		
 		osync_thread_stop(thread);
-		osync_thread_free(thread);
+		osync_thread_unref(thread);
 		
 		int status = 0;
 		wait(&status);
@@ -1654,7 +1654,7 @@ START_TEST (ipc_callback_break)
 		osync_assert(error == NULL);
 		
 		osync_thread_stop(thread);
-		osync_thread_free(thread);
+		osync_thread_unref(thread);
 		
 		osync_queue_unref(client_queue);
 		osync_queue_unref(server_queue);
@@ -1711,7 +1711,7 @@ START_TEST (ipc_callback_break)
 		osync_assert(error == NULL);
 		
 		osync_thread_stop(thread);
-		osync_thread_free(thread);
+		osync_thread_unref(thread);
 		
 		int status = 0;
 		wait(&status);
@@ -1868,7 +1868,7 @@ START_TEST (ipc_pipes_stress)
 		osync_assert(error == NULL);
 		
 		osync_thread_stop(thread);
-		osync_thread_free(thread);
+		osync_thread_unref(thread);
 		
 		osync_queue_unref(client_queue);
 		
@@ -1924,7 +1924,7 @@ START_TEST (ipc_pipes_stress)
 		fail_unless(error == NULL, NULL);
 		
 		osync_thread_stop(thread);
-		osync_thread_free(thread);
+		osync_thread_unref(thread);
 		
 		int status = 0;
 		wait(&status);
@@ -1994,7 +1994,7 @@ START_TEST (ipc_callback_break_pipes)
 		osync_assert(error == NULL);
 		
 		osync_thread_stop(thread);
-		osync_thread_free(thread);
+		osync_thread_unref(thread);
 		
 		osync_queue_unref(client_queue);
 		osync_queue_unref(server_queue);
@@ -2061,7 +2061,7 @@ START_TEST (ipc_callback_break_pipes)
 		osync_assert(error == NULL);
 		
 		osync_thread_stop(thread);
-		osync_thread_free(thread);
+		osync_thread_unref(thread);
 		
 		int status = 0;
 		wait(&status);

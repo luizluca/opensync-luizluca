@@ -187,7 +187,7 @@ START_TEST (dual_sync_engine_unclean)
 	 */
 	if (engine->thread) {
 		osync_thread_stop(engine->thread);
-		osync_thread_free(engine->thread);
+		osync_thread_unref(engine->thread);
 		engine->thread = NULL;
 	}
 

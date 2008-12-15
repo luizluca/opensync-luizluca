@@ -1473,7 +1473,7 @@ void osync_client_unref(OSyncClient *client)
 			osync_plugin_unref(client->plugin);
 		
 		if (client->thread)
-			osync_thread_free(client->thread);
+			osync_thread_unref(client->thread);
 		
 		osync_free(client);
 		
@@ -1604,7 +1604,7 @@ static void client_disconnect_workerthread(gpointer data)
 	osync_thread_start(thread);
 
 	osync_thread_stop(thread);
-	osync_thread_free(thread);
+	osync_thread_unref(thread);
 	thread = NULL;	
 	g_source_unref(source);
 }
@@ -1637,7 +1637,7 @@ void osync_client_shutdown(OSyncClient *client)
 		client->syncloop = NULL;
 	} else if (client->thread) {
 		osync_thread_stop(client->thread);
-		osync_thread_free(client->thread);
+		osync_thread_unref(client->thread);
 		client->thread = NULL;
 	}
 	

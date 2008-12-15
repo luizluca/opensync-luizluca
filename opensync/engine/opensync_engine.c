@@ -567,7 +567,7 @@ void osync_engine_unref(OSyncEngine *engine)
 			g_free(engine->format_dir);
 		
 		if (engine->thread)
-			osync_thread_free(engine->thread);
+			osync_thread_unref(engine->thread);
 			
 		if (engine->context)
 			g_main_context_unref(engine->context);

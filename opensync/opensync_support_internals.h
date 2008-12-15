@@ -27,10 +27,12 @@ typedef struct OSyncThread {
 	GMutex *started_mutex;
 	GMainContext *context;
 	GMainLoop *loop;
+	int ref_count;
 } OSyncThread;
 
 OSYNC_TEST_EXPORT OSyncThread *osync_thread_new(GMainContext *context, OSyncError **error);
-OSYNC_TEST_EXPORT void osync_thread_free(OSyncThread *thread);
+OSYNC_TEST_EXPORT OSyncThread *osync_thread_ref(OSyncThread *thread);
+OSYNC_TEST_EXPORT void osync_thread_unref(OSyncThread *thread);
 OSYNC_TEST_EXPORT void osync_thread_start(OSyncThread *thread);
 OSYNC_TEST_EXPORT void osync_thread_stop(OSyncThread *thread);
 OSYNC_TEST_EXPORT void osync_thread_exit(OSyncThread *thread, int retval);
