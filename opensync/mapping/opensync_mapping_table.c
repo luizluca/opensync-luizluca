@@ -29,12 +29,6 @@
 
 #include "archive/opensync_archive_internals.h"
 
-/**
- * @brief Creates a new mapping table object
- * @param error Pointer to an error struct
- * @return The pointer to the newly allocated mapping table object or NULL in case of error
- */
-
 OSyncMappingTable *osync_mapping_table_new(OSyncError **error)
 {
 	OSyncMappingTable *table = NULL;
@@ -53,10 +47,6 @@ OSyncMappingTable *osync_mapping_table_new(OSyncError **error)
 	return NULL;
 }
 
-/**
- * @brief Increments the reference counter
- * @param archive The pointer to an mapping table object
- */
 OSyncMappingTable *osync_mapping_table_ref(OSyncMappingTable *table)
 {
 	osync_assert(table);
@@ -66,11 +56,6 @@ OSyncMappingTable *osync_mapping_table_ref(OSyncMappingTable *table)
 	return table;
 }
 
-/**
- * @brief Decrement the reference counter. The mapping table object will 
- *  be freed if there is no more reference to it.
- * @param archive The pointer to an mapping table object
- */
 void osync_mapping_table_unref(OSyncMappingTable *table)
 {
 	osync_assert(table);
@@ -85,15 +70,6 @@ void osync_mapping_table_unref(OSyncMappingTable *table)
 	}
 }
 
-/**
- * @brief Loads all mappings from archive for a certain object type.
- *
- * @param table The mapping table object
- * @param archive The archive
- * @param objtype Requested object type 
- * @param error Pointer to an error struct
- * @return TRUE on when all mappings successfully loaded otherwise FALSE
- */ 
 osync_bool osync_mapping_table_load(OSyncMappingTable *table, OSyncArchive *archive, const char *objtype, OSyncError **error)
 {
 	OSyncMappingEntry *entry = NULL;
@@ -165,15 +141,6 @@ osync_bool osync_mapping_table_load(OSyncMappingTable *table, OSyncArchive *arch
 	return FALSE;
 }
 
-/**
- * @brief Delete all mappings from the mapping table and the archive for a certain object type.
- *
- * @param table The mapping table object
- * @param archive The archive
- * @param objtype Reported object type of entry
- * @param error Pointer to an error struct
- * @return Returns TRUE on success, FALSE otherwise 
- */ 
 osync_bool osync_mapping_table_flush(OSyncMappingTable *table, OSyncArchive *archive, const char *objtype, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %s, %p)", __func__, table, archive, objtype, error);
@@ -191,11 +158,6 @@ osync_bool osync_mapping_table_flush(OSyncMappingTable *table, OSyncArchive *arc
 	return FALSE;
 }
 
-/**
- * @brief Close the mapping table 
- *
- * @param table The mapping table object
- */ 
 void osync_mapping_table_close(OSyncMappingTable *table)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, table);
@@ -211,13 +173,6 @@ void osync_mapping_table_close(OSyncMappingTable *table)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/**
- * @brief Search for the mapping object with the mapping id 
- *
- * @param table The mapping table object
- * @param long long int The mapping id to search for
- * @return Returns Mapping object or NULL if no mapping matched the mapping id
- */ 
 OSyncMapping *osync_mapping_table_find_mapping(OSyncMappingTable *table, long long int id)
 {
 	GList *m;
@@ -231,12 +186,6 @@ OSyncMapping *osync_mapping_table_find_mapping(OSyncMappingTable *table, long lo
 	return NULL;
 }
 
-/**
- * @brief Add mapping to the mapping table 
- *
- * @param table The mapping table object
- * @param mapping The mapping to add to the mapping table
- */ 
 void osync_mapping_table_add_mapping(OSyncMappingTable *table, OSyncMapping *mapping)
 {
 	osync_assert(table);
@@ -246,12 +195,6 @@ void osync_mapping_table_add_mapping(OSyncMappingTable *table, OSyncMapping *map
 	osync_mapping_ref(mapping);
 }
 
-/**
- * @brief Remove mapping to the mapping table 
- *
- * @param table The mapping table object
- * @param mapping The mapping to remove to the mapping table
- */ 
 void osync_mapping_table_remove_mapping(OSyncMappingTable *table, OSyncMapping *mapping)
 {
 	osync_assert(table);
@@ -261,37 +204,18 @@ void osync_mapping_table_remove_mapping(OSyncMappingTable *table, OSyncMapping *
 	osync_mapping_unref(mapping);
 }
 
-/**
- * @brief Number of mappings in the mapping table
- *
- * @param table The mapping table object to count mappings
- * @return Number of mappings
- */ 
 int osync_mapping_table_num_mappings(OSyncMappingTable *table)
 {
 	osync_assert(table);
 	return g_list_length(table->mappings);
 }
 
-/**
- * @brief Get nth mapping object from mapping table 
- *
- * @param table The mapping table object to count mappings
- * @param nth The position of the mapping object
- * @return The nth mapping object from mapping table or NULL if nth position isn't available 
- */ 
 OSyncMapping *osync_mapping_table_nth_mapping(OSyncMappingTable *table, int nth)
 {
 	osync_assert(table);
 	return g_list_nth_data(table->mappings, nth);
 }
 
-/**
- * @brief Get next free mapping id from mapping table 
- *
- * @param table The mapping table object
- * @return Next free mapping id of mapping table
- */ 
 long long int osync_mapping_table_get_next_id(OSyncMappingTable *table)
 {
 	long long int new_id = 1;
