@@ -224,7 +224,7 @@ applications:
    failure reports.
 
    Traces should be enabled in a per-application basis using an
-   envinronment variable or at compile time, to be yet defined.
+   environment variable or at compile time, to be yet defined.
 
 UNIT TESTS
 -----------------------------------------------------------------
@@ -236,12 +236,12 @@ UNIT TESTS
   The build-system infra-structure provides a configure option to
   allow check usage. If possible use the CMake macro ADD_CHECK_TEST
   to introduce new tests, for building and integration as testrun
-  in the build-enviroment.
+  in the build-environment.
 
   When using Make, the test can be locally run via:
   $ make test
 
-  Results can also be sent to central testing dasharboard cdash at
+  Results can also be sent to central testing dashboard CDash at
   http://opensync.org/testing. Command to run tests and send results
   to CDash:
   $ make Experimental
@@ -276,5 +276,5 @@ UNIT TESTS
 
   If the test needs an external entity to work (for example, it needs
   a device connected on a specific port), put the test inside a
-  condition for an environemnt variable and document it in a README
+  condition for an environment variable and document it in a README
   file.
