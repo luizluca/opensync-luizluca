@@ -220,8 +220,6 @@ typedef struct {} XMLFormat;
 		osync_xmlformat_sort(self);
 	}
 
-	/* TODO: compare */
-
 %pythoncode %{
 	objtype = property(get_objtype)
 %}
@@ -319,16 +317,9 @@ typedef struct {} XMLField;
 		osync_xmlfield_set_nth_key_value(self, nth, value);
 	}
 
-	bool compare(XMLField *xmlfield) {
-		return osync_xmlfield_compare(self, xmlfield);
-	}
-
-	/* TODO: compare_similar (needs list argument conversion) */
-
 %pythoncode %{
 	name = property(get_name)
 	next = property(get_next)
-	__cmp__ = compare
 
 	# map attributes and keys to two properties of the XMLField object
 	class Attrs:
