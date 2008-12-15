@@ -88,8 +88,10 @@ START_TEST (client_pipes)
 	osync_assert(osync_queue_disconnect(write2, &error));
 	osync_assert(error == NULL);
 	
-	osync_queue_free(read2);
-	osync_queue_free(write1);
+	osync_queue_unref(read2);
+	osync_queue_unref(write1);
+	osync_queue_unref(read1);
+	osync_queue_unref(write2);
 	
 	osync_client_unref(client);
 	
@@ -173,8 +175,10 @@ START_TEST (client_run)
 	osync_assert(osync_queue_disconnect(write2, &error));
 	osync_assert(error == NULL);
 	
-	osync_queue_free(read2);
-	osync_queue_free(write1);
+	osync_queue_unref(read2);
+	osync_queue_unref(write1);
+	osync_queue_unref(read1);
+	osync_queue_unref(write2);
 	
 	osync_client_unref(client);
 	

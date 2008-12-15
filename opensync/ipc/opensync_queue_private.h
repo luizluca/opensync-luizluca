@@ -85,6 +85,9 @@ struct OSyncQueue {
 
 	/** Connection status **/
 	osync_bool connected;
+
+	/** Reference count **/
+	int ref_count;
 };
 
 

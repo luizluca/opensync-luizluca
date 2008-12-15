@@ -553,11 +553,12 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 		osync_trace(TRACE_INTERNAL, "connecting to engine");
 		
 		if (!osync_queue_connect(outgoing, OSYNC_QUEUE_SENDER, error)) {
-			osync_queue_free(outgoing);
+			osync_queue_unref(outgoing);
 			goto error;
 		}
 		
 		osync_client_set_outgoing_queue(client, outgoing);
+		osync_queue_unref(outgoing);
 		osync_trace(TRACE_INTERNAL, "done connecting to engine");
 	}
 	
@@ -1459,13 +1460,13 @@ void osync_client_unref(OSyncClient *client)
 			if (osync_queue_is_connected(client->incoming))
 				osync_queue_disconnect(client->incoming, NULL);
 			osync_queue_remove(client->incoming, NULL);
-			osync_queue_free(client->incoming);
+			osync_queue_unref(client->incoming);
 		}
 	
 		if (client->outgoing) {
 			if (osync_queue_is_connected(client->outgoing))
 				osync_queue_disconnect(client->outgoing, NULL);
-			osync_queue_free(client->outgoing);
+			osync_queue_unref(client->outgoing);
 		}
 		
 		if (client->plugin)
@@ -1484,14 +1485,14 @@ void osync_client_set_incoming_queue(OSyncClient *client, OSyncQueue *incoming)
 {
 	osync_queue_set_message_handler(incoming, _osync_client_message_handler, client);
 	osync_queue_setup_with_gmainloop(incoming, client->context);
-	client->incoming = incoming;
+	client->incoming = osync_queue_ref(incoming);
 }
 
 void osync_client_set_outgoing_queue(OSyncClient *client, OSyncQueue *outgoing)
 {
 	osync_queue_set_message_handler(outgoing, _osync_client_hup_handler, client);
 	osync_queue_setup_with_gmainloop(outgoing, client->context);
-	client->outgoing = outgoing;
+	client->outgoing = osync_queue_ref(outgoing);
 }
 
 void osync_client_run_and_block(OSyncClient *client)
@@ -1553,13 +1554,15 @@ osync_bool osync_client_run_external(OSyncClient *client, char *pipe_path, OSync
 	g_source_set_callback(source, osyncClientConnectCallback, client, NULL);
 	g_source_attach(source, client->context);
 	
+	osync_queue_unref(incoming);
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
 
  error_remove_queue:
 	osync_queue_remove(incoming, NULL);
  error_free_queue:
-	osync_queue_free(incoming);
+	osync_queue_unref(incoming);
  error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;

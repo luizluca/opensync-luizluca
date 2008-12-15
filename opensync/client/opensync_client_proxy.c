@@ -859,8 +859,8 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 		if (!osync_queue_new_pipes(&read2, &write2, error))
 			goto error_free_pipe1;
 		
-		proxy->outgoing = write1;
-		proxy->incoming = read2;
+		proxy->outgoing = osync_queue_ref(write1);
+		proxy->incoming = osync_queue_ref(read2);
 		
 		/* Now we either spawn a new process, or we create a new thread */
 		if (type == OSYNC_START_TYPE_THREAD) {
@@ -937,6 +937,11 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 			//}
 		}
 		
+		osync_queue_unref(read1);
+		osync_queue_unref(write1);
+		osync_queue_unref(read2);
+		osync_queue_unref(write2);
+
 		/* We now connect to our incoming queue */
 		if (!osync_queue_connect(proxy->incoming, OSYNC_QUEUE_RECEIVER, error))
 			goto error;
@@ -978,11 +983,11 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 	return TRUE;
 	
  error_free_pipe2:
-	osync_queue_free(read2);
-	osync_queue_free(write2);
+	osync_queue_unref(read2);
+	osync_queue_unref(write2);
  error_free_pipe1:
-	osync_queue_free(read1);
-	osync_queue_free(write1);
+	osync_queue_unref(read1);
+	osync_queue_unref(write1);
  error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
@@ -1039,8 +1044,8 @@ osync_bool osync_client_proxy_shutdown(OSyncClientProxy *proxy, OSyncError **err
 		//	goto error;
 	}
 			
-	osync_queue_free(proxy->incoming);
-	osync_queue_free(proxy->outgoing);
+	osync_queue_unref(proxy->incoming);
+	osync_queue_unref(proxy->outgoing);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;

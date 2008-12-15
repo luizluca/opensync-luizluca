@@ -18,7 +18,27 @@ START_TEST (ipc_new)
 	fail_unless(queue1 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_queue_free(queue1);
+	osync_queue_unref(queue1);
+	
+	destroy_testbed(testbed);
+}
+END_TEST
+
+START_TEST (ipc_ref)
+{
+	char *testbed = setup_testbed(NULL);
+	osync_testing_file_remove("/tmp/testpipe");
+	
+	OSyncError *error = NULL;
+	OSyncQueue *queue1 = osync_queue_new("/tmp/testpipe", &error);
+	fail_unless(queue1 != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+	
+	queue1 = osync_queue_ref(queue1);
+	fail_unless(queue1 != NULL, NULL);
+
+	osync_queue_unref(queue1);
+	osync_queue_unref(queue1);
 	
 	destroy_testbed(testbed);
 }
@@ -44,7 +64,7 @@ START_TEST (ipc_create)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe") == FALSE, NULL);
 	
-	osync_queue_free(queue1);
+	osync_queue_unref(queue1);
 	
 	destroy_testbed(testbed);
 }
@@ -69,7 +89,7 @@ START_TEST (ipc_connect)
 		if (osync_queue_disconnect(queue, &error) != TRUE || error != NULL)
 			exit(1);
 		
-		osync_queue_free(queue);
+		osync_queue_unref(queue);
 	
 		g_free(testbed);
 		exit(0);
@@ -93,7 +113,7 @@ START_TEST (ipc_connect)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe") == FALSE, NULL);
 
-	osync_queue_free(queue);
+	osync_queue_unref(queue);
 	
 	destroy_testbed(testbed);
 }
@@ -152,7 +172,7 @@ START_TEST (ipc_payload)
 		
 		if (osync_queue_disconnect(client_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(client_queue);
+		osync_queue_unref(client_queue);
 		
 		osync_queue_send_message(server_queue, NULL, reply, &error);
 		osync_message_unref(reply);
@@ -167,7 +187,7 @@ START_TEST (ipc_payload)
 	
 		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(server_queue);
+		osync_queue_unref(server_queue);
 		
 		g_free(testbed);
 		
@@ -230,8 +250,8 @@ START_TEST (ipc_payload)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
 
-	osync_queue_free(client_queue);
-	osync_queue_free(server_queue);
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
 	
 	destroy_testbed(testbed);
 }
@@ -301,7 +321,7 @@ START_TEST (ipc_payload_wait)
 		
 		if (osync_queue_disconnect(client_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(client_queue);
+		osync_queue_unref(client_queue);
 	
 		while (!(message = osync_queue_get_message(server_queue))) {
 			g_usleep(10000);
@@ -316,7 +336,7 @@ START_TEST (ipc_payload_wait)
 		
 		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(server_queue);
+		osync_queue_unref(server_queue);
 		
 		g_free(testbed);
 		
@@ -378,8 +398,8 @@ START_TEST (ipc_payload_wait)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
 
-	osync_queue_free(client_queue);
-	osync_queue_free(server_queue);
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
 	
 	destroy_testbed(testbed);
 }
@@ -446,7 +466,7 @@ START_TEST (ipc_payload_stress)
 		
 		if (osync_queue_disconnect(client_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(client_queue);
+		osync_queue_unref(client_queue);
 	
 		message = osync_queue_get_message(server_queue);
 		
@@ -458,7 +478,7 @@ START_TEST (ipc_payload_stress)
 			
 		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(server_queue);
+		osync_queue_unref(server_queue);
 		
 		g_free(data);
 		g_free(testbed);
@@ -522,8 +542,8 @@ START_TEST (ipc_payload_stress)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
 
-	osync_queue_free(client_queue);
-	osync_queue_free(server_queue);
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
 	
 	g_free(data);
 	destroy_testbed(testbed);
@@ -592,7 +612,7 @@ START_TEST (ipc_payload_stress2)
 		
 		if (osync_queue_disconnect(client_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(client_queue);
+		osync_queue_unref(client_queue);
 	
 		message = osync_queue_get_message(server_queue);
 		
@@ -604,7 +624,7 @@ START_TEST (ipc_payload_stress2)
 			
 		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(server_queue);
+		osync_queue_unref(server_queue);
 		
 		g_free(data);
 		g_free(testbed);
@@ -665,8 +685,8 @@ START_TEST (ipc_payload_stress2)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
 
-	osync_queue_free(client_queue);
-	osync_queue_free(server_queue);
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
 	
 	g_free(data);
 	destroy_testbed(testbed);
@@ -729,7 +749,7 @@ START_TEST (ipc_large_payload)
 		
 		if (osync_queue_disconnect(client_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(client_queue);
+		osync_queue_unref(client_queue);
 	
 		message = osync_queue_get_message(server_queue);
 		
@@ -741,7 +761,7 @@ START_TEST (ipc_large_payload)
 			
 		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(server_queue);
+		osync_queue_unref(server_queue);
 		
 		g_free(data);
 		
@@ -801,8 +821,8 @@ START_TEST (ipc_large_payload)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
 
-	osync_queue_free(client_queue);
-	osync_queue_free(server_queue);
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
 	
 	g_free(data);
 	destroy_testbed(testbed);
@@ -823,7 +843,7 @@ START_TEST (ipc_error_no_pipe)
 	fail_unless(error != NULL, NULL);
 	osync_error_unref(&error);
 	
-	osync_queue_free(queue1);
+	osync_queue_unref(queue1);
 	
 	destroy_testbed(testbed);
 }
@@ -854,7 +874,7 @@ START_TEST (ipc_error_perm)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe") == FALSE, NULL);
 
-	osync_queue_free(queue);
+	osync_queue_unref(queue);
 	
 	destroy_testbed(testbed);
 }
@@ -902,7 +922,7 @@ START_TEST (ipc_error_rem)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe") == FALSE, NULL);
 
-	osync_queue_free(server_queue);
+	osync_queue_unref(server_queue);
 	
 	destroy_testbed(testbed);
 }
@@ -943,7 +963,7 @@ START_TEST (ipc_error_rem2)
 		osync_queue_disconnect(server_queue, &error);
 		fail_unless(error == NULL, NULL);
 		
-		osync_queue_free(server_queue);
+		osync_queue_unref(server_queue);
 		
 		g_free(testbed);
 		exit(0);
@@ -979,7 +999,7 @@ START_TEST (ipc_error_rem2)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe") == FALSE, NULL);
 
-	osync_queue_free(server_queue);
+	osync_queue_unref(server_queue);
 	
 	destroy_testbed(testbed);
 }
@@ -1080,7 +1100,7 @@ START_TEST (ipc_loop_payload)
 	
 		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(server_queue);
+		osync_queue_unref(server_queue);
 		
 		osync_assert(osync_queue_disconnect(client_queue, &error));
 		osync_assert(error == NULL);
@@ -1088,7 +1108,7 @@ START_TEST (ipc_loop_payload)
 		osync_thread_stop(thread);
 		osync_thread_free(thread);
 		
-		osync_queue_free(client_queue);
+		osync_queue_unref(client_queue);
 		
 		g_free(testbed);
 		
@@ -1145,8 +1165,8 @@ START_TEST (ipc_loop_payload)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
 
-	osync_queue_free(client_queue);
-	osync_queue_free(server_queue);
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
 	
 	destroy_testbed(testbed);
 }
@@ -1266,7 +1286,7 @@ START_TEST (ipc_loop_stress)
 	
 		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(server_queue);
+		osync_queue_unref(server_queue);
 		
 		osync_assert(osync_queue_disconnect(client_queue, &error));
 		osync_assert(error == NULL);
@@ -1274,7 +1294,7 @@ START_TEST (ipc_loop_stress)
 		osync_thread_stop(thread);
 		osync_thread_free(thread);
 		
-		osync_queue_free(client_queue);
+		osync_queue_unref(client_queue);
 		
 		g_free(testbed);
 		
@@ -1334,8 +1354,8 @@ START_TEST (ipc_loop_stress)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
 
-	osync_queue_free(client_queue);
-	osync_queue_free(server_queue);
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
 	
 	destroy_testbed(testbed);
 }
@@ -1444,7 +1464,7 @@ START_TEST (ipc_loop_callback)
 	
 		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(server_queue);
+		osync_queue_unref(server_queue);
 		
 		osync_assert(osync_queue_disconnect(client_queue, &error));
 		osync_assert(error == NULL);
@@ -1452,7 +1472,7 @@ START_TEST (ipc_loop_callback)
 		osync_thread_stop(thread);
 		osync_thread_free(thread);
 		
-		osync_queue_free(client_queue);
+		osync_queue_unref(client_queue);
 		
 		g_free(testbed);
 		
@@ -1517,8 +1537,8 @@ START_TEST (ipc_loop_callback)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
 
-	osync_queue_free(client_queue);
-	osync_queue_free(server_queue);
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
 	
 	destroy_testbed(testbed);
 }
@@ -1636,8 +1656,8 @@ START_TEST (ipc_callback_break)
 		osync_thread_stop(thread);
 		osync_thread_free(thread);
 		
-		osync_queue_free(client_queue);
-		osync_queue_free(server_queue);
+		osync_queue_unref(client_queue);
+		osync_queue_unref(server_queue);
 		
 		g_free(testbed);
 		exit(0);
@@ -1706,8 +1726,8 @@ START_TEST (ipc_callback_break)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
 
-	osync_queue_free(client_queue);
-	osync_queue_free(server_queue);
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
 	
 	destroy_testbed(testbed);
 }
@@ -1776,8 +1796,8 @@ START_TEST (ipc_pipes)
 	osync_assert(error == NULL);
 	
 	
-	osync_queue_free(read1);
-	osync_queue_free(write1);
+	osync_queue_unref(read1);
+	osync_queue_unref(write1);
 	
 	destroy_testbed(testbed);
 }
@@ -1810,10 +1830,10 @@ START_TEST (ipc_pipes_stress)
 	if (cpid == 0) { //Child
 		
 		osync_assert(osync_queue_disconnect(write1, &error));
-		osync_queue_free(write1);
+		osync_queue_unref(write1);
 		
 		osync_assert(osync_queue_disconnect(read2, &error));
-		osync_queue_free(read2);
+		osync_queue_unref(read2);
 		
 		client_queue = read1;
 		server_queue = write2;
@@ -1842,7 +1862,7 @@ START_TEST (ipc_pipes_stress)
 		
 		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(server_queue);
+		osync_queue_unref(server_queue);
 		
 		osync_assert(osync_queue_disconnect(client_queue, &error));
 		osync_assert(error == NULL);
@@ -1850,7 +1870,7 @@ START_TEST (ipc_pipes_stress)
 		osync_thread_stop(thread);
 		osync_thread_free(thread);
 		
-		osync_queue_free(client_queue);
+		osync_queue_unref(client_queue);
 		
 		g_free(testbed);
 		
@@ -1858,10 +1878,10 @@ START_TEST (ipc_pipes_stress)
 	} else {
 		
 		osync_assert(osync_queue_disconnect(write2, &error));
-		osync_queue_free(write2);
+		osync_queue_unref(write2);
 		
 		osync_assert(osync_queue_disconnect(read1, &error));
-		osync_queue_free(read1);
+		osync_queue_unref(read1);
 		
 		client_queue = write1;
 		server_queue = read2;
@@ -1911,8 +1931,8 @@ START_TEST (ipc_pipes_stress)
 		fail_unless(WEXITSTATUS(status) == 0, NULL);
 	}
 	
-	osync_queue_free(client_queue);
-	osync_queue_free(server_queue);
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
 	
 	destroy_testbed(testbed);
 }
@@ -1945,10 +1965,10 @@ START_TEST (ipc_callback_break_pipes)
 	if (cpid == 0) { //Child
 		
 		osync_assert(osync_queue_disconnect(write1, &error));
-		osync_queue_free(write1);
+		osync_queue_unref(write1);
 		
 		osync_assert(osync_queue_disconnect(read2, &error));
-		osync_queue_free(read2);
+		osync_queue_unref(read2);
 		
 		client_queue = read1;
 		server_queue = write2;
@@ -1976,18 +1996,18 @@ START_TEST (ipc_callback_break_pipes)
 		osync_thread_stop(thread);
 		osync_thread_free(thread);
 		
-		osync_queue_free(client_queue);
-		osync_queue_free(server_queue);
+		osync_queue_unref(client_queue);
+		osync_queue_unref(server_queue);
 		
 		g_free(testbed);
 		exit(0);
 	} else {
 		
 		osync_assert(osync_queue_disconnect(write2, &error));
-		osync_queue_free(write2);
+		osync_queue_unref(write2);
 		
 		osync_assert(osync_queue_disconnect(read1, &error));
-		osync_queue_free(read1);
+		osync_queue_unref(read1);
 		
 		client_queue = write1;
 		server_queue = read2;
@@ -2048,8 +2068,8 @@ START_TEST (ipc_callback_break_pipes)
 		fail_unless(WEXITSTATUS(status) == 0, NULL);
 	}
 	
-	osync_queue_free(client_queue);
-	osync_queue_free(server_queue);
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
 	
 	destroy_testbed(testbed);
 }
@@ -2149,7 +2169,7 @@ START_TEST (ipc_timeout)
 		
 		if (osync_queue_disconnect(client_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(client_queue);
+		osync_queue_unref(client_queue);
 	
 		while (!(message = osync_queue_get_message(server_queue))) {
 			g_usleep(10000);
@@ -2164,7 +2184,7 @@ START_TEST (ipc_timeout)
 		
 		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
 			exit(1);
-		osync_queue_free(server_queue);
+		osync_queue_unref(server_queue);
 		
 		g_free(testbed);
 		
@@ -2234,8 +2254,8 @@ START_TEST (ipc_timeout)
 	
 	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
 
-	osync_queue_free(client_queue);
-	osync_queue_free(server_queue);
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
 	
 	destroy_testbed(testbed);
 }
@@ -2248,6 +2268,7 @@ Suite *ipc_suite(void)
 //	Suite *s2 = suite_create("IPC");
 	
 	create_case(s, "ipc_new", ipc_new);
+	create_case(s, "ipc_ref", ipc_ref);
 	create_case(s, "ipc_create", ipc_create);
 	create_case(s, "ipc_connect", ipc_connect);
 	create_case(s, "ipc_payload", ipc_payload);

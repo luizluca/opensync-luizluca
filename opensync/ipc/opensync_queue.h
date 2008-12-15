@@ -50,16 +50,35 @@ typedef enum {
 	OSYNC_QUEUE_RECEIVER
 } OSyncQueueType;
 
-/*@}*/
+
 
 OSYNC_EXPORT OSyncQueue *osync_queue_new(const char *name, OSyncError **error);
 OSYNC_EXPORT OSyncQueue *osync_queue_new_from_fd(int fd, OSyncError **error);
 OSYNC_EXPORT osync_bool osync_queue_create(OSyncQueue *queue, OSyncError **error);
 
-OSYNC_EXPORT void osync_queue_free(OSyncQueue *queue);
+/** @brief Increase the reference count on an OSyncQueue
+ * 
+ * Use when storing a reference to the group environment.  When the
+ * reference is no longer needed use osync_queue_unref
+ * 
+ * @returns the passed queue
+ * 
+ */
+OSYNC_EXPORT OSyncQueue *osync_queue_ref(OSyncQueue *queue);
+
+/** @brief Decrements the reference count on an OSyncQueue
+ * 
+ * If the reference count reaches zero then the queue is freed and
+ * all resources are freed or unrefed
+ * 
+ * @param env Pointer to the queue to unreference
+ * 
+ */
+OSYNC_EXPORT void osync_queue_unref(OSyncQueue *queue);
 
 OSYNC_EXPORT osync_bool osync_queue_connect(OSyncQueue *queue, OSyncQueueType type, OSyncError **error);
 OSYNC_EXPORT osync_bool osync_queue_disconnect(OSyncQueue *queue, OSyncError **error);
 
+/*@}*/
 #endif /* _OPENSYNC_QUEUE_H */
 

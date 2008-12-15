@@ -625,7 +625,7 @@ OSyncQueue *osync_queue_new(const char *name, OSyncError **error)
 		goto error;
 	
 	if (name)
-		queue->name = g_strdup(name);
+		queue->name = osync_strdup(name);
 	queue->fd = -1;
 	
 	if (!g_thread_supported ())
@@ -639,6 +639,8 @@ OSyncQueue *osync_queue_new(const char *name, OSyncError **error)
 	queue->incoming = g_async_queue_new();
 
 	queue->disconnectLock = g_mutex_new();
+
+	queue->ref_count = 1;
 
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, queue);
 	return queue;
@@ -714,7 +716,7 @@ osync_bool osync_queue_new_pipes(OSyncQueue **read_queue, OSyncQueue **write_que
 	return TRUE;
 
  error_free_read_queue:
-	osync_queue_free(*read_queue);
+	osync_queue_unref(*read_queue);
  error_close_pipes:
 	close(filedes[0]);
 	close(filedes[1]);
@@ -724,42 +726,56 @@ osync_bool osync_queue_new_pipes(OSyncQueue **read_queue, OSyncQueue **write_que
 #endif
 }
 
-void osync_queue_free(OSyncQueue *queue)
+OSyncQueue *osync_queue_ref(OSyncQueue *queue)
+{
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, queue);
+	osync_assert(queue);
+
+	g_atomic_int_inc(&(queue->ref_count));
+
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return queue;
+}
+
+void osync_queue_unref(OSyncQueue *queue)
 {
 	OSyncPendingMessage *pending = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, queue);
-	
-	g_mutex_free(queue->pendingLock);
-	
-	g_mutex_free(queue->disconnectLock);
+	osync_assert(queue);
 
-	g_main_context_unref(queue->context);
+	if (g_atomic_int_dec_and_test(&(queue->ref_count))) {
+		g_mutex_free(queue->pendingLock);
 
-	_osync_queue_stop_incoming(queue);
+		g_mutex_free(queue->disconnectLock);
 
-	_osync_queue_flush_messages(queue->incoming);
-	g_async_queue_unref(queue->incoming);
-	
-	_osync_queue_flush_messages(queue->outgoing);
-	g_async_queue_unref(queue->outgoing);
+		g_main_context_unref(queue->context);
 
-	while (queue->pendingReplies) {
-		pending = queue->pendingReplies->data;
+		_osync_queue_stop_incoming(queue);
 
-		queue->pendingReplies = g_list_remove(queue->pendingReplies, pending);
+		_osync_queue_flush_messages(queue->incoming);
+		g_async_queue_unref(queue->incoming);
 
-		// TODO: Refcounting for OSyncPendingMessage
-		if (pending->timeout_info)
-			g_free(pending->timeout_info);
+		_osync_queue_flush_messages(queue->outgoing);
+		g_async_queue_unref(queue->outgoing);
 
-		g_free(pending);
-	}
+		while (queue->pendingReplies) {
+			pending = queue->pendingReplies->data;
 
-	if (queue->name)
-		g_free(queue->name);
+			queue->pendingReplies = g_list_remove(queue->pendingReplies, pending);
+
+			/** @todo Refcounting for OSyncPendingMessage */
+			if (pending->timeout_info)
+				g_free(pending->timeout_info);
+
+			g_free(pending);
+		}
+
+		if (queue->name)
+			osync_free(queue->name);
 		
-	g_free(queue);
-	queue = NULL;
+		osync_free(queue);
+		queue = NULL;
+	}
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }

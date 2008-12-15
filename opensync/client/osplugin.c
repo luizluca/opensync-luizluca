@@ -97,7 +97,9 @@ int main(int argc, char **argv)
 			goto error;
 		
 		osync_client_set_incoming_queue(client, incoming);
+		osync_queue_unref(incoming);
 		osync_client_set_outgoing_queue(client, outgoing);
+		osync_queue_unref(outgoing);
 	} else {
 		/* Create connection pipes **/
 		incoming = osync_queue_new(pipe_path, &error);
@@ -112,16 +114,14 @@ int main(int argc, char **argv)
 			goto error;
 		
 		osync_client_set_incoming_queue(client, incoming);
+		osync_queue_unref(incoming);
 	}
 
 	osync_client_run_and_block(client);
 	
 	osync_client_unref(client);
 
-	//queues are already freed with the client
-	//osync_queue_free(incoming);
-	//osync_queue_free(outgoing);
-	
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return 0;
 
