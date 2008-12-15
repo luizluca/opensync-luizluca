@@ -5,7 +5,8 @@ To make a release of OpenSync, do the following:
 
  - check out a fresh copy from subversion
 
- - increment the version number in ./CMakeLists.txt 
+ - increment the version number in ./CMakeLists.txt and follow the instruction
+   of the "UPDATE: "-tagged lines.
 
  - Run "make Experimental" again several times to try to see race conditions.
 
