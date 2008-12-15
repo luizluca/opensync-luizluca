@@ -11,12 +11,12 @@
 
 static void usage (char *name, int ecode)
 {
-  fprintf (stderr, "Usage: %s <groupname>\n", name);
-  fprintf (stderr, "[--configdir] \tSet a different configdir then ~./opensync\n");
-  fprintf (stderr, "[--num] \tHow often do you want to synchronize?\n");
-  fprintf (stderr, "[--tryrecover] \tIf something goes wrong try to recover via slow-sync\n");
-  fprintf (stderr, "[--crash] \tRandomly crash the engine/plugins\n");
-  exit (ecode);
+	fprintf (stderr, "Usage: %s <groupname>\n", name);
+	fprintf (stderr, "[--configdir] \tSet a different configdir then ~./opensync\n");
+	fprintf (stderr, "[--num] \tHow often do you want to synchronize?\n");
+	fprintf (stderr, "[--tryrecover] \tIf something goes wrong try to recover via slow-sync\n");
+	fprintf (stderr, "[--crash] \tRandomly crash the engine/plugins\n");
+	exit (ecode);
 }
 
 GList *members = NULL;
