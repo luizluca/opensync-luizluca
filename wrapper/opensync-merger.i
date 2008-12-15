@@ -64,10 +64,6 @@ typedef struct {} Capabilities;
 		osync_capabilities_unref(self);
 	}
 
-	Capability *get_first(const char *objtype) {
-		return osync_capabilities_get_first(self, objtype);
-	}
-
 	/* returns a python string object */
 	PyObject *assemble() {
 		char *buf;
@@ -80,10 +76,6 @@ typedef struct {} Capabilities;
 		PyObject *obj = PyString_FromStringAndSize(buf, size);
 		free(buf);
 		return obj;
-	}
-
-	void sort() {
-		osync_capabilities_sort(self);
 	}
 }
 
@@ -104,34 +96,6 @@ typedef struct {} Capabilities;
 			return NULL;
 		else
 			return caps; /* new object, no need to inc ref */
-	}
-
-	static Capabilities *capabilities_load(const char *file) {
-		Error *err = NULL;
-		Capabilities *caps = osync_capabilities_load(file, &err);
-		if (raise_exception_on_error(err))
-			return NULL;
-		else
-			return caps; /* new object, no need to inc ref */
-	}
-
-	static Capabilities *capabilities_member_get_capabilities(Member *member) {
-		Error *err = NULL;
-		Capabilities *ret = osync_capabilities_member_get_capabilities(member, &err);
-		if (raise_exception_on_error(err))
-			return NULL;
-		else {
-			if (ret)
-				osync_capabilities_ref(ret);
-			return ret;
-		}
-	}
-
-	static void capabilities_member_set_capabilities(Member *member, Capabilities *caps) {
-		Error *err = NULL;
-		osync_bool ret = osync_capabilities_member_set_capabilities(member, caps, &err);
-		if (!raise_exception_on_error(err) && !ret)
-			wrapper_exception("osync_capabilities_member_set_capabilities failed but did not set error code");
 	}
 %}
 
@@ -168,10 +132,6 @@ typedef struct {} XMLFormat;
 
 	~XMLFormat() {
 		osync_xmlformat_unref(self);
-	}
-
-	const char *get_objtype() {
-		return osync_xmlformat_get_objtype(self);
 	}
 
 	XMLField *get_first_field() {
@@ -211,11 +171,6 @@ typedef struct {} XMLFormat;
 		return obj;
 	}
 
-	bool validate() {
-		OSyncError *err = NULL;
-		return osync_xmlformat_validate(self, &err);
-	}
-
 	void sort() {
 		osync_xmlformat_sort(self);
 	}
@@ -250,15 +205,9 @@ typedef struct {} XMLField;
 	}
 
 	~XMLField() {
-		osync_xmlfield_delete(self);
-	}
-
-	void adopt_xmlfield_before_field(XMLField *to_link) {
-		osync_xmlfield_adopt_xmlfield_before_field(self, to_link);
-	}
-
-	void adopt_xmlfield_after_field(XMLField *to_link) {
-		osync_xmlfield_adopt_xmlfield_after_field(self, to_link);
+                /* TODO: re-export xmlfield_unref for wrapper deconstructor?
+		osync_xmlfield_unref(self);
+                */
 	}
 
 	const char *get_name() {

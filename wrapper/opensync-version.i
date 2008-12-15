@@ -98,24 +98,6 @@ typedef struct {} Version;
 		osync_version_set_identifier(self, identifier);
 	}
 
-	int matches(Version *pattern) {
-		Error *err = NULL;
-		int ret = osync_version_matches(pattern, self, &err);
-		if (!raise_exception_on_error(err) && ret == -1)
-			wrapper_exception("osync_version_matches failed but did not set error code");
-		return ret;
-	}
-
-	Capabilities *find_capabilities() {
-		Error *err = NULL;
-		Capabilities *ret = osync_version_find_capabilities(self, &err);
-		if (!raise_exception_on_error(err) && !ret)
-			wrapper_exception("osync_version_find_capabilities failed but did not set error");
-		if (ret)
-			osync_capabilities_ref(ret);
-		return ret;
-	}
-
 %pythoncode %{
 	plugin = property(get_plugin, set_plugin)
 	priority = property(get_priority, set_priority)

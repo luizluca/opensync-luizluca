@@ -335,18 +335,6 @@ typedef struct {} ObjFormat;
 		return osync_objformat_get_objtype(self);
 	}
 
-	/* TODO: compare, duplicate, create, print, get_revision, destroy, copy */
-
-	bool is_equal(ObjFormat *rightformat) {
-		return osync_objformat_is_equal(self, rightformat);
-	}
-
-	bool must_marshal() {
-		return osync_objformat_must_marshal(self);
-	}
-
-	/* TODO: marshal, demarshal */
-
 %pythoncode %{
 	name = property(get_name)
 	objtype = property(get_objtype)
