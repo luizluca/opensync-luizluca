@@ -272,8 +272,9 @@ typedef struct {} FormatEnv;
 		return ret;
 	}
 
+        /* FIXME: targets/real_targets need to get changed to a OSyncList. For this OSyncList needs
+           ti get wrapped to work with PyList.
 	FormatConverterPath *find_path_formats(ObjFormat *sourceformat, PyObject *targets) {
-		/* convert second argument from a python list to a NULL-terminated array of ObjFormat pointers */
 		if (!PyList_Check(targets)) {
 			PyErr_SetString(PyExc_TypeError, "wrapper error: argument is not a list");
 			return NULL;
@@ -297,6 +298,7 @@ typedef struct {} FormatEnv;
 			osync_converter_path_ref(ret);
 		return ret;
 	}
+        */
 
 %pythoncode %{
 	# extend the SWIG-generated constructor, so that we can setup our list-wrapper classes
