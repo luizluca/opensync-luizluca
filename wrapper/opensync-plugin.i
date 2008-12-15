@@ -120,13 +120,6 @@ typedef struct {} PluginEnv;
 		osync_plugin_env_register_plugin(self, plugin);
 	}
 
-	void load_module(const char *filename) {
-		Error *err = NULL;
-		bool ret = osync_plugin_env_load_module(self, filename, &err);
-		if (!raise_exception_on_error(err) && !ret)
-			wrapper_exception("osync_plugin_env_load_module failed but did not set error code");
-	}
-
 	Plugin *find_plugin(const char *name) {
 		Plugin *plugin = osync_plugin_env_find_plugin(self, name);
 		if (plugin)
