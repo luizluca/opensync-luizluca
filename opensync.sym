@@ -364,7 +364,6 @@ osync_message_write_long_long_int
 osync_message_write_string
 osync_message_write_uint
 osync_module_check
-osync_module_free
 osync_module_get_conversion_info
 osync_module_get_format_info
 osync_module_get_function
@@ -372,7 +371,9 @@ osync_module_get_sync_info
 osync_module_get_version
 osync_module_load
 osync_module_new
+osync_module_ref
 osync_module_unload
+osync_module_unref
 osync_obj_engine_command
 osync_obj_engine_event
 osync_obj_engine_finalize

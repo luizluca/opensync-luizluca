@@ -38,28 +38,57 @@ OSyncModule *osync_module_new(OSyncError **error)
 		return NULL;
 	}
 	
+	module->ref_count = 1;
+
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, module);
 	return module;
 }
 
-/*! @brief Used to free a module
+
+/** @brief Increase the reference count on a module
+ *
+ * When storing a reference to an OSyncModule the reference count
+ * on the module must be manually incremented
+ * @code
+ * format->module = osync_module_ref(module);
+ * @endcode
+ *
+ * @param module pointer to module
+ * @returns the passed module
+ *
+ */
+OSyncModule * osync_module_ref(OSyncModule *module)
+{
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, module);
+	osync_assert(module);
+	
+	g_atomic_int_inc(&(module->ref_count));
+
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return module;
+}
+
+/*! @brief Used to reduce the reference count on a module
  * 
- * Frees a module
+ * Decreases the reference count on a module.  If the reference count reaches
+ * zero the module is freed.
  * 
  * @param module Pointer to the module
  * 
  */
-void osync_module_free(OSyncModule *module)
+void osync_module_unref(OSyncModule *module)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, module);
-	if (module->module)
-		osync_module_unload(module);
+	osync_assert(module);
+	if (g_atomic_int_dec_and_test(&(module->ref_count))) {
+		if (module->module)
+			osync_module_unload(module);
 		
-	if (module->path)
-		g_free(module->path);
+		if (module->path)
+			g_free(module->path);
 	
-	g_free(module);
-	
+		osync_free(module);
+	}
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 

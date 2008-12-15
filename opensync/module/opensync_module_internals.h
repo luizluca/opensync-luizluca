@@ -27,6 +27,8 @@
 struct OSyncModule {
 	GModule *module;
 	char *path;
+
+	int ref_count;
 };
 
 #endif //_OPENSYNC_MODULE_INTERNALS_H_

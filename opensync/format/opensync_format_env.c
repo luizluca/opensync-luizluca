@@ -78,7 +78,7 @@ static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char 
 		
 		if (!osync_module_load(module, filename, error)) {
 			osync_trace(TRACE_INTERNAL, "Unable to load module %s: %s", filename, osync_error_print(error));
-			osync_module_free(module);
+			osync_module_unref(module);
 			g_free(filename);
 			continue;
 		}
@@ -87,7 +87,7 @@ static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char 
 			if (osync_error_is_set(error)) {
 				osync_trace(TRACE_INTERNAL, "Module check error for %s: %s", filename, osync_error_print(error));
 			}
-			osync_module_free(module);
+			osync_module_unref(module);
 			g_free(filename);
 			continue;
 		}
@@ -98,7 +98,7 @@ static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char 
 			}
 			osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to load format plugin %s. Neither a converter nor a format could be initialized.", __NULLSTR(filename));
 			osync_trace(TRACE_ERROR, "%s", osync_error_print(error));
-			osync_module_free(module);
+			osync_module_unref(module);
 			g_free(filename);
 			continue;
 		}
@@ -729,7 +729,7 @@ void osync_format_env_unref(OSyncFormatEnv *env)
 	
 		/* Free the modules */
 		while (env->modules) {
-			osync_module_free(env->modules->data);
+			osync_module_unref(env->modules->data);
 			env->modules = g_list_remove(env->modules, env->modules->data);
 		}
 	

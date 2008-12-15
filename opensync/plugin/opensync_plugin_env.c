@@ -70,7 +70,7 @@ void osync_plugin_env_unref(OSyncPluginEnv *env)
 		/* Unload all modules */
 		while (env->modules) {
 			osync_module_unload(env->modules->data);
-			osync_module_free(env->modules->data);
+			osync_module_unref(env->modules->data);
 			env->modules = g_list_remove(env->modules, env->modules->data);
 		}
 		osync_free(env);
@@ -160,14 +160,14 @@ osync_bool osync_plugin_env_load_module(OSyncPluginEnv *env, const char *filenam
 	
 	if (!osync_module_load(module, filename, error)) {
 		osync_trace(TRACE_INTERNAL, "Unable to load module %s: %s", filename, osync_error_print(error));
-		osync_module_free(module);
+		osync_module_unref(module);
 	} else {
 		if (!osync_module_check(module, error)) {
 			if (osync_error_is_set(error)) {
 				osync_trace(TRACE_INTERNAL, "Module check error for %s: %s", filename, osync_error_print(error));
 			}
 			osync_module_unload(module);
-			osync_module_free(module);
+			osync_module_unref(module);
 			osync_trace(TRACE_EXIT, "%s: Unable to load module", __func__);
 			return FALSE;
 		}
@@ -177,7 +177,7 @@ osync_bool osync_plugin_env_load_module(OSyncPluginEnv *env, const char *filenam
 				goto error_free_module;
 			
 			osync_module_unload(module);
-			osync_module_free(module);
+			osync_module_unref(module);
 			osync_trace(TRACE_EXIT, "%s: No get_sync_info function", __func__);
 			return FALSE;
 		}
@@ -189,7 +189,7 @@ osync_bool osync_plugin_env_load_module(OSyncPluginEnv *env, const char *filenam
 
 error_free_module:
 	osync_module_unload(module);
-	osync_module_free(module);
+	osync_module_unref(module);
 error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;

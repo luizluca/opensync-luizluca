@@ -387,7 +387,7 @@ START_TEST (conv_env_plugin)
 	
 	osync_format_env_unref(env);
 	
-	osync_module_free(module);
+	osync_module_unref(module);
 	
 	destroy_testbed(testbed);
 }

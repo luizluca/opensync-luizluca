@@ -24,7 +24,8 @@
 OPENSYNC_BEGIN_DECLS
 
 OSYNC_EXPORT OSyncModule *osync_module_new(OSyncError **error);
-OSYNC_EXPORT void osync_module_free(OSyncModule *module);
+OSYNC_EXPORT OSyncModule *osync_module_ref(OSyncModule *module);
+OSYNC_EXPORT void osync_module_unref(OSyncModule *module);
 
 OSYNC_EXPORT osync_bool osync_module_load(OSyncModule *module, const char *path, OSyncError **error);
 OSYNC_EXPORT void osync_module_unload(OSyncModule *module);

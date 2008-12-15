@@ -11,7 +11,9 @@ START_TEST (module_create)
 	fail_unless(module != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_module_free(module);
+	osync_module_ref(module);
+	osync_module_unref(module);
+	osync_module_unref(module);
 	
 	destroy_testbed(testbed);
 }
@@ -35,7 +37,7 @@ START_TEST (module_load)
 	
 	osync_module_unload(module);
 	
-	osync_module_free(module);
+	osync_module_unref(module);
 	
 	destroy_testbed(testbed);
 }
@@ -58,7 +60,7 @@ START_TEST (module_load_false)
 	g_free(curdir);
 	osync_error_unref(&error);
 	
-	osync_module_free(module);
+	osync_module_unref(module);
 	
 	destroy_testbed(testbed);
 }
@@ -86,7 +88,7 @@ START_TEST (module_function)
 	
 	osync_module_unload(module);
 	
-	osync_module_free(module);
+	osync_module_unref(module);
 	
 	destroy_testbed(testbed);
 }
@@ -115,7 +117,7 @@ START_TEST (module_function_false)
 	
 	osync_module_unload(module);
 	
-	osync_module_free(module);
+	osync_module_unref(module);
 	
 	destroy_testbed(testbed);
 }
@@ -142,7 +144,7 @@ START_TEST (module_version)
 	
 	osync_module_unload(module);
 	
-	osync_module_free(module);
+	osync_module_unref(module);
 	
 	destroy_testbed(testbed);
 }
@@ -169,7 +171,7 @@ START_TEST (module_check)
 	
 	osync_module_unload(module);
 	
-	osync_module_free(module);
+	osync_module_unref(module);
 	
 	destroy_testbed(testbed);
 }
