@@ -259,8 +259,10 @@ osync_bool osync_module_load(OSyncModule *module, const char *path, OSyncError *
 		goto error;
 	}
 
-	/* Try to open the module or fail if an error occurs */
-	module->module = g_module_open(path, 0);
+	/* Try to open the module or fail if an error occurs.
+	 * Do local bind to avoid symbol-clashing - i.e. plugins having the same
+	 * functions name - e.g. finalize(). */
+	module->module = g_module_open(path, G_MODULE_BIND_LAZY | G_MODULE_BIND_LOCAL);
 	if (!module->module) {
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to open module %s: %s", path, g_module_error());
 		goto error;
