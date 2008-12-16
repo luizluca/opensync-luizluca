@@ -138,6 +138,9 @@ OSYNC_EXPORT OSyncFormatConverter *osync_format_env_find_converter(OSyncFormatEn
 
 /** @brief Returns a list of all converters with the given source and target format
  * 
+ * The returned list must be freed with osync_list_free().  The ref count on each
+ * OSyncFormatConverter is not increased.
+ * 
  * @param env Pointer to the environment
  * @param sourceformat The source format
  * @param targetformat The target format

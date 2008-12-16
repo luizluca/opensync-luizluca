@@ -306,6 +306,7 @@ static osync_bool osync_format_converter_path_vertice_validate_path_with_detecto
 			break;
 		}
 	}
+	osync_list_free(converters_seeknondetectors);
 
 	if (has_nondetector) {
 		OSyncList *converters_sameformat = NULL;
@@ -327,12 +328,14 @@ static osync_bool osync_format_converter_path_vertice_validate_path_with_detecto
 				osync_trace(TRACE_INTERNAL, "detector found");
 				if(!osync_converter_detect(converter_sameformat, ve->data)) {
 					osync_trace(TRACE_INTERNAL, "Invoked detector for converter from %s to %s: FALSE", osync_objformat_get_name(osync_converter_get_sourceformat(converter)), osync_objformat_get_name(osync_converter_get_targetformat(converter)));
+					osync_list_free(converters_sameformat);
 					return FALSE;
 				} else {
 					osync_trace(TRACE_INTERNAL, "Invoked detector for converter from %s to %s: TRUE", osync_objformat_get_name(osync_converter_get_sourceformat(converter)), osync_objformat_get_name(osync_converter_get_targetformat(converter)));
 				}
 			}
 		}
+		osync_list_free(converters_sameformat);
 	} else {
 		/*	The detector was the only converter for the given conversion. Check that the "conversion" (detection) is valid. */
 		osync_trace(TRACE_INTERNAL, "alone detector found");
