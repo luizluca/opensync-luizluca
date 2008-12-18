@@ -24,11 +24,24 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 
+/**
+ * @defgroup OSyncGroupEnvInternalsAPI OpenSync Group Internals
+ * @ingroup OSyncGroupPrivate
+ * @brief The private part of the OSyncGroupEnv
+ * 
+ */
+/*@{*/
+/*! @brief Represent a environment of groups that should be synchronized */
 struct OSyncGroupEnv {
+	/** list of groups */
 	GList *groups;
+	/** directory to store the groups */
 	char *groupsdir;
-
+	
+	/** reference counter */
 	int ref_count;
 };
+
+/*@}*/
 
 #endif /* _OPENSYNC_GROUP_ENV_INTERNALS_H_ */

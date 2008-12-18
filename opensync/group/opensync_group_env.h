@@ -22,23 +22,15 @@
 #define _OPENSYNC_GROUP_ENV_H_
 
 /**
- * @defgroup OSyncPublic OpenSync Public API
- * @brief The public API of opensync
- * 
- * This gives you an insight in the public API of opensync.
- * 
- */
-
-/**
- * @defgroup OSyncGroupEnvAPI OpenSync Environment
- * @ingroup OSyncPublic
- * @brief The public API of the opensync environment
+ * @defgroup OSyncGroupEnvAPI OpenSync Group Environment
+ * @ingroup OSyncGroup
+ * @brief The public API of the opensync group environment
  * 
  */
 /*@{*/
 
 
-/** @brief This will create a new opensync environment
+/** @brief This will create a new opensync group environment
  * 
  * The environment will hold all information about plugins, groups etc
  * 

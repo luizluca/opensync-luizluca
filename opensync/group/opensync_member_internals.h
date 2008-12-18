@@ -22,8 +22,8 @@
 #define _OPENSYNC_MEMBER_INTERNALS_H_
 
 /**
- * @defgroup OSyncMemberPrivateAPI OpenSync Member Internals
- * @ingroup OSyncPrivate
+ * @defgroup OSyncMemberInternalsAPI OpenSync Member Internals
+ * @ingroup OSyncGroupPrivate
  * @brief The private part of the OSyncMember
  * 
  */

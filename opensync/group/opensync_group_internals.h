@@ -24,8 +24,10 @@
 #define _OPENSYNC_GROUP_INTERNALS_H_
 
 /**
- * @defgroup OSyncGroupPrivateAPI OpenSync Group Internals
- * @ingroup OSyncPrivate
+ * @defgroup OSyncGroupPrivate OpenSync Group Module Private API
+ * @ingroup OSyncPrivat
+ * @defgroup OSyncGroupInternalAPI OpenSync Group Internals
+ * @ingroup OSyncGroupPrivate
  * @brief The private API of opensync
  * 
  * This gives you an insight in the private API of opensync.

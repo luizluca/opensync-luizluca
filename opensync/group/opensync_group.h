@@ -22,8 +22,10 @@
 #define _OPENSYNC_GROUP_H_
 
 /**
- * @defgroup OSyncGroupAPI OpenSync Groups
+ * @defgroup OSyncGroup OpenSync Group Module
  * @ingroup OSyncPublic
+ * @defgroup OSyncGroupAPI OpenSync Groups
+ * @ingroup OSyncGroup
  * @brief A groups represent several device or application that should be synchronized
  * 
  */

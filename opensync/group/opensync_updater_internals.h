@@ -22,8 +22,8 @@
 #define _OPENSYNC_UPDATER_INTERNALS_H 
 
 /**
- * @defgroup OSyncPrivateUpdaterAPI OpenSync Updater Internals
- * @ingroup OSyncPrivate
+ * @defgroup OSyncUpdaterInternalsAPI OpenSync Updater Internals
+ * @ingroup OSyncGroupPrivate
  * @brief OpenSync update facilities
  * 
  */

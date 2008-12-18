@@ -21,6 +21,14 @@
 #ifndef _OPENSYNC_UPDATER_PRIVATE_H
 #define _OPENSYNC_UPDATER_PRIVATE_H 
 
+/**
+ * @defgroup OSyncUpdaterprivateAPI OpenSync Updater Private
+ * @ingroup OSyncGroupPrivate
+ * @brief OpenSync update facilities
+ * 
+ */
+/*@{*/
+
 #define OSYNC_UPDATER_SUFFIX ".xsl"
 
 typedef enum {
@@ -68,6 +76,8 @@ struct OSyncUpdaterStatus {
 	/** If the status was a error, this error will be set */
 	OSyncError *error;
 };
+
+/*@}*/
 
 #endif /*  _OPENSYNC_UPDATER_PRIVATE_H */
 

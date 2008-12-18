@@ -23,7 +23,7 @@
 
 /**
  * @defgroup OSyncUpdaterAPI OpenSync Updater 
- * @ingroup OSyncPublic
+ * @ingroup OSyncGroup
  * @brief OpenSync configuration update facilities
  *
  * The OpenSync Updater applies the required changes to group/member/plugin 

@@ -25,7 +25,7 @@
 
 /**
  * @defgroup OSyncMemberAPI OpenSync Member
- * @ingroup OSyncPublic
+ * @ingroup OSyncGroup
  * @brief Used to manipulate members, which represent one device or application in a group
  * 
  */
