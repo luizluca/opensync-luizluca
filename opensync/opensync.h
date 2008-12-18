@@ -69,6 +69,11 @@
 
 OPENSYNC_BEGIN_DECLS
 
+/**
+ * @defgroup OSyncPrivate OpenSync Private API
+ * @defgroup OSyncPublic OpenSync Public API
+ */
+
 /**************************************************************
  * Versions 
  *************************************************************/
