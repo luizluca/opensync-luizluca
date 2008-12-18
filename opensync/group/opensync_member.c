@@ -28,26 +28,13 @@
 #include "opensync-format.h"
 #include "opensync-merger.h"
 #include "opensync_member_internals.h"
+#include "opensync_member_private.h"
 
 #include "merger/opensync_capabilities_internals.h"
 
 #include "opensync_xml.h"
 
-/**
- * @defgroup OSyncMemberPrivateAPI OpenSync Member Internals
- * @ingroup OSyncPrivate
- * @brief The private part of the OSyncMember
- * 
- */
-/*@{*/
-
-/** @brief Set Merger of Member 
- * 
- * @param member The Member pointer 
- * @param merger Pointer to the merger object to set
- * 
- */
-static void _osync_member_set_merger(OSyncMember *member, OSyncMerger *merger)
+static void osync_member_set_merger(OSyncMember *member, OSyncMerger *merger)
 {
 	osync_assert(member);
 	
@@ -58,14 +45,7 @@ static void _osync_member_set_merger(OSyncMember *member, OSyncMerger *merger)
 		osync_merger_ref(member->merger);
 }
 
-
-/** @brief Parser for the "timeout" node in the member configuration
- * 
- * @param cur Pointer to the xmlNode 
- * @param sink Pointer to the OSyncObjTypeSink object
- * 
- */
-void _osync_member_parse_timeout(xmlNode *cur, OSyncObjTypeSink *sink)
+void osync_member_parse_timeout(xmlNode *cur, OSyncObjTypeSink *sink)
 {
 	osync_assert(sink);
 
@@ -97,14 +77,7 @@ void _osync_member_parse_timeout(xmlNode *cur, OSyncObjTypeSink *sink)
 	}
 }
 
-/** @brief Parser for the "objtype" node in the member configuration
- * 
- * @param cur Pointer to the xmlNode 
- * @param error Pointer to a error
- * @returns Object type sink of the parsed configuration. NULL on error.
- * 
- */
-static OSyncObjTypeSink *_osync_member_parse_objtype(xmlNode *cur, OSyncError **error)
+static OSyncObjTypeSink *osync_member_parse_objtype(xmlNode *cur, OSyncError **error)
 {
 	OSyncObjTypeSink *sink = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, cur, error);
@@ -144,7 +117,7 @@ static OSyncObjTypeSink *_osync_member_parse_objtype(xmlNode *cur, OSyncError **
 				osync_xml_free(str_name);
 				osync_xml_free(str_config);
 			} else if (!xmlStrcmp(cur->name, (const xmlChar *)"timeout")) {
-				_osync_member_parse_timeout(cur->xmlChildrenNode, sink);
+				osync_member_parse_timeout(cur->xmlChildrenNode, sink);
 			}
 			osync_xml_free(str);
 		}
@@ -424,7 +397,7 @@ osync_bool osync_member_load(OSyncMember *member, const char *path, OSyncError *
 			} else if (!xmlStrcmp(cur->name, BAD_CAST "name")) {
 				osync_member_set_name(member, str);
 			} else if (!xmlStrcmp(cur->name, (const xmlChar *)"objtype")) {
-				OSyncObjTypeSink *sink = _osync_member_parse_objtype(cur->xmlChildrenNode, error);
+				OSyncObjTypeSink *sink = osync_member_parse_objtype(cur->xmlChildrenNode, error);
 				if (!sink)
 					goto error_free_doc;
 
@@ -439,7 +412,7 @@ osync_bool osync_member_load(OSyncMember *member, const char *path, OSyncError *
 					goto error_free_doc;
 				}
 
-				_osync_member_parse_timeout(cur->xmlChildrenNode, member->main_sink);
+				osync_member_parse_timeout(cur->xmlChildrenNode, member->main_sink);
 			}
 
 			osync_xml_free(str);
@@ -797,7 +770,7 @@ osync_bool osync_member_set_capabilities(OSyncMember *member, OSyncCapabilities 
 		merger = osync_merger_new(member->capabilities, error);
 		if(!merger)
 			return FALSE;
-		_osync_member_set_merger(member, merger);
+		osync_member_set_merger(member, merger);
 		osync_merger_unref(merger);
 	}
 	return TRUE;

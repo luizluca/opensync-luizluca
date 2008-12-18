@@ -29,7 +29,7 @@
  */
 /*@{*/
 
-/*! @brief A member of a group which represent a single device */
+/** @brief A member of a group which represent a single device */
 struct OSyncMember {
 	long long int id;
 	char *configdir;

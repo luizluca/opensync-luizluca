@@ -24,7 +24,7 @@
 /**
  * @defgroup OSyncGroup OpenSync Group Module
  * @ingroup OSyncPublic
- * @defgroup OSyncGroupAPI OpenSync Groups
+ * @defgroup OSyncGroupAPI OpenSync Group
  * @ingroup OSyncGroup
  * @brief A groups represent several device or application that should be synchronized
  * 
