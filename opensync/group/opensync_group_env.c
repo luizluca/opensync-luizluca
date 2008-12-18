@@ -23,32 +23,9 @@
 
 #include "opensync-group.h"
 #include "opensync_group_env_internals.h"
+#include "opensync_group_env_private.h"
 
-/**
- * @defgroup OSyncPrivate OpenSync Private API
- * @brief The private API of opensync
- * 
- * This gives you an insight in the private API of opensync.
- * 
- */
-
-/**
- * @defgroup OSyncGroupEnvPrivate OpenSync Environment Internals
- * @ingroup OSyncPrivate
- * @brief The internals of the opensync environment
- * 
- */
-/*@{*/
-
-/** @brief Returns the next free number for a group in the environments configdir
- * 
- * Returns the next free number for a group in the environments configdir
- * 
- * @param env The osync environment
- * @returns The next free number
- * 
- */
-static long long int _osync_group_env_create_group_id(OSyncGroupEnv *env)
+static long long int osync_group_env_create_group_id(OSyncGroupEnv *env)
 {
 	char *filename = NULL;
 	long long int i = 0;
@@ -61,9 +38,6 @@ static long long int _osync_group_env_create_group_id(OSyncGroupEnv *env)
 	osync_free(filename);
 	return i;
 }
-
-/*@}*/
-
 
 OSyncGroupEnv *osync_group_env_new(OSyncError **error)
 {
@@ -243,7 +217,7 @@ osync_bool osync_group_env_add_group(OSyncGroupEnv *env, OSyncGroup *group, OSyn
 	}
 	
 	if (!osync_group_get_configdir(group)) {
-		char *configdir = osync_strdup_printf("%s%cgroup%lli", env->groupsdir, G_DIR_SEPARATOR, _osync_group_env_create_group_id(env));
+		char *configdir = osync_strdup_printf("%s%cgroup%lli", env->groupsdir, G_DIR_SEPARATOR, osync_group_env_create_group_id(env));
 		osync_group_set_configdir(group, configdir);
 		osync_free(configdir);
 	}

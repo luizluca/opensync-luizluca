@@ -18,30 +18,27 @@
  * 
  */
 
-#ifndef _OPENSYNC_GROUP_ENV_INTERNALS_H_
-#define _OPENSYNC_GROUP_ENV_INTERNALS_H_
-
-#include <libxml/xmlmemory.h>
-#include <libxml/parser.h>
+#ifndef _OPENSYNC_GROUP_ENV_PRIVATE_H
+#define _OPENSYNC_GROUP_ENV_PRIVATE_H
 
 /**
- * @defgroup OSyncGroupEnvInternalsAPI OpenSync Group Environment Internals
+ * @defgroup OSyncGroupEnvPrivateAPI OpenSync Group Environment Private
  * @ingroup OSyncGroupPrivate
- * @brief The private part of the OSyncGroupEnv
+ * @brief The private part of the opensync environment
  * 
  */
 /*@{*/
-/*! @brief Represent a environment of groups that should be synchronized */
-struct OSyncGroupEnv {
-	/** list of groups */
-	GList *groups;
-	/** directory to store the groups */
-	char *groupsdir;
-	
-	/** reference counter */
-	int ref_count;
-};
+
+/** @brief Returns the next free number for a group in the environments configdir
+ * 
+ * Returns the next free number for a group in the environments configdir
+ * 
+ * @param env The osync environment
+ * @returns The next free number
+ * 
+ */
+static long long int osync_group_env_create_group_id(OSyncGroupEnv *env);
 
 /*@}*/
 
-#endif /* _OPENSYNC_GROUP_ENV_INTERNALS_H_ */
+#endif /* _OPENSYNC_GROUP_ENV_PRIVATE_H */
