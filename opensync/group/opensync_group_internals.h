@@ -25,7 +25,7 @@
 
 /**
  * @defgroup OSyncGroupPrivate OpenSync Group Module Private API
- * @ingroup OSyncPrivat
+ * @ingroup OSyncPrivate
  * @defgroup OSyncGroupInternalAPI OpenSync Group Internals
  * @ingroup OSyncGroupPrivate
  * @brief The private API of opensync

@@ -27,6 +27,7 @@
 
 #include "opensync-group.h"
 #include "opensync_group_internals.h"
+#include "opensync_group_private.h"
 #include "opensync-db.h"
 
 #ifdef OPENSYNC_UNITTESTS
@@ -72,23 +73,8 @@ static int flock(int fd, int operation)
 #include <io.h> /* For close() */
 #endif //not defined _WIN32
 
-/**
- * @defgroup OSyncGroupPrivateAPI OpenSync Group Internals
- * @ingroup OSyncPrivate
- * @brief The private API of opensync
- * 
- * This gives you an insight in the private API of opensync.
- * 
- */
-/*@{*/
 
-/** @brief Creates a new unique member if in this group
- * 
- * @param group The group
- * @returns A new unique member id
- * 
- */
-static long long int _osync_group_create_member_id(OSyncGroup *group)
+static long long int osync_group_create_member_id(OSyncGroup *group)
 {
 	char *filename = NULL;
 	long long int i = 0;
@@ -104,17 +90,7 @@ static long long int _osync_group_create_member_id(OSyncGroup *group)
 	return i;
 }
 
-/** @brief Loads all members of a group
- * 
- * Loads all members of a group
- * 
- * @param group The group
- * @param path The path from which to load the members
- * @param error Pointer to an error struct
- * @returns True if the members were loaded successfully, FALSE otherwise
- * 
- */
-static osync_bool _osync_group_load_members(OSyncGroup *group, const char *path, OSyncError **error)
+static osync_bool osync_group_load_members(OSyncGroup *group, const char *path, OSyncError **error)
 {	
 	GDir *dir = NULL;
 	GError *gerror = NULL;
@@ -173,7 +149,7 @@ static osync_bool _osync_group_load_members(OSyncGroup *group, const char *path,
 	return FALSE;
 }
 
-static void _build_list(gpointer key, gpointer value, gpointer user_data)
+static void osync_group_build_list(gpointer key, gpointer value, gpointer user_data)
 {
 	if (GPOINTER_TO_INT(value) >= 2) {
 		GList **l = user_data;
@@ -181,7 +157,7 @@ static void _build_list(gpointer key, gpointer value, gpointer user_data)
 	}
 }
 
-static void _add_one(gpointer key, gpointer value, gpointer user_data)
+static void osync_group_add_one(gpointer key, gpointer value, gpointer user_data)
 {
 	GHashTable *table = user_data;
 	
@@ -189,13 +165,7 @@ static void _add_one(gpointer key, gpointer value, gpointer user_data)
 	g_hash_table_replace(table, key, GINT_TO_POINTER(num + 1));
 }
 
-/** @brief Get list of supported object types of the group 
- * 
- * @param group The group
- * @returns List of supported object types 
- * 
- */
-static GList *_osync_group_get_supported_objtypes(OSyncGroup *group)
+static GList *osync_group_get_supported_objtypes(OSyncGroup *group)
 {
 	GList *m = NULL;
 	GList *ret = NULL;
@@ -224,19 +194,20 @@ static GList *_osync_group_get_supported_objtypes(OSyncGroup *group)
 	}
 	
 	for (i = 0; i < num_data; i++)
-		g_hash_table_foreach(table, _add_one, table);
+		g_hash_table_foreach(table, osync_group_add_one, table);
 	
 	if (g_hash_table_size(table) == 0 && num_data >= 2) {
 		osync_trace(TRACE_INTERNAL, "No objtype found yet, but data available");
 		g_hash_table_replace(table, "data", GINT_TO_POINTER(num_data));
 	}
 	
-	g_hash_table_foreach(table, _build_list, &ret);
+	g_hash_table_foreach(table, osync_group_build_list, &ret);
 	g_hash_table_destroy(table);
 	return ret;
 }
 
 #ifdef OPENSYNC_UNITTESTS
+
 void osync_group_set_schemadir(OSyncGroup *group, const char *schemadir)
 {
 	osync_assert(group);
@@ -247,9 +218,8 @@ void osync_group_set_schemadir(OSyncGroup *group, const char *schemadir)
 
 	group->schemadir = osync_strdup(schemadir); 
 }
-#endif /* OPENSYNC_UNITTESTS */
 
-/*@}*/
+#endif /* OPENSYNC_UNITTESTS */
 
 OSyncGroup *osync_group_new(OSyncError **error)
 {
@@ -732,7 +702,7 @@ osync_bool osync_group_load(OSyncGroup *group, const char *path, OSyncError **er
 		goto error;
 	}
 	
-	if (!_osync_group_load_members(group, group->configdir, error))
+	if (!osync_group_load_members(group, group->configdir, error))
 		goto error;
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, group);
@@ -748,7 +718,7 @@ void osync_group_add_member(OSyncGroup *group, OSyncMember *member)
 	g_assert(group);
 	
 	if (!osync_member_get_configdir(member)) {
-		char *configdir = osync_strdup_printf("%s%c%lli", group->configdir, G_DIR_SEPARATOR, _osync_group_create_member_id(group));
+		char *configdir = osync_strdup_printf("%s%c%lli", group->configdir, G_DIR_SEPARATOR, osync_group_create_member_id(group));
 		osync_member_set_configdir(member, configdir);
 		osync_free(configdir);
 	}
@@ -806,7 +776,7 @@ int osync_group_num_objtypes(OSyncGroup *group)
 	GList *objs = NULL;
 	int len = 0;
 	osync_assert(group);
-	objs = _osync_group_get_supported_objtypes(group);
+	objs = osync_group_get_supported_objtypes(group);
 	len = g_list_length(objs);
 	g_list_free(objs);
 	return len;
@@ -817,7 +787,7 @@ const char *osync_group_nth_objtype(OSyncGroup *group, int nth)
 	GList *objs = NULL;
 	const char *objtype = NULL;
 	osync_assert(group);
-	objs = _osync_group_get_supported_objtypes(group);
+	objs = osync_group_get_supported_objtypes(group);
 	objtype = g_list_nth_data(objs, nth);
 	g_list_free(objs);
 	return objtype;
