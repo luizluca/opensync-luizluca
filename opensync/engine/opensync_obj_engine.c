@@ -219,7 +219,7 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(GList *mapping_engines,
 osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **error)
 {
 	OSyncMappingEngine *mapping_engine = NULL;
-	GList *new_mappings = NULL, *v = NULL, *e = NULL;
+	GList *new_mappings = NULL, *v = NULL;
 	GList *unmapped_mappings = NULL;
 	OSyncConvCmpResult result = 0;
 	OSyncMappingEntryEngine *entry_engine = NULL;
