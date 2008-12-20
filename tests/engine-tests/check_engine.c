@@ -1998,7 +1998,10 @@ Suite *engine_suite(void)
 	create_case(s, "engine_sync_reuse", engine_sync_reuse);
 	create_case(s, "engine_sync_stress", engine_sync_stress);
 
+	/* Disabled due to randomly failing - #994
 	create_case(s, "engine_sync_read_write_stress", engine_sync_read_write_stress);
+	*/
+
 	create_case(s, "engine_sync_read_write", engine_sync_read_write);
 	create_case(s, "engine_sync_read_write_stress2", engine_sync_read_write_stress2);
 	
