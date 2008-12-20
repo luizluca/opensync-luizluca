@@ -83,8 +83,8 @@ START_TEST (ipc_connect)
 		
 	pid_t cpid = fork();
 	if (cpid == 0) { //Child
-		fail_unless(osync_queue_connect(queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
 		
 		if (osync_queue_disconnect(queue, &error) != TRUE || error != NULL)
 			exit(1);
@@ -139,11 +139,11 @@ START_TEST (ipc_payload)
 	
 	pid_t cpid = fork();
 	if (cpid == 0) { //Child
-		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
-		
-		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
 		
 		message = osync_queue_get_message(client_queue);
 		
@@ -161,10 +161,10 @@ START_TEST (ipc_payload)
 		osync_message_read_long_long_int(message, &longint1);
 		osync_message_read_const_data(message, &databuf, strlen(data) + 1);
 		
-		fail_unless(int1 == 4000000, NULL);
-		fail_unless(!strcmp(string, "this is a test string"), NULL);
-		fail_unless(longint1 == 400000000, NULL);
-		fail_unless(!strcmp(databuf, "this is another test string"), NULL);
+		osync_assert(int1 == 4000000);
+		osync_assert(!strcmp(string, "this is a test string"));
+		osync_assert(longint1 == 400000000);
+		osync_assert(!strcmp(databuf, "this is another test string"));
 		
 		OSyncMessage *reply = osync_message_new_reply(message, &error);
 		
@@ -278,11 +278,11 @@ START_TEST (ipc_payload_wait)
 	pid_t cpid = fork();
 	if (cpid == 0) { //Child
 		sleep(1);
-		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
-		
-		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
 		
 		while (!(message = osync_queue_get_message(client_queue))) {
 			g_usleep(10000);
@@ -302,10 +302,10 @@ START_TEST (ipc_payload_wait)
 		osync_message_read_long_long_int(message, &longint1);
 		osync_message_read_data(message, databuf, strlen(data) + 1);
 		
-		fail_unless(int1 == 4000000, NULL);
-		fail_unless(!strcmp(string, "this is a test string"), NULL);
-		fail_unless(longint1 == 400000000, NULL);
-		fail_unless(!strcmp(databuf, "this is another test string"), NULL);
+		osync_assert(int1 == 4000000);
+		osync_assert(!strcmp(string, "this is a test string"));
+		osync_assert(longint1 == 400000000);
+		osync_assert(!strcmp(databuf, "this is another test string"));
 		
 		sleep(1);
 		
@@ -430,11 +430,11 @@ START_TEST (ipc_payload_stress)
 	
 	pid_t cpid = fork();
 	if (cpid == 0) { //Child
-		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
-		
-		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
 		
 		while (num_mess > 0) {
 			osync_trace(TRACE_INTERNAL, "Waiting for message");
@@ -449,7 +449,7 @@ START_TEST (ipc_payload_stress)
 				
 			osync_message_read_data(message, databuf, size);
 			
-			fail_unless(!memcmp(databuf, data, size), NULL);
+			osync_assert(!memcmp(databuf, data, size));
 			
 			osync_trace(TRACE_INTERNAL, "Creating new reply");
 			OSyncMessage *reply = osync_message_new_reply(message, &error);
@@ -576,11 +576,11 @@ START_TEST (ipc_payload_stress2)
 	
 	pid_t cpid = fork();
 	if (cpid == 0) { //Child
-		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
-		
-		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
 		
 		for (i = 0; i < num_mess; i++) {
 			message = osync_queue_get_message(client_queue);
@@ -593,7 +593,7 @@ START_TEST (ipc_payload_stress2)
 				
 			osync_message_read_data(message, databuf, size);
 			
-			fail_unless(!memcmp(databuf, data, size), NULL);
+			osync_assert(!memcmp(databuf, data, size));
 			
 			osync_message_unref(message);
 		}
@@ -719,11 +719,11 @@ START_TEST (ipc_large_payload)
 	
 	pid_t cpid = fork();
 	if (cpid == 0) { //Child
-		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
-		
-		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
 		
 		for (i = 0; i < num_mess; i++) {
 			message = osync_queue_get_message(client_queue);
@@ -946,22 +946,22 @@ START_TEST (ipc_error_rem2)
 		osync_assert(error == NULL);
 		
 		message = osync_message_new(OSYNC_MESSAGE_INITIALIZE, 0, &error);
-		fail_unless(message != NULL, NULL);
-		fail_unless(!osync_error_is_set(&error), NULL);
+		osync_assert(message != NULL);
+		osync_assert(!osync_error_is_set(&error));
 		
 		osync_message_write_int(message, 4000000);
 		osync_message_write_string(message, "this is a test string");
 		osync_message_write_long_long_int(message, 400000000);
 		
-		fail_unless(osync_queue_send_message(server_queue, NULL, message, &error), NULL);
-		fail_unless(!osync_error_is_set(&error), NULL);
+		osync_assert(osync_queue_send_message(server_queue, NULL, message, &error));
+		osync_assert(!osync_error_is_set(&error));
 		
 		osync_message_unref(message);
 		
 		sleep(2);
 		
 		osync_queue_disconnect(server_queue, &error);
-		fail_unless(error == NULL, NULL);
+		osync_assert(error == NULL);
 		
 		osync_queue_unref(server_queue);
 		
@@ -1015,10 +1015,10 @@ void server_handler1(OSyncMessage *message, void *user_data)
 	
 	osync_assert(GPOINTER_TO_INT(user_data) ==1);
 	
-	fail_unless(osync_message_get_command(message) == OSYNC_MESSAGE_INITIALIZE);
+	osync_assert(osync_message_get_command(message) == OSYNC_MESSAGE_INITIALIZE);
 	
 	osync_queue_disconnect(server_queue, &error);
-	fail_unless(error == NULL, NULL);
+	osync_assert(error == NULL);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
@@ -1041,10 +1041,10 @@ void client_handler1(OSyncMessage *message, void *user_data)
 	osync_message_read_long_long_int(message, &longint1);
 	osync_message_read_const_data(message, &databuf, strlen("this is another test string") + 1);
 	
-	fail_unless(int1 == 4000000, NULL);
-	fail_unless(!strcmp(string, "this is a test string"), NULL);
-	fail_unless(longint1 == 400000000, NULL);
-	fail_unless(!strcmp(databuf, "this is another test string"), NULL);
+	osync_assert(int1 == 4000000);
+	osync_assert(!strcmp(string, "this is a test string"));
+	osync_assert(longint1 == 400000000);
+	osync_assert(!strcmp(databuf, "this is another test string"));
 	
 	OSyncMessage *reply = osync_message_new(OSYNC_MESSAGE_INITIALIZE, 0, &error);
 	
@@ -1084,11 +1084,10 @@ START_TEST (ipc_loop_payload)
 		
 		osync_thread_start(thread);
 	
-		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
-		
-		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
 		
 		message = osync_queue_get_message(server_queue);
 		
@@ -1184,23 +1183,23 @@ void server_handler2(OSyncMessage *message, void *user_data)
 	osync_assert(GPOINTER_TO_INT(user_data) ==1);
 	
 	num_msgs++;
-	fail_unless(osync_message_get_command(message) == OSYNC_MESSAGE_INITIALIZE);
+	osync_assert(osync_message_get_command(message) == OSYNC_MESSAGE_INITIALIZE);
 		
 	if (num_msgs >= req_msgs) {
 		osync_queue_disconnect(server_queue, &error);
-		fail_unless(error == NULL, NULL);
+		osync_assert(error == NULL);
 	} else {
 		message = osync_message_new(OSYNC_MESSAGE_INITIALIZE, 0, &error);
-		fail_unless(message != NULL, NULL);
-		fail_unless(!osync_error_is_set(&error), NULL);
+		osync_assert(message != NULL);
+		osync_assert(!osync_error_is_set(&error));
 		
 		osync_message_write_int(message, 4000000);
 		osync_message_write_string(message, "this is a test string");
 		osync_message_write_long_long_int(message, 400000000);
 		osync_message_write_data(message, data, strlen(data) + 1);
 		
-		fail_unless(osync_queue_send_message(client_queue, NULL, message, &error), NULL);
-		fail_unless(!osync_error_is_set(&error), NULL);
+		osync_assert(osync_queue_send_message(client_queue, NULL, message, &error));
+		osync_assert(!osync_error_is_set(&error));
 		
 		osync_message_unref(message);
 	}
@@ -1226,10 +1225,10 @@ void client_handler2(OSyncMessage *message, void *user_data)
 	osync_message_read_long_long_int(message, &longint1);
 	osync_message_read_const_data(message, &databuf, strlen("this is another test string") + 1);
 	
-	fail_unless(int1 == 4000000, NULL);
-	fail_unless(!strcmp(string, "this is a test string"), NULL);
-	fail_unless(longint1 == 400000000, NULL);
-	fail_unless(!strcmp(databuf, "this is another test string"), NULL);
+	osync_assert(int1 == 4000000);
+	osync_assert(!strcmp(string, "this is a test string"));
+	osync_assert(longint1 == 400000000);
+	osync_assert(!strcmp(databuf, "this is another test string"));
 	
 	OSyncMessage *reply = osync_message_new(OSYNC_MESSAGE_INITIALIZE, 0, &error);
 	
@@ -1270,11 +1269,10 @@ START_TEST (ipc_loop_stress)
 		
 		osync_thread_start(thread);
 		
-		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
-		
-		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
 		
 		message = osync_queue_get_message(server_queue);
 		
@@ -1369,11 +1367,11 @@ void callback_handler(OSyncMessage *message, void *user_data)
 	osync_assert(GPOINTER_TO_INT(user_data) == 1);
 	
 	num_msgs++;
-	fail_unless(osync_message_get_command(message) == OSYNC_MESSAGE_REPLY);
+	osync_assert(osync_message_get_command(message) == OSYNC_MESSAGE_REPLY);
 	
 	if (num_msgs >= req_msgs) {
 		osync_queue_disconnect(server_queue, &error);
-		fail_unless(error == NULL, NULL);
+		osync_assert(error == NULL);
 	}
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
@@ -1402,10 +1400,10 @@ void client_handler3(OSyncMessage *message, void *user_data)
 	osync_message_read_long_long_int(message, &longint1);
 	osync_message_read_const_data(message, &databuf, strlen("this is another test string") + 1);
 	
-	fail_unless(int1 == 4000000, NULL);
-	fail_unless(!strcmp(string, "this is a test string"), NULL);
-	fail_unless(longint1 == 400000000, NULL);
-	fail_unless(!strcmp(databuf, "this is another test string"), NULL);
+	osync_assert(int1 == 4000000);
+	osync_assert(!strcmp(string, "this is a test string"));
+	osync_assert(longint1 == 400000000);
+	osync_assert(!strcmp(databuf, "this is another test string"));
 	
 	OSyncMessage *reply = osync_message_new_reply(message, &error);
 	
@@ -1448,11 +1446,11 @@ START_TEST (ipc_loop_callback)
 		
 		osync_thread_start(thread);
 		
-		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
-		
-		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
 		
 		message = osync_queue_get_message(server_queue);
 		
@@ -1589,10 +1587,10 @@ void client_handler4(OSyncMessage *message, void *user_data)
 	osync_message_read_long_long_int(message, &longint1);
 	osync_message_read_const_data(message, &databuf, strlen("this is another test string") + 1);
 	
-	fail_unless(int1 == 4000000, NULL);
-	fail_unless(!strcmp(string, "this is a test string"), NULL);
-	fail_unless(longint1 == 400000000, NULL);
-	fail_unless(!strcmp(databuf, "this is another test string"), NULL);
+	osync_assert(int1 == 4000000);
+	osync_assert(!strcmp(string, "this is a test string"));
+	osync_assert(longint1 == 400000000);
+	osync_assert(!strcmp(databuf, "this is another test string"));
 	
 	if (num_msgs2 >= stop_after) {
 		osync_assert(osync_queue_disconnect(client_queue, &error));
@@ -1642,11 +1640,11 @@ START_TEST (ipc_callback_break)
 		
 		osync_thread_start(thread);
 		
-		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
-		
-		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
 		
 		while (osync_queue_is_connected(client_queue)) { g_usleep(100); }
 		
@@ -1847,11 +1845,11 @@ START_TEST (ipc_pipes_stress)
 		
 		osync_thread_start(thread);
 		
-		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
-		
-		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
 		
 		message = osync_queue_get_message(server_queue);
 		if (osync_message_get_command(message) != OSYNC_MESSAGE_QUEUE_HUP) {
@@ -1982,11 +1980,11 @@ START_TEST (ipc_callback_break_pipes)
 		
 		osync_thread_start(thread);
 		
-		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
-		
-		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
 		
 		while (osync_queue_is_connected(client_queue)) { g_usleep(100); }
 		
@@ -2124,11 +2122,11 @@ START_TEST (ipc_timeout)
 	pid_t cpid = fork();
 	if (cpid == 0) { //Child
 		sleep(1);
-		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
-		fail_unless(error == NULL, NULL);
-		
-		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error), NULL);
-		fail_unless(error == NULL, NULL);
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
 		
 		while (!(message = osync_queue_get_message(client_queue))) {
 			g_usleep(10000);
@@ -2148,10 +2146,11 @@ START_TEST (ipc_timeout)
 		osync_message_read_long_long_int(message, &longint1);
 		osync_message_read_data(message, databuf, strlen(data) + 1);
 		
-		fail_unless(int1 == 4000000, NULL);
-		fail_unless(!strcmp(string, "this is a test string"), NULL);
-		fail_unless(longint1 == 400000000, NULL);
-		fail_unless(!strcmp(databuf, "this is another test string"), NULL);
+		osync_assert(int1 == 4000000);
+		osync_assert(!strcmp(string, "this is a test string"));
+
+		osync_assert(longint1 == 400000000);
+		osync_assert(!strcmp(databuf, "this is another test string"));
 		
 		/* TIMEOUT TIMEOUT TIMEOUT (no reply...) */
 
