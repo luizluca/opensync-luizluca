@@ -166,14 +166,15 @@ static void _osync_obj_engine_disconnect_callback(OSyncClientProxy *proxy, void 
  * return value is MISMATCH if no mapping could be found,
  * SIMILAR if a mapping has been found but its not completely the same
  * SAME if a mapping has been found and is the same */
-static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncObjEngine *engine, OSyncChange *change, OSyncSinkEngine *sinkengine, OSyncMappingEngine **mapping_engine)
+static OSyncConvCmpResult _osync_obj_engine_mapping_find(GList *mapping_engines, OSyncChange *change, OSyncSinkEngine *sinkengine, OSyncMappingEngine **mapping_engine)
 {	
 	GList *m = NULL;
 	GList *e = NULL;
+	osync_bool found_similar = FALSE;
 	OSyncConvCmpResult result = OSYNC_CONV_DATA_MISMATCH;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, engine, change, sinkengine, mapping_engine);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, mapping_engines, change, sinkengine, mapping_engine);
 	
-	for (m = engine->mapping_engines; m; m = m->next) {
+	for (m = mapping_engines; m; m = m->next) {
 		*mapping_engine = m->data;
 		
 		/* Go through the already existing mapping entries. We only consider mappings
@@ -184,7 +185,9 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncObjEngine *engine,
 			OSyncChange *mapping_change = NULL;
 			/* if the mapping already has a entry on our side, its not worth looking */
 			if (entry_engine->sink_engine == sinkengine) {
-				*mapping_engine = NULL;
+				if (!found_similar)
+					*mapping_engine = NULL;
+
 				break;
 			}
 			
@@ -193,10 +196,14 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncObjEngine *engine,
 				continue;
 			
 			result = osync_change_compare(mapping_change, change);
-			if (result == OSYNC_CONV_DATA_MISMATCH)
-				*mapping_engine = NULL;
-			
-			break;
+			if (result == OSYNC_CONV_DATA_MISMATCH) {
+				if (!found_similar)
+					*mapping_engine = NULL;
+			} else if (result == OSYNC_CONV_DATA_SAME) {
+				break;
+			} else if (result == OSYNC_CONV_DATA_SIMILAR) {
+				found_similar = TRUE;
+			}
 		}
 		
 		if (*mapping_engine) {
@@ -212,7 +219,10 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncObjEngine *engine,
 osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **error)
 {
 	OSyncMappingEngine *mapping_engine = NULL;
-	GList *new_mappings = NULL, *v = NULL;
+	GList *new_mappings = NULL, *v = NULL, *e = NULL;
+	GList *unmapped_mappings = NULL;
+	OSyncConvCmpResult result = 0;
+	OSyncMappingEntryEngine *entry_engine = NULL;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, engine);
 	//osync_trace_disable();
@@ -224,18 +234,15 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 		/* We use a temp list to speed things up. We dont have to compare with newly created mappings for
 		 * the current sinkengine, since there will be only one entry (for the current sinkengine) so there
 		 * is no need to compare */
-		new_mappings = NULL;
 		
 		/* For each sinkengine, go through all unmapped changes */
 		while (sinkengine->unmapped) {
 			OSyncChange *change = sinkengine->unmapped->data;
-			OSyncConvCmpResult result = 0;
-			OSyncMappingEntryEngine *entry_engine = NULL;
 			
 			osync_trace(TRACE_INTERNAL, "Looking for mapping for change %s, changetype %i from member %lli", osync_change_get_uid(change), osync_change_get_changetype(change), osync_member_get_id(osync_client_proxy_get_member(sinkengine->proxy)));
 	
 			/* See if there is an exisiting mapping, which fits the unmapped change */
-			result = _osync_obj_engine_mapping_find(engine, change, sinkengine, &mapping_engine);
+			result = _osync_obj_engine_mapping_find(unmapped_mappings, change, sinkengine, &mapping_engine);
 			if (result == OSYNC_CONV_DATA_MISMATCH) {
 				/* If there is none, create one */
 				mapping_engine = _osync_obj_engine_create_mapping_engine(engine, error);
@@ -245,8 +252,11 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 				osync_trace(TRACE_INTERNAL, "Unable to find mapping. Creating new mapping with id %lli", osync_mapping_get_id(mapping_engine->mapping));
 				
 				new_mappings = g_list_append(new_mappings, mapping_engine);
+				unmapped_mappings = g_list_append(unmapped_mappings, mapping_engine);
 			} else if (result == OSYNC_CONV_DATA_SIMILAR) {
 				mapping_engine->conflict = TRUE;
+			} else if (result == OSYNC_CONV_DATA_SAME) {
+				unmapped_mappings = g_list_remove(unmapped_mappings, mapping_engine);
 			}
 			/* Update the entry which belongs to our sinkengine with the the change */
 			entry_engine = osync_mapping_engine_get_entry(mapping_engine, sinkengine);
@@ -257,8 +267,10 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 			osync_change_unref(change);
 		}
 		
-		engine->mapping_engines = g_list_concat(engine->mapping_engines, new_mappings);
 	}
+
+	engine->mapping_engines = g_list_concat(engine->mapping_engines, new_mappings);
+	g_list_free(unmapped_mappings);
 	
 	//osync_trace_enable();
 	osync_trace(TRACE_EXIT, "%s", __func__);
