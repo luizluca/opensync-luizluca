@@ -3310,11 +3310,18 @@ Suite *error_suite(void)
 	Suite *s = suite_create("Engine Errors");
 	//Suite *s2 = suite_create("Engine Errors");
 	
+	/* Temprorarly disabled until reviewed/fixed - see #995
 	create_case(s, "single_init_error", single_init_error);
 	create_case(s, "double_init_error", double_init_error);
+	*/
+
 	create_case(s, "no_config_error", no_config_error);
 	create_case(s, "no_objtype_error", no_objtype_error);
+
+	/* Temprorarly disabled until reviewed/fixed - see #995
 	create_case(s, "dual_connect_error", dual_connect_error);
+	*/
+
 	create_case(s, "one_of_two_connect_error", one_of_two_connect_error);
 	create_case(s, "two_of_three_connect_error", two_of_three_connect_error);
 	create_case(s, "two_of_three_connect_error2", two_of_three_connect_error2);
