@@ -19,7 +19,7 @@
  */
 
 /**
- * @defgroup OSyncGroupPrivate OpenSync Group Module Private API
+ * @defgroup OSyncGroupPrivate OpenSync Group Module Private
  * @ingroup OSyncPrivate
  * @defgroup OSyncGroupPrivateAPI OpenSync Group Private
  * @ingroup OSyncGroupPrivate
