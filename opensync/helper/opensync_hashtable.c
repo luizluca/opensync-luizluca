@@ -2,46 +2,34 @@
  * libopensync - A synchronization framework
  * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
  * Copyright (C) 2008       Daniel Gollub <dgollub@suse.de>
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * 
+ *
  */
- 
+
 #include "opensync.h"
 #include "opensync_internals.h"
 #include "opensync_hashtable_internals.h"
+#include "opensync_hashtable_private.h"
 
 #include "opensync-data.h"
 #include "opensync-helper.h"
 #include "opensync-db.h"
 
-/**
- * @defgroup OSyncHashtablePrivateAPI OpenSync Hashtables
- * @ingroup OSyncPrivate
- * @brief A Hashtable can be used to detect changes
- */
+/* start private api */
 
-/*@{*/
-
-/** @brief Creates the database table for the hashtable 
- * 
- * @param table The hashtable
- * @param error An error struct
- * @returns TRUE on success, or FALSE if an error occurred.
- * 
- */
 static osync_bool osync_hashtable_create(OSyncHashTable *table, OSyncError **error)
 {
 	char *query = NULL;
@@ -61,25 +49,12 @@ static osync_bool osync_hashtable_create(OSyncHashTable *table, OSyncError **err
 }
 
 #if !GLIB_CHECK_VERSION(2,12,0)
-/** \brief g_hash_table_foreach_remove foreach function
- */
 static gboolean remove_entry(gpointer key, gpointer val, gpointer data)
 {
 	return TRUE;
 }
 #endif
 
-/** @brief Makes a hashtable forget reported entries
- * 
- * You can ask the hashtable to detect the changes. In the end you can
- * ask the hashtable for all items that have been deleted since the last sync.
- * For this the hashtable maintains a internal table of items you already reported and
- * reports the items it didn't see yet as deleted.
- * This function resets the internal table so it start to report deleted items again
- * 
- * @param table The hashtable
- * 
- */
 static void osync_hashtable_reset_reports(OSyncHashTable *table)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, table);
@@ -93,15 +68,10 @@ static void osync_hashtable_reset_reports(OSyncHashTable *table)
 #else
 	g_hash_table_foreach_remove(table->reported_entries, remove_entry, NULL);
 #endif
-	
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/** @brief Makes hashtable in memory forget, not the persistent one
- * 
- * @param table The hashtable
- * 
- */
 static void osync_hashtable_reset(OSyncHashTable *table)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, table);
@@ -115,21 +85,10 @@ static void osync_hashtable_reset(OSyncHashTable *table)
 #else
 	g_hash_table_foreach_remove(table->db_entries, remove_entry, NULL);
 #endif
-	
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-
-/** @brief Report a item
- * 
- * When you use this function the item is marked as reported, so it will not get
- * listed as deleted. Use this function if there are problems accessing an object for
- * example so that the object does not get reported as deleted accidentally.
- * 
- * @param table The hashtable
- * @param change The change to report
- * 
- */
 static void osync_hashtable_report(OSyncHashTable *table, OSyncChange *change)
 {
 	char *uid = NULL;
@@ -138,16 +97,15 @@ static void osync_hashtable_report(OSyncHashTable *table, OSyncChange *change)
 	osync_assert(change);
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, table, change);
-	
+
 	/* uid get freed when hashtable get's destroyed */
 	uid = g_strdup(osync_change_get_uid(change));
 
 	g_hash_table_insert(table->reported_entries, uid, GINT_TO_POINTER(1));
-	
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/* TODO */
 static void _osync_hashtable_prepare_insert_query(const char *uid, const char *hash, void *user_data)
 {
 	OSyncHashTable *table = user_data;
@@ -155,28 +113,28 @@ static void _osync_hashtable_prepare_insert_query(const char *uid, const char *h
 	char *escaped_uid = osync_db_sql_escape(uid);
 	char *escaped_hash = osync_db_sql_escape(hash);
 
-	g_string_append_printf(table->query, 
-	                       "REPLACE INTO %s ('uid', 'hash') VALUES('%s', '%s');", 
+	g_string_append_printf(table->query,
+	                       "REPLACE INTO %s ('uid', 'hash') VALUES('%s', '%s');",
 	                       table->name, escaped_uid, escaped_hash);
 
 	g_free(escaped_uid);
 	g_free(escaped_hash);
 }
 
-/*@}*/
+/* end private api */
 
 OSyncHashTable *osync_hashtable_new(const char *path, const char *objtype, OSyncError **error)
 {
 	OSyncHashTable *table = NULL;
 	int ret = 0;
 	osync_trace(TRACE_ENTRY, "%s(%s, %p)", __func__, path, error);
-	
+
 	table = osync_try_malloc0(sizeof(OSyncHashTable), error);
 	if (!table)
 		goto error;
 
 	table->ref_count = 1;
-	
+
 
 	table->reported_entries = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
 	table->db_entries = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
@@ -204,11 +162,11 @@ OSyncHashTable *osync_hashtable_new(const char *path, const char *objtype, OSync
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, table);
 	return table;
 
- error_and_free_db:	
+ error_and_free_db:
 	g_free(table->dbhandle);
  error_and_free:
 	g_free(table);
- error:	
+ error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
 
@@ -217,7 +175,7 @@ OSyncHashTable *osync_hashtable_new(const char *path, const char *objtype, OSync
 OSyncHashTable *osync_hashtable_ref(OSyncHashTable *table)
 {
 	osync_assert(table);
-	
+
 	g_atomic_int_inc(&(table->ref_count));
 
 	return table;
@@ -230,12 +188,12 @@ void osync_hashtable_unref(OSyncHashTable *table)
 	if (g_atomic_int_dec_and_test(&(table->ref_count))) {
 		OSyncError *error = NULL;
 		osync_trace(TRACE_ENTRY, "%s(%p)", __func__, table);
-		
+
 		if (!osync_db_close(table->dbhandle, &error)) {
 			osync_trace(TRACE_ERROR, "Couldn't close database: %s", osync_error_print(&error));
 			osync_error_unref(&error);
 		}
-			
+
 		g_hash_table_destroy(table->reported_entries);
 		g_hash_table_destroy(table->db_entries);
 
@@ -245,7 +203,7 @@ void osync_hashtable_unref(OSyncHashTable *table)
 
 		osync_trace(TRACE_EXIT, "%s", __func__);
 	}
-	
+
 }
 
 osync_bool osync_hashtable_load(OSyncHashTable *table, OSyncError **error)
@@ -256,7 +214,7 @@ osync_bool osync_hashtable_load(OSyncHashTable *table, OSyncError **error)
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, table, error);
 
 	query = g_strdup_printf("SELECT uid, hash FROM %s", table->name);
-	result = osync_db_query_table(table->dbhandle, query, error); 
+	result = osync_db_query_table(table->dbhandle, query, error);
 	g_free(query);
 
 	/* If result is NULL, this means no entries - just check for error. */
@@ -267,7 +225,7 @@ osync_bool osync_hashtable_load(OSyncHashTable *table, OSyncError **error)
 		OSyncList *column = row->data;
 
 		char *uid =  g_strdup(osync_list_nth_data(column, 0));
-		char *hash = g_strdup(osync_list_nth_data(column, 1)); 
+		char *hash = g_strdup(osync_list_nth_data(column, 1));
 
 		g_hash_table_insert(table->db_entries, uid, hash);
 	}
@@ -293,7 +251,7 @@ osync_bool osync_hashtable_save(OSyncHashTable *table, OSyncError **error)
 	table->query = g_string_new("BEGIN TRANSACTION;");
 	g_string_append_printf(table->query, "DELETE FROM %s;", table->name);
 
-	osync_hashtable_foreach(table, _osync_hashtable_prepare_insert_query, table); 
+	osync_hashtable_foreach(table, _osync_hashtable_prepare_insert_query, table);
 
 	table->query = g_string_append(table->query, "COMMIT TRANSACTION;");
 
@@ -329,7 +287,7 @@ osync_bool osync_hashtable_slowsync(OSyncHashTable *table, OSyncError **error)
 
 	/* Reset hashtable in memory */
 	osync_hashtable_reset(table);
-	
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
 
@@ -349,7 +307,7 @@ void osync_hashtable_update_change(OSyncHashTable *table, OSyncChange *change)
 	osync_assert(change);
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, table, change);
-	
+
 	uid = osync_change_get_uid(change);
 	hash = osync_change_get_hash(change);
 
@@ -364,13 +322,13 @@ void osync_hashtable_update_change(OSyncHashTable *table, OSyncChange *change)
 		break;
 	case OSYNC_CHANGE_TYPE_UNKNOWN:
 		/* Someone violets against the rules of the hashtable API!
-		   
+
 		   Changetype needs to get set before calling this function!
 		   Even if the change entry got not modified, then the change type
 		   should get set at least to OSYNC_CHANGE_TYPE_UNMODIFIED. Otherwise:
-		   
+
 		   BOOOOOOOOOOOOOOOOOOOOOM!
-		   
+
 		*/
 		osync_assert_msg(FALSE, "Got called with unknown changetype. This looks like a plugin makes wrong use of a hashtable. Please, contact the plugin author!");
 		break;
@@ -386,7 +344,7 @@ void osync_hashtable_update_change(OSyncHashTable *table, OSyncChange *change)
 	}
 
 	osync_hashtable_report(table, change);
-	
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
@@ -438,7 +396,7 @@ OSyncChangeType osync_hashtable_get_changetype(OSyncHashTable *table, OSyncChang
 	} else
 		retval = OSYNC_CHANGE_TYPE_ADDED;
 
-	
+
 	osync_trace(TRACE_EXIT, "%s: %i", __func__, retval);
 	return retval;
 }
