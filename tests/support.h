@@ -16,6 +16,8 @@
 
 int num_client_connected;
 int num_client_main_connected;
+int num_client_connect_done;
+int num_client_main_connect_done;
 int num_client_disconnected;
 int num_client_main_disconnected;
 int num_client_read;
@@ -32,6 +34,7 @@ int num_change_written;
 int num_change_error;
 
 int num_engine_connected;
+int num_engine_connect_done;
 int num_engine_read;
 int num_engine_written;
 int num_engine_disconnected;

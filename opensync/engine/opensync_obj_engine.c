@@ -119,6 +119,36 @@ static void _osync_obj_engine_connect_callback(OSyncClientProxy *proxy, void *us
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
+static void _osync_obj_engine_connect_done_callback(OSyncClientProxy *proxy, void *userdata, OSyncError *error)
+{
+	OSyncSinkEngine *sinkengine = userdata;
+	OSyncObjEngine *engine = sinkengine->engine;
+	OSyncError *locerror = NULL;
+	
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, proxy, userdata, error);
+	
+	if (error) {
+		osync_obj_engine_set_error(engine, error);
+		engine->sink_errors = engine->sink_errors | (0x1 << sinkengine->position);
+		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_ERROR, engine->objtype, error);
+	} else {
+		engine->sink_connect_done = engine->sink_connect_done | (0x1 << sinkengine->position);
+		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_CONNECT_DONE, engine->objtype, NULL);
+	}
+			
+	if (osync_bitcount(engine->sink_errors | engine->sink_connect_done) == g_list_length(engine->sink_engines)) {
+		if (osync_bitcount(engine->sink_connect_done) < osync_bitcount(engine->sink_connects)) {
+			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Fewer sink_engines reported connect_done than connected");
+			osync_obj_engine_set_error(engine, locerror);
+		}
+
+		osync_obj_engine_event(engine, OSYNC_ENGINE_EVENT_CONNECT_DONE, locerror ? locerror : error);
+	} else
+		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->sink_errors | engine->sink_connect_done));
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
 static void _osync_obj_engine_generate_event_disconnected(OSyncObjEngine *engine, OSyncError *error)
 {
 	OSyncError *locerror = NULL;
@@ -815,6 +845,7 @@ void osync_obj_engine_finalize(OSyncObjEngine *engine)
 
 	engine->sink_errors = 0;
 	engine->sink_connects = 0;
+	engine->sink_connect_done = 0;
 	engine->sink_disconnects = 0;
 	engine->sink_get_changes = 0;
 	engine->sink_sync_done = 0;
@@ -884,6 +915,13 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 			sinkengine = p->data;
 
 			if (!osync_client_proxy_connect(sinkengine->proxy, _osync_obj_engine_connect_callback, sinkengine, engine->objtype, engine->slowsync, error))
+				goto error;
+		}
+		break;
+	case OSYNC_ENGINE_COMMAND_CONNECT_DONE:
+		for (p = engine->sink_engines; p; p = p->next) {
+			sinkengine = p->data;
+			if (!osync_client_proxy_connect_done(sinkengine->proxy, _osync_obj_engine_connect_done_callback, sinkengine, engine->objtype, error))
 				goto error;
 		}
 		break;

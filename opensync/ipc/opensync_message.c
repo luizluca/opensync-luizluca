@@ -564,6 +564,8 @@ char* osync_message_get_commandstr(OSyncMessage *message)
 			cmdstr = "OSYNC_MESSAGE_NOOP"; break;
 		case OSYNC_MESSAGE_CONNECT:
 			cmdstr = "OSYNC_MESSAGE_CONNECT"; break;
+		case OSYNC_MESSAGE_CONNECT_DONE:
+			cmdstr = "OSYNC_MESSAGE_CONNECT_DONE"; break;
 		case OSYNC_MESSAGE_DISCONNECT:
 			cmdstr = "OSYNC_MESSAGE_DISCONNECT"; break;
 		case OSYNC_MESSAGE_GET_CHANGES:

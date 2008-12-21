@@ -67,6 +67,7 @@ typedef struct MockDir {
 	OSyncHashTable *hashtable;
 	mock_env *env;
 	osync_bool committed_all;
+	osync_bool connect_done;
 } MockDir;
 
 #endif //_MOCK_PLUGIN_H

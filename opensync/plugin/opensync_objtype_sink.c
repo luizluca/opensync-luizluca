@@ -318,6 +318,22 @@ void osync_objtype_sink_sync_done(OSyncObjTypeSink *sink, void *plugindata, OSyn
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
+void osync_objtype_sink_connect_done(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx)
+{
+	OSyncObjTypeSinkFunctions functions;
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, plugindata, info, ctx);
+	osync_assert(sink);
+	osync_assert(ctx);
+	
+	functions = sink->functions;
+	if (!functions.connect_done)
+		osync_context_report_success(ctx);
+	else
+		functions.connect_done(plugindata, info, ctx);
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
 void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncChange *change, OSyncContext *ctx)
 {
 	OSyncObjTypeSinkFunctions functions;
@@ -599,6 +615,24 @@ unsigned int osync_objtype_sink_get_syncdone_timeout(OSyncObjTypeSink *sink)
 {
 	osync_assert(sink);
 	return sink->timeout.sync_done;
+}
+
+void osync_objtype_sink_set_connectdone_timeout(OSyncObjTypeSink *sink, unsigned int timeout)
+{
+	osync_assert(sink);
+	sink->timeout.connect_done = timeout;
+}
+
+unsigned int osync_objtype_sink_get_connectdone_timeout_or_default(OSyncObjTypeSink *sink)
+{
+	osync_assert(sink);
+	return sink->timeout.connect_done ? sink->timeout.connect_done : OSYNC_SINK_TIMEOUT_CONNECTDONE;
+}
+
+unsigned int osync_objtype_sink_get_connectdone_timeout(OSyncObjTypeSink *sink)
+{
+	osync_assert(sink);
+	return sink->timeout.connect_done;
 }
 
 void osync_objtype_sink_set_write_timeout(OSyncObjTypeSink *sink, unsigned int timeout)

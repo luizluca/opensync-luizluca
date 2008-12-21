@@ -81,6 +81,11 @@ static void mock_connect(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_assert(dir);
 	dir->committed_all = TRUE;
 
+	/* Sanity check for connect_done - reset it to FALSE.
+	 * To make sure it get reseted to TRUE before get_changes().
+	 */
+	dir->connect_done = FALSE;
+
 	char *anchorpath = g_strdup_printf("%s/anchor.db", osync_plugin_info_get_configdir(info));
 	char *path_field = g_strdup_printf("path_%s", osync_objtype_sink_get_name(sink));
 	if (!osync_anchor_compare(anchorpath, path_field, dir->path))
@@ -97,6 +102,34 @@ end:
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return;
 }
+
+static void mock_connect_done(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+{
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
+	OSyncObjTypeSink *sink = osync_plugin_info_get_sink(info);
+	MockDir *dir = osync_objtype_sink_get_userdata(sink);
+
+	if (mock_get_error(info->memberid, "CONNECT_DONE_ERROR")) {
+		osync_context_report_error(ctx, OSYNC_ERROR_EXPECTED, "Triggering CONNECT_DONE_ERROR error");
+		return;
+	}
+	if (mock_get_error(info->memberid, "CONNECT_DONE_TIMEOUT"))
+		return;
+
+	if (mock_get_error(info->memberid, "LATE_SLOW_SYNC"))
+		osync_objtype_sink_set_slowsync(sink, TRUE);
+
+	/* Validate connect_done() call before get_changes(),
+	 * and after conncet().
+	 */
+	osync_assert(!dir->connect_done);
+	dir->connect_done = TRUE;
+	
+	osync_context_report_success(ctx);
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
 
 static void mock_disconnect(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 {
@@ -343,6 +376,9 @@ static void mock_get_changes(void *data, OSyncPluginInfo *info, OSyncContext *ct
 
 	osync_assert(dir->committed_all == TRUE);
 	dir->committed_all = FALSE;
+
+	osync_assert(dir->connect_done == TRUE);
+	dir->connect_done = FALSE;
 
 	if (mock_get_error(info->memberid, "GET_CHANGES_ERROR")) {
 		osync_context_report_error(ctx, OSYNC_ERROR_EXPECTED, "Triggering GET_CHANGES_ERROR error");
@@ -607,6 +643,9 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 
 		osync_objtype_sink_add_objformat_sink(sink, format_sink);
 		*/
+
+		/* Sanity check for connect_done */
+		dir->connect_done = TRUE;
 		
 		/* All sinks have the same functions of course */
 		OSyncObjTypeSinkFunctions functions;
@@ -614,6 +653,7 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 
 		if (!mock_get_error(info->memberid, "MAINSINK_CONNECT")) {
 			functions.connect = mock_connect;
+			functions.connect_done = mock_connect_done;
 			functions.disconnect = mock_disconnect;
 		}
 

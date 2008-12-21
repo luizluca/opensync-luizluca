@@ -38,6 +38,7 @@ typedef void (* OSyncSinkCommittedAllFn) (void *data, OSyncPluginInfo *info, OSy
 typedef osync_bool (* OSyncSinkReadFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change);
 typedef void (* OSyncSinkBatchCommitFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx, OSyncContext **, OSyncChange **changes);
 typedef void (* OSyncSinkSyncDoneFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx);
+typedef void (* OSyncSinkConnectDoneFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx);
 
 typedef struct OSyncObjTypeSinkFunctions {
 	OSyncSinkConnectFn connect;
@@ -49,6 +50,7 @@ typedef struct OSyncObjTypeSinkFunctions {
 	OSyncSinkReadFn read;
 	OSyncSinkBatchCommitFn batch_commit;
 	OSyncSinkSyncDoneFn sync_done;
+	OSyncSinkConnectDoneFn connect_done;
 } OSyncObjTypeSinkFunctions;
 
 /*! @brief Creates a new main sink
@@ -392,6 +394,18 @@ OSYNC_EXPORT void osync_objtype_sink_disconnect(OSyncObjTypeSink *sink, void *pl
  * 
  */
 OSYNC_EXPORT void osync_objtype_sink_sync_done(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx);
+
+/** @brief Tells the sink that the connection was successfully completed
+ * 
+ * Calls the connect_done function on a sink
+ * 
+ * @param sink Pointer to the sink
+ * @param plugindata User data that will be passed on to the callback function
+ * @param info Pointer to the plugin info object
+ * @param ctx The sync context
+ * 
+ */
+OSYNC_EXPORT void osync_objtype_sink_connect_done(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx);
 
 /** @brief Commits a change to the device
  * 

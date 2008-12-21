@@ -69,6 +69,9 @@ typedef struct callContext {
 	
 	connect_cb connect_callback;
 	void *connect_callback_data;
+
+	connect_done_cb connect_done_callback;
+	void *connect_done_callback_data;
 	
 	disconnect_cb disconnect_callback;
 	void *disconnect_callback_data;
@@ -504,6 +507,39 @@ static void _osync_client_proxy_connect_handler(OSyncMessage *message, void *use
 	
  error:
 	ctx->connect_callback(proxy, ctx->connect_callback_data, FALSE, locerror);
+	osync_free(ctx);
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&locerror));
+	osync_error_unref(&locerror);
+	return;
+}
+
+static void _osync_client_proxy_connect_done_handler(OSyncMessage *message, void *user_data)
+{
+	callContext *ctx = user_data;
+	OSyncClientProxy *proxy = ctx->proxy;
+	OSyncError *error = NULL;
+	OSyncError *locerror = NULL;
+	
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
+	
+	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
+		ctx->connect_done_callback(proxy, ctx->connect_done_callback_data, NULL);
+	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
+		osync_demarshal_error(message, &error);
+		ctx->connect_done_callback(proxy, ctx->connect_done_callback_data, error);
+		osync_error_unref(&error);
+	} else {
+		osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Unexpected reply");
+		goto error;
+	}
+	
+	osync_free(ctx);
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return;
+	
+ error:
+	ctx->connect_done_callback(proxy, ctx->connect_done_callback_data, locerror);
 	osync_free(ctx);
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&locerror));
 	osync_error_unref(&locerror);
@@ -1353,6 +1389,55 @@ osync_bool osync_client_proxy_connect(OSyncClientProxy *proxy, connect_cb callba
 	osync_message_write_string(message, objtype);
 	osync_message_write_int(message, slowsync);
 
+	
+	if (!osync_queue_send_message_with_timeout(proxy->outgoing, proxy->incoming, message, timeout, error))
+		goto error_free_message;
+	
+	osync_message_unref(message);
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+
+ error_free_message:
+	osync_message_unref(message);
+ error_free_context:
+	osync_free(ctx);
+ error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
+}
+
+osync_bool osync_client_proxy_connect_done(OSyncClientProxy *proxy, sync_done_cb callback, void *userdata, const char *objtype, OSyncError **error)
+{
+	int timeout = 0;
+	callContext *ctx = NULL;
+	OSyncObjTypeSink *sink = NULL;
+	OSyncMessage *message = NULL;
+
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %p)", __func__, proxy, callback, userdata, objtype, error);
+	osync_assert(proxy);
+
+	timeout = OSYNC_CLIENT_PROXY_TIMEOUT_CONNECTDONE;
+
+	ctx = osync_try_malloc0(sizeof(callContext), error);
+	if (!ctx)
+		goto error;
+
+	sink = osync_client_proxy_find_objtype_sink(proxy, objtype);
+	if (sink)
+		timeout = osync_objtype_sink_get_connectdone_timeout_or_default(sink); 
+
+	ctx->proxy = proxy;
+	ctx->connect_done_callback = callback;
+	ctx->connect_done_callback_data = userdata;
+	
+	message = osync_message_new(OSYNC_MESSAGE_CONNECT_DONE, 0, error);
+	if (!message)
+		goto error_free_context;
+	
+	osync_message_set_handler(message, _osync_client_proxy_connect_done_handler, ctx);
+
+	osync_message_write_string(message, objtype);
 	
 	if (!osync_queue_send_message_with_timeout(proxy->outgoing, proxy->incoming, message, timeout, error))
 		goto error_free_message;

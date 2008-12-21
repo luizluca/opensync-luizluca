@@ -42,6 +42,7 @@ struct OSyncObjEngine {
 	
 	int sink_errors;
 	int sink_connects;
+	int sink_connect_done;
 	int sink_disconnects;
 	int sink_get_changes;
 	int sink_sync_done;

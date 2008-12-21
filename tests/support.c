@@ -266,6 +266,16 @@ void member_status(OSyncMemberUpdate *status, void *user_data)
 			}
 			
 			break;
+		case OSYNC_CLIENT_EVENT_CONNECT_DONE:
+			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			
+			if (status->objtype == NULL) {
+				num_client_main_connect_done++;
+			} else {
+				fail_unless(!strncmp(status->objtype, "mockobjtype", 11), NULL);
+				num_client_connect_done++;
+			}
+			break;
 		case OSYNC_CLIENT_EVENT_DISCONNECTED:
 			fail_unless(!osync_error_is_set(&(status->error)), NULL);
 			
@@ -352,6 +362,10 @@ void engine_status(OSyncEngineUpdate *status, void *user_data)
 		case OSYNC_ENGINE_EVENT_CONNECTED:
 			fail_unless(!osync_error_is_set(&(status->error)), NULL);
 			num_engine_connected++;
+			break;
+		case OSYNC_ENGINE_EVENT_CONNECT_DONE:
+			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			num_engine_connect_done++;
 			break;
 		case OSYNC_ENGINE_EVENT_READ:
 			fail_unless(!osync_error_is_set(&(status->error)), NULL);

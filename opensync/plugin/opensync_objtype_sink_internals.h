@@ -191,6 +191,21 @@ unsigned int osync_objtype_sink_get_syncdone_timeout_or_default(OSyncObjTypeSink
  */
 unsigned int osync_objtype_sink_get_syncdone_timeout(OSyncObjTypeSink *sink);
 
+/*! @brief Get the current or default connectdone timeout in seconds 
+ * 
+ * @param sink Pointer to the sink
+ * @return The timeout in seconds 
+ * 
+ */
+unsigned int osync_objtype_sink_get_connectdone_timeout_or_default(OSyncObjTypeSink *sink);
+
+/*! @brief Get the current connectdone timeout in seconds 
+ * 
+ * @param sink Pointer to the sink
+ * @return The timeout in seconds 
+ * 
+ */
+unsigned int osync_objtype_sink_get_connectdone_timeout(OSyncObjTypeSink *sink);
 
 /*! @brief Get the current or default write timeout in seconds 
  * 

@@ -97,6 +97,7 @@ struct OSyncEngine {
 	OSyncError *error;
 	
 	int proxy_connects;
+	int proxy_connect_done;
 	int proxy_disconnects;
 	int proxy_get_changes;
 	int proxy_written;
@@ -105,6 +106,7 @@ struct OSyncEngine {
 	
 	int obj_errors;
 	int obj_connects;
+	int obj_connect_done;
 	int obj_disconnects;
 	int obj_get_changes;
 	int obj_written;

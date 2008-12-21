@@ -44,6 +44,7 @@
  */
 
 #define OSYNC_SINK_TIMEOUT_CONNECT 	OSYNC_SINK_TIMEOUT_TRANSPORT 
+#define OSYNC_SINK_TIMEOUT_CONNECTDONE	OSYNC_SINK_TIMEOUT_SINGLEIO
 #define OSYNC_SINK_TIMEOUT_DISCONNECT 	OSYNC_SINK_TIMEOUT_TRANSPORT 
 #define OSYNC_SINK_TIMEOUT_GETCHANGES	OSYNC_SINK_TIMEOUT_BATCHIO
 #define OSYNC_SINK_TIMEOUT_COMMIT	OSYNC_SINK_TIMEOUT_BATCHIO /* FIXME */
@@ -55,6 +56,7 @@
 
 typedef struct OSyncObjTypeSinkFunctionTimeouts {
 	unsigned int connect;
+	unsigned int connect_done;
 	unsigned int disconnect;
 	unsigned int get_changes;
 	unsigned int commit;
