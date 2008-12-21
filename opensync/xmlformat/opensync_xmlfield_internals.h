@@ -1,33 +1,33 @@
 /*
  * libopensync - A synchronization framework
  * Copyright (C) 2006  NetNix Finland Ltd <netnix@netnix.fi>
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * 
+ *
  * Author: Daniel Friedrich <daniel.friedrich@opensync.org>
- * 
+ *
  */
 
 #ifndef OPENSYNC_XMLFIELD_INTERNALS_H_
 #define OPENSYNC_XMLFIELD_INTERNALS_H_
 
 /**
- * @defgroup OSyncXMLFieldPrivateAPI OpenSync XMLField Internals
- * @ingroup OSyncPrivate
- * @brief The private part of the OSyncXMLField
- * 
+ * @defgroup OSyncXMLFieldInternalAPI OpenSync XMLField Internals
+ * @ingroup OSyncXMLFormatPrivate
+ * @brief The internal part of the OSyncXMLField
+ *
  */
 /*@{*/
 
@@ -48,14 +48,14 @@ OSyncXMLField *osync_xmlfield_new_node(OSyncXMLFormat *xmlformat, xmlNodePtr nod
 void osync_xmlfield_free(OSyncXMLField *xmlfield);
 
 
-/** 
+/**
  * @brief Unlink a xmlfield from its context and frees it
  * @param xmlfield The pointer to a xmlfield object
  */
 void osync_xmlfield_delete(OSyncXMLField *xmlfield);
 
 /**
- * @brief Links a xmlfield object from a xmlformat object before a other xmlfield object of a other xmlformat object  
+ * @brief Links a xmlfield object from a xmlformat object before a other xmlfield object of a other xmlformat object
  * @param xmlfield The pointer to a xmlfield object
  * @param to_link The pointer to a xmlfield object
  */
@@ -70,14 +70,14 @@ void osync_xmlfield_adopt_xmlfield_after_field(OSyncXMLField *xmlfield, OSyncXML
 
 
 /**
- * @brief Unlink a xmlfield object  
+ * @brief Unlink a xmlfield object
  * @param xmlfield The pointer to a xmlfield object
  */
 void osync_xmlfield_unlink(OSyncXMLField *xmlfield);
 
 
 /**
- * @brief Compare the names of two xmlfields  
+ * @brief Compare the names of two xmlfields
  * @param xmlfield1 The pointer to a xmlfield object
  * @param xmlfield2 The pointer to a xmlfield object
  * @returns same as strcmp(), 0 is equal

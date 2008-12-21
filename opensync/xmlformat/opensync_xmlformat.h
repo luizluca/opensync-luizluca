@@ -1,33 +1,34 @@
 /*
  * libopensync - A synchronization framework
  * Copyright (C) 2006  NetNix Finland Ltd <netnix@netnix.fi>
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * 
+ *
  * Author: Daniel Friedrich <daniel.friedrich@opensync.org>
- * 
+ *
  */
- 
+
 #ifndef OPENSYNC_XMLFORMAT_H_
 #define OPENSYNC_XMLFORMAT_H_
 
 /**
- * @defgroup OSyncXMLFormatAPI OpenSync XMLFormat
+ * @defgroup OSyncXMLFormat OpenSync XMLFormat Module
  * @ingroup OSyncPublic
+ * @defgroup OSyncXMLFormatAPI OpenSync XMLFormat
+ * @ingroup OSyncXMLFormat
  * @brief The public part of the OSyncXMLFormat
- * 
  */
 /*@{*/
 
@@ -40,7 +41,7 @@
 OSYNC_EXPORT OSyncXMLFormat *osync_xmlformat_new(const char *objtype, OSyncError **error);
 
 /**
- * @brief Creates a new xmlformat object from a xml document. 
+ * @brief Creates a new xmlformat object from a xml document.
  * @param buffer The pointer to the xml document
  * @param size The size of the xml document
  * @param error The error which will hold the info in case of an error
@@ -55,7 +56,7 @@ OSYNC_EXPORT OSyncXMLFormat *osync_xmlformat_parse(const char *buffer, unsigned 
 OSYNC_EXPORT OSyncXMLFormat *osync_xmlformat_ref(OSyncXMLFormat *xmlformat);
 
 /**
- * @brief Decrement the reference counter. The xmlformat object will 
+ * @brief Decrement the reference counter. The xmlformat object will
  *  be freed if there is no more reference to it.
  * @param xmlformat The pointer to the xmlformat object
  */
@@ -71,12 +72,12 @@ OSYNC_EXPORT OSyncXMLField *osync_xmlformat_get_first_field(OSyncXMLFormat *xmlf
 /**
  * @brief Search for xmlfields in the given xmlformat. It is up to the caller to
  *  free the returned list with OSyncXMLFieldList::osync_xmlfieldlist_free
- * @param xmlformat The pointer to the xmlformat object 
+ * @param xmlformat The pointer to the xmlformat object
  * @param name The name of the xmlfields to search for
  * @param error The error which will hold the info in case of an error
  * @param ... If the xmlfield should have an attribute with special value,
- *  then it is possible to specify the attribute name and the attribute 
- *  value. Both parameters must always be set. There can be more 
+ *  then it is possible to specify the attribute name and the attribute
+ *  value. Both parameters must always be set. There can be more
  *  than one attribute pair. The last parameter must always be NULL.
  * @return A pointer to the xmlfieldlist which holds all found xmlfields
  *  or NULL in case of error
@@ -85,8 +86,8 @@ OSYNC_EXPORT OSyncXMLFieldList *osync_xmlformat_search_field(OSyncXMLFormat *xml
 
 /**
  * @brief Dump the xmlformat into a buffer.
- * @param xmlformat The pointer to the xmlformat object 
- * @param buffer The pointer to the buffer which will hold the xml document. It is up 
+ * @param xmlformat The pointer to the xmlformat object
+ * @param buffer The pointer to the buffer which will hold the xml document. It is up
  *  to the caller to free this buffer.
  * @param size The pointer to the buffer which will hold the size of the xml document
  * @return Always returns TRUE.
@@ -114,7 +115,7 @@ OSYNC_EXPORT osync_bool osync_xmlformat_is_sorted(OSyncXMLFormat *xmlformat);
  * @brief Copy data from one xmlformat to another.
  *
  * @return True if the copy succeeded, false otherwise
- */ 
+ */
 OSYNC_EXPORT osync_bool osync_xmlformat_copy(OSyncXMLFormat *source, OSyncXMLFormat **destination, OSyncError **error);
 
 /**
@@ -122,7 +123,7 @@ OSYNC_EXPORT osync_bool osync_xmlformat_copy(OSyncXMLFormat *source, OSyncXMLFor
  *
  * This is needed since the struct itself is private.
  *
- * @return The size of OSyncXMLFormat struct. 
+ * @return The size of OSyncXMLFormat struct.
  */
 OSYNC_EXPORT unsigned int osync_xmlformat_size();
 

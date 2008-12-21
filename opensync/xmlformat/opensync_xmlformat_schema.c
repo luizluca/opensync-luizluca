@@ -42,21 +42,6 @@ static void _osync_xmlformat_schema_unlock_mutex() {
 }
 
 
-/**
- * @defgroup OSyncXMLFormatPrivateAPI OpenSync XMLFormat Internals
- * @ingroup OSyncPrivate
- * @brief The private part of the OSyncXMLFormat
- * 
- */
-/*@{*/
-
-/**
- * @brief Create new OSyncXMLFormatSchema for xmlformat
- * @param xmlformat The pointer to a xmlformat object. xmlformat->objtype is used to identify the schema file
- * @param path The individual schema path. If NULL the default OPENSYNC_SCHEMASDIR is used.
- * @param error The error which will hold the info in case of an error
- * @return new OSyncXMLFormatSchema or NULL in case of an error
- */
 OSyncXMLFormatSchema * osync_xmlformat_schema_new(OSyncXMLFormat *xmlformat, const char *path, OSyncError **error) {
 	OSyncXMLFormatSchema * osyncschema = NULL;
 	char *schemafilepath = NULL;

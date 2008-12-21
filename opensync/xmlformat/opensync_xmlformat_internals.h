@@ -24,8 +24,8 @@
 #define OPENSYNC_XMLFORMAT_INTERNALS_H_
 
 /**
- * @defgroup OSyncXMLFormatPrivateAPI OpenSync XMLFormat Internals
- * @ingroup OSyncPrivate
+ * @defgroup OSyncXMLFormatInternalAPI OpenSync XMLFormat Internals
+ * @ingroup OSyncXMLFormatPrivate
  * @brief The private part of the OSyncXMLFormat
  * 
  */
