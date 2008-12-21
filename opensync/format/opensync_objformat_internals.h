@@ -1,29 +1,27 @@
 /*
  * libopensync - A synchronization framework
  * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * 
+ *
  */
 
 #ifndef _OPENSYNC_OBJFORMAT_INTERNALS_H_
 #define _OPENSYNC_OBJFORMAT_INTERNALS_H_
 
 /**
- * @defgroup OSyncFormatPrivate OpenSync Format Module Private API
- * @ingroup OSyncPrivate
  * @defgroup OSyncObjFormatInternalAPI OpenSync Object Format Internals
  * @ingroup OSyncFormatPrivate
  * @brief The internal part of the OSyncObjFormat API
@@ -47,7 +45,7 @@ OSYNC_TEST_EXPORT OSyncConvCmpResult osync_objformat_compare(OSyncObjFormat *for
 /**
  * @brief Duplicate an object of the specified format
  *
- * Duplication does not mean to make two objects out of one, but to change 
+ * Duplication does not mean to make two objects out of one, but to change
  * the uid of the object in such a way that it differs from the original uid.
  *
  * @param format Pointer to the object format
@@ -64,7 +62,7 @@ OSYNC_TEST_EXPORT OSyncConvCmpResult osync_objformat_compare(OSyncObjFormat *for
 OSYNC_TEST_EXPORT osync_bool osync_objformat_duplicate(OSyncObjFormat *format, const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, OSyncError **error);
 
 /**
- * @brief Object creation function of the specified format 
+ * @brief Object creation function of the specified format
  *
  * @param format Pointer to the object format
  * @param data Pointer to the data
@@ -88,7 +86,7 @@ OSYNC_TEST_EXPORT void osync_objformat_destroy(OSyncObjFormat *format, char *dat
  * @param outdata Copy destination
  * @param outsize Size of copy
  * @param error Pointer to an error struct
- * @returns TRUE on success, FALSE otherwise 
+ * @returns TRUE on success, FALSE otherwise
  */
 OSYNC_TEST_EXPORT osync_bool osync_objformat_copy(OSyncObjFormat *format, const char *indata, unsigned int insize, char **outdata, unsigned int *outsize, OSyncError **error);
 
@@ -101,10 +99,10 @@ OSYNC_TEST_EXPORT osync_bool osync_objformat_copy(OSyncObjFormat *format, const 
 OSYNC_TEST_EXPORT osync_bool osync_objformat_is_equal(OSyncObjFormat *leftformat, OSyncObjFormat *rightformat);
 
 /**
- * @brief Checks if the format needs to be marshaled or not. 
+ * @brief Checks if the format needs to be marshaled or not.
  *
  * @param format Pointer to the object format
- * @returns TRUE if format needs to be marshaled, FALSE otherwise 
+ * @returns TRUE if format needs to be marshaled, FALSE otherwise
  */
 OSYNC_TEST_EXPORT osync_bool osync_objformat_must_marshal(OSyncObjFormat *format);
 
@@ -116,42 +114,42 @@ OSYNC_TEST_EXPORT osync_bool osync_objformat_must_marshal(OSyncObjFormat *format
  * @param inpsize Size of supplied data
  * @param message Marshaled data in a OSyncMessage
  * @param error Pointer to an error struct
- * @returns TRUE on success, FALSE otherwise 
+ * @returns TRUE on success, FALSE otherwise
  */
 OSYNC_TEST_EXPORT osync_bool osync_objformat_marshal(OSyncObjFormat *format, const char *input, unsigned int inpsize, OSyncMessage *message, OSyncError **error);
 
 /**
- * @brief Demarshals supplied OSyncMessage in format specific way 
+ * @brief Demarshals supplied OSyncMessage in format specific way
  *
  * @param format Pointer to the object format
  * @param message Marshaled data as OSyncMessage
  * @param output Data to store unserialized Message content
- * @param outpsize Size of demarshled data in output parameter 
+ * @param outpsize Size of demarshled data in output parameter
  * @param error Pointer to an error struct
- * @returns TRUE on success, FALSE otherwise 
+ * @returns TRUE on success, FALSE otherwise
  */
 OSYNC_TEST_EXPORT osync_bool osync_objformat_demarshal(OSyncObjFormat *format, OSyncMessage *message, char **output, unsigned int *outpsize, OSyncError **error);
 
 /**
- * @brief Validate supplied ata in format specific way 
+ * @brief Validate supplied ata in format specific way
  *
  * @param format Pointer to the object format
- * @param data Pointer to the object to validate 
+ * @param data Pointer to the object to validate
  * @param size Size in bytes of the object specified by the data parameter
  * @param error Pointer to an error struct
- * @returns TRUE if data passed format specific validation, otherwise FALSE 
+ * @returns TRUE if data passed format specific validation, otherwise FALSE
 
  */
 osync_bool osync_objformat_validate(OSyncObjFormat *format, const char *data, unsigned int size, OSyncError **error);
 
 /**
- * @brief Check if specific format requires validation 
+ * @brief Check if specific format requires validation
  *
  * If a validation function is set for the specific format then validation is
  * required for every conversion which results in this object format.
  *
  * @param format Pointer to the object format
- * @returns TRUE if validation is required for this format, otherwise FALSE 
+ * @returns TRUE if validation is required for this format, otherwise FALSE
 
  */
 osync_bool osync_objformat_must_validate(OSyncObjFormat *format);
