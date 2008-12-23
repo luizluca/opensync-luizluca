@@ -168,6 +168,31 @@ START_TEST (plugin_config_subcomponents_nomemory)
 }
 END_TEST
 
+START_TEST (plugin_config_supported)
+{
+	char *testbed = setup_testbed(NULL);
+
+	OSyncError *error = NULL;
+	OSyncPluginConfig *config = osync_plugin_config_new(&error);
+	fail_unless(error == NULL, NULL);
+	fail_unless(config != NULL, NULL);
+
+	osync_plugin_config_set_supported(config, OPENSYNC_PLUGIN_CONFIG_ADVANCEDOPTION);
+	fail_unless(osync_plugin_config_is_supported(config, OPENSYNC_PLUGIN_CONFIG_ADVANCEDOPTION), NULL);
+	fail_unless(!osync_plugin_config_is_supported(config, OPENSYNC_PLUGIN_CONFIG_AUTHENTICATION), NULL);
+	fail_unless(!osync_plugin_config_is_supported(config, OPENSYNC_PLUGIN_CONFIG_LOCALIZATION), NULL);
+	fail_unless(!osync_plugin_config_is_supported(config, OPENSYNC_PLUGIN_CONFIG_RESOURCES), NULL);
+	fail_unless(!osync_plugin_config_is_supported(config, OPENSYNC_PLUGIN_CONFIG_CONNECTION), NULL);
+
+	osync_plugin_config_set_supported(config, OPENSYNC_PLUGIN_CONFIG_CONNECTION);
+	fail_unless(osync_plugin_config_is_supported(config, OPENSYNC_PLUGIN_CONFIG_CONNECTION), NULL);
+	fail_unless(!osync_plugin_config_is_supported(config, OPENSYNC_PLUGIN_CONFIG_ADVANCEDOPTION), NULL);
+
+	osync_plugin_config_unref(config);
+	destroy_testbed(testbed);
+}
+END_TEST
+
 START_TEST (plugin_config_advancedoption)
 {
 	char *testbed = setup_testbed(NULL);
@@ -1178,6 +1203,7 @@ Suite *client_suite(void)
 	
 	create_case(s, "plugin_config_new", plugin_config_new);
 	create_case(s, "plugin_config_new_nomemory", plugin_config_new_nomemory);
+	create_case(s, "plugin_config_supported", plugin_config_supported);
 	create_case(s, "plugin_config_subcomponents", plugin_config_subcomponents);
 	create_case(s, "plugin_config_subcomponents_nomemory", plugin_config_subcomponents_nomemory);
 	create_case(s, "plugin_config_advancedoption", plugin_config_advancedoption);
