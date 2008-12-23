@@ -234,6 +234,86 @@ START_TEST (plugin_config_advancedoption)
 }
 END_TEST
 
+START_TEST (plugin_config_advancedoption_set_get)
+{
+	char *testbed = setup_testbed(NULL);
+
+	OSyncError *error = NULL;
+	OSyncPluginConfig *config = osync_plugin_config_new(&error);
+	fail_unless(error == NULL, NULL);
+	fail_unless(config != NULL, NULL);
+
+	/* Advanced Option */
+	OSyncPluginAdvancedOption *option = osync_plugin_advancedoption_new(&error);
+	fail_unless(error == NULL, NULL);
+	fail_unless(option != NULL, NULL);
+	osync_plugin_advancedoption_set_name(option, "foo");
+
+	osync_plugin_config_add_advancedoption(config, option);
+	OSyncList *advanced_options;
+	advanced_options = osync_plugin_config_get_advancedoptions(config);
+	fail_unless(osync_list_length(advanced_options) == 1, NULL);
+	fail_unless(advanced_options->data == option, NULL);
+
+	OSyncPluginAdvancedOption *test_option = NULL;
+	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "foo");
+	fail_unless(test_option == option);
+
+	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "foo2");
+	fail_unless(test_option == NULL, NULL);
+
+	/* Add option again to make sure it is not added twice */
+	osync_plugin_config_add_advancedoption(config, option);	
+	advanced_options = osync_plugin_config_get_advancedoptions(config);
+	fail_unless(osync_list_length(advanced_options) == 1, NULL);
+	fail_unless(advanced_options->data == option, NULL);
+
+	OSyncPluginAdvancedOption *option2 = osync_plugin_advancedoption_new(&error);
+	fail_unless(error == NULL, NULL);
+	fail_unless(option2 != NULL, NULL);
+	osync_plugin_advancedoption_set_name(option2, "bar");
+	osync_plugin_config_add_advancedoption(config, option2);
+
+	advanced_options = osync_plugin_config_get_advancedoptions(config);
+	fail_unless(osync_list_length(advanced_options) == 2, NULL);
+
+	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "foo");
+	fail_unless(test_option == option);
+
+	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "bar");
+	fail_unless(test_option == option2, NULL);
+
+	/* Removal */
+	OSyncPluginAdvancedOption *option3 = osync_plugin_advancedoption_new(&error);
+	fail_unless(error == NULL, NULL);
+	fail_unless(option3 != NULL, NULL);
+	osync_plugin_advancedoption_set_name(option3, "nonexistant");
+
+	osync_plugin_config_remove_advancedoption(config, option3);
+	advanced_options = osync_plugin_config_get_advancedoptions(config);
+	fail_unless(osync_list_length(advanced_options) == 2, NULL);
+
+	osync_plugin_config_remove_advancedoption(config, option);
+	advanced_options = osync_plugin_config_get_advancedoptions(config);
+	fail_unless(osync_list_length(advanced_options) == 1, NULL);
+	fail_unless(advanced_options->data == option2, NULL);
+	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "foo");
+	fail_unless(test_option == NULL);
+	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "bar");
+	fail_unless(test_option == option2);
+
+	osync_plugin_config_remove_advancedoption(config, option2);
+	fail_unless(osync_plugin_config_get_advancedoptions(config) == NULL, NULL);
+
+	osync_plugin_advancedoption_unref(option);
+	osync_plugin_advancedoption_unref(option2);
+	osync_plugin_advancedoption_unref(option3);
+	osync_plugin_advancedoption_unref(test_option);
+	osync_plugin_config_unref(config);
+	destroy_testbed(testbed);
+}
+END_TEST
+
 START_TEST (plugin_config_advancedoption_param)
 {
 	char *testbed = setup_testbed(NULL);
@@ -1101,6 +1181,7 @@ Suite *client_suite(void)
 	create_case(s, "plugin_config_subcomponents", plugin_config_subcomponents);
 	create_case(s, "plugin_config_subcomponents_nomemory", plugin_config_subcomponents_nomemory);
 	create_case(s, "plugin_config_advancedoption", plugin_config_advancedoption);
+	create_case(s, "plugin_config_advancedoption_set_get", plugin_config_advancedoption_set_get);
 	create_case(s, "plugin_config_advancedoption_param", plugin_config_advancedoption_param);
 	create_case(s, "plugin_config_authentication", plugin_config_authentication);
 	create_case(s, "plugin_config_connection", plugin_config_connection);
