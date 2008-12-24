@@ -783,6 +783,10 @@ void osync_queue_unref(OSyncQueue *queue)
 osync_bool osync_queue_exists(OSyncQueue *queue)
 {
 	osync_assert(queue);
+
+	if (!queue->name)
+		return FALSE;
+
 	return g_file_test(queue->name, G_FILE_TEST_EXISTS) ? TRUE : FALSE;
 }
 
