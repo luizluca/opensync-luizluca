@@ -136,6 +136,9 @@ static void dump_hash(OSyncGroupEnv *env, const char *objtype, const char *group
 	if (!table)
 		goto error;
 	g_free(path);
+
+	if (!osync_hashtable_load(table, &error))
+		goto error;
 	
 	osync_hashtable_foreach(table, print_hashtable, NULL);
 
