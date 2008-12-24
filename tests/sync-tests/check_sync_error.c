@@ -1,6 +1,47 @@
 #include "support.h"
 
 #include "opensync/group/opensync_group_internals.h"
+#include "opensync/engine/opensync_engine_internals.h"
+
+/* Regression test for Ticket #988 */
+START_TEST (single_init_error_noerror)
+{
+	char *testbed = setup_testbed("sync");
+	char *formatdir = g_strdup_printf("%s/formats", testbed);
+	char *plugindir = g_strdup_printf("%s/plugins", testbed);
+	
+	g_setenv("INIT_NULL_NOERROR", "2", TRUE);
+	
+	OSyncError *error = NULL;
+	OSyncGroup *group = osync_group_new(&error);
+	fail_unless(group != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+	
+	osync_group_set_schemadir(group, testbed);
+	fail_unless(osync_group_load(group, "configs/group", &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	OSyncEngine *engine = osync_engine_new(group, &error);
+	fail_unless(engine != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+	osync_group_unref(group);
+
+	osync_engine_set_schemadir(engine, testbed);
+	osync_engine_set_plugindir(engine, plugindir);
+	osync_engine_set_formatdir(engine, formatdir);
+
+	osync_engine_set_memberstatus_callback(engine, member_status, GINT_TO_POINTER(1));
+
+	fail_unless(!osync_engine_initialize(engine, &error), NULL);
+	fail_unless(error != NULL, NULL);
+
+	osync_engine_unref(engine);
+	g_free(formatdir);
+	g_free(plugindir);
+       
+	destroy_testbed(testbed);
+}
+END_TEST
 
 START_TEST (single_init_error)
 {
@@ -2050,11 +2091,16 @@ START_TEST (get_changes_disconnect_error)
 }
 END_TEST
 
+
 Suite *multisync_suite(void)
 {
 	Suite *s = suite_create("Error Codes");
 	//Suite *s2 = suite_create("Error Codes");
-	create_case(s, "single_init_error", single_init_error);
+	create_case(s, "single_init_error_noerror", single_init_error_noerror);
+
+	/* Disabled as not ported see http://opensync.org/ticket/980 
+
+       	create_case(s, "single_init_error", single_init_error);
 	create_case(s, "dual_connect_error", dual_connect_error);
 	create_case(s, "one_of_two_connect_error", one_of_two_connect_error);
 	create_case(s, "two_of_three_connect_error", two_of_three_connect_error);
@@ -2096,13 +2142,15 @@ Suite *multisync_suite(void)
 	create_case(s, "dual_disconnect_timeout", dual_disconnect_timeout);
 	create_case(s, "disconnect_timeout_and_error", disconnect_timeout_and_error);
 	create_case(s, "get_changes_disconnect_error", get_changes_disconnect_error);
-	
+	*/
 	return s;
 }
 
 int main(void)
 {
 	int nf;
+
+	check_env();
 
 	Suite *s = multisync_suite();
 	

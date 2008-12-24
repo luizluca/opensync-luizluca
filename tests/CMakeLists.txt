@@ -36,8 +36,7 @@ ADD_CHECK_TEST( module module-tests/check_module.c ${TEST_TARGET_LIBRARIES} )
 # ticket #981
 #ADD_CHECK_TEST( multisync sync-tests/check_multisync.c ${TEST_TARGET_LIBRARIES} )
 ADD_CHECK_TEST( sync sync-tests/check_sync.c ${TEST_TARGET_LIBRARIES} )
-# ticket #980 
-#ADD_CHECK_TEST( sync-error sync-tests/check_sync_error.c ${TEST_TARGET_LIBRARIES} )
+ADD_CHECK_TEST( sync-error sync-tests/check_sync_error.c ${TEST_TARGET_LIBRARIES} )
 ADD_CHECK_TEST( objformat format-tests/check_objformat.c ${TEST_TARGET_LIBRARIES} )
 ADD_CHECK_TEST( pluginconfig plugin-tests/check_plugin_config.c ${TEST_TARGET_LIBRARIES} )
 ADD_CHECK_TEST( proxy client-tests/check_proxy.c ${TEST_TARGET_LIBRARIES} )

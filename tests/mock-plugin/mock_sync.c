@@ -570,6 +570,11 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, info, error);
 
+	if (mock_get_error(info->memberid, "INIT_NULL_NOERROR")) {
+		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+		return NULL;
+	}
+
 	if (mock_get_error(info->memberid, "INIT_NULL")) {
 		osync_error_set(error, OSYNC_ERROR_EXPECTED, "Triggering INIT_NULL error");
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));

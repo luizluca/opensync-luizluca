@@ -684,8 +684,11 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 	}
 	
 	client->plugin_data = osync_plugin_initialize(client->plugin, client->plugin_info, error);
-	if (!client->plugin_data)
+	if (!client->plugin_data) {
+		if (!*error)
+			osync_error_set(error, OSYNC_ERROR_GENERIC, "Plugin \"%s\" failed to initialize but gave no reason", pluginname);
 		goto error;
+	}
 
 	reply = osync_message_new_reply(message, error);
 	if (!reply)
