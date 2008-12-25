@@ -1197,7 +1197,7 @@ START_TEST (commit_error_modify)
 	g_setenv("COMMIT_TIMEOUT", "2", TRUE);
 	g_setenv("COMMIT_ERROR", "4", TRUE);
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	osync_testing_system_abort("cp newdata2 data1/testdata");
 	
@@ -1258,7 +1258,7 @@ START_TEST (commit_error_delete)
 	g_setenv("COMMIT_TIMEOUT", "2", TRUE);
 	g_setenv("COMMIT_ERROR", "4", TRUE);
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	osync_testing_system_abort("rm -f data1/testdata");
 	

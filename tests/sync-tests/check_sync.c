@@ -1130,7 +1130,7 @@ START_TEST (sync_conflict_duplicate2)
 	
 	osync_testing_system_abort("rm -f data1/testdata");
 	osync_testing_system_abort("rm -f data2/testdata-dupe");
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	osync_testing_system_abort("cp new_data1 data2/testdata");
 	osync_testing_system_abort("cp new_data1 comp_data");
 	
@@ -1546,7 +1546,7 @@ START_TEST (sync_moddel)
 	fail_unless(num_mapping_conflicts == 0, NULL);
 	reset_counters();
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	osync_testing_system_abort("cp new_data1 data1/testdata");
 	osync_testing_system_abort("cp new_data2 data2/testdata");
 	
@@ -1723,7 +1723,7 @@ START_TEST (sync_conflict_moddel)
 	fail_unless(num_mapping_conflicts == 0, NULL);
 	reset_counters();
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	osync_testing_system_abort("cp new_data2 data1/testdata");
 	osync_testing_system_abort("rm -f data2/testdata");
 	
@@ -1901,7 +1901,7 @@ START_TEST (sync_easy_dualdel)
 	
 	reset_counters();
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	osync_testing_system_abort("rm -f data1/testdata");
 	osync_testing_system_abort("rm -f data1/testdata2");
 	
@@ -2122,7 +2122,7 @@ START_TEST (sync_large)
 	
 	reset_counters();
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	//Add left
 	create_random_file("data1/file11");
 	//Add right

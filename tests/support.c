@@ -531,7 +531,7 @@ void solve_conflict(OSyncMappingEngine *mapping)
         OSyncChange *change = NULL;
 	OSyncError *error = NULL;
 
-	sleep(5);
+	g_usleep(5*G_USEC_PER_SEC);
 	
 	change = osync_mapping_engine_nth_change(mapping, 0);
 	osync_assert(osync_engine_mapping_solve(gengine, mapping, change, &error));

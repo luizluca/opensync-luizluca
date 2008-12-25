@@ -277,7 +277,7 @@ START_TEST (ipc_payload_wait)
 	
 	pid_t cpid = fork();
 	if (cpid == 0) { //Child
-		sleep(1);
+		g_usleep(1*G_USEC_PER_SEC);
 		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
 		osync_assert(error == NULL);
 
@@ -307,7 +307,7 @@ START_TEST (ipc_payload_wait)
 		osync_assert(longint1 == 400000000);
 		osync_assert(!strcmp(databuf, "this is another test string"));
 		
-		sleep(1);
+		g_usleep(1*G_USEC_PER_SEC);
 		
 		OSyncMessage *reply = osync_message_new_reply(message, &error);
 		
@@ -317,7 +317,7 @@ START_TEST (ipc_payload_wait)
 		
 		osync_message_unref(reply);
 		
-		sleep(1);
+		g_usleep(1*G_USEC_PER_SEC);
 		
 		if (osync_queue_disconnect(client_queue, &error) != TRUE || error != NULL)
 			exit(1);
@@ -332,7 +332,7 @@ START_TEST (ipc_payload_wait)
 		}
 	
 		osync_message_unref(message);
-		sleep(1);
+		g_usleep(1*G_USEC_PER_SEC);
 		
 		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
 			exit(1);
@@ -958,7 +958,7 @@ START_TEST (ipc_error_rem2)
 		
 		osync_message_unref(message);
 		
-		sleep(2);
+		g_usleep(2*G_USEC_PER_SEC);
 		
 		osync_queue_disconnect(server_queue, &error);
 		osync_assert(error == NULL);
@@ -2121,7 +2121,7 @@ START_TEST (ipc_timeout)
 	
 	pid_t cpid = fork();
 	if (cpid == 0) { //Child
-		sleep(1);
+		g_usleep(1*G_USEC_PER_SEC);
 		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
 		osync_assert(error == NULL);
 
@@ -2179,7 +2179,7 @@ START_TEST (ipc_timeout)
 		}
 	
 		osync_message_unref(message);
-		sleep(1);
+		g_usleep(1*G_USEC_PER_SEC);
 		
 		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
 			exit(1);
