@@ -108,8 +108,10 @@ static osync_bool conv_memo_to_xmlformatnote(char *input, unsigned int inpsize, 
 		osync_xmlfield_add_key_value(field, "Content", str->str);
 	}
 
+	osync_xmlformat_sort(ret);
 
 	*output = (char *)ret;
+	*outpsize = osync_xmlformat_size();
 	return TRUE;
 }
 
