@@ -286,7 +286,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 			if(merger) {
 				/* TODO: Merger save the archive data with the member so we have to load it only for one time*/
 				// osync_archive_load_data() is fetching the mappingid by uid in the db
-				int ret = osync_archive_load_data(engine->archive, uid, objtype, &buffer, &size, &error);
+				int ret = osync_archive_load_data(engine->archive, uid, osync_change_get_objtype(change), &buffer, &size, &error);
 				if (ret < 0) {
 					goto error; 
 				}
@@ -310,7 +310,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 	{GList * o = NULL;
 		for (o = engine->object_engines; o; o = o->next) {
 			OSyncObjEngine *objengine = o->data;
-			if (!strcmp(objtype, osync_obj_engine_get_objtype(objengine))) {
+			if (!strcmp(osync_change_get_objtype(change), osync_obj_engine_get_objtype(objengine))) {
 				found = TRUE;
 				if (!osync_obj_engine_receive_change(objengine, proxy, change, &error))
 					goto error;
