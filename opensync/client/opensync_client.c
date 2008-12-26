@@ -1765,22 +1765,3 @@ void osync_client_error_shutdown(OSyncClient *client, OSyncError *error)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/*void *osync_client_message_sink(OSyncMember *member, const char *name, void *data, osync_bool synchronous)
-	{
-	OSyncClient *client = osync_member_get_data(member);
-	OSyncEngine *engine = client->engine;
-	if (!synchronous) {
-
-	ITMessage *message = itm_message_new_signal(client, "PLUGIN_MESSAGE");
-	osync_debug("CLI", 3, "Sending message %p PLUGIN_MESSAGE for message %s", message, name);
-	itm_message_set_data(message, "data", data);
-	itm_message_set_data(message, "name", g_strdup(name));
-	itm_queue_send(engine->incoming, message);
-
-	return NULL;
-	} else {
-	return engine->plgmsg_callback(engine, client, name, data, engine->plgmsg_userdata);
-	}
-
-	return NULL;
-	}*/

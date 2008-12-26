@@ -2029,23 +2029,6 @@ void osync_engine_set_memberstatus_callback(OSyncEngine *engine, osync_status_me
 	engine->mebstat_userdata = user_data;
 }
 
-#if 0
-/*! @brief This will set the callback handler for a custom message
- * 
- * A custom message can be used to communicate with a plugin directly
- * 
- * @param engine A pointer to the engine, for which to set the callback
- * @param function A pointer to a function which will receive the member status
- * @param user_data A pointer to some user data that the callback function will get passed
- * 
- */
-void osync_engine_set_message_callback(OSyncEngine *engine, void *(* function) (OSyncEngine *, OSyncClient *, const char *, void *, void *), void *user_data)
-{
-	engine->plgmsg_callback = function;
-	engine->plgmsg_userdata = user_data;
-}
-#endif
-
 /*! @brief Aborts running synchronization
  * 
  * This is aborting the current synchronization while flushing the pending
