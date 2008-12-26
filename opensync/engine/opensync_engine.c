@@ -1938,14 +1938,35 @@ OSyncObjEngine *osync_engine_find_objengine(OSyncEngine *engine, const char *obj
  * The conflict handler will be called every time a conflict occurs
  * 
  * @param engine A pointer to the engine, for which to set the callback
- * @param function A pointer to a function which will receive the conflict
- * @param user_data Pointer to some data that will get passed to the status function as the last argument
+ * @param callback A pointer to a function which will receive the conflict
+ * @param user_data Pointer to some data that will get passed to the callback function as the last argument
  * 
  */
 void osync_engine_set_conflict_callback(OSyncEngine *engine, osync_conflict_cb callback, void *user_data)
 {
 	engine->conflict_callback = callback;
 	engine->conflict_userdata = user_data;
+}
+
+/*! @brief This will set the multiply handler for the given engine
+ * 
+ * The multiply handler will be called after the engine multiplied all changes.
+ * Intention is to summaries the ongoing synchronization process (e.g. What is going to change).
+ * If callback is set, then the syncrhonization process is blocked until the callback returned.
+ * Callback gets directly called before writing changes to the peers (and before preparing for
+ * writing).
+ *
+ * It's possible to abort the synchronization with osync_engine_abort() within this callback.
+ * 
+ * @param engine A pointer to the engine, for which to set the callback
+ * @param callback A pointer to a function which will receive multiply summary 
+ * @param user_data Pointer to some data that will get passed to the callback function as the last argument
+ * 
+ */
+void osync_engine_set_multiply_callback(OSyncEngine *engine, osync_multiply_cb callback, void *user_data)
+{
+	engine->multiply_callback = callback;
+	engine->multiply_userdata = user_data;
 }
 
 /*! @brief This will set the change status handler for the given engine

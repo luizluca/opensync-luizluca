@@ -55,6 +55,9 @@ struct OSyncEngine {
 	
 	osync_conflict_cb conflict_callback;
 	void *conflict_userdata;
+
+	osync_multiply_cb multiply_callback;
+	void *multiply_userdata;
 	
 	osync_status_change_cb changestat_callback;
 	void *changestat_userdata;

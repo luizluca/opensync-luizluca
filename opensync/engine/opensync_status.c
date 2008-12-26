@@ -95,6 +95,16 @@ void osync_status_conflict(OSyncEngine *engine, OSyncMappingEngine *mapping_engi
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
+void osync_status_multiply(OSyncEngine *engine)
+{
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, engine);
+
+	if (engine->multiply_callback)
+		engine->multiply_callback(engine, engine->multiply_userdata);
+				
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
 void osync_status_update_member(OSyncEngine *engine, OSyncMember *member, OSyncMemberEvent type, const char *objtype, OSyncError *error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %i, %s, %p)", __func__, engine, member, type, objtype, error);
