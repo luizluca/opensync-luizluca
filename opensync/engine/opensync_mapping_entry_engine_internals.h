@@ -37,7 +37,20 @@ OSyncMappingEntryEngine *osync_entry_engine_new(OSyncMappingEntry *entry, OSyncM
 OSyncMappingEntryEngine *osync_entry_engine_ref(OSyncMappingEntryEngine *engine);
 void osync_entry_engine_unref(OSyncMappingEntryEngine *engine);
 
+/*! @brief Tries to match OSyncMappingEntryEngine with a OSyncChange.
+ *
+ *  Based on the UID of the OSyncChange and the Mapping Entry of the
+ *  OSyncMappingEntryEngine, this functions tries to match the two objects.
+ *
+ *  If the Mapping Entry of the OSyncMappingEntryEngine is not yet assigned to
+ *  a real record (i.e. UID not set) the match fails.
+ *
+ * @param engine Pointer to an OSyncMappingEntryEngine with a Mapping Entry 
+ * @param change Pointer to an OSyncChange with UID set
+ * @returns TRUE if engine and change matches, FALSE otherwise. 
+ */
 osync_bool osync_entry_engine_matches(OSyncMappingEntryEngine *engine, OSyncChange *change);
+
 void osync_entry_engine_update(OSyncMappingEntryEngine *engine, OSyncChange *change);
 OSyncChange *osync_entry_engine_get_change(OSyncMappingEntryEngine *engine);
 

@@ -98,15 +98,18 @@ osync_bool osync_entry_engine_matches(OSyncMappingEntryEngine *engine, OSyncChan
 {
 	OSyncMappingEntry *entry = NULL;
 	const char *mapping_entry_uid = NULL; 
+	const char *change_uid = NULL; 
 	osync_assert(engine);
 	osync_assert(engine->entry);
 	osync_assert(change);
 	
 	entry = engine->entry;
 	mapping_entry_uid = osync_mapping_entry_get_uid(entry); 
-	osync_assert(mapping_entry_uid);
+	change_uid = osync_change_get_uid(change);
+	osync_assert(change_uid);
 	
-	if (!strcmp(mapping_entry_uid, osync_change_get_uid(change)))
+	/* If no UID get set for the MappingEntry - MISMATCH */
+	if (mapping_entry_uid && !strcmp(mapping_entry_uid, change_uid))
 		return TRUE;
 	
 	return FALSE;
