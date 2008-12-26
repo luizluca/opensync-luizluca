@@ -48,7 +48,7 @@
 typedef enum {
 	/** Initiate connect phase */
 	OSYNC_ENGINE_COMMAND_CONNECT = 1,
-	/** Finalize connect phase *//
+	/** Finalize connect phase */
 	OSYNC_ENGINE_COMMAND_CONNECT_DONE,
 	/** Read/Get latest changes or all records, depending on synchronization type */
 	OSYNC_ENGINE_COMMAND_READ,
