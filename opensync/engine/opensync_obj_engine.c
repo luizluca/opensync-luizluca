@@ -106,7 +106,7 @@ static void _osync_obj_engine_connect_callback(OSyncClientProxy *proxy, void *us
 		osync_trace(TRACE_INTERNAL, "SlowSync requested during connect.");
 	}
 			
-	if (osync_bitcount(engine->sink_errors | engine->sink_connects) == g_list_length(engine->sink_engines)) {
+	if (osync_bitcount(engine->sink_errors | engine->sink_connects) == osync_obj_engine_num_active_sink_engines(engine)) {
 		if (osync_bitcount(engine->sink_errors)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one sink_engine failed while connecting");
 			osync_obj_engine_set_error(engine, locerror);
@@ -136,7 +136,7 @@ static void _osync_obj_engine_connect_done_callback(OSyncClientProxy *proxy, voi
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_CONNECT_DONE, engine->objtype, NULL);
 	}
 			
-	if (osync_bitcount(engine->sink_errors | engine->sink_connect_done) == g_list_length(engine->sink_engines)) {
+	if (osync_bitcount(engine->sink_errors | engine->sink_connect_done) == osync_obj_engine_num_active_sink_engines(engine)) {
 		if (osync_bitcount(engine->sink_connect_done) < osync_bitcount(engine->sink_connects)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Fewer sink_engines reported connect_done than connected");
 			osync_obj_engine_set_error(engine, locerror);
@@ -154,7 +154,7 @@ static void _osync_obj_engine_generate_event_disconnected(OSyncObjEngine *engine
 	OSyncError *locerror = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, engine);
 
-	if (osync_bitcount(engine->sink_errors | engine->sink_disconnects) == g_list_length(engine->sink_engines)) {
+	if (osync_bitcount(engine->sink_errors | engine->sink_disconnects) == osync_obj_engine_num_active_sink_engines(engine)) {
 		if (osync_bitcount(engine->sink_disconnects) < osync_bitcount(engine->sink_connects)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Fewer sink_engines disconnected than connected");
 			osync_obj_engine_set_error(engine, locerror);
@@ -268,8 +268,9 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 		/* For each sinkengine, go through all unmapped changes */
 		while (sinkengine->unmapped) {
 			OSyncChange *change = sinkengine->unmapped->data;
+			long long int memberid = osync_member_get_id(osync_client_proxy_get_member(sinkengine->proxy));
 			
-			osync_trace(TRACE_INTERNAL, "Looking for mapping for change %s, changetype %i from member %lli", osync_change_get_uid(change), osync_change_get_changetype(change), osync_member_get_id(osync_client_proxy_get_member(sinkengine->proxy)));
+			osync_trace(TRACE_INTERNAL, "Looking for mapping for change %s, changetype %i from member %lli", osync_change_get_uid(change), osync_change_get_changetype(change), memberid);
 	
 			/* See if there is an exisiting mapping, which fits the unmapped change */
 			result = _osync_obj_engine_mapping_find(unmapped_mappings, change, sinkengine, &mapping_engine);
@@ -337,7 +338,7 @@ static void _osync_obj_engine_read_callback(OSyncClientProxy *proxy, void *userd
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_READ, engine->objtype, NULL);
 	}
 	
-	if (osync_bitcount(engine->sink_errors | engine->sink_get_changes) == g_list_length(engine->sink_engines)) {
+	if (osync_bitcount(engine->sink_errors | engine->sink_get_changes) == osync_obj_engine_num_active_sink_engines(engine)) {
 		
 		if (osync_bitcount(engine->sink_get_changes) < osync_bitcount(engine->sink_connects)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Fewer sink_engines reported get_changes than connected");
@@ -448,7 +449,7 @@ static void _osync_obj_engine_generate_written_event(OSyncObjEngine *engine, OSy
 	osync_trace(TRACE_INTERNAL, "%s: Not dirty anymore", __func__);
 
 	/* And that we received the written replies from all sinks */
-	if (osync_bitcount(engine->sink_errors | engine->sink_written) == g_list_length(engine->sink_engines)) {
+	if (osync_bitcount(engine->sink_errors | engine->sink_written) == osync_obj_engine_num_sink_engines(engine)) {
 		if (osync_bitcount(engine->sink_written) < osync_bitcount(engine->sink_connects)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Fewer sink_engines reported committed all than connected");
 			osync_obj_engine_set_error(engine, locerror);
@@ -565,7 +566,7 @@ static void _osync_obj_engine_sync_done_callback(OSyncClientProxy *proxy, void *
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_SYNC_DONE, engine->objtype, NULL);
 	}
 			
-	if (osync_bitcount(engine->sink_errors | engine->sink_sync_done) == g_list_length(engine->sink_engines)) {
+	if (osync_bitcount(engine->sink_errors | engine->sink_sync_done) == osync_obj_engine_num_active_sink_engines(engine)) {
 		if (osync_bitcount(engine->sink_sync_done) < osync_bitcount(engine->sink_connects)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Fewer sink_engines reported sync_done than connected");
 			osync_obj_engine_set_error(engine, locerror);
@@ -764,6 +765,7 @@ static int _osync_obj_engine_num_write_sinks(OSyncObjEngine *objengine) {
 
 osync_bool osync_obj_engine_initialize(OSyncObjEngine *engine, OSyncError **error)
 {
+	osync_bool dummy_sink = FALSE;
 	const char *objtype = NULL;
 	int num = 0;
 	int i = 0;
@@ -772,6 +774,8 @@ osync_bool osync_obj_engine_initialize(OSyncObjEngine *engine, OSyncError **erro
 
 	osync_trace(TRACE_INTERNAL, "Loaded %i mappings", osync_mapping_table_num_mappings(engine->mapping_table));
 
+	engine->dummies = 0;
+
 	objtype = osync_obj_engine_get_objtype(engine);
 	
 	num = osync_engine_num_proxies(engine->parent);
@@ -779,16 +783,26 @@ osync_bool osync_obj_engine_initialize(OSyncObjEngine *engine, OSyncError **erro
 		OSyncClientProxy *proxy = osync_engine_nth_proxy(engine->parent, i);
 		OSyncObjTypeSink *sink = osync_client_proxy_find_objtype_sink(proxy, objtype);
 		OSyncSinkEngine *sinkengine = NULL; 
+
+		dummy_sink = FALSE;
+
 		if (!sink) {
 			/* "data" sink engine counts also as valid. */
 			sink = osync_client_proxy_find_objtype_sink(proxy, "data"); 
 			if (!sink)
 				continue;
+
+			dummy_sink = TRUE;
 		}
 		
 		sinkengine = osync_sink_engine_new(i, proxy, engine, error);
 		if (!sinkengine)
 			goto error;
+
+		if (dummy_sink) {
+			osync_sink_engine_set_dummy(sinkengine, TRUE);
+			engine->dummies++;
+		}
 		
 		engine->sink_engines = g_list_append(engine->sink_engines, sinkengine);
 	}
@@ -901,6 +915,9 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 		for (p = engine->sink_engines; p; p = p->next) {
 			sinkengine = p->data;
 
+			if (osync_sink_engine_is_dummy(sinkengine))
+				continue;
+
 			if (!osync_client_proxy_connect(sinkengine->proxy, _osync_obj_engine_connect_callback, sinkengine, engine->objtype, engine->slowsync, error))
 				goto error;
 		}
@@ -908,6 +925,10 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 	case OSYNC_ENGINE_COMMAND_CONNECT_DONE:
 		for (p = engine->sink_engines; p; p = p->next) {
 			sinkengine = p->data;
+
+			if (osync_sink_engine_is_dummy(sinkengine))
+				continue;
+
 			if (!osync_client_proxy_connect_done(sinkengine->proxy, _osync_obj_engine_connect_done_callback, sinkengine, engine->objtype, error))
 				goto error;
 		}
@@ -915,6 +936,10 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 	case OSYNC_ENGINE_COMMAND_READ:
 		for (p = engine->sink_engines; p; p = p->next) {
 			sinkengine = p->data;
+
+			if (osync_sink_engine_is_dummy(sinkengine))
+				continue;
+
 			for (m = sinkengine->entries; m; m = m->next) {
 				OSyncMappingEntryEngine *entry = m->data;
 				OSyncChange *change = entry->change;
@@ -943,6 +968,10 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 			sinkengine = p->data;
 
 			member = osync_client_proxy_get_member(sinkengine->proxy);
+
+			if (osync_sink_engine_is_dummy(sinkengine))
+				continue;
+
 			objtype_sink = osync_member_find_objtype_sink(member, engine->objtype);
 
 			/* Is there at least one other writeable sink? */
@@ -1001,6 +1030,16 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 			OSyncFormatConverterPath *path = NULL;
 
 			sinkengine = p->data;
+
+			/* FIXME: for "clean" mixed-objtype syncing - all peers should report
+			 * via their native OSyncObjEngine. This temp. solution uses not the
+			 * ObjTypeSink to write/commit changes. Later the "native" ObjEngine
+			 * should be used.
+			
+			 if (osync_sink_engine_is_dummy(sinkengine))
+				continue;
+			*/
+
 			member = osync_client_proxy_get_member(sinkengine->proxy);
 			memberid = osync_member_get_id(member);
 			objtype_sink = osync_member_find_objtype_sink(member, engine->objtype);
@@ -1144,6 +1183,10 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 	case OSYNC_ENGINE_COMMAND_SYNC_DONE:
 		for (p = engine->sink_engines; p; p = p->next) {
 			sinkengine = p->data;
+
+			if (osync_sink_engine_is_dummy(sinkengine))
+				continue;
+
 			if (!osync_client_proxy_sync_done(sinkengine->proxy, _osync_obj_engine_sync_done_callback, sinkengine, engine->objtype, error))
 				goto error;
 		}
@@ -1151,6 +1194,9 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 	case OSYNC_ENGINE_COMMAND_DISCONNECT:;
 		for (p = engine->sink_engines; p; p = p->next) {
 			sinkengine = p->data;
+
+			if (osync_sink_engine_is_dummy(sinkengine))
+				continue;
 
 			/* Don't call client disconnect functions if the sink is already disconnected.
 			   This avoids unintended disconnect calls of clients/plugins which might not prepared
@@ -1234,3 +1280,16 @@ void osync_obj_engine_set_error(OSyncObjEngine *engine, OSyncError *error)
 	engine->error = error;
 	osync_error_ref(&error);
 }
+
+unsigned int osync_obj_engine_num_sink_engines(OSyncObjEngine *engine)
+{
+	osync_assert(engine);
+	return g_list_length(engine->sink_engines);
+}
+
+unsigned int osync_obj_engine_num_active_sink_engines(OSyncObjEngine *engine)
+{
+	osync_assert(engine);
+	return (osync_obj_engine_num_sink_engines(engine) - engine->dummies);
+}
+
