@@ -123,6 +123,8 @@ osync_engine_synchronize
 osync_engine_synchronize_and_block
 osync_engine_unref
 osync_engine_wait_sync_end
+osync_entry_engine_get_changetype
+osync_entry_engine_is_dirty
 osync_error_get_child
 osync_error_get_name
 osync_error_get_type

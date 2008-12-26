@@ -190,6 +190,7 @@ typedef struct OSyncClientProxy OSyncClientProxy;
 typedef struct OSyncMapping OSyncMapping;
 typedef struct OSyncMappingTable OSyncMappingTable;
 typedef struct OSyncMappingEntry OSyncMappingEntry;
+typedef struct OSyncMappingEntryEngine OSyncMappingEntryEngine;
 typedef struct OSyncMappingEngine OSyncMappingEngine;
 
 /* Helper component */

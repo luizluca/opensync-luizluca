@@ -23,7 +23,8 @@
 
 #include "opensync_sink_engine_internals.h"
 
-typedef struct OSyncMappingEntryEngine {
+/* @TODO: move struct to private header */
+struct OSyncMappingEntryEngine {
 	int ref_count;
 	OSyncSinkEngine *sink_engine;
 	osync_bool dirty;
@@ -31,10 +32,38 @@ typedef struct OSyncMappingEntryEngine {
 	OSyncObjEngine *objengine;
 	OSyncMappingEngine *mapping_engine;
 	OSyncMappingEntry *entry;
-} OSyncMappingEntryEngine;
+};
 
+/**
+ * @defgroup OSyncMappingEntryEnginePrivateAPI OpenSync Mapping Entry Engine 
+ * @ingroup OSyncEnginePrivate
+ * @brief Private functions to handle Mapping Entries 
+ * 
+ */
+/*@{*/
+
+/*! @brief Register a new Mapping Entry Engine
+ *
+ * @param entry Pointer to an OSyncMappingEntry
+ * @param mapping_engine Pointer to an OSyncMappingEngine
+ * @param sink_engine Pointer to an OSyncSinkEngine
+ * @param error Pointer to an error struct
+ * @returns the newly registered Mapping Entry Engine, NULL on error
+ */
 OSyncMappingEntryEngine *osync_entry_engine_new(OSyncMappingEntry *entry, OSyncMappingEngine *mapping_engine, OSyncSinkEngine *sink_engine, OSyncObjEngine *objengine, OSyncError **error);
+
+/*! @brief Increase the reference count on a Mapping Entry Engine 
+ * 
+ * @param plugin Pointer to the Mapping Entry Engine
+ * 
+ */
 OSyncMappingEntryEngine *osync_entry_engine_ref(OSyncMappingEntryEngine *engine);
+
+/*! @brief Decrease the reference count on a Mapping Entry Engine 
+ * 
+ * @param plugin Pointer to the Mapping Entry Engine
+ * 
+ */
 void osync_entry_engine_unref(OSyncMappingEntryEngine *engine);
 
 /*! @brief Tries to match OSyncMappingEntryEngine with a OSyncChange.
@@ -51,10 +80,34 @@ void osync_entry_engine_unref(OSyncMappingEntryEngine *engine);
  */
 osync_bool osync_entry_engine_matches(OSyncMappingEntryEngine *engine, OSyncChange *change);
 
-void osync_entry_engine_update(OSyncMappingEntryEngine *engine, OSyncChange *change);
+/*! @brief Get the pointer of the assinged OSyncChange object 
+ *
+ * @param engine Pointer to an OSyncMappingEntryEngine
+ * @returns Pointer to assigned OSyncChange, or NULL if no change is set
+ */
 OSyncChange *osync_entry_engine_get_change(OSyncMappingEntryEngine *engine);
 
-osync_bool osync_entry_engine_is_dirty(OSyncMappingEntryEngine *engine);
+/*! @brief Update the OSyncChange object in Mapping Entry Engine 
+ *
+ * Mapping Entry Engine get flagged as not sync in the Mapping Table, when
+ * change get updated.
+ *
+ * @param engine Pointer to an OSyncMappingEntryEngine
+ * @param change Pointer to new change to assign or NULL to unset the current change
+ */
+void osync_entry_engine_update(OSyncMappingEntryEngine *engine, OSyncChange *change);
+
+/*! @brief Set the dirty flag for OSyncMappingEntryEngine 
+ *
+ * If dirty flag for OSyncMappingEntryEngine get set, the entry gets handled
+ * in the engine WRITE section.
+ *
+ * @param engine Pointer to an OSyncMappingEntryEngine
+ * @param change Pointer to new change to assign or NULL to unset the current change
+ */
 void osync_entry_engine_set_dirty(OSyncMappingEntryEngine *engine, osync_bool dirty);
 
-#endif /*OPENSYNC_MAPPING_ENTRY_ENGINE_INTERNALS_H_*/
+/*@}*/
+
+#endif /* OPENSYNC_MAPPING_ENTRY_ENGINE_INTERNALS_H_ */
+

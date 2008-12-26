@@ -135,6 +135,12 @@ OSyncChange *osync_entry_engine_get_change(OSyncMappingEntryEngine *engine)
 	return engine->change;
 }
 
+OSyncChangeType osync_entry_engine_get_changetype(OSyncMappingEntryEngine *engine)
+{
+	osync_assert(engine);
+	return osync_change_get_changetype(osync_entry_engine_get_change(engine));
+}
+
 osync_bool osync_entry_engine_is_dirty(OSyncMappingEntryEngine *engine)
 {
 	osync_assert(engine);

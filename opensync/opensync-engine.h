@@ -25,6 +25,7 @@ OPENSYNC_BEGIN_DECLS
 
 #include "engine/opensync_engine.h"
 #include "engine/opensync_mapping_engine.h"
+#include "engine/opensync_mapping_entry_engine.h"
 #include "engine/opensync_obj_engine.h"
 
 OPENSYNC_END_DECLS
