@@ -204,6 +204,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 	char *member_objtype = NULL;
 	OSyncData *data = NULL;
 	OSyncObjFormat *internalFormat = NULL;
+	OSyncObjFormat *detected_format = NULL;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, proxy, userdata, change);
 
@@ -217,13 +218,25 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 	objtype_sink = osync_member_find_objtype_sink(member, objtype);
 
 	osync_trace(TRACE_INTERNAL, "Received change %s, changetype %i, format %s, objtype %s from member %lli", uid, changetype, format, objtype, memberid);
-	member_objtype = g_strdup_printf("%lli_%s", memberid, objtype); 
 
 	data = osync_change_get_data(change);
 
+	/* try to detect encapsulated formats */
+	if (!strcmp(objtype, "data")) { /* @TODO: restricted to objtype data, due to the testsuite (and perforamnce)! */
+		detected_format = osync_format_env_detect_objformat_full(engine->formatenv, data, &error);
+		if (detected_format && detected_format != osync_change_get_objformat(change)) {
+			osync_trace(TRACE_INTERNAL, "Detected format (%s) different then the reported format (%s)!",
+			osync_objformat_get_name(detected_format),
+			osync_objformat_get_name(osync_change_get_objformat(change)));
+			objtype = osync_objformat_get_objtype(detected_format);
+		}
+	}
+	
+	member_objtype = g_strdup_printf("%lli_%s", memberid, objtype); 
+
 	/* Convert the format to the internal format */
-	internalFormat = _osync_engine_get_internal_format(engine, osync_change_get_objtype(change));
-	osync_trace(TRACE_INTERNAL, "common format %p for objtype %s", internalFormat, osync_change_get_objtype(change));
+	internalFormat = _osync_engine_get_internal_format(engine, objtype);
+	osync_trace(TRACE_INTERNAL, "common format %p for objtype %s", internalFormat, objtype);
 
 	/* Only convert if the engine is allowed to convert and if a internal format is available. 
 		 The reason that the engine isn't allowed to convert could be backup. dumping the changes. 
@@ -265,12 +278,9 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 			unsigned int xmlformat_size = 0, size = 0;
 			OSyncXMLFormat *xmlformat = NULL;
 			OSyncXMLFormat *xmlformat_entire = NULL;
-			const char *objtype = NULL;
 			OSyncMerger *merger = NULL;
 			osync_trace(TRACE_INTERNAL, "Merge the XMLFormat.");
 
-			objtype = osync_change_get_objtype(change);
-		
 			member = osync_client_proxy_get_member(proxy);
 			merger = osync_member_get_merger(member);
 			if(merger) {
@@ -300,7 +310,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 	{GList * o = NULL;
 		for (o = engine->object_engines; o; o = o->next) {
 			OSyncObjEngine *objengine = o->data;
-			if (!strcmp(osync_change_get_objtype(change), osync_obj_engine_get_objtype(objengine))) {
+			if (!strcmp(objtype, osync_obj_engine_get_objtype(objengine))) {
 				found = TRUE;
 				if (!osync_obj_engine_receive_change(objengine, proxy, change, &error))
 					goto error;
