@@ -342,19 +342,6 @@ static void _osync_obj_engine_read_callback(OSyncClientProxy *proxy, void *userd
 		if (osync_bitcount(engine->sink_get_changes) < osync_bitcount(engine->sink_connects)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Fewer sink_engines reported get_changes than connected");
 			osync_obj_engine_set_error(engine, locerror);
-		} else {
-			/* We are now done reading the changes. so we can now start to create the mappings, conflicts etc */
-			if (!osync_obj_engine_map_changes(engine, &locerror)) {
-				osync_obj_engine_set_error(engine, locerror);
-			} else {
-				GList *m;
-				for (m = engine->mapping_engines; m; m = m->next) {
-					OSyncMappingEngine *mapping_engine = m->data;
-					if (!mapping_engine->synced)
-						osync_mapping_engine_check_conflict(mapping_engine);
-				}
-			}
-
 		}
 
 		osync_obj_engine_event(engine, OSYNC_ENGINE_EVENT_READ, locerror ? locerror : error);
@@ -970,6 +957,21 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 		}
 
 		break;
+	case OSYNC_ENGINE_COMMAND_MAP:
+		/* We are now done reading the changes. so we can now start to create the mappings, conflicts etc */
+		if (!osync_obj_engine_map_changes(engine, error)) {
+			osync_obj_engine_set_error(engine, *error);
+		} else {
+			for (m = engine->mapping_engines; m; m = m->next) {
+				OSyncMappingEngine *mapping_engine = m->data;
+				if (!mapping_engine->synced)
+					osync_mapping_engine_check_conflict(mapping_engine);
+			}
+		}
+
+		osync_obj_engine_event(engine, OSYNC_ENGINE_EVENT_MAPPED, *error);
+
+		break;
 	case OSYNC_ENGINE_COMMAND_WRITE:
 		if (engine->conflicts) {
 			osync_trace(TRACE_INTERNAL, "We still have conflict. Delaying write");
@@ -986,11 +988,11 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 		/* Write the changes. First, we can multiply the winner in the mapping */
 		osync_trace(TRACE_INTERNAL, "Preparing write. multiplying %i mappings", g_list_length(engine->mapping_engines));
 		for (m = engine->mapping_engines; m; m = m->next) {
-			OSyncMappingEngine *mapping_engine = m->data;
-			if (!osync_mapping_engine_multiply(mapping_engine, error))
-				goto error;
+		        OSyncMappingEngine *mapping_engine = m->data;
+		        if (!osync_mapping_engine_multiply(mapping_engine, error))
+		                goto error;
 		}
-			
+
 		osync_trace(TRACE_INTERNAL, "Starting to write");
 		for (p = engine->sink_engines; p; p = p->next) {
 			OSyncMember *member = NULL;

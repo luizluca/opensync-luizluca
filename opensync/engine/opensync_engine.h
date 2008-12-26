@@ -22,39 +22,101 @@
 #ifndef OPENSYNC_ENGINE_H_
 #define OPENSYNC_ENGINE_H_
 
+/**
+ * @defgroup OSyncEngine OpenSync Engine 
+ * @ingroup OSyncPublic
+ * @brief Interface to start and control a synchronization
+ *
+ * The OpenSync Engine provide the interfaces to start a synchronization and
+ * to control various synchronization options. A synchronization process can
+ * be started in a synchronous (blocking) and asynchronous way.
+ * 
+ * Callback interfaces allow to dynamically influence the synchronization process.
+ * e.g. conflict callback, ...
+ *
+ * Other callbacks give frequent updates of the synchronization process, as well
+ * as error message.
+ *
+ */
+
+/*@{*/
+
+/*! @brief Engine Commands 
+ *
+ **/
+
 typedef enum {
+	/** Initiate connect phase */
 	OSYNC_ENGINE_COMMAND_CONNECT = 1,
+	/** Finalize connect phase *//
 	OSYNC_ENGINE_COMMAND_CONNECT_DONE,
+	/** Read/Get latest changes or all records, depending on synchronization type */
 	OSYNC_ENGINE_COMMAND_READ,
+	/** Write/Commit changes */	
 	OSYNC_ENGINE_COMMAND_WRITE,
+	/** Finalize this synchronization */
 	OSYNC_ENGINE_COMMAND_SYNC_DONE, 
+	/* Disconnect */
 	OSYNC_ENGINE_COMMAND_DISCONNECT,
+	/* Solve conflict(s) */
 	OSYNC_ENGINE_COMMAND_SOLVE,
+	/* Discover resources and capabilities */
 	OSYNC_ENGINE_COMMAND_DISCOVER,
-	OSYNC_ENGINE_COMMAND_ABORT
+	/* Abort the currently running synchronization process */ 
+	OSYNC_ENGINE_COMMAND_ABORT,
+	/* Map all reported changes */
+	OSYNC_ENGINE_COMMAND_MAP
 } OSyncEngineCmd;
 
+
+/*! @brief Engine Status
+ *
+ **/
 typedef enum {
+	/** Uninitialized */
 	OSYNC_ENGINE_STATE_UNINITIALIZED,
+	/** Initialized */
 	OSYNC_ENGINE_STATE_INITIALIZED,
+	/** Waiting for synchronization request by a peer */
 	OSYNC_ENGINE_STATE_WAITING,
+	/** Connecting the peers */
 	OSYNC_ENGINE_STATE_CONNECTING,
+	/** Reading latest changes or all records, depending on synchronization type */
 	OSYNC_ENGINE_STATE_READING,
+	/** Writing changes to peers */
 	OSYNC_ENGINE_STATE_WRITING,
-	OSYNC_ENGINE_STATE_DISCONNECTING
+	/** Disconnecting the peers */
+	OSYNC_ENGINE_STATE_DISCONNECTING,
+	/** Creating mapping between the different reported records */
+	OSYNC_ENGINE_STATE_MAPPING
 } OSyncEngineState;
 
+/*! @brief Completed Engine Event
+ *
+ **/
 typedef enum {
+	/** Initial connection phase of all peers are done */
 	OSYNC_ENGINE_EVENT_CONNECTED = 1,
+	/** Connection phase to all all peers is completed */
 	OSYNC_ENGINE_EVENT_CONNECT_DONE,
+	/** Error */
 	OSYNC_ENGINE_EVENT_ERROR,
+	/** Read latest changes or all records, depending on synchronization type */
 	OSYNC_ENGINE_EVENT_READ,
+	/** All changes got written */
 	OSYNC_ENGINE_EVENT_WRITTEN,
+	/** Synchronization process got finalized */
 	OSYNC_ENGINE_EVENT_SYNC_DONE,
+	/** All peers got disconnected */
 	OSYNC_ENGINE_EVENT_DISCONNECTED,
+	/** Synchronization process was successful */
 	OSYNC_ENGINE_EVENT_SUCCESSFUL,
+	/** All conflicts got solved */
 	OSYNC_ENGINE_EVENT_END_CONFLICTS,
-	OSYNC_ENGINE_EVENT_PREV_UNCLEAN
+	/** Previous synchronization process was unclean */
+	OSYNC_ENGINE_EVENT_PREV_UNCLEAN,
+	/** All reported records got mapped */
+	OSYNC_ENGINE_EVENT_MAPPED
 } OSyncEngineEvent;
 
 typedef enum {
@@ -169,5 +231,7 @@ OSYNC_EXPORT osync_bool osync_engine_mapping_solve(OSyncEngine *engine, OSyncMap
 OSYNC_EXPORT osync_bool osync_engine_mapping_duplicate(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncError **error);
 OSYNC_EXPORT osync_bool osync_engine_mapping_ignore_conflict(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncError **error);
 OSYNC_EXPORT osync_bool osync_engine_mapping_use_latest(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncError **error);
+
+/*@}*/
 
 #endif /*OPENSYNC_ENGINE_H_*/

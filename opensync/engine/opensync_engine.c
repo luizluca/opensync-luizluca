@@ -866,10 +866,31 @@ static void _osync_engine_generate_get_changes_event(OSyncEngine *engine)
 		osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
 	} else {
 		osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_READ, NULL);
-		osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_END_CONFLICTS, NULL);
 		
 		osync_engine_event(engine, OSYNC_ENGINE_EVENT_READ);
 	}
+}
+
+static void _osync_engine_generate_mapped_event(OSyncEngine *engine)
+{
+
+	if (osync_bitcount(engine->obj_errors | engine->obj_mapped) == g_list_length(engine->object_engines)) {
+		if (osync_bitcount(engine->obj_errors)) {
+			OSyncError *locerror = NULL;
+			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed while mapping changes. Aborting");
+			osync_trace(TRACE_ERROR, "%s", osync_error_print(&locerror));
+			osync_engine_set_error(engine, locerror);
+			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_ERROR, locerror);
+			osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
+		} else {
+			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_MAPPED, NULL);
+			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_END_CONFLICTS, NULL);
+			
+			osync_engine_event(engine, OSYNC_ENGINE_EVENT_MAPPED);
+		}
+	} else
+		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->obj_errors | engine->obj_mapped));
+
 }
 
 static void _osync_engine_generate_written_event(OSyncEngine *engine)
@@ -1102,6 +1123,9 @@ static void _osync_engine_get_objengine_event(OSyncEngine *engine, OSyncObjEngin
 	case OSYNC_ENGINE_EVENT_READ:
 		engine->obj_get_changes = engine->obj_get_changes | (0x1 << position);
 		break;
+	case OSYNC_ENGINE_EVENT_MAPPED:
+		engine->obj_mapped = engine->obj_mapped | (0x1 << position);
+		break;
 	case OSYNC_ENGINE_EVENT_WRITTEN:
 		engine->obj_written = engine->obj_written | (0x1 << position);
 		break;
@@ -1129,6 +1153,9 @@ static void _osync_engine_generate_event(OSyncEngine *engine, OSyncEngineEvent e
 		break;
 	case OSYNC_ENGINE_EVENT_READ:
 		_osync_engine_generate_get_changes_event(engine);
+		break;
+	case OSYNC_ENGINE_EVENT_MAPPED:
+		_osync_engine_generate_mapped_event(engine);
 		break;
 	case OSYNC_ENGINE_EVENT_WRITTEN:
 		_osync_engine_generate_written_event(engine);
@@ -1402,6 +1429,7 @@ void osync_engine_command(OSyncEngine *engine, OSyncEngineCommand *command)
 		break;
 	case OSYNC_ENGINE_COMMAND_CONNECT_DONE:
 	case OSYNC_ENGINE_COMMAND_READ:
+	case OSYNC_ENGINE_COMMAND_MAP:
 	case OSYNC_ENGINE_COMMAND_WRITE:
 	case OSYNC_ENGINE_COMMAND_DISCONNECT:
 	case OSYNC_ENGINE_COMMAND_SYNC_DONE:
@@ -1514,7 +1542,16 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 		}
 		break;
 	case OSYNC_ENGINE_EVENT_READ:
-		/* Now that we are connected, we write the changes */
+		/* Now that we read everythin, we map the changes */
+		for (o = engine->object_engines; o; o = o->next) {
+			OSyncObjEngine *objengine = o->data;
+			if (!osync_obj_engine_command(objengine, OSYNC_ENGINE_COMMAND_MAP, &locerror))
+				goto error;
+		}
+
+		break;
+	case OSYNC_ENGINE_EVENT_MAPPED:
+		/* Now that we are mapped the chnage, we write the changes */
 		for (o = engine->object_engines; o; o = o->next) {
 			OSyncObjEngine *objengine = o->data;
 			if (!osync_obj_engine_command(objengine, OSYNC_ENGINE_COMMAND_WRITE, &locerror))
@@ -1593,6 +1630,7 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 		engine->obj_connect_done = 0;
 		engine->obj_disconnects = 0;
 		engine->obj_get_changes = 0;
+		engine->obj_mapped = 0;
 		engine->obj_written = 0;
 		engine->obj_sync_done = 0;
 			
