@@ -84,6 +84,9 @@ OSYNC_EXPORT void osync_change_set_uid(OSyncChange *change, const char *uid);
 OSYNC_EXPORT const char *osync_change_get_uid(OSyncChange *change);
 
 /*! @brief Gets the changetype of a change
+ *
+ * If change is NULL or changetype not set, then OSYNC_CHANGE_TYPE_UNKNOWN get
+ * returned.
  * 
  * @param change The change
  * @returns The changetype

@@ -71,7 +71,9 @@ void osync_change_unref(OSyncChange *change)
 
 OSyncChangeType osync_change_get_changetype(OSyncChange *change)
 {
-	osync_assert(change);
+	if (!change)
+		return OSYNC_CHANGE_TYPE_UNKNOWN;
+
 	return change->changetype;
 }
 
