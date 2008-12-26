@@ -105,3 +105,15 @@ osync_bool osync_sink_engine_is_connected(OSyncSinkEngine *engine)
 	return !!(objengine->sink_connects & (1 << engine->position));
 }
 
+void osync_sink_engine_set_dummy(OSyncSinkEngine *engine, osync_bool isdummy)
+{
+	osync_assert(engine);
+	engine->dummy_sink = isdummy;
+}
+
+osync_bool osync_sink_engine_is_dummy(OSyncSinkEngine *engine)
+{
+	osync_assert(engine);
+	return engine->dummy_sink;
+}
+
