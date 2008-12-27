@@ -113,6 +113,12 @@ osync_bool demarshal_xmlformat(OSyncMessage *message, char **output, unsigned in
 		return FALSE;
 	}
 
+	/* FIXME: Avoid sorting in demarshal call!
+	 *        Demarshal the entire XMLFormat struct, including the sorte
+	 *        attribute to keep this information.
+	 */
+	osync_xmlformat_sort(xmlformat);
+
 	g_free(buffer);
 
 	*output = (char*)xmlformat;
