@@ -1,53 +1,117 @@
 #include "support.h"
 
+#include "opensync/group/opensync_group_internals.h"
+#include "opensync/engine/opensync_engine_internals.h"
+
 START_TEST (multisync_easy_new)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
-	OSyncEnv *osync = init_env();
-	OSyncGroup *group = osync_group_load(osync, "configs/group", NULL);
+	char *formatdir = g_strdup_printf("%s/formats", testbed);
+	char *plugindir = g_strdup_printf("%s/plugins", testbed);
+	
+	OSyncError *error = NULL;
+	OSyncGroup *group = osync_group_new(&error);
 	fail_unless(group != NULL, NULL);
-	fail_unless(osync_env_num_groups(osync) == 1, NULL);
-	mark_point();
+	fail_unless(error == NULL, NULL);
 	
-	OSyncEngine *engine = init_engine(group);
+	osync_group_set_schemadir(group, testbed);
+	fail_unless(osync_group_load(group, "configs/group", &error), NULL);
+	fail_unless(error == NULL, NULL);
 	
-	synchronize_once(engine, NULL);
-	osengine_finalize(engine);
-	osengine_free(engine);
+	OSyncEngine *engine = osync_engine_new(group, &error);
+	fail_unless(engine != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+	osync_group_unref(group);
+
+	osync_engine_set_schemadir(engine, testbed);
+	osync_engine_set_plugindir(engine, plugindir);
+	osync_engine_set_formatdir(engine, formatdir);
+	
+	osync_engine_set_changestatus_callback(engine, entry_status, GINT_TO_POINTER(1));
+	osync_engine_set_mappingstatus_callback(engine, mapping_status, GINT_TO_POINTER(1));
+	osync_engine_set_enginestatus_callback(engine, engine_status, GINT_TO_POINTER(1));
+	osync_engine_set_memberstatus_callback(engine, member_status, GINT_TO_POINTER(1));
+	
+	fail_unless(osync_engine_initialize(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	fail_unless(osync_engine_synchronize_and_block(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	fail_unless(osync_engine_finalize(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+
+	osync_engine_unref(engine);
 	
 	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
 	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" = \"x\""), NULL);
 	
+	/* Client checks */
+	fail_unless(num_client_connected == 3, NULL);
+	fail_unless(num_client_main_connected == 3, NULL);
+	fail_unless(num_client_read == 3, NULL);
+	fail_unless(num_client_main_read == 3, NULL);
+	fail_unless(num_client_written == 3, NULL);
+	fail_unless(num_client_main_written == 3, NULL);
+	fail_unless(num_client_disconnected == 3, NULL);
+	fail_unless(num_client_main_disconnected == 3, NULL);
+	fail_unless(num_client_errors == 0, NULL);
+	fail_unless(num_client_sync_done == 3, NULL);
+	fail_unless(num_client_main_sync_done == 3, NULL);
+	
+	/* Engine checks */
 	fail_unless(num_engine_connected == 1, NULL);
+	fail_unless(num_engine_errors == 0, NULL);
 	fail_unless(num_engine_read == 1, NULL);
-	fail_unless(num_engine_wrote == 1, NULL);
+	fail_unless(num_engine_written == 1, NULL);
+	fail_unless(num_engine_sync_done == 1, NULL);
 	fail_unless(num_engine_disconnected == 1, NULL);
-	fail_unless(num_written == 2, NULL);
-	fail_unless(num_read == 1, NULL);
+	fail_unless(num_engine_successful == 1, NULL);
 	fail_unless(num_engine_end_conflicts == 1, NULL);
+	fail_unless(num_engine_prev_unclean == 0, NULL);
+
+	/* Change checks */
+	fail_unless(num_change_read == 1, NULL);
+	fail_unless(num_change_written == 2, NULL);
+	fail_unless(num_change_error == 0, NULL);
 	
-	OSyncMappingTable *maptable = mappingtable_load(group, 1, 0);
-	check_mapping(maptable, 1, 0, 3, "testdata", "mockformat", "data");
-	check_mapping(maptable, 2, 0, 3, "testdata", "mockformat", "data");
-	check_mapping(maptable, 3, 0, 3, "testdata", "mockformat", "data");
-    mappingtable_close(maptable);
+	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
+	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
+	g_free(path);
+	check_mapping(maptable, 1, 1, 3, "testdata");
+	check_mapping(maptable, 2, 1, 3, "testdata");
+	check_mapping(maptable, 3, 1, 3, "testdata");
+	osync_mapping_table_close(maptable);
+	osync_mapping_table_unref(maptable);
+ 
+	path = g_strdup_printf("%s/configs/group/1/hashtable.db", testbed);
+	OSyncHashTable *table = hashtable_load(path, "mockobjtype1", 1);
+	g_free(path);
+	check_hash(table, "testdata");
+	osync_hashtable_unref(table);
 	
-	OSyncHashTable *table = hashtable_load(group, 1, 1);
-    check_hash(table, "testdata");
-	osync_hashtable_close(table);
+	path = g_strdup_printf("%s/configs/group/2/hashtable.db", testbed);
+	table = hashtable_load(path, "mockobjtype1", 1);
+	g_free(path);
+	check_hash(table, "testdata");
+	osync_hashtable_unref(table);
 	
-	table = hashtable_load(group, 2, 1);
-    check_hash(table, "testdata");
-	osync_hashtable_close(table);
-	
-	table = hashtable_load(group, 3, 1);
-    check_hash(table, "testdata");
-	osync_hashtable_close(table);
-	
+	path = g_strdup_printf("%s/configs/group/3/hashtable.db", testbed);
+	table = hashtable_load(path, "mockobjtype1", 1);
+	g_free(path);
+	check_hash(table, "testdata");
+	osync_hashtable_unref(table);
+
+	g_free(formatdir);
+	g_free(plugindir);
+
 	destroy_testbed(testbed);
 }
 END_TEST
 
+
+/* FIXME: port testcases, see ticket #981 */
+#if 0
 START_TEST (multisync_easy_mod)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
@@ -2280,12 +2344,16 @@ START_TEST(multisync_multi_conflict_b2)
 	unsetenv("BATCH_COMMIT");
 }
 END_TEST
+#endif
 
 Suite *multisync_suite(void)
 {
 	Suite *s = suite_create("Multisync");
 	//Suite *s2 = suite_create("Multisync");
 	create_case(s, "multisync_easy_new", multisync_easy_new);
+
+/* FIXME: port testcases, see ticket #981 */
+#if 0
 	create_case(s, "multisync_dual_new", multisync_dual_new);
 	create_case(s, "multisync_triple_new", multisync_triple_new);
 	create_case(s, "multisync_easy_mod", multisync_easy_mod);
@@ -2329,6 +2397,7 @@ Suite *multisync_suite(void)
 	create_case(s, "multisync_delayed_conflict_handler_b2", multisync_delayed_conflict_handler_b2);
 	create_case(s, "multisync_conflict_ignore_b2", multisync_conflict_ignore_b2);
 	create_case(s, "multisync_multi_conflict_b2", multisync_multi_conflict_b2);
+#endif
 	
 	return s;
 }
