@@ -112,6 +112,138 @@ END_TEST
 
 /* FIXME: port testcases, see ticket #981 */
 #if 0
+START_TEST (multisync_dual_new)
+{
+	char *testbed = setup_testbed("multisync_easy_new_partial");
+	OSyncEnv *osync = init_env();
+	OSyncGroup *group = osync_group_load(osync, "configs/group", NULL);
+	fail_unless(group != NULL, NULL);
+	fail_unless(osync_env_num_groups(osync) == 1, NULL);
+	mark_point();
+	
+	OSyncEngine *engine = init_engine(group);
+	
+	synchronize_once(engine, NULL);
+
+	fail_unless(num_engine_connected == 1, NULL);
+	fail_unless(num_engine_read == 1, NULL);
+	fail_unless(num_engine_wrote == 1, NULL);
+	fail_unless(num_engine_disconnected == 1, NULL);
+	fail_unless(num_written == 1, NULL);
+	fail_unless(num_read == 2, NULL);
+
+	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" = \"x\""), NULL);
+	
+	OSyncMappingTable *maptable = mappingtable_load(group, 1, 0);
+	check_mapping(maptable, 1, 0, 3, "testdata", "mockformat", "data");
+	check_mapping(maptable, 2, 0, 3, "testdata", "mockformat", "data");
+	check_mapping(maptable, 3, 0, 3, "testdata", "mockformat", "data");
+    mappingtable_close(maptable);
+	
+	OSyncHashTable *table = hashtable_load(group, 1, 1);
+    check_hash(table, "testdata");
+	osync_hashtable_close(table);
+	
+	table = hashtable_load(group, 2, 1);
+    check_hash(table, "testdata");
+	osync_hashtable_close(table);
+	
+	table = hashtable_load(group, 3, 1);
+    check_hash(table, "testdata");
+	osync_hashtable_close(table);
+	
+	system("rm -f data2/testdata");
+	
+	synchronize_once(engine, NULL);
+	osengine_finalize(engine);
+	
+	maptable = mappingtable_load(group, 0, 0);
+    mappingtable_close(maptable);
+	
+	table = hashtable_load(group, 1, 0);
+	osync_hashtable_close(table);
+	
+	table = hashtable_load(group, 2, 0);
+	osync_hashtable_close(table);
+	
+	table = hashtable_load(group, 3, 0);
+	osync_hashtable_close(table);
+	
+	fail_unless(!system("test \"x$(ls data1)\" = \"x\""), NULL);
+	fail_unless(!system("test \"x$(ls data2)\" = \"x\""), NULL);
+	fail_unless(!system("test \"x$(ls data3)\" = \"x\""), NULL);
+	
+	destroy_testbed(testbed);
+}
+END_TEST
+
+START_TEST (multisync_triple_new)
+{
+	char *testbed = setup_testbed("multisync_easy_new_partial2");
+	OSyncEnv *osync = init_env();
+	OSyncGroup *group = osync_group_load(osync, "configs/group", NULL);
+	fail_unless(group != NULL, NULL);
+	fail_unless(osync_env_num_groups(osync) == 1, NULL);
+	mark_point();
+	
+	OSyncEngine *engine = init_engine(group);
+	
+	synchronize_once(engine, NULL);
+
+	fail_unless(num_engine_connected == 1, NULL);
+	fail_unless(num_engine_read == 1, NULL);
+	fail_unless(num_engine_wrote == 1, NULL);
+	fail_unless(num_engine_disconnected == 1, NULL);
+	fail_unless(num_written == 0, NULL);
+	fail_unless(num_read == 3, NULL);
+
+	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" = \"x\""), NULL);
+	
+	OSyncMappingTable *maptable = mappingtable_load(group, 1, 0);
+	check_mapping(maptable, 1, 0, 3, "testdata", "mockformat", "data");
+	check_mapping(maptable, 2, 0, 3, "testdata", "mockformat", "data");
+	check_mapping(maptable, 3, 0, 3, "testdata", "mockformat", "data");
+    mappingtable_close(maptable);
+	
+	OSyncHashTable *table = hashtable_load(group, 1, 1);
+    check_hash(table, "testdata");
+	osync_hashtable_close(table);
+	
+	table = hashtable_load(group, 2, 1);
+    check_hash(table, "testdata");
+	osync_hashtable_close(table);
+	
+	table = hashtable_load(group, 3, 1);
+    check_hash(table, "testdata");
+	osync_hashtable_close(table);
+	
+	system("rm -f data1/testdata");
+	
+	synchronize_once(engine, NULL);
+	osengine_finalize(engine);
+	
+	maptable = mappingtable_load(group, 0, 0);
+    mappingtable_close(maptable);
+	
+	table = hashtable_load(group, 1, 0);
+	osync_hashtable_close(table);
+	
+	table = hashtable_load(group, 2, 0);
+	osync_hashtable_close(table);
+	
+	table = hashtable_load(group, 3, 0);
+	osync_hashtable_close(table);
+	
+	fail_unless(!system("test \"x$(ls data1)\" = \"x\""), NULL);
+	fail_unless(!system("test \"x$(ls data2)\" = \"x\""), NULL);
+	fail_unless(!system("test \"x$(ls data3)\" = \"x\""), NULL);
+	
+	destroy_testbed(testbed);
+}
+END_TEST
+
 START_TEST (multisync_easy_mod)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
@@ -293,139 +425,6 @@ START_TEST (multisync_triple_mod)
 	table = hashtable_load(group, 3, 1);
     check_hash(table, "testdata");
 	osync_hashtable_close(table);
-	
-	destroy_testbed(testbed);
-}
-END_TEST
-
-START_TEST (multisync_dual_new)
-{
-	char *testbed = setup_testbed("multisync_easy_new_partial");
-	OSyncEnv *osync = init_env();
-	OSyncGroup *group = osync_group_load(osync, "configs/group", NULL);
-	fail_unless(group != NULL, NULL);
-	fail_unless(osync_env_num_groups(osync) == 1, NULL);
-	mark_point();
-	
-	OSyncEngine *engine = init_engine(group);
-	
-	synchronize_once(engine, NULL);
-
-	fail_unless(num_engine_connected == 1, NULL);
-	fail_unless(num_engine_read == 1, NULL);
-	fail_unless(num_engine_wrote == 1, NULL);
-	fail_unless(num_engine_disconnected == 1, NULL);
-	fail_unless(num_written == 1, NULL);
-	fail_unless(num_read == 2, NULL);
-
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" = \"x\""), NULL);
-	
-	OSyncMappingTable *maptable = mappingtable_load(group, 1, 0);
-	check_mapping(maptable, 1, 0, 3, "testdata", "mockformat", "data");
-	check_mapping(maptable, 2, 0, 3, "testdata", "mockformat", "data");
-	check_mapping(maptable, 3, 0, 3, "testdata", "mockformat", "data");
-    mappingtable_close(maptable);
-	
-	OSyncHashTable *table = hashtable_load(group, 1, 1);
-    check_hash(table, "testdata");
-	osync_hashtable_close(table);
-	
-	table = hashtable_load(group, 2, 1);
-    check_hash(table, "testdata");
-	osync_hashtable_close(table);
-	
-	table = hashtable_load(group, 3, 1);
-    check_hash(table, "testdata");
-	osync_hashtable_close(table);
-	
-	system("rm -f data2/testdata");
-	
-	synchronize_once(engine, NULL);
-	osengine_finalize(engine);
-	
-	maptable = mappingtable_load(group, 0, 0);
-    mappingtable_close(maptable);
-	
-	table = hashtable_load(group, 1, 0);
-	osync_hashtable_close(table);
-	
-	table = hashtable_load(group, 2, 0);
-	osync_hashtable_close(table);
-	
-	table = hashtable_load(group, 3, 0);
-	osync_hashtable_close(table);
-	
-	fail_unless(!system("test \"x$(ls data1)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data3)\" = \"x\""), NULL);
-	
-	destroy_testbed(testbed);
-}
-END_TEST
-
-
-START_TEST (multisync_triple_new)
-{
-	char *testbed = setup_testbed("multisync_easy_new_partial2");
-	OSyncEnv *osync = init_env();
-	OSyncGroup *group = osync_group_load(osync, "configs/group", NULL);
-	fail_unless(group != NULL, NULL);
-	fail_unless(osync_env_num_groups(osync) == 1, NULL);
-	mark_point();
-	
-	OSyncEngine *engine = init_engine(group);
-	
-	synchronize_once(engine, NULL);
-
-	fail_unless(num_engine_connected == 1, NULL);
-	fail_unless(num_engine_read == 1, NULL);
-	fail_unless(num_engine_wrote == 1, NULL);
-	fail_unless(num_engine_disconnected == 1, NULL);
-	fail_unless(num_written == 0, NULL);
-	fail_unless(num_read == 3, NULL);
-
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" = \"x\""), NULL);
-	
-	OSyncMappingTable *maptable = mappingtable_load(group, 1, 0);
-	check_mapping(maptable, 1, 0, 3, "testdata", "mockformat", "data");
-	check_mapping(maptable, 2, 0, 3, "testdata", "mockformat", "data");
-	check_mapping(maptable, 3, 0, 3, "testdata", "mockformat", "data");
-    mappingtable_close(maptable);
-	
-	OSyncHashTable *table = hashtable_load(group, 1, 1);
-    check_hash(table, "testdata");
-	osync_hashtable_close(table);
-	
-	table = hashtable_load(group, 2, 1);
-    check_hash(table, "testdata");
-	osync_hashtable_close(table);
-	
-	table = hashtable_load(group, 3, 1);
-    check_hash(table, "testdata");
-	osync_hashtable_close(table);
-	
-	system("rm -f data1/testdata");
-	
-	synchronize_once(engine, NULL);
-	osengine_finalize(engine);
-	
-	maptable = mappingtable_load(group, 0, 0);
-    mappingtable_close(maptable);
-	
-	table = hashtable_load(group, 1, 0);
-	osync_hashtable_close(table);
-	
-	table = hashtable_load(group, 2, 0);
-	osync_hashtable_close(table);
-	
-	table = hashtable_load(group, 3, 0);
-	osync_hashtable_close(table);
-	
-	fail_unless(!system("test \"x$(ls data1)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data3)\" = \"x\""), NULL);
 	
 	destroy_testbed(testbed);
 }
