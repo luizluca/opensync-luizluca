@@ -41,8 +41,8 @@
 
 /*@{*/
 
-/*! @brief Engine Commands 
- *
+/**
+ * @brief Engine Commands
  **/
 
 typedef enum {
@@ -69,8 +69,8 @@ typedef enum {
 } OSyncEngineCmd;
 
 
-/*! @brief Engine Status
- *
+/**
+ * @brief Engine Status
  **/
 typedef enum {
 	/** Uninitialized */
@@ -91,8 +91,8 @@ typedef enum {
 	OSYNC_ENGINE_STATE_MAPPING
 } OSyncEngineState;
 
-/*! @brief Completed Engine Event
- *
+/**
+ * @brief Completed Engine Event
  **/
 typedef enum {
 	/** Initial connection phase of all peers are done */
@@ -143,8 +143,8 @@ typedef enum {
 } OSyncMappingEvent;
 
 
-/*! @brief Struct for the member status callback
- * @ingroup OSEnginePublic
+/**
+ * @brief Struct for the member status callback
  */
 typedef struct OSyncMemberUpdate {
 	/** The type of the status update */
@@ -156,8 +156,8 @@ typedef struct OSyncMemberUpdate {
 	OSyncError *error;
 } OSyncMemberUpdate;
 
-/*! @brief Struct for the change status callback
- * @ingroup OSEnginePublic
+/**
+ * @brief Struct for the change status callback
  */
 typedef struct OSyncChangeUpdate {
 	/** The type of the status update */
@@ -172,8 +172,8 @@ typedef struct OSyncChangeUpdate {
 	OSyncError *error;
 } OSyncChangeUpdate;
 
-/*! @brief Struct for the mapping status callback
- * @ingroup OSEnginePublic
+/**
+ * @brief Struct for the mapping status callback
  */
 typedef struct OSyncMappingUpdate {
 	/** The type of the status update */
@@ -186,8 +186,8 @@ typedef struct OSyncMappingUpdate {
 	OSyncError *error;
 } OSyncMappingUpdate;
 
-/*! @brief Struct for the engine status callback
- * @ingroup OSEnginePublic
+/**
+ * @brief Struct for the engine status callback
  */
 typedef struct OSyncEngineUpdate {
 	/** The type of the status update */

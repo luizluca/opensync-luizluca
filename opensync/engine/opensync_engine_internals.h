@@ -42,14 +42,16 @@ int osync_engine_num_objengine(OSyncEngine *engine);
 OSyncClientProxy *osync_engine_nth_proxy(OSyncEngine *engine, int nth);
 int osync_engine_num_proxies(OSyncEngine *engine);
 
-/*! @brief Get "human readable" string of OSyncEngineCmd enum 
+/**
+ * @brief Get "human readable" string of OSyncEngineCmd enum 
  *
  * @param cmd OSyncEngineCmd enum value 
  * @returns String of corresponding  OSyncEngineCmd
  */
 const char *osync_engine_get_cmdstr(OSyncEngineCmd cmd);
 
-/*! @brief Get "human readable" string of OSyncEngineEvent enum 
+/**
+ * @brief Get "human readable" string of OSyncEngineEvent enum 
  *
  * @param event OSyncEngineEvent enum value 
  * @returns String of corresponding  OSyncEngineEvent
