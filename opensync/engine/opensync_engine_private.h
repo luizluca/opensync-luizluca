@@ -21,6 +21,15 @@
 #ifndef OPENSYNC_ENGINE_PRIVATE_H_
 #define OPENSYNC_ENGINE_PRIVATE_H_
 
+/**
+ * @defgroup OSyncEnginePrivate OpenSync Engine Module Private
+ * @ingroup OSyncPrivate
+ * @defgroup OSyncEnginePrivateAPI OpenSync Engine Private
+ * @ingroup OSyncEnginePrivate
+ */
+
+/*@{*/
+
 typedef enum {
 	OSYNC_ENGINE_SOLVE_DUPLICATE,
 	OSYNC_ENGINE_SOLVE_CHOOSE,
@@ -120,5 +129,7 @@ struct OSyncEngine {
 	/** converter_paths contains a hash of all OSyncFormatConverterPath objects **/
 	GHashTable *converterPathes;
 };
+
+/*@}*/
 
 #endif /* OPENSYNC_ENGINE_PRIVATE_H_ */

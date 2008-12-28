@@ -22,11 +22,10 @@
 #define OPENSYNC_ENGINE_INTERNALS_H_
 
 /**
- * @defgroup OSyncEnginePrivateAPI OpenSync Engine Internals 
- * @ingroup OSyncPrivate
- * @brief Private functions of OSyncEngine 
+ * @defgroup OSyncEngineInternalAPI OpenSync Engine Internals
+ * @ingroup OSyncEnginePrivate
+ * @brief Internals of OpenSync Engine
  */
-/*@{*/
 
 osync_bool osync_engine_check_get_changes(OSyncEngine *engine);
 
