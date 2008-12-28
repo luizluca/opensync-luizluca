@@ -283,11 +283,11 @@ osync_bool osync_mapping_engine_multiply(OSyncMappingEngine *engine, OSyncError 
 		OSyncData *masterData = NULL, *newData = NULL;
 		OSyncMappingEntryEngine *entry_engine = e->data;
 		OSyncChangeType existChangeType = 0, newChangeType = 0;
+
+		/* Skip if the current entry_engine is the master */
 		if (entry_engine == engine->master)
 			continue;
-		
-		osync_trace(TRACE_INTERNAL, "Propagating change %s to %p from %p", osync_mapping_entry_get_uid(entry_engine->entry), entry_engine, engine->master);
-		
+			
 		/* Input is:
 		 * masterChange -> change that solved the mapping
 		 * masterData -> data of masterChange
@@ -296,6 +296,21 @@ osync_bool osync_mapping_engine_multiply(OSyncMappingEngine *engine, OSyncError 
 		existChange = entry_engine->change;
 		masterChange = osync_entry_engine_get_change(engine->master);
 		masterData = osync_change_get_data(masterChange);
+
+		/* Skip if masterChang the existing Change of the current
+		 * Mapping Entry Engine are the same. The original change of
+		 * the current Mapping Entry Engine got replaced by the conflict
+		 * master in osync_mapping_engine_check_conflict().
+		 *
+		 * The purpose is to avoid unexpected write of changes which are
+		 * equal on a multi-sync. Regression testcases:
+		 *  - multisync_dual_new
+		 *  - multisync_tripple_new
+		 */
+		if (existChange == masterChange)
+			continue;
+
+		osync_trace(TRACE_INTERNAL, "Propagating change %s to %p from %p", osync_mapping_entry_get_uid(entry_engine->entry), entry_engine, engine->master);
 		
 		/* Clone the masterData. This has to be done since the data
 		 * might get changed (converted) and we dont want to touch the 
@@ -450,6 +465,13 @@ void osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 				goto conflict;
 			} else {
 				is_same++;
+
+				/* Update the change to the master change.
+				 * This helps osync_mapping_engine_multiply() to identify
+				 * them as equal changes which need not get multiplied,
+				 * without an additional osync_change_compare()!
+				 */
+				osync_entry_engine_update(rightentry, leftchange);
 			}
 		}
 	}
