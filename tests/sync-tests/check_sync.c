@@ -3195,6 +3195,160 @@ START_TEST (sync_slowsync_mainsink_connect)
 }
 END_TEST
 
+/* Test if an initial Slow-Sync get triggered on the first Sync of a group.
+ * Since mock-sync is using hashtables and would report all entries, we need
+ * to do one sync and reset the timer. This will keep the entries in the hashtable
+ * and on a missing initial slow-sync implementation no new changes would get reported
+ * due to missing slow-sync (#997)
+ */
+START_TEST (sync_initial_slow_sync)
+{
+	char *testbed = setup_testbed("sync");
+	char *formatdir = g_strdup_printf("%s/formats", testbed);
+	char *plugindir = g_strdup_printf("%s/plugins", testbed);
+	
+	osync_testing_system_abort("cp testdata data1/testdata");
+	
+	OSyncError *error = NULL;
+	OSyncGroup *group = osync_group_new(&error);
+	fail_unless(group != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+	
+	osync_group_set_schemadir(group, testbed);
+	fail_unless(osync_group_load(group, "configs/group", &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	OSyncEngine *engine = osync_engine_new(group, &error);
+	fail_unless(engine != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+	
+	osync_engine_set_schemadir(engine, testbed);
+	osync_engine_set_plugindir(engine, plugindir);
+	osync_engine_set_formatdir(engine, formatdir);
+	
+	osync_engine_set_conflict_callback(engine, conflict_handler_choose_first, GINT_TO_POINTER(1));
+	osync_engine_set_changestatus_callback(engine, entry_status, GINT_TO_POINTER(1));
+	osync_engine_set_mappingstatus_callback(engine, mapping_status, GINT_TO_POINTER(1));
+	osync_engine_set_enginestatus_callback(engine, engine_status, GINT_TO_POINTER(1));
+	osync_engine_set_memberstatus_callback(engine, member_status, GINT_TO_POINTER(1));
+	
+	
+	fail_unless(osync_engine_initialize(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	fail_unless(osync_engine_synchronize_and_block(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	fail_unless(osync_engine_finalize(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	osync_engine_unref(engine);
+
+	/* NOW we manipulate the group and reset the last_sync timer! */
+	group = osync_group_new(&error);
+	fail_unless(group != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+	
+	fail_unless(osync_group_load(group, "configs/group", &error), NULL);
+	fail_unless(error == NULL, NULL);
+
+	osync_group_set_schemadir(group, testbed);
+
+	/* Resetting the last sync timer to 0 */
+	osync_group_set_last_synchronization(group, 0);
+
+	engine = osync_engine_new(group, &error);
+	fail_unless(engine != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+	osync_group_unref(group);
+	
+	osync_engine_set_schemadir(engine, testbed);
+	osync_engine_set_plugindir(engine, plugindir);
+	osync_engine_set_formatdir(engine, formatdir);
+	
+	osync_engine_set_conflict_callback(engine, conflict_handler_choose_first, GINT_TO_POINTER(1));
+	osync_engine_set_changestatus_callback(engine, entry_status, GINT_TO_POINTER(1));
+	osync_engine_set_mappingstatus_callback(engine, mapping_status, GINT_TO_POINTER(1));
+	osync_engine_set_enginestatus_callback(engine, engine_status, GINT_TO_POINTER(1));
+	osync_engine_set_memberstatus_callback(engine, member_status, GINT_TO_POINTER(1));
+	
+	
+	fail_unless(osync_engine_initialize(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	fail_unless(synchronize_once(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	fail_unless(osync_engine_finalize(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+
+	/* Change checks */
+	fail_unless(num_change_written == 0, NULL);
+	fail_unless(num_change_error == 0, NULL);
+
+	/* BOOoom! If intial slow-sync implementation is missing */
+	fail_unless(num_change_read == 2, NULL);
+
+	/* Client checks */
+	fail_unless(num_client_connected == 2, NULL);
+	fail_unless(num_client_main_connected == 2, NULL);
+	fail_unless(num_client_read == 2, NULL);
+	fail_unless(num_client_main_read == 2, NULL);
+	fail_unless(num_client_written == 2, NULL);
+	fail_unless(num_client_main_written == 2, NULL);
+	fail_unless(num_client_disconnected == 2, NULL);
+	fail_unless(num_client_main_disconnected == 2, NULL);
+	fail_unless(num_client_errors == 0, NULL);
+	fail_unless(num_client_sync_done == 2, NULL);
+	fail_unless(num_client_main_sync_done == 2, NULL);
+	
+	/* Client checks */
+	fail_unless(num_engine_connected == 1, NULL);
+	fail_unless(num_engine_errors == 0, NULL);
+	fail_unless(num_engine_read == 1, NULL);
+	fail_unless(num_engine_written == 1, NULL);
+	fail_unless(num_engine_sync_done == 1, NULL);
+	fail_unless(num_engine_disconnected == 1, NULL);
+	fail_unless(num_engine_successful == 1, NULL);
+	fail_unless(num_engine_end_conflicts == 1, NULL);
+	fail_unless(num_engine_prev_unclean == 0, NULL);
+
+	/* Mapping checks */
+	fail_unless(num_mapping_solved == 1, NULL);
+	//fail_unless(num_mapping_written == 1, NULL);
+	fail_unless(num_mapping_errors == 0, NULL);
+	fail_unless(num_mapping_conflicts == 0, NULL);
+
+	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	
+	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
+	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
+	g_free(path);
+	check_mapping(maptable, 1, 1, 2, "testdata");
+	check_mapping(maptable, 2, 1, 2, "testdata");
+	osync_mapping_table_close(maptable);
+	osync_mapping_table_unref(maptable);
+    
+	path = g_strdup_printf("%s/configs/group/1/hashtable.db", testbed);
+	OSyncHashTable *table = hashtable_load(path, "mockobjtype1", 1);
+	g_free(path);
+	check_hash(table, "testdata");
+	osync_hashtable_unref(table);
+
+	path = g_strdup_printf("%s/configs/group/2/hashtable.db", testbed);
+	table = hashtable_load(path, "mockobjtype1", 1);
+	g_free(path);
+	check_hash(table, "testdata");
+	osync_hashtable_unref(table);
+
+	g_free(formatdir);
+	g_free(plugindir);
+
+	destroy_testbed(testbed);
+}
+END_TEST
+
+
 Suite *env_suite(void)
 {
 	Suite *s = suite_create("Sync");
@@ -3221,6 +3375,8 @@ Suite *env_suite(void)
 
 	create_case(s, "sync_slowsync_connect", sync_slowsync_connect);
 	create_case(s, "sync_slowsync_mainsink_connect", sync_slowsync_mainsink_connect);
+
+	create_case(s, "sync_initial_slow_sync", sync_initial_slow_sync);
 
 	//stateless sync
 	
