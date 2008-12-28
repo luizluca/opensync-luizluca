@@ -264,11 +264,15 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 		/* We use a temp list to speed things up. We dont have to compare with newly created mappings for
 		 * the current sinkengine, since there will be only one entry (for the current sinkengine) so there
 		 * is no need to compare */
+
+		long long int memberid = osync_member_get_id(osync_client_proxy_get_member(sinkengine->proxy));
+		osync_trace(TRACE_INTERNAL, "Sinkengine of member %lli", memberid);
+
+		unmapped_mappings = g_list_copy(new_mappings);
 		
 		/* For each sinkengine, go through all unmapped changes */
 		while (sinkengine->unmapped) {
 			OSyncChange *change = sinkengine->unmapped->data;
-			long long int memberid = osync_member_get_id(osync_client_proxy_get_member(sinkengine->proxy));
 			
 			osync_trace(TRACE_INTERNAL, "Looking for mapping for change %s, changetype %i from member %lli", osync_change_get_uid(change), osync_change_get_changetype(change), memberid);
 	
@@ -281,7 +285,7 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 					goto error;
 				
 				osync_trace(TRACE_INTERNAL, "Unable to find mapping. Creating new mapping with id %lli", osync_mapping_get_id(mapping_engine->mapping));
-				
+				/* TODO: what about _prepend (O(1)) instead of _append (O(n))? Order doesn't matter here - right? */
 				new_mappings = g_list_append(new_mappings, mapping_engine);
 				unmapped_mappings = g_list_append(unmapped_mappings, mapping_engine);
 			} else if (result == OSYNC_CONV_DATA_SIMILAR) {
@@ -297,11 +301,12 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 			sinkengine->unmapped = g_list_remove(sinkengine->unmapped, sinkengine->unmapped->data);
 			osync_change_unref(change);
 		}
+
+		g_list_free(unmapped_mappings);
 		
 	}
 
 	engine->mapping_engines = g_list_concat(engine->mapping_engines, new_mappings);
-	g_list_free(unmapped_mappings);
 	
 	//osync_trace_enable();
 	osync_trace(TRACE_EXIT, "%s", __func__);
