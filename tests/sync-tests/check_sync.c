@@ -3248,11 +3248,11 @@ START_TEST (sync_initial_slow_sync)
 	group = osync_group_new(&error);
 	fail_unless(group != NULL, NULL);
 	fail_unless(error == NULL, NULL);
+
+	osync_group_set_schemadir(group, testbed);
 	
 	fail_unless(osync_group_load(group, "configs/group", &error), NULL);
 	fail_unless(error == NULL, NULL);
-
-	osync_group_set_schemadir(group, testbed);
 
 	/* Resetting the last sync timer to 0 */
 	osync_group_set_last_synchronization(group, 0);

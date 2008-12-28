@@ -40,6 +40,8 @@ START_TEST (engine_new)
 	OSyncGroup *group = osync_group_new(&error);
 	fail_unless(group != NULL, NULL);
 	fail_unless(error == NULL, NULL);
+
+	osync_group_set_configdir(group, testbed);
 	
 	OSyncMember *member1 = osync_member_new(&error);
 	fail_unless(member1 != NULL, NULL);
@@ -78,6 +80,8 @@ START_TEST (engine_init)
 	OSyncGroup *group = osync_group_new(&error);
 	fail_unless(group != NULL, NULL);
 	fail_unless(error == NULL, NULL);
+
+	osync_group_set_configdir(group, testbed);
 	
 	OSyncMember *member1 = osync_member_new(&error);
 	fail_unless(member1 != NULL, NULL);
@@ -243,6 +247,8 @@ static OSyncDebugGroup *_create_group(char *testbed)
 	debug->group = osync_group_new(&error);
 	fail_unless(debug->group != NULL, NULL);
 	fail_unless(error == NULL, NULL);
+
+	osync_group_set_configdir(debug->group, testbed);
 	
 	debug->member1 = osync_member_new(&error);
 	fail_unless(debug->member1 != NULL, NULL);
@@ -579,6 +585,8 @@ static OSyncDebugGroup *_create_group2(char *testbed)
 	fail_unless(debug->group != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
+	osync_group_set_configdir(debug->group, testbed);
+
 	debug->member1 = osync_member_new(&error);
 	fail_unless(debug->member1 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
@@ -977,7 +985,9 @@ static OSyncDebugGroup *_create_group3(char *testbed)
 	debug->group = osync_group_new(&error);
 	fail_unless(debug->group != NULL, NULL);
 	fail_unless(error == NULL, NULL);
-	
+
+	osync_group_set_configdir(debug->group, testbed);
+
 	debug->member1 = osync_member_new(&error);
 	fail_unless(debug->member1 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
@@ -1208,6 +1218,8 @@ static OSyncDebugGroup *_create_group4(char *testbed)
 	debug->group = osync_group_new(&error);
 	fail_unless(debug->group != NULL, NULL);
 	fail_unless(error == NULL, NULL);
+
+	osync_group_set_configdir(debug->group, testbed);
 	
 	debug->member1 = osync_member_new(&error);
 	fail_unless(debug->member1 != NULL, NULL);
@@ -1490,6 +1502,8 @@ static OSyncDebugGroup *_create_group5(char *testbed)
 	debug->group = osync_group_new(&error);
 	fail_unless(debug->group != NULL, NULL);
 	fail_unless(error == NULL, NULL);
+
+	osync_group_set_configdir(debug->group, testbed);
 	
 	debug->member1 = osync_member_new(&error);
 	fail_unless(debug->member1 != NULL, NULL);
@@ -1692,6 +1706,8 @@ static OSyncDebugGroup *_create_group6(char *testbed)
 	debug->group = osync_group_new(&error);
 	fail_unless(debug->group != NULL, NULL);
 	fail_unless(error == NULL, NULL);
+
+	osync_group_set_configdir(debug->group, testbed);
 	
 	debug->member1 = osync_member_new(&error);
 	fail_unless(debug->member1 != NULL, NULL);
@@ -1894,6 +1910,8 @@ static OSyncDebugGroup *_create_group7(char *testbed)
 	debug->group = osync_group_new(&error);
 	fail_unless(debug->group != NULL, NULL);
 	fail_unless(error == NULL, NULL);
+
+	osync_group_set_configdir(debug->group, testbed);
 	
 	debug->member1 = osync_member_new(&error);
 	fail_unless(debug->member1 != NULL, NULL);
