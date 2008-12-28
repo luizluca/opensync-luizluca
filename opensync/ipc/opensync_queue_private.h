@@ -120,7 +120,7 @@ typedef struct OSyncPendingMessage {
  * the lower 2 bytes are a random number
  * 
  * */
-static long long int gen_id(const GTimeVal *tv);
+static long long int opensync_queue_gen_id(const GTimeVal *tv);
 
 /*@}*/
 

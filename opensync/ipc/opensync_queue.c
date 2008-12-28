@@ -1012,7 +1012,7 @@ OSyncMessage *osync_queue_get_message(OSyncQueue *queue)
 	return g_async_queue_pop(queue->incoming);
 }
 
-static long long int gen_id(const GTimeVal *tv)
+static long long int opensync_queue_gen_id(const GTimeVal *tv)
 {
 	long long int now = (tv->tv_sec * 1000000 + tv->tv_usec) << 16;
 	long long int rnd = ((long long int)g_random_int()) & 0xFFFF;
@@ -1041,7 +1041,7 @@ osync_bool osync_queue_send_message_with_timeout(OSyncQueue *queue, OSyncQueue *
 		/* g_sourcet_get_current_time used cached time ... hopefully faster then g_get_.._time() */
 		g_source_get_current_time(queue->timeout_source, &current_time);
 
-		id = gen_id(&current_time);
+		id = opensync_queue_gen_id(&current_time);
 		osync_message_set_id(message, id);
 		pending->id = id;
 		osync_trace(TRACE_INTERNAL, "Setting id %lli for pending reply", id);
