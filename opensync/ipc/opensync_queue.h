@@ -22,15 +22,16 @@
 #define _OPENSYNC_QUEUE_H
 
 /**
- * @ingroup OSyncQueue
+ * @defgroup OSyncQueueAPI OpenSync Queue
+ * @ingroup OSyncIPC
  * @brief A Queue used for asynchronous communication between thread
  */
 
 /*@{*/
 
 
-/*! @brief The type of a queue event 
- * 
+/** 
+ * @brief The type of a queue event 
  */
 
 typedef enum {
@@ -41,19 +42,44 @@ typedef enum {
 } OSyncQueueEvent;
 
 
-/*! @brief The queue type 
- * 
+/** 
+ * @brief The queue type 
  */
 
 typedef enum {
+	/** Queue Sender */
 	OSYNC_QUEUE_SENDER,
+	/** Queue Receiver */
 	OSYNC_QUEUE_RECEIVER
 } OSyncQueueType;
 
 
-
+/** 
+ * @brief Creates a new asynchronous queue
+ * @param name Name of the queue
+ * @param error An OpenSync Error
+ * 
+ * This function return the pointer to a newly created OSyncQueue
+ * 
+ */
 OSYNC_EXPORT OSyncQueue *osync_queue_new(const char *name, OSyncError **error);
+
+/** 
+ * @brief Creates a new asynchronous queue
+ * @param fd A file descriptor
+ * @param error An OpenSync Error
+ * 
+ * This function return the pointer to a newly created OSyncQueue
+ * 
+ */
 OSYNC_EXPORT OSyncQueue *osync_queue_new_from_fd(int fd, OSyncError **error);
+
+/**
+ * @brief Initializes and creates a new FIFO Queue
+ * @param queue OpenSync Queue that should be used to create a Queue
+ * @param error An OpenSync Error
+ * @return TRUE if the queue could be created
+ */
 OSYNC_EXPORT osync_bool osync_queue_create(OSyncQueue *queue, OSyncError **error);
 
 /** @brief Increase the reference count on an OSyncQueue
@@ -61,7 +87,8 @@ OSYNC_EXPORT osync_bool osync_queue_create(OSyncQueue *queue, OSyncError **error
  * Use when storing a reference to the group environment.  When the
  * reference is no longer needed use osync_queue_unref
  * 
- * @returns the passed queue
+ * @param queue Pointer to the queue to reference
+ * @return the passed queue
  * 
  */
 OSYNC_EXPORT OSyncQueue *osync_queue_ref(OSyncQueue *queue);
@@ -71,12 +98,26 @@ OSYNC_EXPORT OSyncQueue *osync_queue_ref(OSyncQueue *queue);
  * If the reference count reaches zero then the queue is freed and
  * all resources are freed or unrefed
  * 
- * @param env Pointer to the queue to unreference
+ * @param queue Pointer to the queue to unreference
  * 
  */
 OSYNC_EXPORT void osync_queue_unref(OSyncQueue *queue);
 
+/**
+ * @brief Connects a Queue
+ * @param queue Queue that should be connected
+ * @param type Type of the Queue (Sender or Receiver)
+ * @param error An OpenSync Error
+ * @return TRUE if successful
+ */
 OSYNC_EXPORT osync_bool osync_queue_connect(OSyncQueue *queue, OSyncQueueType type, OSyncError **error);
+
+/**
+ * @brief Disconnects a Queue
+ * @param queue Queue that should be disconnected
+ * @param error An OpenSync Error
+ * @return TRUE if successful
+ */
 OSYNC_EXPORT osync_bool osync_queue_disconnect(OSyncQueue *queue, OSyncError **error);
 
 /*@}*/

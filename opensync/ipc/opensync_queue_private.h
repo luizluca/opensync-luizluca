@@ -30,7 +30,8 @@
 #include <signal.h>
 
 /**
- * @ingroup OSyncQueueInternal
+ * @defgroup OSyncQueuePrivateAPI OpenSync Queue Private
+ * @ingroup OSyncIPCPrivate
  * @brief A Queue used for asynchronous communication between thread
  */
 
@@ -91,14 +92,14 @@ struct OSyncQueue {
 };
 
 
-/*! @brief Timeout object 
+/** @brief Timeout object 
  */
 typedef struct OSyncTimeoutInfo {
 	/** Expiration date */
 	GTimeVal expiration; 
 } OSyncTimeoutInfo;
 
-/*! @brief Pending Message object 
+/** @brief Pending Message object 
  */
 typedef struct OSyncPendingMessage {
 	/** ID of the expected Message */
@@ -110,6 +111,16 @@ typedef struct OSyncPendingMessage {
 	/** Message Timeout */
 	OSyncTimeoutInfo *timeout_info;
 } OSyncPendingMessage;
+
+/**
+ * @brief Generate IDs
+ * Ids are generated as follows:
+ * 
+ * the upper 6 bytes are the time in seconds and microseconds
+ * the lower 2 bytes are a random number
+ * 
+ * */
+static long long int gen_id(const GTimeVal *tv);
 
 /*@}*/
 

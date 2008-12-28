@@ -28,16 +28,7 @@
 #include "opensync_queue_internals.h"
 #include "opensync_queue_private.h"
 
-/**
- * @ingroup OSyncQueue
- * @brief A Queue used for asynchronous communication between thread
- * 
- */
-
-/*@{*/
-
-static
-gboolean _timeout_prepare(GSource *source, gint *timeout_)
+static gboolean _timeout_prepare(GSource *source, gint *timeout_)
 {
 	/* TODO adapt *timeout_ value to shortest message timeout value...
 	   GTimeVal current_time;
@@ -48,8 +39,7 @@ gboolean _timeout_prepare(GSource *source, gint *timeout_)
 	return FALSE;
 }
 
-static
-gboolean _timeout_check(GSource *source)
+static gboolean _timeout_check(GSource *source)
 {
 	GList *p;
 	GTimeVal current_time;
@@ -87,8 +77,7 @@ gboolean _timeout_check(GSource *source)
 	return FALSE;
 }
 
-static
-gboolean _timeout_dispatch(GSource *source, GSourceFunc callback, gpointer user_data)
+static gboolean _timeout_dispatch(GSource *source, GSourceFunc callback, gpointer user_data)
 {
 	GList *p;
 	OSyncPendingMessage *pending;
@@ -157,15 +146,13 @@ gboolean _timeout_dispatch(GSource *source, GSourceFunc callback, gpointer user_
 	return TRUE;
 }
 
-static
-gboolean _incoming_prepare(GSource *source, gint *timeout_)
+static gboolean _incoming_prepare(GSource *source, gint *timeout_)
 {
 	*timeout_ = 1;
 	return FALSE;
 }
 
-static
-gboolean _incoming_check(GSource *source)
+static gboolean _incoming_check(GSource *source)
 {
 	OSyncQueue *queue = *((OSyncQueue **)(source + 1));
 	if (g_async_queue_length(queue->incoming) > 0)
@@ -176,8 +163,7 @@ gboolean _incoming_check(GSource *source)
 
 /* This function is called from the master thread. The function dispatched incoming data from
  * the remote end */
-static
-gboolean _incoming_dispatch(GSource *source, GSourceFunc callback, gpointer user_data)
+static gboolean _incoming_dispatch(GSource *source, GSourceFunc callback, gpointer user_data)
 {
 	OSyncPendingMessage *pending = NULL;
 	OSyncQueue *queue = user_data;
@@ -256,15 +242,13 @@ static void _osync_queue_stop_incoming(OSyncQueue *queue)
 	}
 }
 
-static
-gboolean _queue_prepare(GSource *source, gint *timeout_)
+static gboolean _queue_prepare(GSource *source, gint *timeout_)
 {
 	*timeout_ = 1;
 	return FALSE;
 }
 
-static
-gboolean _queue_check(GSource *source)
+static gboolean _queue_check(GSource *source)
 {
 	OSyncQueue *queue = *((OSyncQueue **)(source + 1));
 	if (g_async_queue_length(queue->outgoing) > 0)
@@ -315,8 +299,7 @@ static osync_bool _osync_queue_write_int(OSyncQueue *queue, const int message, O
 
 /* This function sends the data to the remote side. If there is an error, it sends an error
  * message to the incoming queue */
-static
-gboolean _queue_dispatch(GSource *source, GSourceFunc callback, gpointer user_data)
+static gboolean _queue_dispatch(GSource *source, GSourceFunc callback, gpointer user_data)
 {
 	OSyncQueue *queue = user_data;
 	OSyncError *error = NULL;
@@ -377,15 +360,13 @@ gboolean _queue_dispatch(GSource *source, GSourceFunc callback, gpointer user_da
 	return FALSE;
 }
 
-static
-gboolean _source_prepare(GSource *source, gint *timeout_)
+static gboolean _source_prepare(GSource *source, gint *timeout_)
 {
 	*timeout_ = 1;
 	return FALSE;
 }
 
-static
-int _osync_queue_read_data(OSyncQueue *queue, void *vptr, size_t n, OSyncError **error)
+static int _osync_queue_read_data(OSyncQueue *queue, void *vptr, size_t n, OSyncError **error)
 {
 #ifdef _WIN32
 	return 0;
@@ -412,8 +393,7 @@ int _osync_queue_read_data(OSyncQueue *queue, void *vptr, size_t n, OSyncError *
 #endif //_WIN32
 }
 
-static
-osync_bool _osync_queue_read_int(OSyncQueue *queue, int *message, OSyncError **error)
+static osync_bool _osync_queue_read_int(OSyncQueue *queue, int *message, OSyncError **error)
 {
 	int read = _osync_queue_read_data(queue, message, sizeof(int), error);
 	
@@ -428,8 +408,7 @@ osync_bool _osync_queue_read_int(OSyncQueue *queue, int *message, OSyncError **e
 	return TRUE;
 }
 
-static
-osync_bool _osync_queue_read_long_long_int(OSyncQueue *queue, long long int *message, OSyncError **error)
+static osync_bool _osync_queue_read_long_long_int(OSyncQueue *queue, long long int *message, OSyncError **error)
 {
 	int read = _osync_queue_read_data(queue, message, sizeof(long long int), error);
 
@@ -444,8 +423,7 @@ osync_bool _osync_queue_read_long_long_int(OSyncQueue *queue, long long int *mes
 	return TRUE;
 }
 
-static
-gboolean _source_check(GSource *source)
+static gboolean _source_check(GSource *source)
 {
 	OSyncQueue *queue = *((OSyncQueue **)(source + 1));
 	OSyncMessage *message = NULL;
@@ -512,8 +490,7 @@ gboolean _source_check(GSource *source)
 
 /* This function reads from the file descriptor and inserts incoming data into the
  * incoming queue */
-static
-gboolean _source_dispatch(GSource *source, GSourceFunc callback, gpointer user_data)
+static gboolean _source_dispatch(GSource *source, GSourceFunc callback, gpointer user_data)
 {
 	OSyncQueue *queue = user_data;
 	OSyncMessage *message = NULL;
@@ -588,7 +565,7 @@ gboolean _source_dispatch(GSource *source, GSourceFunc callback, gpointer user_d
 }
 
 
-/*! @brief Flush all message of the Queue 
+/** @brief Flush all message of the Queue 
  * 
  * Flush all message inside the Queue and dereference the messages.
  *
@@ -608,12 +585,6 @@ static void _osync_queue_flush_messages(GAsyncQueue *queue)
 
 	g_async_queue_unlock(queue);
 }
-
-/*! @brief Creates a new asynchronous queue
- * 
- * This function return the pointer to a newly created OSyncQueue
- * 
- */
 
 OSyncQueue *osync_queue_new(const char *name, OSyncError **error)
 {
@@ -650,11 +621,6 @@ OSyncQueue *osync_queue_new(const char *name, OSyncError **error)
 	return NULL;
 }
 
-/*! @brief Creates a new asynchronous queue
- * 
- * This function return the pointer to a newly created OSyncQueue
- * 
- */
 OSyncQueue *osync_queue_new_from_fd(int fd, OSyncError **error)
 {
 	OSyncQueue *queue = NULL;
@@ -674,23 +640,6 @@ OSyncQueue *osync_queue_new_from_fd(int fd, OSyncError **error)
 	return NULL;
 }
 
-/* Creates anonymous pipes which dont have to be created and are automatically connected.
- * 
- * Lets assume parent wants to send, child wants to receive
- * 
- * osync_queue_new_pipes()
- * fork()
- * 
- * Parent:
- * connect(write_queue)
- * disconnect(read_queue)
- * 
- * Child:
- * connect(read_queue)
- * close(write_queue)
- * 
- * 
- *  */
 osync_bool osync_queue_new_pipes(OSyncQueue **read_queue, OSyncQueue **write_queue, OSyncError **error)
 {
 #ifdef _WIN32
@@ -976,15 +925,6 @@ osync_bool osync_queue_is_connected(OSyncQueue *queue)
 	return queue->connected;
 }
 
-/*! @brief Sets the message handler for a queue
- * 
- * Sets the function that will receive all messages, except the methodcall replies
- * 
- * @param queue The queue to set the handler on
- * @param handler The message handler function
- * @param user_data The userdata that the message handler should receive
- * 
- */
 void osync_queue_set_message_handler(OSyncQueue *queue, OSyncMessageHandler handler, gpointer user_data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, queue, handler, user_data);
@@ -995,16 +935,6 @@ void osync_queue_set_message_handler(OSyncQueue *queue, OSyncMessageHandler hand
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/*! @brief Sets the queue to use the gmainloop with the given context
- * 
- * This function will attach the OSyncQueue as a source to the given context.
- * The queue will then be check for new messages and the messages will be
- * handled.
- * 
- * @param queue The queue to set up
- * @param context The context to use. NULL for default loop
- * 
- */
 void osync_queue_setup_with_gmainloop(OSyncQueue *queue, GMainContext *context)
 {
 	OSyncQueue **queueptr = NULL;
@@ -1077,19 +1007,11 @@ OSyncQueueEvent osync_queue_poll(OSyncQueue *queue)
 #endif //_WIN32
 }
 
-/** note that this function is blocking */
 OSyncMessage *osync_queue_get_message(OSyncQueue *queue)
 {
 	return g_async_queue_pop(queue->incoming);
 }
 
-/* Ids are generated as follows:
- * 
- * the upper 6 bytes are the time in seconds and microseconds
- * 
- * the lower 2 bytes are a random number
- * 
- * */
 static long long int gen_id(const GTimeVal *tv)
 {
 	long long int now = (tv->tv_sec * 1000000 + tv->tv_usec) << 16;
@@ -1186,28 +1108,12 @@ osync_bool osync_queue_is_alive(OSyncQueue *queue)
 	return TRUE;
 }
 
-/*! @brief Get the path of the fifo for the Queue
- * 
- * Get the full path of the fifo for this Queue if fifos used.
- *
- * @param queue The queue to get the file descriptor
- * @returns The full path of the fifo or NULL if no fifos used 
- * 
- */
 const char *osync_queue_get_path(OSyncQueue *queue)
 {
 	osync_assert(queue);
 	return queue->name;
 }
 
-/*! @brief Get the pipe file descriptor of the Queue
- * 
- * Get the pipe file descriptor of this Queue if pipes are used.
- *
- * @param queue The queue to get the file descriptor
- * @returns The pipe file descriptor of the queue or -1 if no pipes used or set
- * 
- */
 int osync_queue_get_fd(OSyncQueue *queue)
 {
 	osync_assert(queue);
