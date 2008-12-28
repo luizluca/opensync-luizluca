@@ -23,7 +23,7 @@
 
 /**
  * @defgroup OSyncMappingEntryAPI OpenSync Mapping Entry
- * @ingroup OSyncPublic
+ * @ingroup OSyncMapping
  * @brief Functions for managing member uids in mappings
  *
  * Mapping entries (member-specific components of a mapping) have several associated IDs:

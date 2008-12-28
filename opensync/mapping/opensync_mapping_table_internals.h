@@ -21,10 +21,25 @@
 #ifndef OPENSYNC_MAPPING_TABLE_INTERNALS_H_
 #define OPENSYNC_MAPPING_TABLE_INTERNALS_H_
 
+/**
+ * @defgroup OSyncMappingTableInternalAPI OpenSync Mapping Table Internals
+ * @ingroup OSyncMappingPrivate
+ * @brief Internals of OpenSync Mapping Table
+ */
+
+/*@{*/
+
+/**
+ * @brief List of Mappings
+ */
 struct OSyncMappingTable {
+	/** Reference Counter */
 	int ref_count;
 	
+	/** Contains all mappings */
 	GList *mappings;
 };
+
+/*@}*/
 
 #endif /*OPENSYNC_MAPPING_TABLE_INTERNALS_H_*/

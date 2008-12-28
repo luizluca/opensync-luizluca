@@ -23,7 +23,7 @@
 
 /**
  * @defgroup OSyncMappingTableAPI OpenSync Mapping Table
- * @ingroup OSyncPublic
+ * @ingroup OSyncMapping
  * @brief Functions for managing tables of mappings between member uids
  * 
  * @see OSyncMappingAPI, OSyncMappingEntryAPI

@@ -21,13 +21,30 @@
 #ifndef OPENSYNC_MAPPING_ENTRY_INTERNALS_H_
 #define OPENSYNC_MAPPING_ENTRY_INTERNALS_H_
 
+/**
+ * @defgroup OSyncMappingEntryInternalAPI OpenSync Mapping Entry Internals
+ * @ingroup OSyncMappingPrivate
+ * @brief Internals of OpenSync Mapping Entry
+ */
+
+/*@{*/
+
+/**
+ * @brief A Mapping Entry
+ */
 struct OSyncMappingEntry {
+	/** Reference Counter */
 	int ref_count;
 	
+	/** unique identifier of the item/entry in the member's system */
 	char *uid;
 	
+	/** uniquely identifies the member */
 	long long int member_id;
+	/** uniquely identifies the mapping table entry */
 	long long int id;
 };
+
+/*@}*/
 
 #endif /*OPENSYNC_MAPPING_ENTRY_INTERNALS_H_*/

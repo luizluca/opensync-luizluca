@@ -22,8 +22,10 @@
 #define OPENSYNC_MAPPING_H_
 
 /**
- * @defgroup OSyncMappingAPI OpenSync Mapping
+ * @defgroup OSyncMapping OpenSync Mapping Module
  * @ingroup OSyncPublic
+ * @defgroup OSyncMappingAPI OpenSync Mapping
+ * @ingroup OSyncMapping
  * @brief Functions for managing mappings between multiple member uids
  * 
  * A mapping links together uids (unique IDs referring to a data item in
