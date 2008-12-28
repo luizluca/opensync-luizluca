@@ -21,6 +21,14 @@
 #ifndef _OPENSYNC_SERIALIZER_INTERNALS_H_
 #define _OPENSYNC_SERIALIZER_INTERNALS_H_
 
+/**
+ * @defgroup OSyncSerializerInternalAPI OpenSync Serializer Internals
+ * @ingroup OSyncIPCPrivate
+ * @brief Internal API of OpenSync Serializer
+ */
+
+/*@{*/
+
 osync_bool osync_marshal_data(OSyncMessage *message, OSyncData *data, OSyncError **error);
 osync_bool osync_demarshal_data(OSyncMessage *message, OSyncData **data, OSyncFormatEnv *env, OSyncError **error);
 
@@ -41,5 +49,7 @@ OSYNC_TEST_EXPORT osync_bool osync_demarshal_pluginconfig(OSyncMessage *message,
 
 osync_bool osync_marshal_pluginresource(OSyncMessage *message, OSyncPluginResource *res, OSyncError **error);
 osync_bool osync_demarshal_pluginresource(OSyncMessage *message, OSyncPluginResource **res, OSyncError **error);
+
+/*@}*/
 
 #endif /* _OPENSYNC_SERIALIZER_INTERNALS_H_ */

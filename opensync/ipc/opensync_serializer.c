@@ -30,6 +30,7 @@
 #include "opensync-plugin.h"
 #include "plugin/opensync_objtype_sink_internals.h"
 
+#include "opensync_serializer.h"
 #include "opensync_serializer_internals.h"
 
 osync_bool osync_marshal_data(OSyncMessage *message, OSyncData *data, OSyncError **error)

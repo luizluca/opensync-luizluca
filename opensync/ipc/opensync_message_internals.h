@@ -24,7 +24,7 @@
 /**
  * @defgroup OSyncIPCPrivate OpenSync IPC Module Private
  * @ingroup OSyncPrivate
- * @defgroup OSyncMessagePrivateAPI OpenSync Message Internals
+ * @defgroup OSyncMessageInternalAPI OpenSync Message Internals
  * @ingroup OSyncIPCPrivate
  * @brief A Message used by the inter thread messaging library
  * 
