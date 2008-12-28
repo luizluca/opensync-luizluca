@@ -24,8 +24,15 @@
 #define OPENSYNC_CAPABILITY_PRIVATE_H_
 
 /**
+ * @defgroup OSyncCapabilityPrivateAPI OpenSync Capability Private
+ * @ingroup OSyncMergerPrivate
+ * @brief Private part of OpenSync Capability
+ */
+
+/*@{*/
+
+/**
  * @brief Represents a Capability object
- * @ingroup OSyncCapabilityPrivateAPI
  */
 struct OSyncCapability {
 	/** The pointer to the next capability */
@@ -35,6 +42,8 @@ struct OSyncCapability {
 	/** The wrapped xml node */
 	xmlNodePtr node;
 };
+
+/*@}*/
 
 #endif /* OPENSYNC_CAPABILITY_PRIVATE_H_ */
 

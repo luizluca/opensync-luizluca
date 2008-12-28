@@ -24,8 +24,10 @@
 #define OPENSYNC_MERGER_H_
 
 /**
- * @defgroup OSyncMergerAPI OpenSync Merger
+ * @defgroup OSyncMerger OpenSync Merger Module
  * @ingroup OSyncPublic
+ * @defgroup OSyncMergerAPI OpenSync Merger
+ * @ingroup OSyncMerger
  * @brief The public part of the OSyncMerger
  * 
  */

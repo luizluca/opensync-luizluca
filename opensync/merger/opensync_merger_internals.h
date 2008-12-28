@@ -24,8 +24,16 @@
 #define OPENSYNC_MERGER_INTERNALS_H_
 
 /**
- * @brief Represent a Merger object
- * @ingroup OSyncMergerPrivateAPI
+ * @defgroup OSyncMergerPrivate OpenSync Merger Module Private
+ * @ingroup OSyncPrivate
+ * @defgroup OSyncMergerInternalAPI OpenSync Merger Internals
+ * @ingroup OSyncMergerPrivate
+ */
+
+/*@{*/
+
+/**
+ * @brief Represents a Merger object
  */
 struct OSyncMerger {
 	/** The reference counter for this object */
@@ -33,5 +41,7 @@ struct OSyncMerger {
 	/** The pointer to the capabilities object */
 	OSyncCapabilities *capabilities;
 };
+
+/*@}*/
 
 #endif /*OPENSYNC_MERGER_INTERNALS_H_*/

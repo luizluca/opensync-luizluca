@@ -28,23 +28,13 @@
 #include "xmlformat/opensync-xmlformat_internals.h"
 
 
-#include "xmlformat/opensync_xmlfield_private.h"	/* FIXME: direcyt access to private header */
+#include "xmlformat/opensync_xmlfield_private.h"	/* FIXME: directly access to private header */
 
-#include "opensync_capability_private.h"	/* FIXME: direcyt access to private header */
+#include "opensync_capability_private.h"	/* FIXME: directly access to private header */
 
 #include "opensync-merger.h"
 #include "opensync-merger_internals.h"
 
-
-/**
- * @defgroup OSyncMergerPrivateAPI OpenSync Merger Internals
- * @ingroup OSyncPrivate
- * @brief The private part of the OSyncMerger
- * 
- */
-/*@{*/
-
-/*@}*/
 
 OSyncMerger *osync_merger_new(OSyncCapabilities *capabilities, OSyncError **error)
 {

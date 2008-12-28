@@ -24,8 +24,15 @@
 #define OPENSYNC_CAPABILITIES_PRIVATE_H_
 
 /**
+ * @defgroup OSyncCapabilitiesPrivateAPI OpenSync Capabilities Private
+ * @ingroup OSyncMergerPrivate
+ * @brief Private part of OpenSync Capabilities
+ */
+
+/*@{*/
+
+/**
  * @brief Represent a CapabilitiesObjType object
- * @ingroup OSyncCapabilitiesPrivateAPI
  */
 struct OSyncCapabilitiesObjType {
 	/** The pointer to the next objtype */
@@ -42,7 +49,6 @@ struct OSyncCapabilitiesObjType {
 
 /**
  * @brief Represent a Capabilities object
- * @ingroup OSyncCapabilitiesPrivateAPI
  */
 struct OSyncCapabilities {
 	/** The reference counter for this object */
@@ -55,7 +61,24 @@ struct OSyncCapabilities {
 	xmlDocPtr doc;
 };
 
+/**
+ * @brief Creates a new capabilitiesobjtype object which will be added to the end of capabilitiesobjtype of the capabilities object.
+ *  The returned object will be freed with the capabilities object. 
+ * @param capabilities The pointer to a capabilities object
+ * @param node The node must be already inserted at the end of childs of the xmlDoc root element
+ * @param error The error which will hold the info in case of an error
+ * @return The pointer to the newly allocated capabilitiesobjtype object or NULL in case of error
+ */
 OSyncCapabilitiesObjType *osync_capabilitiesobjtype_new(OSyncCapabilities *capabilities, xmlNodePtr node, OSyncError **error);
+
+/**
+ * @brief Get the first capabilitiesobjtype for a given objtype from the capabilities
+ * @param capabilities The pointer to a capabilities object
+ * @param objtype The name of the objtype (e.g.: contact)
+ * @return The capabilitiesobjtype for a given objtype from the capabilities
+ */
 OSyncCapabilitiesObjType *osync_capabilitiesobjtype_get(OSyncCapabilities *capabilities, const char *objtype);
+
+/*@}*/
 
 #endif /*OPENSYNC_CAPABILITIES_PRIVATE_H_*/

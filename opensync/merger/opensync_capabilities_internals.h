@@ -26,8 +26,8 @@
 typedef struct OSyncCapabilitiesObjType OSyncCapabilitiesObjType;
 
 /**
- * @defgroup OSyncCapabilitiesPrivateAPI OpenSync Capabilities Internals
- * @ingroup OSyncPrivate
+ * @defgroup OSyncCapabilitiesInternalAPI OpenSync Capabilities Internals
+ * @ingroup OSyncMergerPrivate
  * @brief The private part of the OSyncCapabilities
  * 
  */

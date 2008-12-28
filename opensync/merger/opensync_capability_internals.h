@@ -24,9 +24,9 @@
 #define OPENSYNC_CAPABILITY_INTERNALS_H_
 
 /**
- * @defgroup OSyncCapabilityPrivateAPI OpenSync Capability Internals
- * @ingroup OSyncPrivate
- * @brief The private part of the OSyncCapability
+ * @defgroup OSyncCapabilityInternalAPI OpenSync Capability Internals
+ * @ingroup OSyncMergerPrivate
+ * @brief The internal part of the OpenSync Capability
  * 
  */
 /*@{*/
