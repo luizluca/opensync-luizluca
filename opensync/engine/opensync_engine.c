@@ -1264,7 +1264,7 @@ static osync_bool _osync_engine_initialize_formats(OSyncEngine *engine, OSyncErr
 
 osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 {
-	osync_bool prev_sync_unclean = FALSE;
+	osync_bool prev_sync_unclean = FALSE, first_sync = FALSE;
 	OSyncGroup *group = NULL;
 	int i = 0, num = 0;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
@@ -1285,6 +1285,14 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 	if (osync_group_num_objtypes(engine->group) == 0) {
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "No synchronizable objtype");
 		goto error;
+	}
+
+	/* Check if this is the first Synchronization.
+	 * On the first synchronization a Slow-Sync is required for all (ObjType)Sinks!
+	 */
+	if (osync_group_get_last_synchronization(engine->group) == 0) {
+		osync_trace(TRACE_INTERNAL, "Last Sync timestamp is 0. First Sync!");
+		first_sync = TRUE;
 	}
 	
 	switch (osync_group_lock(group)) {
@@ -1336,8 +1344,9 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 		osync_obj_engine_set_callback(objengine, _osync_engine_event_callback, engine);
 		engine->object_engines = g_list_append(engine->object_engines, objengine);
 
-		/* If previous sync was unclean, then trigger SlowSync for all ObjEngines */
-		if (prev_sync_unclean)
+		/* If previous sync was unclean, then trigger SlowSync for all ObjEngines.
+		 * Also trigger SlowSync if this is the first synchronization. */
+		if (prev_sync_unclean || first_sync)
 			osync_obj_engine_set_slowsync(objengine, TRUE);
 	}
 
@@ -1392,6 +1401,10 @@ osync_bool osync_engine_finalize(OSyncEngine *engine, OSyncError **error)
 	
 	/* free internal schemas */
 	_osync_engine_finalize_internal_schemas(engine);
+
+	/* Store group modificiations (i.e. last_sync timestamp) */
+	if (!osync_group_save(engine->group, error))
+		goto error;
 
 	if (!engine->error)
 		osync_group_unlock(engine->group);
@@ -1596,6 +1609,10 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 		osync_trace(TRACE_ERROR, "Engine aborting due to an error: %s", osync_error_print(&(engine->error)));
 		/* Fall through! - To emit disconnect commands for clean connection termination, in error condition */
 	case OSYNC_ENGINE_EVENT_SYNC_DONE:
+
+		/* Store the timestamp of the last synchronization */
+		osync_group_set_last_synchronization(engine->group, time(NULL)); 
+
 		/* Lets disconnect */
 		for (o = engine->object_engines; o; o = o->next) {
 			OSyncObjEngine *objengine = o->data;
