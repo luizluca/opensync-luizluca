@@ -910,7 +910,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 	OSyncSinkEngine *sinkengine = NULL;
 
 	
-	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p)", __func__, engine, cmd, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p)", __func__, engine, osync_engine_get_cmdstr(cmd), error);
 	osync_assert(engine);
 	
 	switch (cmd) {

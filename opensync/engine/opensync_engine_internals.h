@@ -21,6 +21,13 @@
 #ifndef OPENSYNC_ENGINE_INTERNALS_H_
 #define OPENSYNC_ENGINE_INTERNALS_H_
 
+/**
+ * @defgroup OSyncEnginePrivateAPI OpenSync Engine Internals 
+ * @ingroup OSyncPrivate
+ * @brief Private functions of OSyncEngine 
+ */
+/*@{*/
+
 osync_bool osync_engine_check_get_changes(OSyncEngine *engine);
 
 void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event);
@@ -36,9 +43,25 @@ int osync_engine_num_objengine(OSyncEngine *engine);
 OSyncClientProxy *osync_engine_nth_proxy(OSyncEngine *engine, int nth);
 int osync_engine_num_proxies(OSyncEngine *engine);
 
+/*! @brief Get "human readable" string of OSyncEngineCmd enum 
+ *
+ * @param cmd OSyncEngineCmd enum value 
+ * @returns String of corresponding  OSyncEngineCmd
+ */
+const char *osync_engine_get_cmdstr(OSyncEngineCmd cmd);
+
+/*! @brief Get "human readable" string of OSyncEngineEvent enum 
+ *
+ * @param event OSyncEngineEvent enum value 
+ * @returns String of corresponding  OSyncEngineEvent
+ */
+const char *osync_engine_get_eventstr(OSyncEngineEvent event);
+
 OSYNC_TEST_EXPORT void osync_engine_set_formatdir(OSyncEngine *engine, const char *dir);
 OSYNC_TEST_EXPORT void osync_engine_set_plugindir(OSyncEngine *engine, const char *dir);
 
 OSYNC_TEST_EXPORT void osync_engine_set_schemadir(OSyncEngine *engine, const char *schema_dir);
+
+/*@}*/
 
 #endif /*OPENSYNC_ENGINE_INTERNALS_H_*/

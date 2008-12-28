@@ -1188,7 +1188,7 @@ static void _osync_engine_event_callback(OSyncObjEngine *objengine, OSyncEngineE
 {
 	OSyncEngine *engine = userdata;
 	int position = 0;
-	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p, %p)", __func__, objengine, event, error, userdata);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p, %p)", __func__, objengine, osync_engine_get_eventstr(event), error, userdata);
 
 	position = _osync_engine_get_objengine_position(engine, objengine);
 	
@@ -1425,9 +1425,11 @@ void osync_engine_command(OSyncEngine *engine, OSyncEngineCommand *command)
 	GList *p = NULL;
 	OSyncError *locerror = NULL;
 	OSyncClientProxy *proxy = NULL;
-			
-	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, command);
+
 	osync_assert(engine);
+	osync_assert(command);
+			
+	osync_trace(TRACE_ENTRY, "%s(%p, %p:%s)", __func__, engine, command, osync_engine_get_cmdstr(command->cmd));
 	
 	switch (command->cmd) {
 	case OSYNC_ENGINE_COMMAND_CONNECT:
@@ -1528,7 +1530,7 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 	GList *o = NULL;
 	OSyncError *locerror = NULL;
 	
-	osync_trace(TRACE_ENTRY, "%s(%p, %i)", __func__, engine, event);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s)", __func__, engine, osync_engine_get_eventstr(event));
 	osync_assert(engine);
 	
 
@@ -2106,6 +2108,89 @@ osync_bool osync_engine_abort(OSyncEngine *engine, OSyncError **error)
  error:	
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
+}
+
+const char *osync_engine_get_cmdstr(OSyncEngineCmd cmd)
+{
+	const char *cmdstr = "UNKNOWN";
+
+	switch (cmd) {
+		case OSYNC_ENGINE_COMMAND_CONNECT:
+			cmdstr = "CONNECTED";
+			break;
+		case OSYNC_ENGINE_COMMAND_CONNECT_DONE:
+			cmdstr = "CONNECT_DONE";
+			break;
+		case OSYNC_ENGINE_COMMAND_READ:
+			cmdstr = "READ";
+			break;
+		case OSYNC_ENGINE_COMMAND_WRITE:
+			cmdstr = "WRITE";
+			break;
+		case OSYNC_ENGINE_COMMAND_SYNC_DONE: 
+			cmdstr = "SYNC_DONE";
+			break;
+		case OSYNC_ENGINE_COMMAND_DISCONNECT:
+			cmdstr = "DISCONNECT";
+			break;
+		case OSYNC_ENGINE_COMMAND_SOLVE:
+			cmdstr = "SOLVE";
+			break;
+		case OSYNC_ENGINE_COMMAND_DISCOVER:
+			cmdstr = "DISCOVER";
+			break;
+		case OSYNC_ENGINE_COMMAND_ABORT:
+			cmdstr = "ABORT";
+			break;
+		case OSYNC_ENGINE_COMMAND_MAP:
+			cmdstr = "MAP";
+			break;
+	}
+
+	return cmdstr;
+}
+
+const char *osync_engine_get_eventstr(OSyncEngineEvent event)
+{
+	const char *eventstr = "UNKNOWN";
+
+	switch (event) {
+		case OSYNC_ENGINE_EVENT_CONNECTED:
+			eventstr = "CONNECTED";
+			break;
+		case OSYNC_ENGINE_EVENT_CONNECT_DONE:
+			eventstr = "CONNECT_DONE";
+			break;
+		case OSYNC_ENGINE_EVENT_ERROR:
+			eventstr = "ERROR";
+			break;
+		case OSYNC_ENGINE_EVENT_READ:
+			eventstr = "READ";
+			break;
+		case OSYNC_ENGINE_EVENT_WRITTEN:
+			eventstr = "WRITTEN";
+			break;
+		case OSYNC_ENGINE_EVENT_SYNC_DONE:
+			eventstr = "SYNC_DONE";
+			break;
+		case OSYNC_ENGINE_EVENT_DISCONNECTED:
+			eventstr = "DISCONNECTED";
+			break;
+		case OSYNC_ENGINE_EVENT_SUCCESSFUL:
+			eventstr = "SUCCESSFUL";
+			break;
+		case OSYNC_ENGINE_EVENT_END_CONFLICTS:
+			eventstr = "END_CONFLICTS";
+			break;
+		case OSYNC_ENGINE_EVENT_PREV_UNCLEAN:
+			eventstr = "PREV_UNCLEAN";
+			break;
+		case OSYNC_ENGINE_EVENT_MAPPED:
+			eventstr = "MAPPED";
+			break;
+	}
+
+	return eventstr;
 }
 
 #ifdef OPENSYNC_UNITTESTS
