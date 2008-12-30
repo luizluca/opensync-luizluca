@@ -21,7 +21,7 @@
 #include "opensync.h"
 #include "opensync_internals.h"
 
-#include "opensync-module.h"
+#include "module/opensync_module_internals.h"
 #include "opensync-data.h"
 #include "opensync/data/opensync_data_internals.h"
 

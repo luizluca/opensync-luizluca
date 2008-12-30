@@ -45,18 +45,6 @@ OSyncModule *osync_module_new(OSyncError **error)
 }
 
 
-/** @brief Increase the reference count on a module
- *
- * When storing a reference to an OSyncModule the reference count
- * on the module must be manually incremented
- * @code
- * format->module = osync_module_ref(module);
- * @endcode
- *
- * @param module pointer to module
- * @returns the passed module
- *
- */
 OSyncModule * osync_module_ref(OSyncModule *module)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, module);
@@ -68,14 +56,6 @@ OSyncModule * osync_module_ref(OSyncModule *module)
 	return module;
 }
 
-/*! @brief Used to reduce the reference count on a module
- * 
- * Decreases the reference count on a module.  If the reference count reaches
- * zero the module is freed.
- * 
- * @param module Pointer to the module
- * 
- */
 void osync_module_unref(OSyncModule *module)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, module);
@@ -92,16 +72,6 @@ void osync_module_unref(OSyncModule *module)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/*! @brief Used to look up a symbol on the plugin
- * 
- * Looks up and returns a function
- * 
- * @param plugin Pointer to the plugin
- * @param name The name of the function to look up
- * @param error Pointer to a error struct
- * @return Pointer to the function
- * 
- */
 void *osync_module_get_function(OSyncModule *module, const char *name, OSyncError **error)
 {
 	void *function = NULL;
@@ -238,16 +208,6 @@ osync_bool osync_module_check(OSyncModule *module, OSyncError **error)
 	return TRUE;
 }
 
-/*! @brief dlopen()s a format plugin
- * 
- * The get_info() function on the format plugin gets called
- * 
- * @param env The environment in which to open the plugin
- * @param path Where to find this plugin
- * @param error Pointer to a error struct
- * @return Pointer to the plugin on success, NULL otherwise
- * 
- */
 osync_bool osync_module_load(OSyncModule *module, const char *path, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p)", __func__, module, path, error);
@@ -283,12 +243,6 @@ osync_bool osync_module_load(OSyncModule *module, const char *path, OSyncError *
 	return FALSE;
 }
 
-/*! @brief Closes a module
- * 
- * @param env The environment from which to remove the module
- * @param module The module to unload
- * 
- */
 void osync_module_unload(OSyncModule *module)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, module);
@@ -305,5 +259,3 @@ void osync_module_unload(OSyncModule *module)
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
-
-/*@}*/

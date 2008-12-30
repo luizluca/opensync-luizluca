@@ -1,6 +1,7 @@
 #include "support.h"
 
 #include <opensync/opensync-module.h>
+#include "opensync/module/opensync_module_internals.h"
 
 START_TEST (module_create)
 {

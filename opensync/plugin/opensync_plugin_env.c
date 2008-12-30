@@ -22,6 +22,8 @@
 #include "opensync_internals.h"
 
 #include "opensync-module.h"
+#include "module/opensync_module_internals.h"
+
 #include "opensync-plugin.h"
 #include "opensync_plugin_env_internals.h"
 #include "opensync_plugin_env_private.h"

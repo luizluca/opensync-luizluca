@@ -21,24 +21,4 @@
 #ifndef _OPENSYNC_MODULE_H_
 #define _OPENSYNC_MODULE_H_
 
-OPENSYNC_BEGIN_DECLS
-
-OSYNC_EXPORT OSyncModule *osync_module_new(OSyncError **error);
-OSYNC_EXPORT OSyncModule *osync_module_ref(OSyncModule *module);
-OSYNC_EXPORT void osync_module_unref(OSyncModule *module);
-
-OSYNC_EXPORT osync_bool osync_module_load(OSyncModule *module, const char *path, OSyncError **error);
-OSYNC_EXPORT void osync_module_unload(OSyncModule *module);
-
-OSYNC_EXPORT osync_bool osync_module_get_sync_info(OSyncModule *module, OSyncPluginEnv *env, OSyncError **error);
-OSYNC_EXPORT osync_bool osync_module_get_format_info(OSyncModule *module, OSyncFormatEnv *env, OSyncError **error);
-OSYNC_EXPORT osync_bool osync_module_get_conversion_info(OSyncModule *module, OSyncFormatEnv *env, OSyncError **error);
-
-OSYNC_EXPORT int osync_module_get_version(OSyncModule *module);
-OSYNC_EXPORT osync_bool osync_module_check(OSyncModule *module, OSyncError **error);
-
-OSYNC_EXPORT void *osync_module_get_function(OSyncModule *module, const char *name, OSyncError **error);
-
-OPENSYNC_END_DECLS
-
-#endif //_OPENSYNC_MODULE_H_
+#endif /* _OPENSYNC_MODULE_H_ */
