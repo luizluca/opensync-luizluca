@@ -31,75 +31,84 @@ plugin.
 \section{Plugin module functions}
 The plugin module functions are called once synchronously when the module
 is loaded.
-\subsection{get_sync_info}
+\subsection{get\_sync\_info}
 This is the entry point for the plugin.  Once the plugin is loaded
-get_sync_info is called to determine the connectors provided by the plugin. A single plugin may
-provide module may provide several connectors.  For example the syncml plugin provides
-syncml-obex, syncml-http-client and syncml-http-server connectors.
+\verb|get_sync_info| is called to determine the connectors provided by the
+plugin. A single plugin may provide module may provide several connectors.  For
+example the syncml plugin provides syncml-obex, syncml-http-client and
+syncml-http-server connectors.
 
-In this function a plugin must create an OSyncPlugin for each of
-the connectors it provides.  The initialize, discover and finalize functions for each
-provided conector must be set using the coressponding osync_plugin_set function. Each OSyncPlugin
-is added to the passed plugin environment using osync_plugin_env_register_plugin.
+In this function a plugin must create an OSyncPlugin for each of the connectors
+it provides.  The initialize, discover and finalize functions for each provided
+conector must be set using the coressponding \verb|osync_plugin_set|
+function. Each OSyncPlugin is added to the passed plugin environment using
+\verb|osync_plugin_env_register_plugin|.
 
 Return TRUE on success.  If an error occurs set OSyncError and return FALSE.
 \section{Plugin specific functions}
 These functions are called for a particular plugin that was registered in
-get_sync_info.
+\verb|get_sync_info|.
 \subsection{Initialize}
 The next call to the plugin will be to initialize a particular connector that
-was registered in get_Sync_info.  At this point the engine will have read
-the plugin config which can be accessed using osync_plugin_info_get_config
+was registered in get\_sync\_info.  At this point the engine will have read the
+plugin config which can be accessed using \verb|osync_plugin_info_get_config|
 
 During this function the plugin should set itself up and register functions for each
 objtype.
 
-The passed OSyncPluginInfo contains a list of OSyncObjTypeSink.  Each of these represents an objtype (e.g. contact, event)
-that the engine is capable of syncing.  For each of these the plugin must:
+The passed OSyncPluginInfo contains a list of OSyncObjTypeSink.  Each of these
+represents an objtype (e.g. contact, event) that the engine is capable of
+syncing.  For each of these the plugin must:
 
-Register Sink functions using osync_objtype_sink_set_functions
+Register Sink functions using \verb|osync_objtype_sink_set_functions|
 
-If a MainSink is needed (e.g. to connect to an interface that is shared between several objtype sinks)
-it can be created and registered using:
-osync_objtype_main_sink_new
-osync_plugin_info_set_main_sink
+If a MainSink is needed (e.g. to connect to an interface that is shared between
+several objtype sinks) it can be created and registered using:
+\verb|osync_objtype_main_sink_new| \verb|osync_plugin_info_set_main_sink|
 
 The function should return it's data cast to (void *) on success.  On failure
 return NULL and set OSyncError to a user friendly explaination of the failure
 cause.
 \subsection{Discover}
-In this function the plugin reports which objtype sinks are available, sets version information and if requiring dynamically generated capabilities reports them here.
-Initialize will already have been called.
+In this function the plugin reports which objtype sinks are available, sets
+version information and if requiring dynamically generated capabilities reports
+them here.  Initialize will already have been called.
 
-If an objtype can be syncronized then it should be set available using osync_objtype_sink_set_available.  Again the
-OSyncPluginInfo contains a list of objtypes known to the engine.
+If an objtype can be syncronized then it should be set available using
+\verb|osync_objtype_sink_set_available|.  Again the OSyncPluginInfo contains a
+list of objtypes known to the engine.
 
-There are two ways to describe the capabilities of a plugin: Dynamic and Static.  Not defining any
-capabilties WILL lead to data loss unless your plugin supports all possible attributes.
+There are two ways to describe the capabilities of a plugin: Dynamic and Static.
+Not defining any capabilties WILL lead to data loss unless your plugin supports
+all possible attributes.
 \subsubsection{Static Capabilties}
-Static capabilities are described in xml files shipped with a plugin.  A descriptions.xml file links OSyncVersion
-properties to a particular capabilites xml file. If no capabilities are set by the plugin in discover
-the engine will use the version info to find the best matching capbilities.  If several capabilities files match
-then the one with the ?highest/lowest? capability is used.
+Static capabilities are described in xml files shipped with a plugin.  A
+descriptions.xml file links OSyncVersion properties to a particular capabilites
+xml file. If no capabilities are set by the plugin in discover the engine will
+use the version info to find the best matching capbilities.  If several
+capabilities files match then the one with the ?highest/lowest? capability is
+used.
 
+\begin{verbatim}
 Use the osync_verion_set functions as required.
 
-	OSyncVersion *version = osync_version_new(error);\\
-	osync_version_set_plugin(version, "pluginname");\\
-	osync_version_set_modelversion(version, "version");\\
-	osync_version_set_firmwareversion(version, "firmwareversion");\\
-	osync_version_set_softwareversion(version, "softwareversion");\\
-	osync_version_set_hardwareversion(version, "hardwareversion");\\
-	osync_plugin_info_set_version(info, version);\\
+	OSyncVersion *version = osync_version_new(error);
+	osync_version_set_plugin(version, "pluginname");
+	osync_version_set_modelversion(version, "version");
+	osync_version_set_firmwareversion(version, "firmwareversion");
+	osync_version_set_softwareversion(version, "softwareversion");
+	osync_version_set_hardwareversion(version, "hardwareversion");
+	osync_plugin_info_set_version(info, version);
+\end{verbatim}
 
 \subsubsection{Dynamic capabilities generation}
 If the capabilities of a peer can only be known by querying it or can not be set using the
 static capabilities method. The plugin must generate the capabilities.
 
 Create new capabilities using:
-osync_capabilities_new and osync_capability_new
+\verb|osync_capabilities_new and osync_capability_new|
 Add the capabilities to the plugin info using:
-osync_plugin_info_set_capabilities
+\verb|osync_plugin_info_set_capabilities|
 \subsection{Finalize}
 Clean up and free any allocated memory
 %\subsection{Usable}
@@ -130,7 +139,7 @@ Disconnect & Optional
 \end{center}
 
 The sink for which the sink function has been called may be found using
-osync_plugin_info_get_sink
+\verb|osync_plugin_info_get_sink|
 
 \subsection{Connect}
 The Connect function is available for all Object Type Sinks and could be used to
@@ -142,7 +151,7 @@ otherwise be called for each Object Type for the same interface.
 
 It is usual at this stage to compare the stored anchor with that from the peer
 using \verb|osync_anchor_compare|.  If the anchor has changed then the need for
-a slow sync should be set using osync_objtype_sink_set_slowsync
+a slow sync should be set using \verb|osync_objtype_sink_set_slowsync|
 
 This function MUST only establish a connection to the device or resource. After
 the connection has been successfully established successful the plugin MUST
