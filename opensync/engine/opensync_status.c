@@ -84,15 +84,26 @@ void osync_status_free_mapping_update(OSyncMappingUpdate *update)
 	g_free(update);
 }
 
-void osync_status_conflict(OSyncEngine *engine, OSyncMappingEngine *mapping_engine)
+osync_bool osync_status_conflict(OSyncEngine *engine, OSyncMappingEngine *mapping_engine)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, mapping_engine);
 
 	osync_assert_msg(engine->conflict_callback, "No conflict handler registered! OpenSync frontend very likely broken!");
+	osync_assert_msg(engine->conflict_callback, "Engine is already tainted with an error! Not going to call any conflict callback!");
+	if (osync_engine_has_error(engine))
+		goto error;
 
 	engine->conflict_callback(engine, mapping_engine, engine->conflict_userdata);
+
+	if (osync_engine_has_error(engine))
+		goto error;
 				
 	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: Engine has an error. Sync got abortd?!", __func__);
+	return FALSE;
 }
 
 void osync_status_multiply(OSyncEngine *engine)
