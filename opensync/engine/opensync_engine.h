@@ -65,7 +65,9 @@ typedef enum {
 	/* Abort the currently running synchronization process */ 
 	OSYNC_ENGINE_COMMAND_ABORT,
 	/* Map all reported changes */
-	OSYNC_ENGINE_COMMAND_MAP
+	OSYNC_ENGINE_COMMAND_MAP,
+	/* Multiply all reported changes to all peers */
+	OSYNC_ENGINE_COMMAND_MULTIPLY
 } OSyncEngineCmd;
 
 
@@ -88,7 +90,9 @@ typedef enum {
 	/** Disconnecting the peers */
 	OSYNC_ENGINE_STATE_DISCONNECTING,
 	/** Creating mapping between the different reported records */
-	OSYNC_ENGINE_STATE_MAPPING
+	OSYNC_ENGINE_STATE_MAPPING,
+	/** Multiplying all reported changes to all peers */ 
+	OSYNC_ENGINE_STATE_MULTIPLYING
 } OSyncEngineState;
 
 /**
@@ -116,7 +120,9 @@ typedef enum {
 	/** Previous synchronization process was unclean */
 	OSYNC_ENGINE_EVENT_PREV_UNCLEAN,
 	/** All reported records got mapped */
-	OSYNC_ENGINE_EVENT_MAPPED
+	OSYNC_ENGINE_EVENT_MAPPED,
+	/** Multiplying of all reported changes is completed */
+	OSYNC_ENGINE_EVENT_MULTIPLIED
 } OSyncEngineEvent;
 
 typedef enum {

@@ -104,6 +104,9 @@ struct OSyncEngine {
 	osync_bool allow_sync_alert;
 	
 	OSyncError *error;
+
+	/** disconnecting status, if TRUE engine is already busy with disconnecting **/
+	osync_bool disconnecting;
 	
 	int proxy_connects;
 	int proxy_connect_done;
@@ -119,6 +122,7 @@ struct OSyncEngine {
 	int obj_disconnects;
 	int obj_get_changes;
 	int obj_mapped;
+	int obj_multiplied;
 	int obj_written;
 	int obj_sync_done;
 	

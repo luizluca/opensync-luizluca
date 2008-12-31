@@ -594,18 +594,8 @@ osync_bool osync_mapping_engine_solve(OSyncMappingEngine *engine, OSyncChange *c
 	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_MAPPING_EVENT_SOLVED, NULL);
 	engine->parent->conflicts = g_list_remove(engine->parent->conflicts, engine);
 	
-	if (osync_engine_check_get_changes(engine->parent->parent) && osync_bitcount(engine->parent->sink_errors | engine->parent->sink_get_changes) == g_list_length(engine->parent->sink_engines)) {
-		if (!osync_obj_engine_command(engine->parent, OSYNC_ENGINE_COMMAND_WRITE, error))
-			goto error;
-	} else
-		osync_trace(TRACE_INTERNAL, "Not triggering write. didnt receive all reads yet");
-	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
-
- error:
-	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-	return FALSE;
 }
 
 osync_bool osync_mapping_engine_ignore(OSyncMappingEngine *engine, OSyncError **error)
@@ -633,18 +623,8 @@ osync_bool osync_mapping_engine_ignore(OSyncMappingEngine *engine, OSyncError **
 	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_MAPPING_EVENT_SOLVED, NULL);
 	engine->parent->conflicts = g_list_remove(engine->parent->conflicts, engine);
 	
-	if (osync_engine_check_get_changes(engine->parent->parent) && osync_bitcount(engine->parent->sink_errors | engine->parent->sink_get_changes) == g_list_length(engine->parent->sink_engines)) {
-		if (!osync_obj_engine_command(engine->parent, OSYNC_ENGINE_COMMAND_WRITE, error))
-			goto error;
-	} else
-		osync_trace(TRACE_INTERNAL, "Not triggering write. didnt receive all reads yet");
-	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
-
- error:
-	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-	return FALSE;
 }
 
 osync_bool osync_mapping_engine_use_latest(OSyncMappingEngine *engine, OSyncError **error)
@@ -662,13 +642,6 @@ osync_bool osync_mapping_engine_use_latest(OSyncMappingEngine *engine, OSyncErro
 	engine->conflict = FALSE;
 	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_MAPPING_EVENT_SOLVED, NULL);
 	engine->parent->conflicts = g_list_remove(engine->parent->conflicts, engine);
-	
-	if (osync_engine_check_get_changes(engine->parent->parent) && osync_bitcount(engine->parent->sink_errors | engine->parent->sink_get_changes) == g_list_length(engine->parent->sink_engines)) {
-		OSyncError *error = NULL;
-		if (!osync_obj_engine_command(engine->parent, OSYNC_ENGINE_COMMAND_WRITE, &error))
-			goto error;
-	} else
-		osync_trace(TRACE_INTERNAL, "Not triggering write. didnt receive all reads yet");
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
@@ -810,12 +783,6 @@ osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, O
 	
 	objengine->conflicts = g_list_remove(objengine->conflicts, existingMapping);
 	osync_status_update_mapping(objengine->parent, existingMapping, OSYNC_MAPPING_EVENT_SOLVED, NULL);
-	
-	if (osync_engine_check_get_changes(objengine->parent) && osync_bitcount(objengine->sink_errors | objengine->sink_get_changes) == g_list_length(objengine->sink_engines)) {
-		if (!osync_obj_engine_command(objengine, OSYNC_ENGINE_COMMAND_WRITE, error))
-			goto error;
-	} else
-		osync_trace(TRACE_INTERNAL, "Not triggering write. didnt receive all reads yet");
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;

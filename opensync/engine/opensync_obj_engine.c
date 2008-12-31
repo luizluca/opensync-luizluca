@@ -999,11 +999,32 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 			for (m = engine->mapping_engines; m; m = m->next) {
 				OSyncMappingEngine *mapping_engine = m->data;
 				if (!mapping_engine->synced)
-					osync_mapping_engine_check_conflict(mapping_engine);
+					if (!osync_mapping_engine_check_conflict(mapping_engine)) {
+						osync_error_set(error, OSYNC_ERROR_GENERIC, "Error while resolving conflicts");
+						osync_obj_engine_set_error(engine, *error);
+						break;
+						/* Don't jump to error - in this case the main engine already
+						 * is in error state. And will abort on the next command cycle.
+						 * Leave!
+						 */
+					}
 			}
 		}
 
 		osync_obj_engine_event(engine, OSYNC_ENGINE_EVENT_MAPPED, *error);
+
+		break;
+	case OSYNC_ENGINE_COMMAND_MULTIPLY:
+
+		/* Now we can multiply the winner in the mapping */
+		osync_trace(TRACE_INTERNAL, "Multiplying %u mappings", g_list_length(engine->mapping_engines));
+		for (m = engine->mapping_engines; m; m = m->next) {
+		        OSyncMappingEngine *mapping_engine = m->data;
+		        if (!osync_mapping_engine_multiply(mapping_engine, error))
+				break;
+		}
+
+		osync_obj_engine_event(engine, OSYNC_ENGINE_EVENT_MULTIPLIED, *error);
 
 		break;
 	case OSYNC_ENGINE_COMMAND_WRITE:
@@ -1011,21 +1032,13 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 			osync_trace(TRACE_INTERNAL, "We still have conflict. Delaying write");
 			break;
 		}
-		
+			
 		if (engine->written) {
 			osync_trace(TRACE_INTERNAL, "Already written");
 			break;
 		}
 				
 		engine->written = TRUE;
-		
-		/* Write the changes. First, we can multiply the winner in the mapping */
-		osync_trace(TRACE_INTERNAL, "Preparing write. multiplying %i mappings", g_list_length(engine->mapping_engines));
-		for (m = engine->mapping_engines; m; m = m->next) {
-		        OSyncMappingEngine *mapping_engine = m->data;
-		        if (!osync_mapping_engine_multiply(mapping_engine, error))
-		                goto error;
-		}
 
 		osync_trace(TRACE_INTERNAL, "Starting to write");
 		for (p = engine->sink_engines; p; p = p->next) {

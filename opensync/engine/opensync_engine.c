@@ -903,9 +903,32 @@ static void _osync_engine_generate_mapped_event(OSyncEngine *engine)
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_END_CONFLICTS, NULL);
 			
 			osync_engine_event(engine, OSYNC_ENGINE_EVENT_MAPPED);
+			/* TODO: error handling! */
+			osync_engine_queue_command(engine, OSYNC_ENGINE_COMMAND_MULTIPLY, NULL);
 		}
 	} else
 		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->obj_errors | engine->obj_mapped));
+
+}
+
+static void _osync_engine_generate_multiplied_event(OSyncEngine *engine)
+{
+
+	if (osync_bitcount(engine->obj_errors | engine->obj_multiplied) == g_list_length(engine->object_engines)) {
+		if (osync_bitcount(engine->obj_errors)) {
+			OSyncError *locerror = NULL;
+			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed while multiplying changes. Aborting");
+			osync_trace(TRACE_ERROR, "%s", osync_error_print(&locerror));
+			osync_engine_set_error(engine, locerror);
+			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_ERROR, locerror);
+			osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
+		} else {
+			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_MULTIPLIED, NULL);
+			
+			osync_engine_event(engine, OSYNC_ENGINE_EVENT_MULTIPLIED);
+		}
+	} else
+		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->obj_errors | engine->obj_multiplied));
 
 }
 
@@ -962,9 +985,7 @@ static osync_bool _osync_engine_generate_disconnected_event(OSyncEngine *engine)
 
 		/* Error handling in this case is quite special. We have to call OSYNC_ENGINE_EVENT_DISCONNECTED,
 			 even on errors. Since OSYNC_ENGINE_EVENT_ERROR would emit this DISCONNECTED event again - deadlock! */
-		if (!osync_bitcount(engine->obj_errors))
-			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_DISCONNECTED, NULL);
-
+		osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_DISCONNECTED, NULL);
 		osync_engine_event(engine, OSYNC_ENGINE_EVENT_DISCONNECTED);
 		return TRUE;
 	}
@@ -1142,6 +1163,9 @@ static void _osync_engine_get_objengine_event(OSyncEngine *engine, OSyncObjEngin
 	case OSYNC_ENGINE_EVENT_MAPPED:
 		engine->obj_mapped = engine->obj_mapped | (0x1 << position);
 		break;
+	case OSYNC_ENGINE_EVENT_MULTIPLIED:
+		engine->obj_multiplied = engine->obj_multiplied | (0x1 << position);
+		break;
 	case OSYNC_ENGINE_EVENT_WRITTEN:
 		engine->obj_written = engine->obj_written | (0x1 << position);
 		break;
@@ -1172,6 +1196,9 @@ static void _osync_engine_generate_event(OSyncEngine *engine, OSyncEngineEvent e
 		break;
 	case OSYNC_ENGINE_EVENT_MAPPED:
 		_osync_engine_generate_mapped_event(engine);
+		break;
+	case OSYNC_ENGINE_EVENT_MULTIPLIED:
+		_osync_engine_generate_multiplied_event(engine);
 		break;
 	case OSYNC_ENGINE_EVENT_WRITTEN:
 		_osync_engine_generate_written_event(engine);
@@ -1461,6 +1488,15 @@ void osync_engine_command(OSyncEngine *engine, OSyncEngineCommand *command)
 	case OSYNC_ENGINE_COMMAND_CONNECT_DONE:
 	case OSYNC_ENGINE_COMMAND_READ:
 	case OSYNC_ENGINE_COMMAND_MAP:
+		break;
+	case OSYNC_ENGINE_COMMAND_MULTIPLY:
+		/* Now that we have mapped everything, we multiply the changes */
+		for (o = engine->object_engines; o; o = o->next) {
+			OSyncObjEngine *objengine = o->data;
+			if (!osync_obj_engine_command(objengine, OSYNC_ENGINE_COMMAND_MULTIPLY, &locerror))
+				goto error;
+		}
+		break;
 	case OSYNC_ENGINE_COMMAND_WRITE:
 	case OSYNC_ENGINE_COMMAND_DISCONNECT:
 	case OSYNC_ENGINE_COMMAND_SYNC_DONE:
@@ -1506,12 +1542,13 @@ void osync_engine_command(OSyncEngine *engine, OSyncEngineCommand *command)
 		/* For nwo Command Aborting is just trigger ENGINE_EVENT_ERROR.
 			 Which is basically just calling the disconnect functions and not setting
 			 the synchrnoization as a successful one. */
-		osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Synchronization got aborted by user!");
+		if (!osync_engine_has_error(engine)) {
+			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Synchronization got aborted!");
+			osync_engine_set_error(engine, locerror);
+			osync_error_unref(&locerror);
+		}
 
-		osync_engine_set_error(engine, locerror);
-		osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_ERROR, locerror);
-
-		osync_error_unref(&locerror);
+		osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_ERROR, engine->error);
 
 		osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
 		break;
@@ -1571,9 +1608,10 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 			if (!osync_client_proxy_get_changes(proxy, _osync_engine_get_changes_callback, engine, NULL, FALSE, &locerror))
 				goto error;
 		}
+
 		break;
 	case OSYNC_ENGINE_EVENT_READ:
-		/* Now that we read everythin, we map the changes */
+		/* Now that we have read everything, we map the changes */
 		for (o = engine->object_engines; o; o = o->next) {
 			OSyncObjEngine *objengine = o->data;
 			if (!osync_obj_engine_command(objengine, OSYNC_ENGINE_COMMAND_MAP, &locerror))
@@ -1582,7 +1620,14 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 
 		break;
 	case OSYNC_ENGINE_EVENT_MAPPED:
-		/* Now that we are mapped the chnage, we write the changes */
+		/* No proxies involved in this.
+		 * So this get called by osync_engine_command_queue() to queue
+		 * an aynchronous. This is also required to handle the mapping
+		 * resolution from the conflict callback.
+		 */
+		break;
+	case OSYNC_ENGINE_EVENT_MULTIPLIED:
+		/* Now that we have multiplied the changes, we write the changes */
 		for (o = engine->object_engines; o; o = o->next) {
 			OSyncObjEngine *objengine = o->data;
 			if (!osync_obj_engine_command(objengine, OSYNC_ENGINE_COMMAND_WRITE, &locerror))
@@ -1618,6 +1663,13 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 		/* Fall through! - To emit disconnect commands for clean connection termination, in error condition */
 	case OSYNC_ENGINE_EVENT_SYNC_DONE:
 
+		if (engine->disconnecting) {
+			osync_trace(TRACE_INTERNAL, "Already disconnecting!");
+			break;
+		}
+
+		engine->disconnecting = TRUE;
+
 		/* Store the timestamp of the last synchronization */
 		osync_group_set_last_synchronization(engine->group, time(NULL)); 
 
@@ -1652,6 +1704,8 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 			osync_obj_engine_finalize(objengine);
 		}
 
+		engine->disconnecting = FALSE;
+
 		engine->proxy_connects = 0;
 		engine->proxy_connect_done = 0;
 		engine->proxy_disconnects = 0;
@@ -1666,6 +1720,7 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 		engine->obj_disconnects = 0;
 		engine->obj_get_changes = 0;
 		engine->obj_mapped = 0;
+		engine->obj_multiplied = 0;
 		engine->obj_written = 0;
 		engine->obj_sync_done = 0;
 			
@@ -2062,6 +2117,9 @@ void osync_engine_set_memberstatus_callback(OSyncEngine *engine, osync_status_me
  * This could be also used within a conflict handler function which aborts the
  * synchronization instead of resolving the conflicts.
  *
+ * This will also turn in the engine into error condition.
+ * osync_error_has_error() will return TRUE once the abort got requested.
+ *
  * FIXME: Currently aborting of the current synchronization is not yet perfect! It
  *        will not preempt already running commands. For example the batch_commit
  *        will not be preempted and the engine will abort after the batch_commit is done.
@@ -2080,6 +2138,7 @@ void osync_engine_set_memberstatus_callback(OSyncEngine *engine, osync_status_me
  */
 osync_bool osync_engine_abort(OSyncEngine *engine, OSyncError **error)
 {
+	OSyncError *locerror = NULL;
 	OSyncEngineCommand *pending_command, *cmd;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
 
@@ -2087,6 +2146,10 @@ osync_bool osync_engine_abort(OSyncEngine *engine, OSyncError **error)
 		osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "This engine was not in state initialized: %i", engine->state);
 		goto error;
 	}
+
+	osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Synchronization got aborted by user!");
+	osync_engine_set_error(engine, locerror);
+	osync_error_unref(&locerror);
 
 	cmd = osync_try_malloc0(sizeof(OSyncEngineCommand), error);
 	if (!cmd)
@@ -2170,6 +2233,9 @@ const char *osync_engine_get_cmdstr(OSyncEngineCmd cmd)
 		case OSYNC_ENGINE_COMMAND_MAP:
 			cmdstr = "MAP";
 			break;
+		case OSYNC_ENGINE_COMMAND_MULTIPLY:
+			cmdstr = "MULTIPLY";
+			break;
 	}
 
 	return cmdstr;
@@ -2212,6 +2278,9 @@ const char *osync_engine_get_eventstr(OSyncEngineEvent event)
 			break;
 		case OSYNC_ENGINE_EVENT_MAPPED:
 			eventstr = "MAPPED";
+			break;
+		case OSYNC_ENGINE_EVENT_MULTIPLIED:
+			eventstr = "MULTIPLIED";
 			break;
 	}
 
