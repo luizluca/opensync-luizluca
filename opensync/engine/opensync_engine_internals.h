@@ -64,7 +64,7 @@ const char *osync_engine_get_eventstr(OSyncEngineEvent event);
  * @param engine Pointer of OSyncEngine 
  * @returns TURE if engine has an error, FALSE otherwise 
  */
-osync_bool osync_engine_has_error(OSyncEngine *engine);
+OSYNC_TEST_EXPORT osync_bool osync_engine_has_error(OSyncEngine *engine);
 
 /**
  * @brief Queue an engine command 
