@@ -113,6 +113,7 @@ osync_engine_mapping_solve
 osync_engine_mapping_use_latest
 osync_engine_new
 osync_engine_ref
+osync_engine_repair
 osync_engine_set_changestatus_callback
 osync_engine_set_conflict_callback
 osync_engine_set_enginestatus_callback

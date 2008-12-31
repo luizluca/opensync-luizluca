@@ -406,6 +406,18 @@ OSYNC_EXPORT osync_bool osync_engine_mapping_duplicate(OSyncEngine *engine, OSyn
 OSYNC_EXPORT osync_bool osync_engine_mapping_ignore_conflict(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncError **error);
 OSYNC_EXPORT osync_bool osync_engine_mapping_use_latest(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncError **error);
 
+/*! @brief Repairs engine from failed synchronization processes. 
+ *
+ * This needs to get called to repair every failed synchronization process,
+ * when same engine should get used. (Without initalizing a new engine).
+ * 
+ * @param engine A pointer to an already initialized but with an error affected engine
+ * @param error A pointer to an empty error struct
+ * @returns TRUE if repair process was succesful, FALSE otherwise.
+ * 
+ */
+OSYNC_EXPORT osync_bool osync_engine_repair(OSyncEngine *engine, OSyncError **error);
+
 /*@}*/
 
 #endif /*OPENSYNC_ENGINE_H_*/

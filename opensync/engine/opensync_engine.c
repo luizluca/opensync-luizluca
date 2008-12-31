@@ -889,6 +889,7 @@ static void _osync_engine_generate_mapped_event(OSyncEngine *engine)
 			osync_engine_set_error(engine, locerror);
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_ERROR, locerror);
 			osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
+			osync_error_unref(&locerror);
 		} else {
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_MAPPED, NULL);
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_END_CONFLICTS, NULL);
@@ -1734,9 +1735,14 @@ osync_bool osync_engine_synchronize(OSyncEngine *engine, OSyncError **error)
 	OSyncEngineCommand *cmd = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
 	osync_assert(engine);
-	
+
+	if (engine->error) {
+		osync_error_set(error, OSYNC_ERROR_INITIALIZATION, "Can't initialize the engine, it's still affected by an error."); 
+		goto error;
+	}
+
 	if (engine->state != OSYNC_ENGINE_STATE_INITIALIZED) {
-		osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "This engine was not in state initialized: %i", engine->state);
+		osync_error_set(error, OSYNC_ERROR_INITIALIZATION, "This engine was not in state initialized.");
 		goto error;
 	}
 
@@ -2014,6 +2020,17 @@ osync_bool osync_engine_abort(OSyncEngine *engine, OSyncError **error)
  error:	
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
+}
+
+osync_bool osync_engine_repair(OSyncEngine *engine, OSyncError **error)
+{
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
+
+	if (engine->error)
+		osync_error_unref(&(engine->error));
+
+	osync_trace(TRACE_EXIT, "%s: Engine got repaired!", __func__);
+	return TRUE;
 }
 
 osync_bool osync_engine_queue_command(OSyncEngine *engine, OSyncEngineCmd cmdid, OSyncError **error)
