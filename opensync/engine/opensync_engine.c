@@ -2110,6 +2110,25 @@ osync_bool osync_engine_abort(OSyncEngine *engine, OSyncError **error)
 	return FALSE;
 }
 
+osync_bool osync_engine_queue_command(OSyncEngine *engine, OSyncEngineCmd cmdid, OSyncError **error)
+{
+	OSyncEngineCommand *cmd;
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p)", __func__, engine, osync_engine_get_cmdstr(cmdid),  error);
+	
+	cmd = osync_try_malloc0(sizeof(OSyncEngineCommand), error);
+	if (!cmd) {
+		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+		return FALSE;
+	}
+	
+	cmd->cmd = cmdid;
+	
+	g_async_queue_push(engine->command_queue, cmd);
+
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+}
+
 const char *osync_engine_get_cmdstr(OSyncEngineCmd cmd)
 {
 	const char *cmdstr = "UNKNOWN";

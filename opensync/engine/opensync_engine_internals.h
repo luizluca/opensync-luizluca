@@ -58,6 +58,18 @@ const char *osync_engine_get_cmdstr(OSyncEngineCmd cmd);
  */
 const char *osync_engine_get_eventstr(OSyncEngineEvent event);
 
+/**
+ * @brief Queue an engine command 
+ *
+ * This function is useful to queue asynchronous engine commands.
+ *
+ * @param engine Pointer of OSyncEngine 
+ * @param cmdid ID of Engine Command (OSyncEngineCmd) to queue
+ * @param error Pointer to an error struct which stores information about the failed queuing
+ * @returns TURE if command got queued successful, FALSE otherwise 
+ */
+osync_bool osync_engine_queue_command(OSyncEngine *engine, OSyncEngineCmd cmdid, OSyncError **error);
+
 OSYNC_TEST_EXPORT void osync_engine_set_formatdir(OSyncEngine *engine, const char *dir);
 OSYNC_TEST_EXPORT void osync_engine_set_plugindir(OSyncEngine *engine, const char *dir);
 
