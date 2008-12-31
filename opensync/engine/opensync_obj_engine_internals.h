@@ -77,6 +77,9 @@ struct OSyncObjEngine {
 	/** Written status of Object Engine. - TODO: Is this still needed?! **/
 	osync_bool written;
 
+	/** Conflicts already solved */
+	osync_bool conflicts_solved;
+
 	/** Total number of "dummy" OSyncSinkEngine-elements */
 	unsigned int dummies;
 };
@@ -87,7 +90,7 @@ OSyncMappingEngine *_osync_obj_engine_create_mapping_engine(OSyncObjEngine *engi
  *
  * This includes "active" and "dummy" Sink Engines (OSyncSinkEngine)
  *
- * @param engine Pointer to OSyncObjEngien
+ * @param engine Pointer to OSyncObjEngine
  * @returns Total number of "active" and "dummy" Sink Engines
  */
 unsigned int osync_obj_engine_num_sink_engines(OSyncObjEngine *engine);
@@ -104,6 +107,13 @@ unsigned int osync_obj_engine_num_sink_engines(OSyncObjEngine *engine);
  * @returns Number of "active" Sink Engines
  */
 unsigned int osync_obj_engine_num_active_sink_engines(OSyncObjEngine *engine);
+
+/*! @brief Get total number of OSyncMappingEngines of this OSyncObjEngine
+ *
+ * @param engine Pointer to OSyncObjEngine
+ * @returns Total number of "active" and "dummy" Sink Engines
+ */
+unsigned int osync_obj_engine_num_mapping_engines(OSyncObjEngine *engine);
 
 #endif /*OPENSYNC_OBJ_ENGINE_INTERNALS_H_*/
 

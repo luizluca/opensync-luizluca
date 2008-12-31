@@ -69,7 +69,10 @@ typedef enum {
 	/* Map all reported changes */
 	OSYNC_ENGINE_COMMAND_MAP,
 	/* Multiply all reported changes to all peers */
-	OSYNC_ENGINE_COMMAND_MULTIPLY
+	OSYNC_ENGINE_COMMAND_MULTIPLY,
+	/* Check if all conflicts got solved */
+	OSYNC_ENGINE_COMMAND_END_CONFLICTS
+
 } OSyncEngineCmd;
 
 
@@ -94,7 +97,9 @@ typedef enum {
 	/** Creating mapping between the different reported records */
 	OSYNC_ENGINE_STATE_MAPPING,
 	/** Multiplying all reported changes to all peers */ 
-	OSYNC_ENGINE_STATE_MULTIPLYING
+	OSYNC_ENGINE_STATE_MULTIPLYING,
+	/** Solving conflicts */
+	OSYNC_ENGINE_STATE_SOLVING
 } OSyncEngineState;
 
 /**

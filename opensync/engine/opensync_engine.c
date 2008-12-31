@@ -36,10 +36,12 @@
 #include "client/opensync_client_proxy_internals.h"
 
 #include "opensync_status_internals.h"
+#include "opensync_obj_engine_internals.h"
 
 #include "opensync_engine.h"
 #include "opensync_engine_private.h"
 #include "opensync_engine_internals.h"
+
 
 #ifdef OPENSYNC_UNITTESTS
 #include "xmlformat/opensync-xmlformat_internals.h"
@@ -892,14 +894,37 @@ static void _osync_engine_generate_mapped_event(OSyncEngine *engine)
 			osync_error_unref(&locerror);
 		} else {
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_MAPPED, NULL);
-			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_END_CONFLICTS, NULL);
 			
 			osync_engine_event(engine, OSYNC_ENGINE_EVENT_MAPPED);
+			/* TODO: error handling! */
+			osync_engine_queue_command(engine, OSYNC_ENGINE_COMMAND_END_CONFLICTS, NULL);
+		}
+	} else
+		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->obj_errors | engine->obj_mapped));
+
+}
+
+static void _osync_engine_generate_end_conflicts_event(OSyncEngine *engine)
+{
+
+	if (osync_bitcount(engine->obj_errors | engine->obj_solved) == g_list_length(engine->object_engines)) {
+		if (osync_bitcount(engine->obj_errors)) {
+			OSyncError *locerror = NULL;
+			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed while solving conflicts. Aborting");
+			osync_trace(TRACE_ERROR, "%s", osync_error_print(&locerror));
+			osync_engine_set_error(engine, locerror);
+			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_ERROR, locerror);
+			osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
+			osync_error_unref(&locerror);
+		} else {
+			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_END_CONFLICTS, NULL);
+			
+			osync_engine_event(engine, OSYNC_ENGINE_EVENT_END_CONFLICTS);
 			/* TODO: error handling! */
 			osync_engine_queue_command(engine, OSYNC_ENGINE_COMMAND_MULTIPLY, NULL);
 		}
 	} else
-		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->obj_errors | engine->obj_mapped));
+		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->obj_errors | engine->obj_solved));
 
 }
 
@@ -1155,6 +1180,9 @@ static void _osync_engine_get_objengine_event(OSyncEngine *engine, OSyncObjEngin
 	case OSYNC_ENGINE_EVENT_MAPPED:
 		engine->obj_mapped = engine->obj_mapped | (0x1 << position);
 		break;
+	case OSYNC_ENGINE_EVENT_END_CONFLICTS:
+		engine->obj_solved = engine->obj_solved | (0x1 << position);
+		break;
 	case OSYNC_ENGINE_EVENT_MULTIPLIED:
 		engine->obj_multiplied = engine->obj_multiplied | (0x1 << position);
 		break;
@@ -1168,7 +1196,6 @@ static void _osync_engine_get_objengine_event(OSyncEngine *engine, OSyncObjEngin
 		engine->obj_disconnects = engine->obj_disconnects | (0x1 << position);
 		break;
 	case OSYNC_ENGINE_EVENT_SUCCESSFUL:
-	case OSYNC_ENGINE_EVENT_END_CONFLICTS:
 	case OSYNC_ENGINE_EVENT_PREV_UNCLEAN:
 		break;
 	}
@@ -1189,6 +1216,9 @@ static void _osync_engine_generate_event(OSyncEngine *engine, OSyncEngineEvent e
 	case OSYNC_ENGINE_EVENT_MAPPED:
 		_osync_engine_generate_mapped_event(engine);
 		break;
+	case OSYNC_ENGINE_EVENT_END_CONFLICTS:
+		_osync_engine_generate_end_conflicts_event(engine);
+		break;
 	case OSYNC_ENGINE_EVENT_MULTIPLIED:
 		_osync_engine_generate_multiplied_event(engine);
 		break;
@@ -1203,7 +1233,6 @@ static void _osync_engine_generate_event(OSyncEngine *engine, OSyncEngineEvent e
 		break;
 	case OSYNC_ENGINE_EVENT_ERROR:
 	case OSYNC_ENGINE_EVENT_SUCCESSFUL:
-	case OSYNC_ENGINE_EVENT_END_CONFLICTS:
 	case OSYNC_ENGINE_EVENT_PREV_UNCLEAN:
 		break;
 	}
@@ -1472,6 +1501,14 @@ void osync_engine_command(OSyncEngine *engine, OSyncEngineCommand *command)
 	case OSYNC_ENGINE_COMMAND_READ:
 	case OSYNC_ENGINE_COMMAND_MAP:
 		break;
+	case OSYNC_ENGINE_COMMAND_END_CONFLICTS:
+		for (o = engine->object_engines; o; o = o->next) {
+			OSyncObjEngine *objengine = o->data;
+
+			if (!osync_obj_engine_command(objengine, OSYNC_ENGINE_COMMAND_END_CONFLICTS, &locerror))
+				goto error;
+		}
+		break;
 	case OSYNC_ENGINE_COMMAND_MULTIPLY:
 		/* Now that we have mapped everything, we multiply the changes */
 		for (o = engine->object_engines; o; o = o->next) {
@@ -1503,6 +1540,7 @@ void osync_engine_command(OSyncEngine *engine, OSyncEngineCommand *command)
 				goto error;
 			break;
 		}
+
 		break;
 	case OSYNC_ENGINE_COMMAND_DISCOVER:
 		for (p = engine->proxies; p; p = p->next) {
@@ -1609,6 +1647,12 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 		 * resolution from the conflict callback.
 		 */
 		break;
+	case OSYNC_ENGINE_EVENT_END_CONFLICTS:
+		/* No proxies involved in this.
+		 * So this get called by osync_engine_command_queue() to queue
+		 * an aynchronous.
+		 */
+		break;
 	case OSYNC_ENGINE_EVENT_MULTIPLIED:
 		/* Now that we have multiplied the changes, we write the changes */
 		for (o = engine->object_engines; o; o = o->next) {
@@ -1703,6 +1747,7 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 		engine->obj_disconnects = 0;
 		engine->obj_get_changes = 0;
 		engine->obj_mapped = 0;
+		engine->obj_solved = 0;
 		engine->obj_multiplied = 0;
 		engine->obj_written = 0;
 		engine->obj_sync_done = 0;
@@ -1712,7 +1757,6 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 		g_mutex_unlock(engine->syncing_mutex);
 		break;
 	case OSYNC_ENGINE_EVENT_SUCCESSFUL:
-	case OSYNC_ENGINE_EVENT_END_CONFLICTS:
 	case OSYNC_ENGINE_EVENT_PREV_UNCLEAN:
 		break;
 	}
@@ -2089,6 +2133,9 @@ const char *osync_engine_get_cmdstr(OSyncEngineCmd cmd)
 			break;
 		case OSYNC_ENGINE_COMMAND_MULTIPLY:
 			cmdstr = "MULTIPLY";
+			break;
+		case OSYNC_ENGINE_COMMAND_END_CONFLICTS:
+			cmdstr = "END_CONFLICTS";
 			break;
 	}
 

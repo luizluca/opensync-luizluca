@@ -3362,14 +3362,7 @@ Suite *env_suite(void)
 	create_case(s, "sync_easy_conflict_duplicate", sync_easy_conflict_duplicate);
 	create_case(s, "sync_easy_conflict_abort", sync_easy_conflict_abort);
 	create_case(s, "sync_conflict_duplicate2", sync_conflict_duplicate2);
-
-	/* FIXME: Current Engine Command "MAP" doesn't allow "delayed conflict callbacks.
-	 *        This will get fixed with an additonal Engine Command "SOLVE_CONFLICTS"
-	 *        to block until all delayed conflicts got sovled.
-	 *
 	create_case(s, "sync_conflict_delay", sync_conflict_delay);
-	 */
-
 	create_case(s, "sync_conflict_deldel", sync_conflict_deldel);
 	create_case(s, "sync_moddel", sync_moddel);
 	create_case(s, "sync_conflict_moddel", sync_conflict_moddel);

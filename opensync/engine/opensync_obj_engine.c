@@ -857,6 +857,8 @@ void osync_obj_engine_finalize(OSyncObjEngine *engine)
 	engine->sink_sync_done = 0;
 	engine->sink_written = 0;
 
+	engine->conflicts_solved = 0;
+
 	while (engine->sink_engines) {
 		OSyncSinkEngine *sinkengine = engine->sink_engines->data;
 		osync_sink_engine_unref(sinkengine);
@@ -993,24 +995,49 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 		break;
 	case OSYNC_ENGINE_COMMAND_MAP:
 		/* We are now done reading the changes. so we can now start to create the mappings, conflicts etc */
-		if (!osync_obj_engine_map_changes(engine, error)) {
-			osync_obj_engine_set_error(engine, *error);
-		} else {
+		if (osync_obj_engine_map_changes(engine, error)) {
 			for (m = engine->mapping_engines; m; m = m->next) {
 				OSyncMappingEngine *mapping_engine = m->data;
-				if (!mapping_engine->synced)
-					if (!osync_mapping_engine_check_conflict(mapping_engine)) {
-						osync_error_set(error, OSYNC_ERROR_GENERIC, "Error while resolving conflicts");
-						break;
-						/* Don't jump to error - in this case the main engine already
-						 * is in error state. And will abort on the next command cycle.
-						 * Leave!
-						 */
-					}
+
+				/* TODO: Is this still needeD? synced does get set in WRITE event - right? */
+				if (mapping_engine->synced)
+					continue;
+
+				if (!osync_mapping_engine_check_conflict(mapping_engine)) {
+					osync_error_set(error, OSYNC_ERROR_GENERIC, "Error while resolving conflicts");
+					break;
+					/* Don't jump to error - in this case the main engine already
+					 * is in error state. And will abort on the next command cycle.
+					 * Leave!
+					 */
+				}
 			}
 		}
 
 		osync_obj_engine_event(engine, OSYNC_ENGINE_EVENT_MAPPED, *error);
+		if (*error) {
+			osync_obj_engine_set_error(engine, *error);
+			osync_error_unref(error);
+		}
+
+		break;
+	case OSYNC_ENGINE_COMMAND_END_CONFLICTS:
+
+		osync_trace(TRACE_INTERNAL, "Check for pending conflicts");
+
+		if (engine->conflicts) {
+			osync_trace(TRACE_INTERNAL, "Delay. Total pending conflicts: %u", g_list_length(engine->conflicts));
+			break;
+		}
+
+		if (engine->conflicts_solved) {
+			osync_trace(TRACE_INTERNAL, "Conflicts already solved.");
+			break;
+		}
+
+		engine->conflicts_solved = TRUE;
+
+		osync_obj_engine_event(engine, OSYNC_ENGINE_EVENT_END_CONFLICTS, *error);
 		if (*error) {
 			osync_obj_engine_set_error(engine, *error);
 			osync_error_unref(error);
@@ -1312,5 +1339,11 @@ unsigned int osync_obj_engine_num_active_sink_engines(OSyncObjEngine *engine)
 {
 	osync_assert(engine);
 	return (osync_obj_engine_num_sink_engines(engine) - engine->dummies);
+}
+
+unsigned int osync_obj_engine_num_mapping_engines(OSyncObjEngine *engine)
+{
+	osync_assert(engine);
+	return g_list_length(engine->mapping_engines);
 }
 
