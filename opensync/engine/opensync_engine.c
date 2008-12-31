@@ -45,7 +45,7 @@
 #include "xmlformat/opensync-xmlformat_internals.h"
 #endif
 
-static void osync_engine_set_error(OSyncEngine *engine, OSyncError *error)
+void osync_engine_set_error(OSyncEngine *engine, OSyncError *error)
 {
 	osync_assert(engine);
 	if (engine->error) {

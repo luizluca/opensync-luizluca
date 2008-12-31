@@ -130,6 +130,16 @@ struct OSyncEngine {
 	GHashTable *converterPathes;
 };
 
+/**
+ * @brief Set error for OSyncEngine.
+ * 
+ * Stack error message. If an error is already set, the error get stacked.
+ *
+ * @param engine Pointer of OSyncEngine 
+ * @param error Pointer to OSyncEror struct to add
+ */
+void osync_engine_set_error(OSyncEngine *engine, OSyncError *error);
+
 /*@}*/
 
 #endif /* OPENSYNC_ENGINE_PRIVATE_H_ */
