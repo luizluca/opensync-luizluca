@@ -418,7 +418,7 @@ static unsigned int prod(unsigned int n)
 	return x;
 }
 
-void osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
+osync_bool osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 {
 	int is_same = 0;
 	GList *e = NULL;
@@ -427,7 +427,7 @@ void osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 	
 	if (engine->master != NULL) {
 		osync_trace(TRACE_EXIT, "%s: Already has a master", __func__);
-		return;
+		return TRUE;
 	}
 	
 	if (engine->conflict) {
@@ -481,9 +481,12 @@ void osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 		//conflict, solve conflict
 		osync_trace(TRACE_INTERNAL, "Got conflict for mapping_engine %p", engine);
 		engine->parent->conflicts = g_list_append(engine->parent->conflicts, engine);
-		osync_status_conflict(engine->parent->parent, engine);
+
+		if (!osync_status_conflict(engine->parent->parent, engine))
+			goto error;
+
 		osync_trace(TRACE_EXIT, "%s: Got conflict", __func__);
-		return;
+		return TRUE;
 	}
 	osync_assert(engine->master);
 	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_MAPPING_EVENT_SOLVED, NULL);
@@ -499,6 +502,11 @@ void osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 	}
 	
 	osync_trace(TRACE_EXIT, "%s: No conflict", __func__);
+	return TRUE;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s", __func__);
+	return FALSE;
 }
 
 

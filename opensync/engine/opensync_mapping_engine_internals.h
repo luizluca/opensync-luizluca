@@ -24,6 +24,14 @@
 
 #include "opensync_mapping_entry_engine_internals.h"
 
+/**
+ * @defgroup OSyncMappingEngineInternalAPI OpenSync Mapping Engine Internals
+ * @ingroup OSyncEnginePrivate
+ * @brief The internal part of the OSyncMappingEngine API
+ * 
+ */
+/*@{*/
+
 struct OSyncMappingEngine {
 	int ref_count;
 	OSyncMapping *mapping;
@@ -39,7 +47,26 @@ OSyncMappingEngine *osync_mapping_engine_ref(OSyncMappingEngine *engine);
 void osync_mapping_engine_unref(OSyncMappingEngine *engine);
 
 osync_bool osync_mapping_engine_multiply(OSyncMappingEngine *engine, OSyncError **error);
-void osync_mapping_engine_check_conflict(OSyncMappingEngine *engine);
+
+/**
+ * @brief Checks for conflicts in the Mapping Engine and calls conflict
+ *        callbacks if required.
+ *
+ * On a conflict the conflict callbacks get called in a syncrhounous way
+ * and might block. But the application could also delay the conflict
+ * resolution and solve it later.
+ *
+ * If this functions fails, by returning FALSE, synchronization got aborted
+ * during the conflict resolution.
+ *
+ * @param engine Pointer to the Mapping Engine struct 
+ * @return Returns TRUE on success, FALSE if conflict resolution got aborted
+ */
+osync_bool osync_mapping_engine_check_conflict(OSyncMappingEngine *engine);
+
 OSyncMappingEntryEngine *osync_mapping_engine_get_entry(OSyncMappingEngine *engine, OSyncSinkEngine *sinkengine);
 
-#endif /*OPENSYNC_MAPPING_ENGINE_INTERNALS_H_*/
+/*@}*/
+
+#endif /* OPENSYNC_MAPPING_ENGINE_INTERNALS_H_ */
+
