@@ -1001,7 +1001,6 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 				if (!mapping_engine->synced)
 					if (!osync_mapping_engine_check_conflict(mapping_engine)) {
 						osync_error_set(error, OSYNC_ERROR_GENERIC, "Error while resolving conflicts");
-						osync_obj_engine_set_error(engine, *error);
 						break;
 						/* Don't jump to error - in this case the main engine already
 						 * is in error state. And will abort on the next command cycle.
@@ -1012,6 +1011,10 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 		}
 
 		osync_obj_engine_event(engine, OSYNC_ENGINE_EVENT_MAPPED, *error);
+		if (*error) {
+			osync_obj_engine_set_error(engine, *error);
+			osync_error_unref(error);
+		}
 
 		break;
 	case OSYNC_ENGINE_COMMAND_MULTIPLY:

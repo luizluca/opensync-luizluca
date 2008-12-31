@@ -873,8 +873,7 @@ START_TEST (sync_easy_conflict_abort)
 	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
 //	osync_testing_system_abort("rm -f data1/testdata-dupe");
 	
-	reset_counters();
-	fail_unless(!osync_engine_synchronize_and_block(engine, &error), NULL);
+	fail_unless(!synchronize_once(engine, &error), NULL);
 	fail_unless(error != NULL, NULL);
 	osync_error_unref(&error);
 	

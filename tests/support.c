@@ -600,6 +600,7 @@ void reset_counters()
 osync_bool synchronize_once(OSyncEngine *engine, OSyncError **error)
 {
 	reset_counters();
+	fail_unless(osync_engine_repair(engine, error), "Repair of engine failed: %s", osync_error_print(error));
 	return osync_engine_synchronize_and_block(engine, error);
 }
 
