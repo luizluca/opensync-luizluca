@@ -539,12 +539,6 @@ int osync_mapping_engine_num_changes(OSyncMappingEngine *engine)
 	return num;
 }
 
-/*! @brief Search for the nth entry in the mapping
- * 
- * @param engine A pointer to the mapping engine
- * @param nth The value of the position
- * @returns The pointer to the nth change. NULL if there isn't enough entries in the mapping. 
- */
 OSyncChange *osync_mapping_engine_nth_change(OSyncMappingEngine *engine, int nth)
 {
 	int num = 0;
@@ -562,12 +556,6 @@ OSyncChange *osync_mapping_engine_nth_change(OSyncMappingEngine *engine, int nth
 	return NULL;
 }
 
-/*! @brief Search in the mapping for the change of the member.
- * 
- * @param engine A pointer to the mapping engine
- * @param memberid The member id of the request change.
- * @returns The pointer to the change of the member. NULL if member doesn't have an entry in this mapping.
- */
 OSyncChange *osync_mapping_engine_member_change(OSyncMappingEngine *engine, int memberid)
 {
 	GList *e = NULL;
@@ -661,12 +649,6 @@ static osync_bool _osync_change_elevate(OSyncChange *change, int level, osync_bo
 	return TRUE;
 }
 
-/** @brief Solves the conflict by duplicating the conflicting entries
- * 
- * @param engine The engine
- * @param dupe_mapping The conflicting mapping to duplicate
- * 
- */
 osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, OSyncError **error)
 {
 	int elevation = 0;

@@ -23,8 +23,10 @@
 #define OPENSYNC_ENGINE_H_
 
 /**
- * @defgroup OSyncEngine OpenSync Engine 
+ * @defgroup OSyncEngine OpenSync Engine Module
  * @ingroup OSyncPublic
+ * @defgroup OSyncEngineAPI OpenSync Engine
+ * @ingroup OSyncEngine
  * @brief Interface to start and control a synchronization
  *
  * The OpenSync Engine provide the interfaces to start a synchronization and
@@ -202,6 +204,15 @@ typedef struct OSyncEngineUpdate {
 	OSyncError *error;
 } OSyncEngineUpdate;
 
+/** @brief This will create a new engine for the given group
+ *
+ * This will create a new engine for the given group
+ *
+ * @param group A pointer to the group, for which you want to create a new engine
+ * @param error A pointer to a error struct
+ * @returns Pointer to a newly allocated OSyncEngine on success, NULL otherwise
+ *
+ */
 OSYNC_EXPORT OSyncEngine *osync_engine_new(OSyncGroup *group, OSyncError **error);
 OSYNC_EXPORT OSyncEngine *osync_engine_ref(OSyncEngine *engine);
 OSYNC_EXPORT void osync_engine_unref(OSyncEngine *engine);
@@ -209,13 +220,103 @@ OSYNC_EXPORT void osync_engine_unref(OSyncEngine *engine);
 OSYNC_EXPORT osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error);
 OSYNC_EXPORT osync_bool osync_engine_finalize(OSyncEngine *engine, OSyncError **error);
 
+/** @brief Starts to synchronize the given OSyncEngine
+ *
+ * This function synchronizes a given engine. The Engine has to be created
+ * from a OSyncGroup before by using osync_engine_new(). This function will not block
+ *
+ * @param engine A pointer to the engine, which will be used to sync
+ * @param error A pointer to a error struct
+ * @returns TRUE on success, FALSE otherwise. Check the error on FALSE. Note that this just says if the sync has been started successfully, not if the sync itself was successful
+ *
+ */
 OSYNC_EXPORT osync_bool osync_engine_synchronize(OSyncEngine *engine, OSyncError **error);
+
+/** @brief This function will synchronize once and block until the sync has finished
+ *
+ * This can be used to sync a group and wait for the synchronization end. DO NOT USE
+ * osync_engine_wait_sync_end for this as this might introduce a race condition.
+ *
+ * @param engine A pointer to the engine, which to sync and wait for the sync end
+ * @param member A pointer to the member, which to discover
+ * @param error A pointer to a error struct
+ * @returns TRUE on success, FALSE otherwise.
+ *
+ */
 OSYNC_EXPORT osync_bool osync_engine_synchronize_and_block(OSyncEngine *engine, OSyncError **error);
+
+
+/** @brief This function will block until a synchronization has ended
+ *
+ * This can be used to wait until the synchronization has ended. Note that this function will always
+ * block until 1 sync has ended. It can be used before the sync has started, to wait for one auto-sync
+ * to end
+ *
+ * @param engine A pointer to the engine, for which to wait for the sync end
+ * @param error Return location for the error if the sync was not successful
+ * @returns TRUE on success, FALSE otherwise.
+ */
 OSYNC_EXPORT osync_bool osync_engine_wait_sync_end(OSyncEngine *engine, OSyncError **error);
 
+/** @brief This function will discover the capabilities of a member
+ *
+ * This function discover a member of a given engine. The Engine has to be created
+ * from a OSyncGroup before by using osync_engine_new(). This function will not block
+ * The Engine MUST NOT be initialized by osync_engine_initilize(), but MUST finalized with
+ * osync_engine_finalize().
+ *
+ * FIXME: Automatically finalize the engine after discovery of member is finished. This
+ *        is needed by the frontend to allow easy use of non-blocking discovery.
+ *
+ * @param engine A pointer to the engine, which to discover the member and wait for the discover end
+ * @param member A pointer to the member, which to discover
+ * @param error A pointer to a error struct
+ * @returns TRUE on success, FALSE otherwise.
+ *
+ */
 OSYNC_EXPORT osync_bool osync_engine_discover(OSyncEngine *engine, OSyncMember *member, OSyncError **error);
+
+/** @brief This function will discover the member and block until the discovery has finished
+ *
+ * This can be used to discover a member and wait for the discovery end.
+ * The engine MUST NOT be initialized or finalized.
+ *
+ * @param engine A pointer to the engine, which to discover the member and wait for the discover end
+ * @param member A pointer to the member, which to discover
+ * @param error A pointer to a error struct
+ * @returns TRUE on success, FALSE otherwise.
+ *
+ */
 OSYNC_EXPORT osync_bool osync_engine_discover_and_block(OSyncEngine *engine, OSyncMember *member, OSyncError **error);
 
+
+/** @brief Aborts running synchronization
+ *
+ * This is aborting the current synchronization while flushing the pending
+ * commands in the engine command queue and pushing the abort command on this
+ * queue. The abort command will send the disconnect command to the client/plugins.
+ * This could be also used within a conflict handler function which aborts the
+ * synchronization instead of resolving the conflicts.
+ *
+ * This will also turn in the engine into error condition.
+ * osync_error_has_error() will return TRUE once the abort got requested.
+ *
+ * FIXME: Currently aborting of the current synchronization is not yet perfect! It
+ *        will not preempt already running commands. For example the batch_commit
+ *        will not be preempted and the engine will abort after the batch_commit is done.
+ *
+ * TODO: Review XMPM Benq patches for abort hander. Is sigaction really sane way
+ *       to abort? It's very important that the plugins get called with the disconnect
+ *       functions, since plugins/devices rely on clean termination of connections.
+ *
+ * TODO: Introduce plugin abort function for protocol specific abort implementations
+ *       (SyncML?, OBEX-based?, ...?)
+ *
+ * @param engine A pointer to the engine with a running synchronization which gets aborted.
+ * @param error A pointer to a error struct
+ * @returns TRUE on success, FALSE otherwise.
+ *
+ */
 OSYNC_EXPORT osync_bool osync_engine_abort(OSyncEngine *engine, OSyncError **error);
 
 
@@ -226,11 +327,76 @@ typedef void (* osync_multiply_cb) (OSyncEngine *, void *);
 typedef void (* osync_status_member_cb) (OSyncMemberUpdate *, void *);
 typedef void (* osync_status_engine_cb) (OSyncEngineUpdate *, void *);
 
+/** @brief This will set the conflict handler for the given engine
+ *
+ * The conflict handler will be called every time a conflict occurs
+ *
+ * @param engine A pointer to the engine, for which to set the callback
+ * @param callback A pointer to a function which will receive the conflict
+ * @param user_data Pointer to some data that will get passed to the callback function as the last argument
+ *
+ */
 OSYNC_EXPORT void osync_engine_set_conflict_callback(OSyncEngine *engine, osync_conflict_cb callback, void *user_data);
+
+/** @brief This will set the multiply handler for the given engine
+ *
+ * The multiply handler will be called after the engine multiplied all changes.
+ * Intention is to summaries the ongoing synchronization process (e.g. What is going to change).
+ * If callback is set, then the syncrhonization process is blocked until the callback returned.
+ * Callback gets directly called before writing changes to the peers (and before preparing for
+ * writing).
+ *
+ * It's possible to abort the synchronization with osync_engine_abort() within this callback.
+ *
+ * @param engine A pointer to the engine, for which to set the callback
+ * @param callback A pointer to a function which will receive multiply summary
+ * @param user_data Pointer to some data that will get passed to the callback function as the last argument
+ *
+ */
 OSYNC_EXPORT void osync_engine_set_multiply_callback(OSyncEngine *engine, osync_multiply_cb callback, void *user_data);
+
+/** @brief This will set the change status handler for the given engine
+ *
+ * The change status handler will be called every time a new change is received, written etc
+ *
+ * @param engine A pointer to the engine, for which to set the callback
+ * @param function A pointer to a function which will receive the change status
+ * @param user_data Pointer to some data that will get passed to the status function as the last argument
+ *
+ */
 OSYNC_EXPORT void osync_engine_set_changestatus_callback(OSyncEngine *engine, osync_status_change_cb callback, void *user_data);
+
+/** @brief This will set the mapping status handler for the given engine
+ *
+ * The mapping status handler will be called every time a mapping is updated
+ *
+ * @param engine A pointer to the engine, for which to set the callback
+ * @param function A pointer to a function which will receive the mapping status
+ * @param user_data Pointer to some data that will get passed to the status function as the last argument
+ *
+ */
 OSYNC_EXPORT void osync_engine_set_mappingstatus_callback(OSyncEngine *engine, osync_status_mapping_cb callback, void *user_data);
+
+/** @brief This will set the engine status handler for the given engine
+ *
+ * The engine status handler will be called every time the engine is updated (started, stopped etc)
+ *
+ * @param engine A pointer to the engine, for which to set the callback
+ * @param function A pointer to a function which will receive the engine status
+ * @param user_data Pointer to some data that will get passed to the status function as the last argument
+ *
+ */
 OSYNC_EXPORT void osync_engine_set_enginestatus_callback(OSyncEngine *engine, osync_status_engine_cb callback, void *user_data);
+
+/** @brief This will set the member status handler for the given engine
+ *
+ * The member status handler will be called every time a member is updated (connects, disconnects etc)
+ *
+ * @param engine A pointer to the engine, for which to set the callback
+ * @param function A pointer to a function which will receive the member status
+ * @param user_data Pointer to some data that will get passed to the status function as the last argument
+ *
+ */
 OSYNC_EXPORT void osync_engine_set_memberstatus_callback(OSyncEngine *engine, osync_status_member_cb callback, void *user_data);
 
 OSYNC_EXPORT OSyncObjEngine *osync_engine_find_objengine(OSyncEngine *engine, const char *objtype);

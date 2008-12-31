@@ -144,6 +144,17 @@ struct OSyncEngine {
  */
 void osync_engine_set_error(OSyncEngine *engine, OSyncError *error);
 
+/** @brief Initialize format environment and "intenral formats" for the engine
+ *
+ * FIXME: Drop internal schema initilization once xmlformat plugin does this in the fomrat-init function.
+ *
+ * @param engine A pointer to the engine, which to initialize the formatenv.
+ * @param error A pointer to a error struct
+ * @returns TRUE on success, FALSE otherwise.
+ *
+ */
+static osync_bool _osync_engine_initialize_formats(OSyncEngine *engine, OSyncError **error);
+
 /*@}*/
 
 #endif /* OPENSYNC_ENGINE_PRIVATE_H_ */

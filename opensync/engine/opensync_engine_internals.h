@@ -81,6 +81,14 @@ osync_bool osync_engine_queue_command(OSyncEngine *engine, OSyncEngineCmd cmdid,
 OSYNC_TEST_EXPORT void osync_engine_set_formatdir(OSyncEngine *engine, const char *dir);
 OSYNC_TEST_EXPORT void osync_engine_set_plugindir(OSyncEngine *engine, const char *dir);
 
+/** @brief Set the schemadir for schema validation to a custom directory.
+ *  This is actually only inteded for UNITTESTS to run tests without
+ *  having OpenSync installed.
+ *
+ * @param engine Pointer to engine
+ * @param schemadir Custom schemadir path
+ *
+ */
 OSYNC_TEST_EXPORT void osync_engine_set_schemadir(OSyncEngine *engine, const char *schema_dir);
 
 /*@}*/
