@@ -1239,7 +1239,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 void osync_obj_engine_event(OSyncObjEngine *engine, OSyncEngineEvent event, OSyncError *error)
 {
-	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p)", __func__, engine, event, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p)", __func__, engine, osync_engine_get_eventstr(event), error);
 	osync_assert(engine);
 
 	/* TODO: Create own enum OSyncObjEngine for objengine events. */
