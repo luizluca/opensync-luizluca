@@ -24,21 +24,36 @@
 #define OPENSYNC_VERSION_PRIVATE_H_
 
 /**
- * @brief Represent a Version object
- * @ingroup OSyncVersionPrivateAPI
+ * @defgroup OSyncVersionPrivate OpenSync Version Module Private
+ * @ingroup OSyncPrivate
+ * @defgroup OSyncVersionPrivateAPI OpenSync Version Private
+ * @ingroup OSyncVersionPrivate
+ * @brief The private part of the OSyncVersion API, representing a Version object
+ *
  */
+/*@{*/
+
 struct OSyncVersion{
 	/** The reference counter for this object */
 	int ref_count;
+	/** FIXME */
 	char *plugin;
+	/** FIXME */
 	char *priority;
+	/** FIXME */
 	char *vendor;
+	/** FIXME */
 	char *modelversion;
+	/** FIXME */
 	char *firmwareversion;
+	/** FIXME */
 	char *softwareversion;
+	/** FIXME */
 	char *hardwareversion;
+	/** FIXME */
 	char *identifier;
 };
+/*@}*/
 
 #endif /* OPENSYNC_VERSION_PRIVATE_H_ */
 
