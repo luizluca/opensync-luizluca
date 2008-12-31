@@ -57,6 +57,12 @@ static void osync_engine_set_error(OSyncEngine *engine, OSyncError *error)
 	if (error)
 		osync_error_ref(&error);
 }
+ 
+osync_bool osync_engine_has_error(OSyncEngine *engine)
+{
+	osync_assert(engine);
+	return engine->error ? TRUE : FALSE;
+}
 
 static void _finalize_callback(OSyncClientProxy *proxy, void *userdata, OSyncError *error)
 {

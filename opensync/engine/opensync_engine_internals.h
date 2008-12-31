@@ -59,6 +59,14 @@ const char *osync_engine_get_cmdstr(OSyncEngineCmd cmd);
 const char *osync_engine_get_eventstr(OSyncEngineEvent event);
 
 /**
+ * @brief Check if engine has an error. 
+ *
+ * @param engine Pointer of OSyncEngine 
+ * @returns TURE if engine has an error, FALSE otherwise 
+ */
+osync_bool osync_engine_has_error(OSyncEngine *engine);
+
+/**
  * @brief Queue an engine command 
  *
  * This function is useful to queue asynchronous engine commands.
