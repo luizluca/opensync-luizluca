@@ -38,28 +38,11 @@ const char *trace = NULL;
 #include <pthread.h>
 #endif
 
-/**
- * @defgroup OSyncDebugAPI OpenSync Debug
- * @ingroup OSyncPublic
- * @brief Debug functions used by opensync
- * 
- */
-/*@{*/
-
-/*! @brief Reset the indentation of the trace function. 
- *
- * Use this function after when process got forked. It's up to the forked
- * process (child) to reset the indent.
- * 
- */
 void osync_trace_reset_indent(void)
 {
 	g_private_set(current_tabs, GINT_TO_POINTER(0));
 }
 
-/*! @brief Disable tracing
- *
- */
 void osync_trace_disable(void)
 {
 	if (!trace_disabled)
@@ -67,10 +50,6 @@ void osync_trace_disable(void)
 	
 	g_private_set(trace_disabled, GINT_TO_POINTER(1));
 }
-
-/*! @brief Enable tracing
- *
- */
 void osync_trace_enable(void)
 {
 	if (!trace_disabled)
@@ -81,6 +60,14 @@ void osync_trace_enable(void)
 	else
 		g_private_set(trace_disabled, GINT_TO_POINTER(0));
 
+}
+
+osync_bool osync_trace_is_enabled(void)
+{
+	if (!trace_disabled || !g_private_get(trace_disabled))
+		return TRUE;
+
+	return FALSE;
 }
 
 /*! @brief Initailize tracing 
@@ -119,16 +106,6 @@ static void _osync_trace_init()
 
 }
 	
-/*! @brief Used for tracing the application
- * 
- * use this function to trace calls. The call graph will be saved into
- * the file that is given in the OSYNC_TRACE environment variable
- * 
- * @param type The type of the trace
- * @param message The message to save
- * 
- */
- 
 void osync_trace(OSyncTraceType type, const char *message, ...)
 {
 #ifdef OPENSYNC_TRACE
@@ -279,12 +256,10 @@ char *osync_print_binary(const unsigned char *data, int len)
 	return g_string_free(str, FALSE);
 }
 
-/*@}*/
-
 /**
- * @defgroup OSyncEnvAPIMisc OpenSync Misc
+ * @defgroup OSyncThreadAPI OpenSync Thread Module 
  * @ingroup OSyncPrivate
- * @brief Some helper functions
+ * @brief Some threading  functions
  * 
  */
 /*@{*/
@@ -317,163 +292,6 @@ static gboolean osyncThreadStartCallback(gpointer data)
 	g_mutex_unlock(thread->started_mutex);
 	
 	return FALSE;
-}
-
-/*@}*/
-
-/**
- * @defgroup OSyncEnvAPIMisc OpenSync Misc
- * @ingroup OSyncPublic
- * @brief Some helper functions
- * 
- */
-/*@{*/
-
-/*! @brief Writes data to a file
- * 
- * Writes data to a file
- * 
- * @param filename Where to save the data
- * @param data Pointer to the data
- * @param size Size of the data
- * @param mode The mode to set on the file
- * @param oserror Pointer to a error struct
- * @returns TRUE if successful, FALSE otherwise
- * 
- */
-osync_bool osync_file_write(const char *filename, const char *data, unsigned int size, int mode, OSyncError **oserror)
-{
-	osync_bool ret = FALSE;
-	GError *error = NULL;
-	gsize writen;
-	
-	GIOChannel *chan = g_io_channel_new_file(filename, "w", &error);
-	if (!chan) {
-		osync_trace(TRACE_INTERNAL, "Unable to open file %s for writing: %s", filename, error->message);
-		osync_error_set(oserror, OSYNC_ERROR_IO_ERROR, "Unable to open file %s for writing: %s", filename, error->message);
-		return FALSE;
-	}
-	if (mode) {
-		if (g_chmod(filename, mode)) {
-			osync_trace(TRACE_INTERNAL, "Unable to set file permissions %i for file %s", mode, filename);
-			osync_error_set(oserror, OSYNC_ERROR_IO_ERROR, "Unable to set file permissions %i for file %s", mode, filename);
-			return FALSE;
-		}
-	}
-	
-	g_io_channel_set_encoding(chan, NULL, NULL);
-	if (g_io_channel_write_chars(chan, data, size, &writen, &error) != G_IO_STATUS_NORMAL) {
-		osync_trace(TRACE_INTERNAL, "Unable to write contents of file %s: %s", filename, error->message);
-		osync_error_set(oserror, OSYNC_ERROR_IO_ERROR, "Unable to write contents of file %s: %s", filename, error->message);
-	} else {
-		g_io_channel_flush(chan, NULL);
-		ret = TRUE;
-	}
-	g_io_channel_shutdown(chan, FALSE, NULL);
-	g_io_channel_unref(chan);
-	return ret;
-}
-
-/*! @brief Reads a file
- * 
- * Reads a file
- * 
- * @param filename Where to read the data from
- * @param data Pointer to the data
- * @param size Size of the data
- * @param oserror Pointer to a error struct
- * @returns TRUE if successful, FALSE otherwise
- * 
- */
-osync_bool osync_file_read(const char *filename, char **data, unsigned int *size, OSyncError **oserror)
-{
-	osync_bool ret = FALSE;
-	GError *error = NULL;
-	gsize sz = 0;
-	GIOChannel *chan = NULL;
-	
-	if (!filename) {
-		osync_trace(TRACE_INTERNAL, "No file open specified");
-		osync_error_set(oserror, OSYNC_ERROR_IO_ERROR, "No file to open specified");
-		return FALSE;
-	}
-	
-	chan = g_io_channel_new_file(filename, "r", &error);
-	if (!chan) {
-		osync_trace(TRACE_INTERNAL, "Unable to read file %s: %s", filename, error->message);
-		osync_error_set(oserror, OSYNC_ERROR_IO_ERROR, "Unable to open file %s for reading: %s", filename, error->message);
-		return FALSE;
-	}
-	
-	g_io_channel_set_encoding(chan, NULL, NULL);
-	if (g_io_channel_read_to_end(chan, data, &sz, &error) != G_IO_STATUS_NORMAL) {
-		osync_trace(TRACE_INTERNAL, "Unable to read contents of file %s: %s", filename, error->message);
-		osync_error_set(oserror, OSYNC_ERROR_IO_ERROR, "Unable to read contents of file %s: %s", filename, error->message);
-	} else {
-		ret = TRUE;
-		if (size)
-			*size = (int)sz;
-	}
-	g_io_channel_shutdown(chan, FALSE, NULL);
-	g_io_channel_unref(chan);
-	return ret;
-}
-
-/*! @brief Returns the version of opensync
- * 
- * Returns a string identifying the major and minor version
- * of opensync (something like "0.11")
- * 
- * @returns String with version
- * 
- */
-const char *osync_get_version(void)
-{
-	return OPENSYNC_VERSION;
-}
-
-/*! @brief Safely tries to malloc memory
- * 
- * Tries to malloc memory but returns an error in an OOM situation instead
- * of aborting
- * 
- * @param size The size in bytes to malloc
- * @param error The error which will hold the info in case of an error
- * @returns A pointer to the new memory or NULL in case of error
- * 
- */
-void *osync_try_malloc0(unsigned int size, OSyncError **error)
-{
-	void *result = NULL;
-	
-#ifdef OPENSYNC_UNITTESTS 	
-	if (!g_getenv("OSYNC_NOMEMORY"))
-		result = g_try_malloc(size);
-#else		
-	result = g_try_malloc(size);
-#endif /*OPENSYNC_UNITTESTS*/
-
-	if (!result) {
-		osync_error_set(error, OSYNC_ERROR_GENERIC, "No memory left");
-		return NULL;
-	}
-	memset(result, 0, size);
-	return result;
-}
-
-/*! @brief Frees memory
- * 
- * Frees memory allocated by osync_try_malloc0().
- * 
- * @param ptr Pointer to allocated memory which should get freed
- * 
- */
-void osync_free(void *ptr)
-{
-	if (!ptr)
-		return;
-
-	g_free(ptr);
 }
 
 /*! @brief Allocates a new thread with a g_mainloop 
@@ -693,14 +511,125 @@ void osync_thread_exit(OSyncThread *thread, int retval)
 }
 
 
-/*! @brief String replace
- * 
- * @param input Input string to work on
- * @param delimiter Delimiter
- * @param replacement Replacement
- * @returns Replaced/Modified string result 
- * 
- */
+
+/*@}*/
+
+osync_bool osync_file_write(const char *filename, const char *data, unsigned int size, int mode, OSyncError **oserror)
+{
+	osync_bool ret = FALSE;
+	GError *error = NULL;
+	gsize writen;
+	
+	GIOChannel *chan = g_io_channel_new_file(filename, "w", &error);
+	if (!chan) {
+		osync_trace(TRACE_INTERNAL, "Unable to open file %s for writing: %s", filename, error->message);
+		osync_error_set(oserror, OSYNC_ERROR_IO_ERROR, "Unable to open file %s for writing: %s", filename, error->message);
+		return FALSE;
+	}
+	if (mode) {
+		if (g_chmod(filename, mode)) {
+			osync_trace(TRACE_INTERNAL, "Unable to set file permissions %i for file %s", mode, filename);
+			osync_error_set(oserror, OSYNC_ERROR_IO_ERROR, "Unable to set file permissions %i for file %s", mode, filename);
+			return FALSE;
+		}
+	}
+	
+	g_io_channel_set_encoding(chan, NULL, NULL);
+	if (g_io_channel_write_chars(chan, data, size, &writen, &error) != G_IO_STATUS_NORMAL) {
+		osync_trace(TRACE_INTERNAL, "Unable to write contents of file %s: %s", filename, error->message);
+		osync_error_set(oserror, OSYNC_ERROR_IO_ERROR, "Unable to write contents of file %s: %s", filename, error->message);
+	} else {
+		g_io_channel_flush(chan, NULL);
+		ret = TRUE;
+	}
+	g_io_channel_shutdown(chan, FALSE, NULL);
+	g_io_channel_unref(chan);
+	return ret;
+}
+
+osync_bool osync_file_read(const char *filename, char **data, unsigned int *size, OSyncError **oserror)
+{
+	osync_bool ret = FALSE;
+	GError *error = NULL;
+	gsize sz = 0;
+	GIOChannel *chan = NULL;
+	
+	if (!filename) {
+		osync_trace(TRACE_INTERNAL, "No file open specified");
+		osync_error_set(oserror, OSYNC_ERROR_IO_ERROR, "No file to open specified");
+		return FALSE;
+	}
+	
+	chan = g_io_channel_new_file(filename, "r", &error);
+	if (!chan) {
+		osync_trace(TRACE_INTERNAL, "Unable to read file %s: %s", filename, error->message);
+		osync_error_set(oserror, OSYNC_ERROR_IO_ERROR, "Unable to open file %s for reading: %s", filename, error->message);
+		return FALSE;
+	}
+	
+	g_io_channel_set_encoding(chan, NULL, NULL);
+	if (g_io_channel_read_to_end(chan, data, &sz, &error) != G_IO_STATUS_NORMAL) {
+		osync_trace(TRACE_INTERNAL, "Unable to read contents of file %s: %s", filename, error->message);
+		osync_error_set(oserror, OSYNC_ERROR_IO_ERROR, "Unable to read contents of file %s: %s", filename, error->message);
+	} else {
+		ret = TRUE;
+		if (size)
+			*size = (int)sz;
+	}
+	g_io_channel_shutdown(chan, FALSE, NULL);
+	g_io_channel_unref(chan);
+	return ret;
+}
+
+const char *osync_get_version(void)
+{
+	return OPENSYNC_VERSION;
+}
+
+void *osync_try_malloc0(unsigned int size, OSyncError **error)
+{
+	void *result = NULL;
+	
+#ifdef OPENSYNC_UNITTESTS 	
+	if (!g_getenv("OSYNC_NOMEMORY"))
+		result = g_try_malloc(size);
+#else		
+	result = g_try_malloc(size);
+#endif /*OPENSYNC_UNITTESTS*/
+
+	if (!result) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "No memory left");
+		return NULL;
+	}
+	memset(result, 0, size);
+	return result;
+}
+
+void osync_free(void *ptr)
+{
+	if (!ptr)
+		return;
+
+	g_free(ptr);
+}
+
+char *osync_strdup(const char *str)
+{
+	return g_strdup(str);
+}
+
+char *osync_strdup_printf(const char *format, ...)
+{
+	va_list ap;
+	char *str;
+
+	va_start(ap, format);
+	str = g_strdup_vprintf(format, ap); 
+	va_end(ap);
+
+	return str;
+}
+
 char *osync_strreplace(const char *input, const char *delimiter, const char *replacement)
 {
 	gchar **array;
@@ -716,6 +645,30 @@ char *osync_strreplace(const char *input, const char *delimiter, const char *rep
 	return ret;
 }
 
+char *osync_rand_str(int maxlength)
+{
+	char *randchars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIKLMNOPQRSTUVWXYZ1234567890";
+	
+	int length;
+	char *retchar;
+	int i = 0;
+
+	length = g_random_int_range(1, maxlength + 1);
+
+	retchar = osync_try_malloc0(length * sizeof(char) + 1, NULL);
+	osync_return_val_if_fail(!retchar, NULL);
+
+	retchar[0] = 0;
+
+	for (i = 0; i < length; i++) {
+		retchar[i] = randchars[g_random_int_range(0, strlen(randchars))];
+		retchar[i + 1] = 0;
+	}
+
+	return retchar;
+}
+
+
 /*! @brief Bit counting
  * 
  * MIT HAKMEM Count, Bit counting in constant time and memory. 
@@ -730,67 +683,4 @@ int osync_bitcount(unsigned int u)
 	return ((uCount + (uCount >> 3)) & 030707070707) % 63;
 }
 
-/*! @brief Creates a random string
- * 
- * Creates a random string of given length or less
- * 
- * @param maxlength The maximum length of the string
- * @returns The random string
- * 
- */
-char *osync_rand_str(int maxlength)
-{
-	char *randchars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIKLMNOPQRSTUVWXYZ1234567890";
-	
-	int length;
-	char *retchar;
-	int i = 0;
-
-	length = g_random_int_range(1, maxlength + 1);
-	retchar = malloc(length * sizeof(char) + 1);
-	retchar[0] = 0;
-
-	for (i = 0; i < length; i++) {
-		retchar[i] = randchars[g_random_int_range(0, strlen(randchars))];
-		retchar[i + 1] = 0;
-	}
-
-	return retchar;
-}
-
-/*! @brief Duplicates a string 
- * 
- * Duplicates a string, ending with terminating-zero: \0
- * 
- * @param str The pointer of the string to duplicate
- * @returns The duplicate string, caller is responsible for freeing.
- * 
- */
-char *osync_strdup(const char *str)
-{
-	return g_strdup(str);
-}
-
-/*! @brief Duplicates a formated string 
- * 
- * Duplicates a formated string, ending with terminating-zero: \0
- * 
- * @param str The pointer of the string to duplicate
- * @param args 
- * @returns The duplicate string, caller is responsible for freeing.
- * 
- */
-char *osync_strdup_printf(const char *format, ...)
-{
-	va_list ap;
-	char *str;
-
-	va_start(ap, format);
-	str = g_strdup_vprintf(format, ap); 
-	va_end(ap);
-
-	return str;
-}
-
-/*@}*/
 

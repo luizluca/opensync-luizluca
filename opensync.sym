@@ -691,6 +691,7 @@ osync_time_vtime2utc
 osync_trace
 osync_trace_disable
 osync_trace_enable
+osync_trace_is_enabled
 osync_trace_reset_indent
 osync_try_malloc0
 osync_updater_action_required
