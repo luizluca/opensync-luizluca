@@ -663,6 +663,7 @@ osync_queue_new_from_fd
 osync_queue_ref
 osync_queue_unref
 osync_rand_str
+osync_sink_engine_get_mapping_entry_engines
 osync_strdup
 osync_strdup_printf
 osync_strreplace

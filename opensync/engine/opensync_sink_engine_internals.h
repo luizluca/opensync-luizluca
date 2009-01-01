@@ -24,7 +24,7 @@
 /*! @brief OSyncSinkEngine struct members 
  *
  **/
-typedef struct OSyncSinkEngine {
+struct OSyncSinkEngine {
 	/** Reference counting */
 	int ref_count;
 	/** Position of OSyncSinkEngine in OSyncObjEngine */
@@ -39,7 +39,7 @@ typedef struct OSyncSinkEngine {
 	OSyncList *unmapped;
 	/** "dummy" attribute, when set no proxy functions of OSyncSinkEngine get called */
 	osync_bool dummy_sink;
-} OSyncSinkEngine;
+};
 
 OSyncSinkEngine *osync_sink_engine_new(int position, OSyncClientProxy *proxy, OSyncObjEngine *objengine, OSyncError **error);
 OSyncSinkEngine *osync_sink_engine_ref(OSyncSinkEngine *engine);

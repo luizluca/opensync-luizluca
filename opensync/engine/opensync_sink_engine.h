@@ -1,6 +1,7 @@
 /*
- * libopensync - A synchronization framework
+ * libopensync- A synchronization engine for the opensync framework
  * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
+ * Copyright (C) 2006-2009  Daniel Gollub <dgollub@suse.de> 
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,18 +18,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  * 
  */
+ 
+#ifndef OPENSYNC_SINK_ENGINE_H_
+#define OPENSYNC_SINK_ENGINE_H_
 
-#ifndef HAVE_OSYNC_ENGINE_H
-#define HAVE_OSYNC_ENGINE_H
+/*! @brief Get list of OSyncMappingEntryEngines of the OSyncSinkEngine
+ *
+ * @param engine Pointer to an OSyncSinkEngine
+ * @returns List of OSyncMappingEntryEngines-elements or NULL if there are no Mapping Entry Engines. 
+ */
+OSYNC_EXPORT const OSyncList *osync_sink_engine_get_mapping_entry_engines(OSyncSinkEngine *engine);
 
-OPENSYNC_BEGIN_DECLS
+#endif /* OPENSYNC_SINK_ENGINE_H_ */
 
-#include "engine/opensync_engine.h"
-#include "engine/opensync_mapping_engine.h"
-#include "engine/opensync_mapping_entry_engine.h"
-#include "engine/opensync_obj_engine.h"
-#include "engine/opensync_sink_engine.h"
-
-OPENSYNC_END_DECLS
-
-#endif /*HAVE_OSYNC_ENGINE_H*/
