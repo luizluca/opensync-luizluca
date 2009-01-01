@@ -102,6 +102,7 @@ osync_db_reset_table
 osync_db_sql_escape
 osync_db_table_exists
 osync_engine_abort
+osync_engine_continue
 osync_engine_discover
 osync_engine_discover_and_block
 osync_engine_finalize
