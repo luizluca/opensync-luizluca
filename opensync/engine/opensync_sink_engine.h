@@ -31,5 +31,12 @@
  */
 OSYNC_EXPORT const OSyncList *osync_sink_engine_get_mapping_entry_engines(OSyncSinkEngine *engine);
 
+/*! @brief Get member of the OSyncSinkEngine
+ *
+ * @param engine Pointer to an OSyncSinkEngine
+ * @returns Pointer to Member of OSyncSinkEngine 
+ */
+OSYNC_EXPORT OSyncMember *osync_sink_engine_get_member(OSyncSinkEngine *engine);
+
 #endif /* OPENSYNC_SINK_ENGINE_H_ */
 

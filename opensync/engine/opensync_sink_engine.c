@@ -27,11 +27,11 @@
 #include "opensync-data.h"
 #include "opensync-mapping.h"
 
-#include "opensync_obj_engine.h"
 #include "opensync_obj_engine_internals.h"
 #include "opensync_sink_engine_internals.h"
-
 #include "opensync_mapping_entry_engine_internals.h"
+
+#include "client/opensync_client_proxy_internals.h"
 
 OSyncSinkEngine *osync_sink_engine_new(int position, OSyncClientProxy *proxy, OSyncObjEngine *objengine, OSyncError **error)
 {
@@ -121,5 +121,12 @@ const OSyncList *osync_sink_engine_get_mapping_entry_engines(OSyncSinkEngine *en
 {
 	osync_return_val_if_fail(engine, NULL);
 	return engine->entries;
+}
+
+OSyncMember *osync_sink_engine_get_member(OSyncSinkEngine *engine)
+{
+	osync_return_val_if_fail(engine, NULL);
+	osync_return_val_if_fail(engine->proxy, NULL);
+	return osync_client_proxy_get_member(engine->proxy);
 }
 
