@@ -55,7 +55,7 @@ OSyncMappingEntryEngine *osync_entry_engine_new(OSyncMappingEntry *entry, OSyncM
 	engine->mapping_engine = osync_mapping_engine_ref(mapping_engine);
 	engine->entry = osync_mapping_entry_ref(entry);
 	
-	sink_engine->entries = g_list_append(sink_engine->entries, engine);
+	sink_engine->entries = osync_list_append(sink_engine->entries, engine);
 	osync_entry_engine_ref(engine);
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, engine);

@@ -33,10 +33,10 @@ typedef struct OSyncSinkEngine {
 	OSyncClientProxy *proxy;
 	/** Pointer to assinged OSyncObjEngine */
 	OSyncObjEngine *engine;
-	/** List of assinged OSyncMappingEntry elements */
-	GList *entries;
-	/** List of assinged OSyncMappingEntry elemebts, but unmapped (no counter-entry) */
-	GList *unmapped;
+	/** List of assinged OSyncMappingEntryEngine elements */
+	OSyncList *entries;
+	/** List of assinged OSyncMappingEntryEngine elemebts, but unmapped (no counter-entry) */
+	OSyncList *unmapped;
 	/** "dummy" attribute, when set no proxy functions of OSyncSinkEngine get called */
 	osync_bool dummy_sink;
 } OSyncSinkEngine;

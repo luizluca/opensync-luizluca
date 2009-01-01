@@ -78,14 +78,14 @@ void osync_sink_engine_unref(OSyncSinkEngine *engine)
 			OSyncChange *change = engine->unmapped->data;
 			osync_change_unref(change);
 			
-			engine->unmapped = g_list_remove(engine->unmapped, engine->unmapped->data);
+			engine->unmapped = osync_list_remove(engine->unmapped, engine->unmapped->data);
 		}
 		
 		while (engine->entries) {
 			OSyncMappingEntryEngine *entry = engine->entries->data;
 			osync_entry_engine_unref(entry);
 			
-			engine->entries = g_list_remove(engine->entries, engine->entries->data);
+			engine->entries = osync_list_remove(engine->entries, engine->entries->data);
 		}
 		
 		g_free(engine);
@@ -115,5 +115,11 @@ osync_bool osync_sink_engine_is_dummy(OSyncSinkEngine *engine)
 {
 	osync_assert(engine);
 	return engine->dummy_sink;
+}
+
+const OSyncList *osync_sink_engine_get_mapping_entry_engines(OSyncSinkEngine *engine)
+{
+	osync_return_val_if_fail(engine, NULL);
+	return engine->entries;
 }
 

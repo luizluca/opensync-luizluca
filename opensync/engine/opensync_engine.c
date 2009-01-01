@@ -932,7 +932,8 @@ static void _osync_engine_generate_end_conflicts_event(OSyncEngine *engine)
 
 void osync_engine_trace_multiply_summary(OSyncEngine *engine)
 {
-	GList *o, *s, *e;
+	GList *o, *s;
+	OSyncList *e;
 	unsigned int added, modified, deleted, unmodified, unknown;
 	long long int memberid;
 

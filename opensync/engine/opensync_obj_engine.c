@@ -298,7 +298,7 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 			osync_assert(entry_engine);
 			
 			osync_entry_engine_update(entry_engine, change);
-			sinkengine->unmapped = g_list_remove(sinkengine->unmapped, sinkengine->unmapped->data);
+			sinkengine->unmapped = osync_list_remove(sinkengine->unmapped, sinkengine->unmapped->data);
 			osync_change_unref(change);
 		}
 
@@ -360,7 +360,8 @@ static void _osync_obj_engine_read_callback(OSyncClientProxy *proxy, void *userd
 osync_bool osync_obj_engine_receive_change(OSyncObjEngine *objengine, OSyncClientProxy *proxy, OSyncChange *change, OSyncError **error)
 {
 	OSyncSinkEngine *sinkengine = NULL;
-	GList *s = NULL, *e = NULL;
+	GList *s = NULL;
+	OSyncList *e = NULL;
 	
 	osync_assert(objengine);
 	
@@ -398,7 +399,7 @@ osync_bool osync_obj_engine_receive_change(OSyncObjEngine *objengine, OSyncClien
 			
 	/* If we couldnt find a match entry, we will append it the unmapped changes
 	 * and take care of it later */
-	sinkengine->unmapped = g_list_append(sinkengine->unmapped, change);
+	sinkengine->unmapped = osync_list_append(sinkengine->unmapped, change);
 	osync_change_ref(change);
 	
 	osync_trace(TRACE_EXIT, "%s: Unmapped", __func__);
@@ -420,7 +421,7 @@ static void _osync_obj_engine_generate_written_event(OSyncObjEngine *engine, OSy
 {
 	osync_bool dirty = FALSE;
 	GList *p = NULL;
-	GList *e = NULL;
+	OSyncList *e = NULL;
 	OSyncSinkEngine *sinkengine = NULL;
 	OSyncError *locerror = NULL;
 
@@ -907,8 +908,7 @@ osync_bool osync_obj_engine_get_slowsync(OSyncObjEngine *engine)
 osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, OSyncError **error)
 {
 	GList *p = NULL;
-	GList *m = NULL;
-	GList *e = NULL;
+	OSyncList *o = NULL;
 	OSyncSinkEngine *sinkengine = NULL;
 
 	
@@ -947,8 +947,8 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 			if (osync_sink_engine_is_dummy(sinkengine))
 				continue;
 
-			for (m = sinkengine->entries; m; m = m->next) {
-				OSyncMappingEntryEngine *entry = m->data;
+			for (o = sinkengine->entries; o; o = o->next) {
+				OSyncMappingEntryEngine *entry = o->data;
 				OSyncChange *change = entry->change;
 
 				if (!change)
@@ -996,8 +996,8 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 	case OSYNC_ENGINE_COMMAND_MAP:
 		/* We are now done reading the changes. so we can now start to create the mappings, conflicts etc */
 		if (osync_obj_engine_map_changes(engine, error)) {
-			for (m = engine->mapping_engines; m; m = m->next) {
-				OSyncMappingEngine *mapping_engine = m->data;
+			for (p = engine->mapping_engines; p; p = p->next) {
+				OSyncMappingEngine *mapping_engine = p->data;
 
 				/* TODO: Is this still needeD? synced does get set in WRITE event - right? */
 				if (mapping_engine->synced)
@@ -1048,8 +1048,8 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 		/* Now we can multiply the winner in the mapping */
 		osync_trace(TRACE_INTERNAL, "Multiplying %u mappings", g_list_length(engine->mapping_engines));
-		for (m = engine->mapping_engines; m; m = m->next) {
-		        OSyncMappingEngine *mapping_engine = m->data;
+		for (p = engine->mapping_engines; p; p = p->next) {
+		        OSyncMappingEngine *mapping_engine = p->data;
 		        if (!osync_mapping_engine_multiply(mapping_engine, error))
 				break;
 		}
@@ -1097,8 +1097,8 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 				objtype_sink = osync_member_find_objtype_sink(member, "data");
 			/* TODO: Review if objtype_sink = NULL is valid at all. */
 
-			for (e = sinkengine->entries; e; e = e->next) {
-				OSyncMappingEntryEngine *entry_engine = e->data;
+			for (o = sinkengine->entries; o; o = o->next) {
+				OSyncMappingEntryEngine *entry_engine = o->data;
 				osync_assert(entry_engine);
 
 				/* Merger - Save the entire xml and demerge */
