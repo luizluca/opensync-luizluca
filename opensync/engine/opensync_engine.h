@@ -324,6 +324,14 @@ OSYNC_EXPORT osync_bool osync_engine_discover_and_block(OSyncEngine *engine, OSy
  */
 OSYNC_EXPORT osync_bool osync_engine_abort(OSyncEngine *engine, OSyncError **error);
 
+/** @brief Continue a halted/paused synchronization process. 
+ *
+ * @param engine A pointer to the engine with a running synchronization which got paused/halted. 
+ * @param error A pointer to a error struct
+ * @returns TRUE on success, FALSE otherwise.
+ *
+ */
+OSYNC_EXPORT osync_bool osync_engine_continue(OSyncEngine *engine, OSyncError **error);
 
 typedef void (* osync_conflict_cb) (OSyncEngine *, OSyncMappingEngine *, void *);
 typedef void (* osync_status_change_cb) (OSyncChangeUpdate *, void *);
@@ -428,7 +436,7 @@ OSYNC_EXPORT OSyncObjEngine *osync_engine_nth_objengine(OSyncEngine *engine, uns
  * @returns Total number of OSyncObjEngine-elements 
  *
  */
-OSYNC_EXPORT unsigned int osync_engine_num_objengine(OSyncEngine *engine);
+OSYNC_EXPORT unsigned int osync_engine_num_objengines(OSyncEngine *engine);
 
 OSYNC_EXPORT osync_bool osync_engine_mapping_solve(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncChange *change, OSyncError **error);
 OSYNC_EXPORT osync_bool osync_engine_mapping_duplicate(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncError **error);

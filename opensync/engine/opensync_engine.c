@@ -1007,7 +1007,10 @@ static void _osync_engine_generate_multiplied_event(OSyncEngine *engine)
 			/* This is only for debugging purposes */
 			osync_engine_trace_multiply_summary(engine);
 
-			osync_engine_event(engine, OSYNC_ENGINE_EVENT_MULTIPLIED);
+			if (engine->multiply_callback)
+				engine->multiply_callback(engine, engine->multiply_userdata);
+			else
+				osync_engine_event(engine, OSYNC_ENGINE_EVENT_MULTIPLIED);
 		}
 	} else
 		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->obj_errors | engine->obj_multiplied));
@@ -1268,6 +1271,8 @@ static void _osync_engine_get_objengine_event(OSyncEngine *engine, OSyncObjEngin
 
 static void _osync_engine_generate_event(OSyncEngine *engine, OSyncEngineEvent event)
 {
+	engine->lastevent = event;
+
 	switch (event) {
 	case OSYNC_ENGINE_EVENT_CONNECTED:
 		_osync_engine_generate_connected_event(engine);
@@ -2024,7 +2029,7 @@ OSyncClientProxy *osync_engine_find_proxy(OSyncEngine *engine, OSyncMember *memb
 	return NULL;
 }
 
-unsigned int osync_engine_num_objengine(OSyncEngine *engine)
+unsigned int osync_engine_num_objengines(OSyncEngine *engine)
 {
 	osync_return_val_if_fail(engine, 0);
 	return g_list_length(engine->object_engines);
@@ -2123,6 +2128,25 @@ osync_bool osync_engine_abort(OSyncEngine *engine, OSyncError **error)
 	/* Done. Unlock the command queue again. */
 	g_async_queue_unlock(engine->command_queue);
 	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+
+ error:	
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
+}
+
+osync_bool osync_engine_continue(OSyncEngine *engine, OSyncError **error)
+{
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
+
+	if (engine->state != OSYNC_ENGINE_STATE_INITIALIZED) {
+		osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "This engine was not in state initialized: %i", engine->state);
+		goto error;
+	}
+
+	osync_engine_event(engine, engine->lastevent);
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
 

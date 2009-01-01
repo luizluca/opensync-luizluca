@@ -133,6 +133,9 @@ struct OSyncEngine {
 	GHashTable *internalSchemas;
 	/** converter_paths contains a hash of all OSyncFormatConverterPath objects **/
 	GHashTable *converterPathes;
+
+	/** The last completed engine event. */
+	OSyncEngineEvent lastevent;
 };
 
 /**
