@@ -2024,13 +2024,13 @@ OSyncClientProxy *osync_engine_find_proxy(OSyncEngine *engine, OSyncMember *memb
 	return NULL;
 }
 
-int osync_engine_num_objengine(OSyncEngine *engine)
+unsigned int osync_engine_num_objengine(OSyncEngine *engine)
 {
 	osync_assert(engine);
 	return g_list_length(engine->object_engines);
 }
 
-OSyncObjEngine *osync_engine_nth_objengine(OSyncEngine *engine, int nth)
+OSyncObjEngine *osync_engine_nth_objengine(OSyncEngine *engine, unsigned int nth)
 {
 	osync_assert(engine);
 	return g_list_nth_data(engine->object_engines, nth);

@@ -404,7 +404,31 @@ OSYNC_EXPORT void osync_engine_set_enginestatus_callback(OSyncEngine *engine, os
  */
 OSYNC_EXPORT void osync_engine_set_memberstatus_callback(OSyncEngine *engine, osync_status_member_cb callback, void *user_data);
 
+/** @brief Find the Object Engine for a certain Object Type. 
+ *
+ * @param engine A pointer to the engine
+ * @param objtype The string of an Object Type to look for 
+ * @returns Pointer of the found OSyncObjEngine, otherwise NULL
+ *
+ */
 OSYNC_EXPORT OSyncObjEngine *osync_engine_find_objengine(OSyncEngine *engine, const char *objtype);
+
+/** @brief Get the nth OSyncObjEngine of the OSyncEngine
+ *
+ * @param engine A pointer to the engine
+ * @param nth The position of the OSyncObjEngien to request
+ * @returns Pointer of the nth OSyncObjEngine
+ *
+ */
+OSYNC_EXPORT OSyncObjEngine *osync_engine_nth_objengine(OSyncEngine *engine, unsigned int nth);
+
+/** @brief Get the number of OSyncObjEngine-elements in OSyncEngine 
+ *
+ * @param engine A pointer to the engine
+ * @returns Total number of OSyncObjEngine-elements 
+ *
+ */
+OSYNC_EXPORT unsigned int osync_engine_num_objengine(OSyncEngine *engine);
 
 OSYNC_EXPORT osync_bool osync_engine_mapping_solve(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncChange *change, OSyncError **error);
 OSYNC_EXPORT osync_bool osync_engine_mapping_duplicate(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncError **error);

@@ -36,9 +36,6 @@ OSyncClientProxy *osync_engine_find_proxy(OSyncEngine *engine, OSyncMember *memb
 OSyncArchive *osync_engine_get_archive(OSyncEngine *engine);
 OSYNC_TEST_EXPORT OSyncGroup *osync_engine_get_group(OSyncEngine *engine);
 
-OSyncObjEngine *osync_engine_nth_objengine(OSyncEngine *engine, int nth);
-int osync_engine_num_objengine(OSyncEngine *engine);
-
 OSyncClientProxy *osync_engine_nth_proxy(OSyncEngine *engine, int nth);
 int osync_engine_num_proxies(OSyncEngine *engine);
 
