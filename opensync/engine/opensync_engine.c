@@ -1353,7 +1353,7 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 		break;
 	}
 
-	if (!_osync_engine_initialize_formats(engine, error))
+	if (!osync_engine_initialize_formats(engine, error))
 		goto error;
 	
 	osync_trace(TRACE_INTERNAL, "Running the main loop");
@@ -1869,7 +1869,7 @@ osync_bool osync_engine_discover(OSyncEngine *engine, OSyncMember *member, OSync
 
 	/* Initialize formats before members! 
 	 * Since we check if the formats claimed by the members are available */
-	if (!_osync_engine_initialize_formats(engine, error))
+	if (!osync_engine_initialize_formats(engine, error))
 		goto error;
 	
 	proxy = _osync_engine_initialize_member(engine, member, error);
