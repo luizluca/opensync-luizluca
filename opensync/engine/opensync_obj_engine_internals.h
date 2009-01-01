@@ -97,7 +97,7 @@ OSyncMappingEngine *_osync_obj_engine_create_mapping_engine(OSyncObjEngine *engi
  * @param engine Pointer to OSyncObjEngine
  * @returns Number of "active" Sink Engines
  */
-unsigned int osync_obj_engine_num_active_sink_engines(OSyncObjEngine *engine);
+unsigned int osync_obj_engine_num_active_sinkengines(OSyncObjEngine *engine);
 
 /*! @brief Get total number of OSyncMappingEngines of this OSyncObjEngine
  *

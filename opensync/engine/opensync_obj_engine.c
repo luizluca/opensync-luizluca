@@ -106,7 +106,7 @@ static void _osync_obj_engine_connect_callback(OSyncClientProxy *proxy, void *us
 		osync_trace(TRACE_INTERNAL, "SlowSync requested during connect.");
 	}
 			
-	if (osync_bitcount(engine->sink_errors | engine->sink_connects) == osync_obj_engine_num_active_sink_engines(engine)) {
+	if (osync_bitcount(engine->sink_errors | engine->sink_connects) == osync_obj_engine_num_active_sinkengines(engine)) {
 		if (osync_bitcount(engine->sink_errors)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one sink_engine failed while connecting");
 			osync_obj_engine_set_error(engine, locerror);
@@ -136,7 +136,7 @@ static void _osync_obj_engine_connect_done_callback(OSyncClientProxy *proxy, voi
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_CONNECT_DONE, engine->objtype, NULL);
 	}
 			
-	if (osync_bitcount(engine->sink_errors | engine->sink_connect_done) == osync_obj_engine_num_active_sink_engines(engine)) {
+	if (osync_bitcount(engine->sink_errors | engine->sink_connect_done) == osync_obj_engine_num_active_sinkengines(engine)) {
 		if (osync_bitcount(engine->sink_connect_done) < osync_bitcount(engine->sink_connects)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Fewer sink_engines reported connect_done than connected");
 			osync_obj_engine_set_error(engine, locerror);
@@ -154,7 +154,7 @@ static void _osync_obj_engine_generate_event_disconnected(OSyncObjEngine *engine
 	OSyncError *locerror = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, engine);
 
-	if (osync_bitcount(engine->sink_errors | engine->sink_disconnects) == osync_obj_engine_num_active_sink_engines(engine)) {
+	if (osync_bitcount(engine->sink_errors | engine->sink_disconnects) == osync_obj_engine_num_active_sinkengines(engine)) {
 		if (osync_bitcount(engine->sink_disconnects) < osync_bitcount(engine->sink_connects)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Fewer sink_engines disconnected than connected");
 			osync_obj_engine_set_error(engine, locerror);
@@ -343,7 +343,7 @@ static void _osync_obj_engine_read_callback(OSyncClientProxy *proxy, void *userd
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_READ, engine->objtype, NULL);
 	}
 	
-	if (osync_bitcount(engine->sink_errors | engine->sink_get_changes) == osync_obj_engine_num_active_sink_engines(engine)) {
+	if (osync_bitcount(engine->sink_errors | engine->sink_get_changes) == osync_obj_engine_num_active_sinkengines(engine)) {
 		
 		if (osync_bitcount(engine->sink_get_changes) < osync_bitcount(engine->sink_connects)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Fewer sink_engines reported get_changes than connected");
@@ -455,7 +455,9 @@ static void _osync_obj_engine_generate_written_event(OSyncObjEngine *engine, OSy
 	osync_trace(TRACE_INTERNAL, "%s: Not dirty anymore", __func__);
 
 	/* And that we received the written replies from all sinks */
-	if (osync_bitcount(engine->sink_errors | engine->sink_written) == osync_obj_engine_num_sink_engines(engine)) {
+	/* TODO: Review if this is intended to even check for "dummy" sinks here!i
+	 *        Other commands/devent checks for osync_obj_engine_num_active_sinkengines()! */
+	if (osync_bitcount(engine->sink_errors | engine->sink_written) == osync_obj_engine_num_sinkengines(engine)) {
 		if (osync_bitcount(engine->sink_written) < osync_bitcount(engine->sink_connects)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Fewer sink_engines reported committed all than connected");
 			osync_obj_engine_set_error(engine, locerror);
@@ -572,7 +574,7 @@ static void _osync_obj_engine_sync_done_callback(OSyncClientProxy *proxy, void *
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_SYNC_DONE, engine->objtype, NULL);
 	}
 			
-	if (osync_bitcount(engine->sink_errors | engine->sink_sync_done) == osync_obj_engine_num_active_sink_engines(engine)) {
+	if (osync_bitcount(engine->sink_errors | engine->sink_sync_done) == osync_obj_engine_num_active_sinkengines(engine)) {
 		if (osync_bitcount(engine->sink_sync_done) < osync_bitcount(engine->sink_connects)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Fewer sink_engines reported sync_done than connected");
 			osync_obj_engine_set_error(engine, locerror);
@@ -1335,16 +1337,16 @@ OSyncSinkEngine *osync_obj_engine_nth_sinkengine(OSyncObjEngine *engine, unsigne
 	return g_list_nth_data(engine->sink_engines, nth);
 }
 
-unsigned int osync_obj_engine_num_sink_engines(OSyncObjEngine *engine)
+unsigned int osync_obj_engine_num_sinkengines(OSyncObjEngine *engine)
 {
 	osync_assert(engine);
 	return g_list_length(engine->sink_engines);
 }
 
-unsigned int osync_obj_engine_num_active_sink_engines(OSyncObjEngine *engine)
+unsigned int osync_obj_engine_num_active_sinkengines(OSyncObjEngine *engine)
 {
 	osync_assert(engine);
-	return (osync_obj_engine_num_sink_engines(engine) - engine->dummies);
+	return (osync_obj_engine_num_sinkengines(engine) - engine->dummies);
 }
 
 unsigned int osync_obj_engine_num_mapping_engines(OSyncObjEngine *engine)

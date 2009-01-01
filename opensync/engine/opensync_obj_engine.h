@@ -56,7 +56,7 @@ OSYNC_EXPORT OSyncSinkEngine *osync_obj_engine_nth_sinkengine(OSyncObjEngine *en
  * @param engine Pointer to OSyncObjEngine
  * @returns Total number of Sink Engines
  */
-OSYNC_EXPORT unsigned int osync_obj_engine_num_sink_engines(OSyncObjEngine *engine);
+OSYNC_EXPORT unsigned int osync_obj_engine_num_sinkengines(OSyncObjEngine *engine);
 
 #endif /* OPENSYNC_OBJ_ENGINE_H_ */
 
