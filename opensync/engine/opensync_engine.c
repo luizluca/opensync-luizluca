@@ -37,6 +37,8 @@
 
 #include "opensync_status_internals.h"
 #include "opensync_obj_engine_internals.h"
+#include "opensync_sink_engine_internals.h"
+#include "opensync_mapping_entry_engine_internals.h"
 
 #include "opensync_engine.h"
 #include "opensync_engine_private.h"
@@ -928,6 +930,66 @@ static void _osync_engine_generate_end_conflicts_event(OSyncEngine *engine)
 
 }
 
+void osync_engine_trace_multiply_summary(OSyncEngine *engine)
+{
+	GList *o, *s, *e;
+	unsigned int added, modified, deleted, unmodified, unknown;
+	long long int memberid;
+
+	if (!osync_trace_is_enabled())
+		return;
+
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, engine);
+
+	for (o = engine->object_engines; o; o = o->next) {
+		OSyncObjEngine *objengine = o->data;
+		const char *objtype = objengine->objtype; 
+
+		osync_trace(TRACE_INTERNAL, "ObjEngine: %s", objtype);
+
+		for (s = objengine->sink_engines; s; s = s->next) {
+			OSyncSinkEngine *sinkengine = s->data;
+
+			added = modified = deleted = unmodified = unknown = 0;
+			memberid = osync_member_get_id(osync_client_proxy_get_member(sinkengine->proxy));
+
+			for (e = sinkengine->entries; e; e = e->next) {
+				OSyncMappingEntryEngine *mapping_entry_engine = e->data;
+
+				if (!mapping_entry_engine->dirty)
+					continue;
+
+				switch (osync_change_get_changetype(mapping_entry_engine->change)) {
+					case OSYNC_CHANGE_TYPE_ADDED:
+						added++;
+						break;
+					case OSYNC_CHANGE_TYPE_MODIFIED:
+						modified++;
+						break;
+					case OSYNC_CHANGE_TYPE_DELETED:
+						deleted++;
+						break;
+					case OSYNC_CHANGE_TYPE_UNMODIFIED:
+						unmodified++;
+						break;
+					case OSYNC_CHANGE_TYPE_UNKNOWN:
+						unknown++;
+						break;
+				}
+			}
+
+			osync_trace(TRACE_INTERNAL, "\tMember: %lli "
+					"added:%u modified:%u deleted:%u "
+					"(unmodified:%u unknown:%u)",
+					memberid, added, modified, deleted, unmodified, unknown);
+		}
+
+		
+	}
+
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
 static void _osync_engine_generate_multiplied_event(OSyncEngine *engine)
 {
 
@@ -941,7 +1003,10 @@ static void _osync_engine_generate_multiplied_event(OSyncEngine *engine)
 			osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
 		} else {
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_MULTIPLIED, NULL);
-			
+
+			/* This is only for debugging purposes */
+			osync_engine_trace_multiply_summary(engine);
+
 			osync_engine_event(engine, OSYNC_ENGINE_EVENT_MULTIPLIED);
 		}
 	} else

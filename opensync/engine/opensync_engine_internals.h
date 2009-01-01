@@ -91,6 +91,20 @@ OSYNC_TEST_EXPORT void osync_engine_set_plugindir(OSyncEngine *engine, const cha
  */
 OSYNC_TEST_EXPORT void osync_engine_set_schemadir(OSyncEngine *engine, const char *schema_dir);
 
+
+
+/** @brief Trace the multiply result of the entire engine. 
+ *  
+ *  This summaries which changes get synced how to the members.
+ *  Very helpful to debug OSyncEngine Multiply issues.
+ *
+ *  This is NOOP if tracing is disabled.
+ *
+ * @param engine Pointer to engine
+ *
+ */
+OSYNC_TEST_EXPORT void osync_engine_trace_multiply_summary(OSyncEngine *engine);
+
 /*@}*/
 
 #endif /*OPENSYNC_ENGINE_INTERNALS_H_*/
