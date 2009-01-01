@@ -154,7 +154,7 @@ void osync_engine_set_error(OSyncEngine *engine, OSyncError *error);
  * @returns TRUE on success, FALSE otherwise.
  *
  */
-static osync_bool _osync_engine_initialize_formats(OSyncEngine *engine, OSyncError **error);
+osync_bool osync_engine_initialize_formats(OSyncEngine *engine, OSyncError **error);
 
 /*@}*/
 

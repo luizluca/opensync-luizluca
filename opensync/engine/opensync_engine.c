@@ -1276,7 +1276,7 @@ static void _osync_engine_discover_callback(OSyncClientProxy *proxy, void *userd
 }
 
 
-static osync_bool _osync_engine_initialize_formats(OSyncEngine *engine, OSyncError **error)
+osync_bool osync_engine_initialize_formats(OSyncEngine *engine, OSyncError **error)
 {
 	engine->formatenv = osync_format_env_new(error);
 	if (!engine->formatenv)
