@@ -1996,15 +1996,15 @@ osync_bool osync_engine_discover_and_block(OSyncEngine *engine, OSyncMember *mem
 	return FALSE;
 }
 
-int osync_engine_num_proxies(OSyncEngine *engine)
+unsigned int osync_engine_num_proxies(OSyncEngine *engine)
 {
-	osync_assert(engine);
+	osync_return_val_if_fail(engine, 0);
 	return g_list_length(engine->proxies);
 }
 
-OSyncClientProxy *osync_engine_nth_proxy(OSyncEngine *engine, int nth)
+OSyncClientProxy *osync_engine_nth_proxy(OSyncEngine *engine, unsigned int nth)
 {
-	osync_assert(engine);
+	osync_return_val_if_fail(engine, NULL);
 	return g_list_nth_data(engine->proxies, nth);
 }
 
@@ -2013,7 +2013,7 @@ OSyncClientProxy *osync_engine_find_proxy(OSyncEngine *engine, OSyncMember *memb
 	GList *p = NULL;
 	OSyncClientProxy *proxy = NULL;
 	
-	osync_assert(engine);
+	osync_return_val_if_fail(engine, NULL);
 	
 	for (p = engine->proxies; p; p = p->next) {
 		proxy = p->data;
@@ -2026,13 +2026,13 @@ OSyncClientProxy *osync_engine_find_proxy(OSyncEngine *engine, OSyncMember *memb
 
 unsigned int osync_engine_num_objengine(OSyncEngine *engine)
 {
-	osync_assert(engine);
+	osync_return_val_if_fail(engine, 0);
 	return g_list_length(engine->object_engines);
 }
 
 OSyncObjEngine *osync_engine_nth_objengine(OSyncEngine *engine, unsigned int nth)
 {
-	osync_assert(engine);
+	osync_return_val_if_fail(engine, NULL);
 	return g_list_nth_data(engine->object_engines, nth);
 }
 
@@ -2041,7 +2041,7 @@ OSyncObjEngine *osync_engine_find_objengine(OSyncEngine *engine, const char *obj
 	GList *p = NULL;
 	OSyncObjEngine *objengine = NULL;
 	
-	osync_assert(engine);
+	osync_return_val_if_fail(engine, NULL);
 
 	for (p = engine->object_engines; p; p = p->next) {
 		objengine = p->data;

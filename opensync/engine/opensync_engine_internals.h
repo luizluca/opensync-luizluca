@@ -36,8 +36,23 @@ OSyncClientProxy *osync_engine_find_proxy(OSyncEngine *engine, OSyncMember *memb
 OSyncArchive *osync_engine_get_archive(OSyncEngine *engine);
 OSYNC_TEST_EXPORT OSyncGroup *osync_engine_get_group(OSyncEngine *engine);
 
-OSyncClientProxy *osync_engine_nth_proxy(OSyncEngine *engine, int nth);
-int osync_engine_num_proxies(OSyncEngine *engine);
+
+/** @brief Get the nth OSyncClientProxy of the OSyncEngine
+ *
+ * @param engine A pointer to the engine
+ * @param nth The position of the OSyncClientProxy to request
+ * @returns Pointer of the nth OSyncClientProxy
+ *
+ */
+OSyncClientProxy *osync_engine_nth_proxy(OSyncEngine *engine, unsigned int nth);
+
+/** @brief Get the number of OSyncClientProxy-elements in OSyncEngine 
+ *
+ * @param engine A pointer to the engine
+ * @returns Total number of OSyncClientProxy-elements 
+ *
+ */
+unsigned int osync_engine_num_proxies(OSyncEngine *engine);
 
 /**
  * @brief Get "human readable" string of OSyncEngineCmd enum 

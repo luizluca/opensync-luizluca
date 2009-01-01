@@ -416,7 +416,7 @@ OSYNC_EXPORT OSyncObjEngine *osync_engine_find_objengine(OSyncEngine *engine, co
 /** @brief Get the nth OSyncObjEngine of the OSyncEngine
  *
  * @param engine A pointer to the engine
- * @param nth The position of the OSyncObjEngien to request
+ * @param nth The position of the OSyncObjEngine to request
  * @returns Pointer of the nth OSyncObjEngine
  *
  */
