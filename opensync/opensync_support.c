@@ -656,7 +656,7 @@ char *osync_rand_str(int maxlength)
 	length = g_random_int_range(1, maxlength + 1);
 
 	retchar = osync_try_malloc0(length * sizeof(char) + 1, NULL);
-	osync_return_val_if_fail(!retchar, NULL);
+	osync_return_val_if_fail(retchar, NULL);
 
 	retchar[0] = 0;
 
