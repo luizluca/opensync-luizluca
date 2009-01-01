@@ -42,4 +42,21 @@ OSYNC_EXPORT osync_bool osync_obj_engine_receive_change(OSyncObjEngine *objengin
 
 OSYNC_EXPORT void osync_obj_engine_set_error(OSyncObjEngine *engine, OSyncError *error);
 
-#endif /*OPENSYNC_OBJ_ENGINE_H_*/
+/** @brief Get the nth OSyncSinkEngine of the OSyncObjEngine
+ *
+ * @param engine A pointer to the engine
+ * @param nth The position of the OSyncSinkEngine to request
+ * @returns Pointer of the nth OSyncSinkEngine, or NULL if not available
+ *
+ */
+OSYNC_EXPORT OSyncSinkEngine *osync_obj_engine_nth_sinkengine(OSyncObjEngine *engine, unsigned int nth);
+
+/*! @brief Get total number of Sink Engines
+ *
+ * @param engine Pointer to OSyncObjEngine
+ * @returns Total number of Sink Engines
+ */
+OSYNC_EXPORT unsigned int osync_obj_engine_num_sink_engines(OSyncObjEngine *engine);
+
+#endif /* OPENSYNC_OBJ_ENGINE_H_ */
+

@@ -1329,6 +1329,12 @@ void osync_obj_engine_set_error(OSyncObjEngine *engine, OSyncError *error)
 	osync_error_ref(&error);
 }
 
+OSyncSinkEngine *osync_obj_engine_nth_sinkengine(OSyncObjEngine *engine, unsigned int nth)
+{
+	osync_return_val_if_fail(engine, NULL);
+	return g_list_nth_data(engine->sink_engines, nth);
+}
+
 unsigned int osync_obj_engine_num_sink_engines(OSyncObjEngine *engine)
 {
 	osync_assert(engine);

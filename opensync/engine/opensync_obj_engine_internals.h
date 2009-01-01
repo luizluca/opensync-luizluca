@@ -86,15 +86,6 @@ struct OSyncObjEngine {
 
 OSyncMappingEngine *_osync_obj_engine_create_mapping_engine(OSyncObjEngine *engine, OSyncError **error);
 
-/*! @brief Get total number of Sink Engines
- *
- * This includes "active" and "dummy" Sink Engines (OSyncSinkEngine)
- *
- * @param engine Pointer to OSyncObjEngine
- * @returns Total number of "active" and "dummy" Sink Engines
- */
-unsigned int osync_obj_engine_num_sink_engines(OSyncObjEngine *engine);
-
 /*! @brief Get number of "active" Sink Engines (excluded "dummy" Sink Engines)
  *         in ObjEngine
  *
