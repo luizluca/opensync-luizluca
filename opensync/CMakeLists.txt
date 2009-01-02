@@ -6,13 +6,13 @@ INCLUDE( Compiler )
 SET( libopensync_LIB_SRCS
    opensync_context.c
    opensync_error.c
-   opensync_list.c
    opensync_support.c
    opensync_xml.c
    archive/opensync_archive.c
    client/opensync_client.c
    client/opensync_client_proxy.c
    common/opensync_file.c
+   common/opensync_list.c
    common/opensync_memory.c
    common/opensync_string.c
    common/opensync_thread.c
