@@ -33,7 +33,8 @@
 #include "opensync_capability_private.h"	/* FIXME: directly access to private header */
 
 #include "opensync-merger.h"
-#include "opensync-merger_internals.h"
+#include "opensync_capabilities_internals.h"
+#include "opensync_merger_private.h"
 
 
 OSyncMerger *osync_merger_new(OSyncCapabilities *capabilities, OSyncError **error)

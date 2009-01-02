@@ -25,6 +25,5 @@
 
 #include "opensync_capabilities_internals.h"
 #include "opensync_capability_internals.h"
-#include "opensync_merger_internals.h"
 
 #endif /*OPENSYNCMERGER_INTERNALS_H_*/
