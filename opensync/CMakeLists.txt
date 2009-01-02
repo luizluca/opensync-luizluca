@@ -4,7 +4,6 @@ INCLUDE_DIRECTORIES( ${GLIB2_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIRS} ${LIBXSLT_INC
 INCLUDE( Compiler )
 
 SET( libopensync_LIB_SRCS
-   opensync_context.c
    opensync_error.c
    opensync_support.c
    archive/opensync_archive.c
@@ -48,6 +47,7 @@ SET( libopensync_LIB_SRCS
    merger/opensync_capability.c
    merger/opensync_merger.c
    module/opensync_module.c
+   plugin/opensync_context.c
    plugin/opensync_plugin_advancedoptions.c
    plugin/opensync_plugin_authentication.c
    plugin/opensync_plugin.c
