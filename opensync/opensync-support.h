@@ -33,8 +33,6 @@ OPENSYNC_BEGIN_DECLS
  */
 /*@{*/
 
-#define __NULLSTR(x) x ? x : "(NULL)"
-
 /*! @brief Returns the version of opensync
  * 
  * Returns a string identifying the major and minor version

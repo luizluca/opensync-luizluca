@@ -99,14 +99,14 @@ OPENSYNC_BEGIN_DECLS
 #define FALSE 0
 #endif
 
+#define __NULLSTR(x) x ? x : "(NULL)"
+
 #ifndef NDEBUG
 #define osync_assert(x) if (!(x)) { fprintf(stderr, "%s:%i:E:%s: Assertion \"" #x "\" failed\n", __FILE__, __LINE__, __func__); abort();}
 #define osync_assert_msg(x, msg) if (!(x)) { fprintf(stderr, "%s:%i:E:%s: %s\n", __FILE__, __LINE__, __func__, msg); abort();}
-#define segfault_me char **blablabla = NULL; *blablabla = "test";
 #else
 #define osync_assert(x)
 #define osync_assert_msg(x, msg)
-#define segfault_me
 #endif
 
 /**************************************************************
