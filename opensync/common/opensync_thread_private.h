@@ -17,37 +17,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  * 
  */
+ 
+#ifndef _OPENSYNC_THREAD_PRIVATE_H
+#define _OPENSYNC_THREAD_PRIVATE_H
 
-#ifndef OPENSYNC_INTERNALS_H_
-#define OPENSYNC_INTERNALS_H_
+struct OSyncThread {
+	GThread *thread;
+	GCond *started;
+	GMutex *started_mutex;
+	GMainContext *context;
+	GMainLoop *loop;
+	int ref_count;
+};
 
-#include <glib.h>
-#include <gmodule.h>
-#include <string.h>
-#include <glib/gprintf.h>
-#include <glib/gstdio.h>
-#include <sys/stat.h>
-
-#include "config.h"
-
-#include <errno.h>
-#ifndef _WIN32
-extern int errno;
-#endif
-
-
-#define osync_return_if_fail(condition) do {    \
-    if (!(condition)) {                         \
-      return;                                   \
-    } } while (0)
-
-#define osync_return_val_if_fail(condition, val) do {   \
-    if (!(condition)) {                                 \
-      return (val);                                     \
-    } } while (0)
-
-#include "opensync_support_internals.h"
-#include "opensync/common/opensync_common_internals.h"
-
-#endif /* OPENSYNC_INTERNALS_H_ */
+#endif /* _OPENSYNC_THREAD_PRIVATE_H */
 

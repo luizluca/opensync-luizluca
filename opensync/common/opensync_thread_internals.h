@@ -1,6 +1,7 @@
 /*
  * libopensync - A synchronization framework
  * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
+ * Copyright (C) 2009       Daniel Gollub <dgollub@suse.de>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,37 +18,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  * 
  */
+ 
+#ifndef _OPENSYNC_THREAD_INTERNALS_H
+#define _OPENSYNC_THREAD_INTERNALS_H
 
-#ifndef OPENSYNC_INTERNALS_H_
-#define OPENSYNC_INTERNALS_H_
+typedef struct OSyncThread OSyncThread;
 
-#include <glib.h>
-#include <gmodule.h>
-#include <string.h>
-#include <glib/gprintf.h>
-#include <glib/gstdio.h>
-#include <sys/stat.h>
+OSYNC_TEST_EXPORT OSyncThread *osync_thread_new(GMainContext *context, OSyncError **error);
+OSYNC_TEST_EXPORT OSyncThread *osync_thread_ref(OSyncThread *thread);
+OSYNC_TEST_EXPORT void osync_thread_unref(OSyncThread *thread);
+OSYNC_TEST_EXPORT void osync_thread_start(OSyncThread *thread);
+OSYNC_TEST_EXPORT void osync_thread_stop(OSyncThread *thread);
+OSYNC_TEST_EXPORT void osync_thread_exit(OSyncThread *thread, int retval);
+OSYNC_TEST_EXPORT OSyncThread *osync_thread_create(GThreadFunc func, void *userdata, OSyncError **error);
 
-#include "config.h"
-
-#include <errno.h>
-#ifndef _WIN32
-extern int errno;
-#endif
-
-
-#define osync_return_if_fail(condition) do {    \
-    if (!(condition)) {                         \
-      return;                                   \
-    } } while (0)
-
-#define osync_return_val_if_fail(condition, val) do {   \
-    if (!(condition)) {                                 \
-      return (val);                                     \
-    } } while (0)
-
-#include "opensync_support_internals.h"
-#include "opensync/common/opensync_common_internals.h"
-
-#endif /* OPENSYNC_INTERNALS_H_ */
+#endif /* _OPENSYNC_THREAD_INTERNALS_H */
 

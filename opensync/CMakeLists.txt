@@ -12,6 +12,7 @@ SET( libopensync_LIB_SRCS
    archive/opensync_archive.c
    client/opensync_client.c
    client/opensync_client_proxy.c
+   common/opensync_thread.c
    data/opensync_change.c
    data/opensync_data.c
    db/opensync_db.c
@@ -84,6 +85,7 @@ INSTALL( TARGETS opensync DESTINATION ${LIB_INSTALL_DIR} )
 INSTALL( DIRECTORY 
   archive
   client
+  common
   data
   db
   engine

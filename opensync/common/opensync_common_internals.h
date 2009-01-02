@@ -1,6 +1,6 @@
 /*
  * libopensync - A synchronization framework
- * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
+ * Copyright (C) 2009       Daniel Gollub <dgollub@suse.de>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,13 +17,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  * 
  */
- 
-#ifndef _OPENSYNC_SUPPORT_INTERNALS_H
-#define _OPENSYNC_SUPPORT_INTERNALS_H
 
-int osync_bitcount(unsigned int u);
+#ifndef _OSYNC_COMMON_INTERNALS_H
+#define _OSYNC_COMMON_INTERNALS_H
 
-char *osync_print_binary(const unsigned char *data, int len);
+OPENSYNC_BEGIN_DECLS
 
-#endif /* _OPENSYNC_SUPPORT_INTERNALS_H */
+#include "common/opensync_thread_internals.h"
+
+OPENSYNC_END_DECLS
+
+#endif /* _OSYNC_COMMON_INTERNALS_H */
 
