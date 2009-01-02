@@ -24,7 +24,9 @@
 
 OPENSYNC_BEGIN_DECLS
 
+#include "opensync/common/opensync_error.h"
 #include "opensync/common/opensync_file.h"
+#include "opensync/common/opensync_list.h"
 #include "opensync/common/opensync_memory.h"
 #include "opensync/common/opensync_string.h"
 
