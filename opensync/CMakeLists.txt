@@ -12,6 +12,7 @@ SET( libopensync_LIB_SRCS
    archive/opensync_archive.c
    client/opensync_client.c
    client/opensync_client_proxy.c
+   common/opensync_file.c
    common/opensync_thread.c
    data/opensync_change.c
    data/opensync_data.c
@@ -111,6 +112,7 @@ INSTALL( FILES
    opensync-archive.h
    opensync-client.h
    opensync-context.h
+   opensync-common.h
    opensync-data.h
    opensync-engine.h
    opensync-error.h

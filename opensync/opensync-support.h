@@ -21,6 +21,9 @@
 #ifndef _OPENSYNC_SUPPORT_H
 #define _OPENSYNC_SUPPORT_H
 
+/* FIXME: Drop opensync-support.h with 0.39 release */
+#include "opensync-common.h"
+
 OPENSYNC_BEGIN_DECLS
 
 /**
@@ -156,33 +159,6 @@ OSYNC_EXPORT char *osync_strdup(const char *str);
  * 
  */
 OSYNC_EXPORT char *osync_strdup_printf(const char *format, ...);
-
-/*! @brief Writes data to a file
- * 
- * Writes data to a file
- * 
- * @param filename Where to save the data
- * @param data Pointer to the data
- * @param size Size of the data
- * @param mode The mode to set on the file
- * @param error Pointer to a error struct
- * @returns TRUE if successful, FALSE otherwise
- * 
- */
-OSYNC_EXPORT osync_bool osync_file_write(const char *filename, const char *data, unsigned int size, int mode, OSyncError **error);
-
-/*! @brief Reads a file
- * 
- * Reads a file
- * 
- * @param filename Where to read the data from
- * @param data Pointer to the data
- * @param size Size of the data
- * @param error Pointer to a error struct
- * @returns TRUE if successful, FALSE otherwise
- * 
- */
-OSYNC_EXPORT osync_bool osync_file_read(const char *filename, char **data, unsigned int *size, OSyncError **error);
 
 /*! @brief Creates a random string
  * 

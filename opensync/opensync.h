@@ -227,7 +227,7 @@ typedef int osync_bool;
 
 OPENSYNC_END_DECLS
 
-#include "opensync-support.h"
+#include "opensync/opensync-support.h"
 #include "opensync-error.h"
 
 #endif
