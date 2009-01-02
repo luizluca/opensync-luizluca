@@ -1371,10 +1371,14 @@ osync_bool osync_engine_initialize_formats(OSyncEngine *engine, OSyncError **err
 	_osync_engine_set_internal_format(engine, "todo", osync_format_env_find_objformat(engine->formatenv, "xmlformat-todo"));
 	_osync_engine_set_internal_format(engine, "note", osync_format_env_find_objformat(engine->formatenv, "xmlformat-note"));
 	/* init schemas */
+
+	/* TODO: DROP engine-central valdation.
+	 * This should be done after MULTPLIY and WRITE engine command.
 	_osync_engine_set_internal_schema(engine, "contact", error);
 	_osync_engine_set_internal_schema(engine, "event", error);
 	_osync_engine_set_internal_schema(engine, "todo", error);
 	_osync_engine_set_internal_schema(engine, "note", error);
+	*/
 	
 	return TRUE;
 
