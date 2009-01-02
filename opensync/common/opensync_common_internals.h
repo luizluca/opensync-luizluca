@@ -23,6 +23,7 @@
 
 OPENSYNC_BEGIN_DECLS
 
+#include "common/opensync_memory_internals.h"
 #include "common/opensync_thread_internals.h"
 #include "common/opensync_xml_internals.h"
 

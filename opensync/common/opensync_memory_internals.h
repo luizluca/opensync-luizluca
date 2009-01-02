@@ -17,25 +17,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  * 
  */
+ 
+#ifndef _OPENSYNC_MEMORY_INTERNALS_H
+#define _OPENSYNC_MEMORY_INTERNALS_H
 
-#include "opensync.h"
-#include "opensync_internals.h"
+int osync_bitcount(unsigned int u);
 
-#include "opensync-support.h"
-#include "opensync_support_internals.h"
-
-
-/*! @brief Bit counting
- * 
- * MIT HAKMEM Count, Bit counting in constant time and memory. 
- * 
- * @param u unsigned integer value to count bits
- * @returns The bit counting result 
- * 
- */
-int osync_bitcount(unsigned int u)
-{
-	unsigned int uCount = u - ((u >> 1) & 033333333333) - ((u >> 2) & 011111111111);
-	return ((uCount + (uCount >> 3)) & 030707070707) % 63;
-}
+#endif /* _OPENSYNC_MEMORY_INTERNALS_H */
 

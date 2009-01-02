@@ -55,27 +55,6 @@ char *osync_strreplace(const char *input, const char *delimiter, const char *rep
 	return ret;
 }
 
-/*! @brief Used for printing binary data
- * 
- * Unprintable character will be printed in hex, printable are just printed
- * 
- * @param data The data to print
- * @param len The length to print
- * 
- */
-char *osync_print_binary(const unsigned char *data, int len)
-{
-	int t;
-	GString *str = g_string_new("");
-	for (t = 0; t < len; t++) {
-		if (data[t] >= ' ' && data[t] <= 'z')
-			g_string_append_c(str, data[t]);
-		else
-			g_string_append_printf(str, " %02x ", data[t]);
-	}
-	return g_string_free(str, FALSE);
-}
-
 char *osync_rand_str(int maxlength)
 {
 	char *randchars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIKLMNOPQRSTUVWXYZ1234567890";
@@ -98,3 +77,4 @@ char *osync_rand_str(int maxlength)
 
 	return retchar;
 }
+

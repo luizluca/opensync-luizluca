@@ -46,7 +46,6 @@ extern int errno;
       return (val);                                     \
     } } while (0)
 
-#include "opensync_support_internals.h"
 #include "opensync/common/opensync_common_internals.h"
 
 #endif /* OPENSYNC_INTERNALS_H_ */
