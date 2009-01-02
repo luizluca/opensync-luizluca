@@ -23,6 +23,8 @@
 #ifndef _OPENSYNC_GROUP_INTERNALS_H_
 #define _OPENSYNC_GROUP_INTERNALS_H_
 
+#include "opensync/format/opensync_filter_internals.h"
+
 /**
  * @defgroup OSyncGroupInternalAPI OpenSync Group Internals
  * @ingroup OSyncGroupPrivate

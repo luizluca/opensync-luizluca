@@ -163,7 +163,6 @@ typedef struct OSyncFormatEnv OSyncFormatEnv;
 typedef struct OSyncObjFormat OSyncObjFormat;
 typedef struct OSyncFormatConverterPath OSyncFormatConverterPath;
 typedef struct OSyncFormatConverter OSyncFormatConverter;
-typedef struct OSyncFilter OSyncFilter;
 typedef struct OSyncObjFormatSink OSyncObjFormatSink;
 
 /* Plugin component */
@@ -219,7 +218,6 @@ typedef struct OSyncUserInfo OSyncUserInfo;
 typedef struct OSyncContext OSyncContext;
 typedef struct OSyncHashTable OSyncHashTable;
 typedef struct OSyncFormatProperty OSyncFormatProperty;
-typedef struct OSyncCustomFilter OSyncCustomFilter;
 typedef struct OSyncMessage OSyncMessage;
 typedef struct OSyncQueue OSyncQueue;
 typedef struct OSyncDB OSyncDB;

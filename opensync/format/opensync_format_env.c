@@ -25,13 +25,14 @@
 #include "opensync-data.h"
 #include "opensync/data/opensync_data_internals.h"
 
+#include "opensync_filter_internals.h"
+#include "opensync_objformat_internals.h"
+
 #include "opensync-format.h"
 #include "opensync_format_env_internals.h"
 #include "opensync_format_env_private.h"
 
-#include "opensync_objformat_internals.h"
 
-#include "opensync_filter_internals.h"
 
 static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char *path, osync_bool must_exist, OSyncError **error)
 {

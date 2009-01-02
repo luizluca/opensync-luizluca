@@ -29,6 +29,10 @@
 
 /*@{*/
 
+
+typedef struct OSyncFilter OSyncFilter;
+typedef struct OSyncCustomFilter OSyncCustomFilter;
+
 /** @brief The action that should be invoked */
 typedef enum OSyncFilterAction {
 	/** This filter should be ignored */
