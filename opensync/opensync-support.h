@@ -45,68 +45,6 @@ OPENSYNC_BEGIN_DECLS
  */
 OSYNC_EXPORT const char *osync_get_version(void);
 
-/*! @brief Safely tries to malloc memory
- * 
- * Tries to malloc memory but returns an error in an OOM situation instead
- * of aborting
- * 
- * @param size The size in bytes to malloc
- * @param error The error which will hold the info in case of an error
- * @returns A pointer to the new memory or NULL in case of error, needs to be released by osync_free()
- * 
- */
-OSYNC_EXPORT void *osync_try_malloc0(unsigned int size, OSyncError **error);
-
-/*! @brief Frees memory
- * 
- * Frees memory allocated by osync_try_malloc0() and others osync_* functions.
- * 
- * @param ptr Pointer to allocated memory which should get freed
- * 
- */
-OSYNC_EXPORT void osync_free(void *ptr);
-
-/*! @brief String replace
- * 
- * @param input Input string to work on
- * @param delimiter Delimiter
- * @param replacement Replacement
- * @returns Replaced/Modified string result 
- * 
- */
-OSYNC_EXPORT char *osync_strreplace(const char *input, const char *delimiter, const char *replacement);
-
-/*! @brief Duplicates a string 
- * 
- * Duplicates a string, ending with terminating-zero: \0
- * 
- * @param str The pointer of the string to duplicate
- * @returns The duplicate string, caller is responsible for freeing.
- * 
- */
-OSYNC_EXPORT char *osync_strdup(const char *str);
-
-/*! @brief Duplicates a formated string 
- * 
- * Duplicates a formated string, ending with terminating-zero: \0
- * 
- * @param str The pointer of the string to duplicate
- * @param args 
- * @returns The duplicate string, caller is responsible for freeing.
- * 
- */
-OSYNC_EXPORT char *osync_strdup_printf(const char *format, ...);
-
-/*! @brief Creates a random string
- * 
- * Creates a random string of given length or less
- * 
- * @param maxlength The maximum length of the string
- * @returns The random string, caller is repsonsible for freeing with osync_free().
- *          NULL on OOM situation.
- * 
- */
-OSYNC_EXPORT char *osync_rand_str(int maxlength);
 
 /*@} */
 

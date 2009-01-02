@@ -13,6 +13,8 @@ SET( libopensync_LIB_SRCS
    client/opensync_client.c
    client/opensync_client_proxy.c
    common/opensync_file.c
+   common/opensync_memory.c
+   common/opensync_string.c
    common/opensync_thread.c
    data/opensync_change.c
    data/opensync_data.c

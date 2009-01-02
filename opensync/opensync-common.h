@@ -25,6 +25,8 @@
 OPENSYNC_BEGIN_DECLS
 
 #include "opensync/common/opensync_file.h"
+#include "opensync/common/opensync_memory.h"
+#include "opensync/common/opensync_string.h"
 
 OPENSYNC_END_DECLS
 

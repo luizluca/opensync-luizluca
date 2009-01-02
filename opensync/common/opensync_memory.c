@@ -18,28 +18,35 @@
  * 
  */
 
+#include "config.h"
+
 #include "opensync.h"
 #include "opensync_internals.h"
 
-#include "opensync-support.h"
-#include "opensync_support_internals.h"
-
-const char *osync_get_version(void)
+void *osync_try_malloc0(unsigned int size, OSyncError **error)
 {
-	return OPENSYNC_VERSION;
+	void *result = NULL;
+	
+#ifdef OPENSYNC_UNITTESTS 	
+	if (!g_getenv("OSYNC_NOMEMORY"))
+		result = g_try_malloc(size);
+#else		
+	result = g_try_malloc(size);
+#endif /*OPENSYNC_UNITTESTS*/
+
+	if (!result) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "No memory left");
+		return NULL;
+	}
+	memset(result, 0, size);
+	return result;
 }
 
-/*! @brief Bit counting
- * 
- * MIT HAKMEM Count, Bit counting in constant time and memory. 
- * 
- * @param u unsigned integer value to count bits
- * @returns The bit counting result 
- * 
- */
-int osync_bitcount(unsigned int u)
+void osync_free(void *ptr)
 {
-	unsigned int uCount = u - ((u >> 1) & 033333333333) - ((u >> 2) & 011111111111);
-	return ((uCount + (uCount >> 3)) & 030707070707) % 63;
+	if (!ptr)
+		return;
+
+	g_free(ptr);
 }
 

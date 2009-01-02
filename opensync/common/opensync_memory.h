@@ -18,28 +18,35 @@
  * 
  */
 
-#include "opensync.h"
-#include "opensync_internals.h"
+#ifndef _OPENSYNC_MEMORY_H
+#define _OPENSYNC_MEMORY_H
 
-#include "opensync-support.h"
-#include "opensync_support_internals.h"
+/**
+ * @defgroup OSyncMemoryAPI OpenSync Memory interface 
+ * @ingroup OSyncCommon
+ * @brief Functions for handling memory operations 
+ */
 
-const char *osync_get_version(void)
-{
-	return OPENSYNC_VERSION;
-}
-
-/*! @brief Bit counting
+/*! @brief Safely tries to malloc memory
  * 
- * MIT HAKMEM Count, Bit counting in constant time and memory. 
+ * Tries to malloc memory but returns an error in an OOM situation instead
+ * of aborting
  * 
- * @param u unsigned integer value to count bits
- * @returns The bit counting result 
+ * @param size The size in bytes to malloc
+ * @param error The error which will hold the info in case of an error
+ * @returns A pointer to the new memory or NULL in case of error, needs to be released by osync_free()
  * 
  */
-int osync_bitcount(unsigned int u)
-{
-	unsigned int uCount = u - ((u >> 1) & 033333333333) - ((u >> 2) & 011111111111);
-	return ((uCount + (uCount >> 3)) & 030707070707) % 63;
-}
+OSYNC_EXPORT void *osync_try_malloc0(unsigned int size, OSyncError **error);
+
+/*! @brief Frees memory
+ * 
+ * Frees memory allocated by osync_try_malloc0() and others osync_* functions.
+ * 
+ * @param ptr Pointer to allocated memory which should get freed
+ * 
+ */
+OSYNC_EXPORT void osync_free(void *ptr);
+
+#endif /* _OPENSYNC_MEMORY_H */
 
