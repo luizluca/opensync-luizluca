@@ -21,12 +21,6 @@
 
 #include "xmlformat.h"
 
-#include <libxml/xmlstring.h>
-#include <libxml/tree.h>
-
-#include "opensync/xmlformat/opensync_xmlfield_private.h"	/* FIXME: direct include of private header */
-
-
 /**
  * @brief Search for the points in the sorted OSyncXMLPoints array for a given fieldname.
  * @param points The sorted points array
@@ -86,19 +80,6 @@ static int xmlformat_subtract_points(OSyncXMLField *xmlfield, OSyncXMLPoints *po
 }
 
 /**
- * @brief Help method which return the content of a xmlNode
- * @param node The pointer to a xmlNode
- * @return The value of the xmlNode or a empty string
- */
-static xmlChar *xml_node_get_content(xmlNodePtr node)
-{
-	if (node->children && node->children->content)
-		return node->children->content;
-		
-	return (xmlChar *)"";
-}
-
-/**
  * @brief Compares two xmlfield objects with each other
  * @param xmlfield1 The pointer to a xmlformat object
  * @param xmlfield2 The pointer to a xmlformat object
@@ -108,8 +89,8 @@ osync_bool xmlfield_compare(OSyncXMLField *xmlfield1, OSyncXMLField *xmlfield2)
 {
 	int i;	
 	osync_bool same;
-	xmlNodePtr key1 = NULL;
-	xmlNodePtr key2 = NULL;
+	OSyncXMLField *key1 = NULL;
+	OSyncXMLField *key2 = NULL;
 
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, xmlfield1, xmlfield2);
@@ -122,8 +103,8 @@ osync_bool xmlfield_compare(OSyncXMLField *xmlfield1, OSyncXMLField *xmlfield2)
 	}
 
 	same = TRUE;
-	key1 = xmlfield1->node->children;
-	key2 = xmlfield2->node->children;
+	key1 = osync_xmlfield_get_child(xmlfield1);
+	key2 = osync_xmlfield_get_child(xmlfield2);
 	
 	while(same)
 		{
@@ -140,21 +121,21 @@ osync_bool xmlfield_compare(OSyncXMLField *xmlfield1, OSyncXMLField *xmlfield2)
 				break;	
 			}
 		
-			curkeyname = (const char *)key1->name;
+			curkeyname = osync_xmlfield_get_name(key1);
 			do {
 				keylist1 = g_slist_prepend(keylist1, key1);
-				key1 = key1->next;
+				key1 = osync_xmlfield_get_next(key1);
 				if(key1 == NULL)
 					break;
-				i = strcmp((const char *)key1->name, curkeyname);
+				i = strcmp(osync_xmlfield_get_name(key1), curkeyname);
 			} while(i == 0);
 		
 			do {
 				keylist2 = g_slist_prepend(keylist2, key2);
-				key2 = key2->next;
+				key2 = osync_xmlfield_get_next(key2);
 				if(key2 == NULL)
 					break;
-				i = strcmp((const char *)key2->name, curkeyname);
+				i = strcmp(osync_xmlfield_get_name(key2), curkeyname);
 			} while(i == 0);	
 
 			do{
@@ -173,7 +154,7 @@ osync_bool xmlfield_compare(OSyncXMLField *xmlfield1, OSyncXMLField *xmlfield2)
 					cur_list2 = keylist2;
 
 					do {
-						if(!xmlStrcmp(xml_node_get_content(cur_list1->data), xml_node_get_content(cur_list2->data)))
+						if(!strcmp(osync_xmlfield_get_value(cur_list1->data), osync_xmlfield_get_value(cur_list2->data)))
 							break;
 						cur_list2 = g_slist_next(cur_list2);
 						if(cur_list2 == NULL) {
@@ -234,7 +215,7 @@ osync_bool xmlfield_compare(OSyncXMLField *xmlfield1, OSyncXMLField *xmlfield2)
 osync_bool xmlfield_compare_similar(OSyncXMLField *xmlfield1, OSyncXMLField *xmlfield2, char* keys[])
 {
 	osync_bool res = TRUE;
-	xmlNodePtr node1, node2;
+	OSyncXMLField *node1, *node2;
 	int i;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, xmlfield1, xmlfield2, keys);
 	osync_assert(xmlfield1);
@@ -243,8 +224,8 @@ osync_bool xmlfield_compare_similar(OSyncXMLField *xmlfield1, OSyncXMLField *xml
 	if(strcmp((const char *) osync_xmlfield_get_name(xmlfield1), (const char *) osync_xmlfield_get_name(xmlfield2)) != 0)
 		res = FALSE;
 
-	node1 = xmlfield1->node->children;
-	node2 = xmlfield2->node->children;
+	node1 = osync_xmlfield_get_child(xmlfield1);
+	node2 = osync_xmlfield_get_child(xmlfield2);
 
 	for(i=0; keys[i]; i++) {
 		GSList *list1;
@@ -256,15 +237,15 @@ osync_bool xmlfield_compare_similar(OSyncXMLField *xmlfield1, OSyncXMLField *xml
 		list2 = NULL;
 
 		while(node1 != NULL) {
-			if(strcmp(keys[i], (const char *)node1->name) == 0)
+			if(strcmp(keys[i], osync_xmlfield_get_name(node1)) == 0)
 				list1 = g_slist_prepend(list1, node1);
-			node1 = node1->next;
+			node1 = osync_xmlfield_get_next(node1);
 		};
 
 		while(node2 != NULL) {
-			if(strcmp(keys[i], (const char *)node2->name) == 0)
+			if(strcmp(keys[i], osync_xmlfield_get_name(node2)) == 0)
 				list2 = g_slist_prepend(list2, node2);
-			node2 = node2->next;
+			node2 = osync_xmlfield_get_next(node2);
 		};
 
 		while(list1 != NULL)
@@ -277,8 +258,8 @@ osync_bool xmlfield_compare_similar(OSyncXMLField *xmlfield1, OSyncXMLField *xml
 					break;
 				}
 
-				while(xmlStrcmp(xml_node_get_content((xmlNodePtr)cur_list1->data),
-				                xml_node_get_content((xmlNodePtr)cur_list2->data))) {
+				while(strcmp(osync_xmlfield_get_value((OSyncXMLField *)cur_list1->data),
+				                osync_xmlfield_get_value((OSyncXMLField *)cur_list2->data))) {
 					cur_list2 = g_slist_next(cur_list2);
 					if(cur_list2 == NULL) {
 						res = FALSE;
