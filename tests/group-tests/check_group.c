@@ -4,6 +4,7 @@
 #include <opensync/opensync-group.h>
 #include <opensync/opensync_internals.h>
 
+#include "opensync/group/opensync_group_internals.h"
 
 START_TEST (group_last_sync)
 {

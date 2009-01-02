@@ -84,6 +84,32 @@ typedef struct OSyncFormatConverterPathVertice {
 
 typedef osync_bool (*OSyncTargetLastConverterFn)(const void *data, OSyncFormatConverterTree *tree);
 
+/** @brief Register Filter in Format Environment 
+ * 
+ * @param env The format environment
+ * @param filter Pointer of Custom Filter to register
+ * 
+ */
+OSYNC_TEST_EXPORT void osync_format_env_register_filter(OSyncFormatEnv *env, OSyncCustomFilter *filter);
+
+/** @brief Returns the number of available filters
+ * 
+ * @param env The format environment
+ * @returns The number of filters
+ * 
+ */
+OSYNC_TEST_EXPORT int osync_format_env_num_filters(OSyncFormatEnv *env);
+
+/** @brief Gets the nth filter
+ * 
+ * @param env The format environment
+ * @param nth The position of the filter to retrieve
+ * @returns The filter
+ * 
+ */
+OSYNC_TEST_EXPORT OSyncCustomFilter *osync_format_env_nth_filter(OSyncFormatEnv *env, int nth);
+
 /*@}*/
 
-#endif //_OPENSYNC_FORMAT_ENV_INTERNALS_H_
+#endif /* _OPENSYNC_FORMAT_ENV_INTERNALS_H_ */
+

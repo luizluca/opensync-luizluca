@@ -166,31 +166,6 @@ OSYNC_EXPORT int osync_format_env_num_converters(OSyncFormatEnv *env);
  */
 OSYNC_EXPORT OSyncFormatConverter *osync_format_env_nth_converter(OSyncFormatEnv *env, int nth);
 
-/** @brief Register Filter in Format Environment 
- * 
- * @param env The format environment
- * @param filter Pointer of Custom Filter to register
- * 
- */
-OSYNC_EXPORT void osync_format_env_register_filter(OSyncFormatEnv *env, OSyncCustomFilter *filter);
-
-/** @brief Returns the number of available filters
- * 
- * @param env The format environment
- * @returns The number of filters
- * 
- */
-OSYNC_EXPORT int osync_format_env_num_filters(OSyncFormatEnv *env);
-
-/** @brief Gets the nth filter
- * 
- * @param env The format environment
- * @param nth The position of the filter to retrieve
- * @returns The filter
- * 
- */
-OSYNC_EXPORT OSyncCustomFilter *osync_format_env_nth_filter(OSyncFormatEnv *env, int nth);
-
 /** @brief Tries to detect the format of the given data object
  * 
  * This will try to detect the format of the specified data object
