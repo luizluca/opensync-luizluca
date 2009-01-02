@@ -272,52 +272,6 @@ OSYNC_EXPORT void osync_group_set_objtype_enabled(OSyncGroup *group, const char 
 OSYNC_EXPORT int osync_group_objtype_enabled(OSyncGroup *group, const char *objtype);
 
 
-/** @brief Add a filter to the group 
- * 
- * @param group The group
- * @param filter The filter to add 
- * 
- */
-OSYNC_EXPORT void osync_group_add_filter(OSyncGroup *group, OSyncFilter *filter);
-
-/** @brief Remove a filter from the group 
- * 
- * @param group The group
- * @param filter The filter to remove
- * 
- */
-OSYNC_EXPORT void osync_group_remove_filter(OSyncGroup *group, OSyncFilter *filter);
-
-/** @brief Get the number of filters registered in a group
- * 
- * @param group The group
- * @returns The number of filters
- * 
- */
-OSYNC_EXPORT int osync_group_num_filters(OSyncGroup *group);
-
-/** @brief Gets the nth filter of a group
- * 
- * Note that you should not add or delete filters while
- * iterating over them
- * 
- * @param group The group
- * @param nth Which filter to return
- * @returns The filter or NULL if not found
- * 
- */
-OSYNC_EXPORT OSyncFilter *osync_group_nth_filter(OSyncGroup *group, int nth);
-
-
-/** @brief Sets the last synchronization date of this group
- * 
- * The information will be stored on disc after osync_group_save()
- * 
- * @param group The group in which to save
- * @param last_sync The time info to set
- */
-OSYNC_EXPORT void osync_group_set_last_synchronization(OSyncGroup *group, time_t last_sync);
-
 /** @brief Gets the last synchronization date from this group
  * 
  * The information will available on the group after osync_group_load()
@@ -326,7 +280,6 @@ OSYNC_EXPORT void osync_group_set_last_synchronization(OSyncGroup *group, time_t
  * @return The synchronization info
  */
 OSYNC_EXPORT time_t osync_group_get_last_synchronization(OSyncGroup *group);
-
 
 /** @brief Set fixed conflict resolution for the group for all appearing conflicts 
  * 
@@ -345,7 +298,6 @@ OSYNC_EXPORT void osync_group_set_conflict_resolution(OSyncGroup *group, OSyncCo
  * 
  */
 OSYNC_EXPORT void osync_group_get_conflict_resolution(OSyncGroup *group, OSyncConflictResolution *res, int *num);
-
 
 /** @brief Get group configured status of merger use. 
  * 

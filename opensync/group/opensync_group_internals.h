@@ -62,6 +62,51 @@ struct OSyncGroup {
 	int ref_count;
 };
 
+/** @brief Sets the last synchronization date of this group
+ * 
+ * The information will be stored on disc after osync_group_save()
+ * 
+ * @param group The group in which to save
+ * @param last_sync The time info to set
+ */
+OSYNC_TEST_EXPORT void osync_group_set_last_synchronization(OSyncGroup *group, time_t last_sync);
+
+/** @brief Add a filter to the group 
+ * 
+ * @param group The group
+ * @param filter The filter to add 
+ * 
+ */
+OSYNC_TEST_EXPORT void osync_group_add_filter(OSyncGroup *group, OSyncFilter *filter);
+
+/** @brief Remove a filter from the group 
+ * 
+ * @param group The group
+ * @param filter The filter to remove
+ * 
+ */
+OSYNC_TEST_EXPORT void osync_group_remove_filter(OSyncGroup *group, OSyncFilter *filter);
+
+/** @brief Get the number of filters registered in a group
+ * 
+ * @param group The group
+ * @returns The number of filters
+ * 
+ */
+OSYNC_TEST_EXPORT int osync_group_num_filters(OSyncGroup *group);
+
+/** @brief Gets the nth filter of a group
+ * 
+ * Note that you should not add or delete filters while
+ * iterating over them
+ * 
+ * @param group The group
+ * @param nth Which filter to return
+ * @returns The filter or NULL if not found
+ * 
+ */
+OSYNC_TEST_EXPORT OSyncFilter *osync_group_nth_filter(OSyncGroup *group, int nth);
+
 #ifdef OPENSYNC_UNITTESTS
 /** @brief Set the schemadir for configuration validation to a custom directory.
  *  This is actually only inteded for UNITTESTS to run tests without
@@ -77,3 +122,4 @@ OSYNC_TEST_EXPORT void osync_group_set_schemadir(OSyncGroup *group, const char *
 /*@}*/
 
 #endif /* _OPENSYNC_GROUP_INTERNALS_H_ */
+

@@ -1,7 +1,7 @@
 /*
  * libopensync - A synchronization engine for the opensync framework
  * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
- * Copyright (C) 2007       Daniel Gollub <dgollub@suse.de>
+ * Copyright (C) 2007-2008  Daniel Gollub <dgollub@suse.de>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,6 +34,7 @@
 
 #include "archive/opensync_archive_internals.h"
 #include "client/opensync_client_proxy_internals.h"
+#include "group/opensync_group_internals.h"
 
 #include "opensync_status_internals.h"
 #include "opensync_obj_engine_internals.h"
