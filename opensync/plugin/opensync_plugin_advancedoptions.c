@@ -332,7 +332,7 @@ OSyncPluginAdvancedOptionParameter *osync_plugin_advancedoption_param_new(OSyncE
 
 OSyncPluginAdvancedOptionParameter *osync_plugin_advancedoption_param_ref(OSyncPluginAdvancedOptionParameter *param)
 {
-	osync_assert(param);
+	osync_return_val_if_fail(param, NULL);
 	
 	g_atomic_int_inc(&(param->ref_count));
 
@@ -341,7 +341,7 @@ OSyncPluginAdvancedOptionParameter *osync_plugin_advancedoption_param_ref(OSyncP
 
 void osync_plugin_advancedoption_param_unref(OSyncPluginAdvancedOptionParameter *param)
 {
-	osync_assert(param);
+	osync_return_if_fail(param);
 	
 	if (g_atomic_int_dec_and_test(&(param->ref_count))) {
 
@@ -365,13 +365,15 @@ void osync_plugin_advancedoption_param_unref(OSyncPluginAdvancedOptionParameter 
 
 const char *osync_plugin_advancedoption_param_get_displayname(OSyncPluginAdvancedOptionParameter *param)
 {
-	osync_assert(param);
+	osync_return_val_if_fail(param, NULL);
 	return param->displayname;
 }
 
 void osync_plugin_advancedoption_param_set_displayname(OSyncPluginAdvancedOptionParameter *param, const char *displayname)
 {
-	osync_assert(param);
+	osync_return_if_fail(param);
+	osync_return_if_fail(displayname);
+
 	if (param->displayname)
 		g_free(param->displayname);
 
@@ -380,13 +382,15 @@ void osync_plugin_advancedoption_param_set_displayname(OSyncPluginAdvancedOption
 
 const char *osync_plugin_advancedoption_param_get_name(OSyncPluginAdvancedOptionParameter *param)
 {
-	osync_assert(param);
+	osync_return_val_if_fail(param, NULL);
 	return param->name;
 }
 
 void osync_plugin_advancedoption_param_set_name(OSyncPluginAdvancedOptionParameter *param, const char *name)
 {
-	osync_assert(param);
+	osync_return_if_fail(param);
+	osync_return_if_fail(name);
+
 	if (param->name)
 		g_free(param->name);
 
@@ -396,32 +400,34 @@ void osync_plugin_advancedoption_param_set_name(OSyncPluginAdvancedOptionParamet
 
 OSyncPluginAdvancedOptionType osync_plugin_advancedoption_param_get_type(OSyncPluginAdvancedOptionParameter *param)
 {
-	osync_assert(param);
+	osync_return_val_if_fail(param, OSYNC_PLUGIN_ADVANCEDOPTION_TYPE_NONE);
 	return param->type;
 }
 
 const char *osync_plugin_advancedoption_param_get_type_string(OSyncPluginAdvancedOptionParameter *param)
 {
+	osync_return_val_if_fail(param, NULL);
 	return _osync_plugin_advancedoption_get_type_string(param->type);
 }
 
 void osync_plugin_advancedoption_param_set_type(OSyncPluginAdvancedOptionParameter *param, OSyncPluginAdvancedOptionType type)
 {
-	osync_assert(param);
+	osync_return_if_fail(param);
 	param->type = type;
 }
 
 OSyncList *osync_plugin_advancedoption_param_get_valenums(OSyncPluginAdvancedOptionParameter *param)
 {
-	osync_assert(param);
+	osync_return_val_if_fail(param, NULL);
 	return param->valenum;
 }
 
 void osync_plugin_advancedoption_param_add_valenum(OSyncPluginAdvancedOptionParameter *param, const char *value)
 {
 	OSyncList *data = NULL;
-	osync_assert(param);
-	osync_assert(value);
+
+	osync_return_if_fail(param);
+	osync_return_if_fail(value);
 
 	/* Don't add duplicated values */
 	data = osync_list_find_custom(param->valenum, (void *) value, _list_string_compare);
@@ -434,8 +440,9 @@ void osync_plugin_advancedoption_param_add_valenum(OSyncPluginAdvancedOptionPara
 void osync_plugin_advancedoption_param_remove_valenum(OSyncPluginAdvancedOptionParameter *param, const char *value)
 {
 	OSyncList *data = NULL;
-	osync_assert(param);
-	osync_assert(value);
+
+	osync_return_if_fail(param);
+	osync_return_if_fail(value);
 
 	data = osync_list_find_custom(param->valenum, (void *) value, _list_string_compare);
 	if (!data)
@@ -447,13 +454,13 @@ void osync_plugin_advancedoption_param_remove_valenum(OSyncPluginAdvancedOptionP
 
 const char *osync_plugin_advancedoption_param_get_value(OSyncPluginAdvancedOptionParameter *param)
 {
-	osync_assert(param);
+	osync_return_val_if_fail(param, NULL);
 	return param->value;
 }
 
 void osync_plugin_advancedoption_param_set_value(OSyncPluginAdvancedOptionParameter *param, const char *value)
 {
-	osync_assert(param);
+	osync_return_if_fail(param);
 	if (param->value)
 		g_free(param->value);
 
