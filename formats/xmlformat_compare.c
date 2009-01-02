@@ -24,9 +24,6 @@
 #include <libxml/xmlstring.h>
 #include <libxml/tree.h>
 
-#include "opensync/xmlformat/opensync_xmlformat_internals.h"
-
-
 #include "opensync/xmlformat/opensync_xmlfield_private.h"	/* FIXME: direct include of private header */
 
 

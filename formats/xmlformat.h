@@ -24,11 +24,14 @@
 #ifndef XMLFORMAT_H_
 #define XMLFORMAT_H_
 
+#include "config.h"
+
 #include <stdio.h>
 #include <string.h>
 
+#include <glib.h>
+
 #include <opensync/opensync.h>
-#include <opensync/opensync_internals.h>
 #include <opensync/opensync-xmlformat.h>
 #include <opensync/opensync-serializer.h>
 #include <opensync/opensync-format.h>
