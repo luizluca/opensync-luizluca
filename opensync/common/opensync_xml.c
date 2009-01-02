@@ -18,8 +18,12 @@
  * 
  */
  
-#include "opensync_xml.h"
+#include "config.h"
+
+#include "opensync.h"
 #include "opensync_internals.h"
+#include "opensync_xml_internals.h"
+
 #include <opensync/opensync-serializer.h>
 
 void osync_xml_free(void *ptr)

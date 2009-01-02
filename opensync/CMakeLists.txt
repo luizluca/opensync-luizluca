@@ -7,7 +7,6 @@ SET( libopensync_LIB_SRCS
    opensync_context.c
    opensync_error.c
    opensync_support.c
-   opensync_xml.c
    archive/opensync_archive.c
    client/opensync_client.c
    client/opensync_client_proxy.c
@@ -16,6 +15,7 @@ SET( libopensync_LIB_SRCS
    common/opensync_memory.c
    common/opensync_string.c
    common/opensync_thread.c
+   common/opensync_xml.c
    data/opensync_change.c
    data/opensync_data.c
    db/opensync_db.c

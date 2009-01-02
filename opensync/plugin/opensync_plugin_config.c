@@ -24,7 +24,7 @@
 #include "opensync-plugin.h"
 #include "opensync-format.h"
 
-#include "opensync_xml.h"
+#include "common/opensync_xml_internals.h"
 
 #include "opensync_plugin_advancedoptions_private.h"	/* FIXME: direct access to private header */
 #include "opensync_plugin_authentication_private.h"	/* FIXME: direct access to private header */

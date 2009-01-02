@@ -18,6 +18,8 @@
  * 
  */
 
+#include "config.h"
+
 #include <libxml/xmlIO.h>
 #include <libxml/parser.h>
 #include <libxml/xmlmemory.h>
@@ -34,7 +36,7 @@
 
 #include "opensync-group.h"
 
-#include "opensync_xml.h"
+#include "common/opensync_xml_internals.h"
 
 #include "opensync_updater.h"
 #include "opensync_updater_private.h"

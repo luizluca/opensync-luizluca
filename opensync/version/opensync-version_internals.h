@@ -30,7 +30,7 @@
 #include <libxml/parser.h>
 #include <libxml/xmlschemas.h>
 
-#include <opensync/opensync_xml.h>
+#include "common/opensync_xml_internals.h"
 
 #include "opensync_version_internals.h"
 

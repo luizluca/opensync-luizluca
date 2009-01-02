@@ -23,11 +23,12 @@
 #ifndef OPENSYNCXMLFORMAT_INTERNALS_H_
 #define OPENSYNCXMLFORMAT_INTERNALS_H_
 
-#include <opensync/opensync_xml.h>
+#include "opensync/common/opensync_xml_internals.h"
 
 #include "opensync_xmlformat_internals.h"
 #include "opensync_xmlformat_schema_internals.h"
 #include "opensync_xmlfield_internals.h"
 #include "opensync_xmlfieldlist_internals.h"
 
-#endif /*OPENSYNCXMLFORMAT_INTERNALS_H_*/
+#endif /* OPENSYNCXMLFORMAT_INTERNALS_H_ */
+

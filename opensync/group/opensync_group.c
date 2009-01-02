@@ -19,11 +19,11 @@
  */
  
 #include "opensync.h"
-#include "opensync_xml.h"
 #include "opensync_internals.h"
 
 #include "opensync-format.h"
 #include "format/opensync_filter_internals.h"
+#include "common/opensync_xml_internals.h"
 
 #include "opensync-group.h"
 #include "opensync_group_internals.h"

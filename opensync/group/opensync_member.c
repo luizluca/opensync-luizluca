@@ -32,7 +32,7 @@
 
 #include "merger/opensync_capabilities_internals.h"
 
-#include "opensync_xml.h"
+#include "common/opensync_xml_internals.h"
 
 static void osync_member_set_merger(OSyncMember *member, OSyncMerger *merger)
 {

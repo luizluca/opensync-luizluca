@@ -23,8 +23,6 @@
 #ifndef OPENSYNCMERGER_INTERNALS_H_
 #define OPENSYNCMERGER_INTERNALS_H_
 
-#include <opensync/opensync_xml.h>
-
 #include "opensync_capabilities_internals.h"
 #include "opensync_capability_internals.h"
 #include "opensync_merger_internals.h"
