@@ -1207,7 +1207,7 @@ START_TEST (dual_connect_timeout)
 	fail_unless(num_client_connected == 0, NULL);
 	fail_unless(num_client_disconnected == 0, NULL);
 	fail_unless(num_client_written == 0, NULL);
-	fail_unless(num_engine_errors == 1, NULL);
+	fail_unless(num_engine_errors == 1, "Number of Engine Errors: %u Expected: 1", num_engine_errors);
 	fail_unless(num_engine_successful == 0, NULL);
 	
 	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
@@ -2703,7 +2703,7 @@ START_TEST (dual_sync_done_timeout)
 	fail_unless(num_change_error == 0, NULL);
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
-	fail_unless(num_engine_errors == 1, NULL);
+	fail_unless(num_engine_errors == 1, "Number of Engine Errors: %u Expected: 1", num_engine_errors);
 	fail_unless(num_engine_successful == 0, NULL);
 	
 	fail_unless(osync_testing_diff("data1", "data2"));
@@ -3060,7 +3060,7 @@ START_TEST (dual_disconnect_timeout)
 	fail_unless(osync_engine_initialize(engine, &error), NULL);
 	fail_unless(error == NULL, NULL);
 
-	fail_unless(synchronize_once(engine, &error), NULL);
+	fail_unless(synchronize_once(engine, &error), "Unexpected error: %s", osync_error_print(&error));
 	fail_unless(!osync_error_is_set(&error), NULL);
 	
 	osync_error_unref(&error);
