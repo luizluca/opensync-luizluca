@@ -29,7 +29,7 @@
 #ifndef _OPENSYNC_LIST_H_
 #define _OPENSYNC_LIST_H_
 
-#include "opensync.h"
+#include "opensync/opensync.h"
 
 typedef struct _OSyncList OSyncList;
 
