@@ -33,6 +33,10 @@
  * @brief Represent a XMLField object
  */
 struct OSyncXMLField {
+	/** The pointer to the parent xmlfield */
+	OSyncXMLField *parent;
+	/** The pointer to the first child xmlfield */
+	OSyncXMLField *child;
 	/** The pointer to the next xmlfield */
 	OSyncXMLField *next;
 	/** The pointer to the previous xmlfield */
@@ -41,6 +45,8 @@ struct OSyncXMLField {
 	xmlNodePtr node;
 	/** Sorted status */
 	osync_bool sorted;
+        /** Child count */
+        unsigned int child_count;
 };
 /*@}*/
 

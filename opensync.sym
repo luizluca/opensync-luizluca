@@ -716,6 +716,7 @@ osync_version_unref
 osync_xmlfield_add_key_value
 osync_xmlfield_get_attr
 osync_xmlfield_get_attr_count
+osync_xmlfield_get_child
 osync_xmlfield_get_key_count
 osync_xmlfield_get_key_value
 osync_xmlfield_get_name
@@ -724,6 +725,9 @@ osync_xmlfield_get_nth_attr_name
 osync_xmlfield_get_nth_attr_value
 osync_xmlfield_get_nth_key_name
 osync_xmlfield_get_nth_key_value
+osync_xmlfield_get_parent
+osync_xmlfield_get_prev
+osync_xmlfield_get_value
 osync_xmlfield_new
 osync_xmlfield_set_attr
 osync_xmlfield_set_key_value

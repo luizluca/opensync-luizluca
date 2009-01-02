@@ -36,6 +36,8 @@
 struct OSyncXMLFormat {
 	/** The reference counter for this object */
 	int ref_count;
+	/** The root xmlfield */
+	OSyncXMLField *xmlfield;
 	/** The first xmlfield */
 	OSyncXMLField *first_child;
 	/** The last xmlfield */

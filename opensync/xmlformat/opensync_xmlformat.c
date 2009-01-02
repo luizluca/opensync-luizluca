@@ -72,44 +72,42 @@ OSyncXMLFormat *osync_xmlformat_new(const char *objtype, OSyncError **error)
 OSyncXMLFormat *osync_xmlformat_parse(const char *buffer, unsigned int size, OSyncError **error)
 {
 	OSyncXMLFormat *xmlformat = NULL;
+	OSyncXMLField *xmlfield = NULL;
 	xmlNodePtr cur = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p)", __func__, buffer, size, error);
 	osync_assert(buffer);
 
 	xmlformat = osync_try_malloc0(sizeof(OSyncXMLFormat), error);
-	if(!xmlformat) {
-		osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
-		return NULL;
-	}
+	if (!xmlformat)
+		goto error;
 	
 	xmlformat->doc = xmlReadMemory(buffer, size, NULL, NULL, XML_PARSE_NOBLANKS);
 	if(!xmlformat->doc) {
-		g_free(xmlformat);
+		osync_free(xmlformat);
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not parse XML.");
-		osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
-		return NULL;	
+		goto error;
 	}
 
 	xmlformat->ref_count = 1;
-	xmlformat->first_child = NULL;
-	xmlformat->last_child = NULL;
-	xmlformat->child_count = 0;
 	xmlformat->doc->_private = xmlformat;
-		
+
+	
 	cur = xmlDocGetRootElement(xmlformat->doc);
-	cur = cur->children;
-	while (cur != NULL) {
-		OSyncXMLField *xmlfield = osync_xmlfield_new_node(xmlformat, cur, error);
-		if(!xmlfield) {
-			osync_xmlformat_unref(xmlformat);
-			osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
-			return NULL;
-		}
-		cur = cur->next;
-	}
+	if (!(xmlfield = osync_xmlfield_new_node(cur, error)))
+		goto error;
+
+	if (!osync_xmlfield_parse(xmlfield, cur->children, &xmlformat->first_child, &xmlformat->last_child, error))
+		goto error;
+
+	xmlformat->xmlfield = xmlfield;
+	xmlformat->child_count = osync_xmlfield_get_key_count(xmlfield);
 
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, xmlformat);
 	return xmlformat;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
+	return NULL;
 }
 
 OSyncXMLFormat *osync_xmlformat_ref(OSyncXMLFormat *xmlformat)

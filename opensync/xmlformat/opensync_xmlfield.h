@@ -64,6 +64,34 @@ OSYNC_EXPORT void osync_xmlfield_set_name(OSyncXMLField *xmlfield, const char *n
 OSYNC_EXPORT OSyncXMLField *osync_xmlfield_get_next(OSyncXMLField *xmlfield);
 
 /**
+ * @brief Get the previous xmlfield
+ * @param xmlfield Pointer to the xmlfield object
+ * @return A pointer to the previous xmlfield or NULL if there is no more xmlfield
+ */
+OSYNC_EXPORT OSyncXMLField *osync_xmlfield_get_prev(OSyncXMLField *xmlfield);
+
+/**
+ * @brief Get the parent xmlfield
+ * @param xmlfield Pointer to the xmlfield object
+ * @return A pointer to the parent xmlfield or NULL if there is no parent xmlfield
+ */
+OSYNC_EXPORT OSyncXMLField *osync_xmlfield_get_parent(OSyncXMLField *xmlfield);
+
+/**
+ * @brief Get the child xmlfield
+ * @param xmlfield Pointer to the xmlfield object
+ * @return A pointer to the child xmlfield or NULL if there is no child xmlfield
+ */
+OSYNC_EXPORT OSyncXMLField *osync_xmlfield_get_child(OSyncXMLField *xmlfield);
+
+/**
+ * @brief Get the value of the xmlfield
+ * @param xmlfield Pointer to the xmlfield object
+ * @return String pointer to the value. If the content is empty, "" gets returned.
+ */
+OSYNC_EXPORT const char *osync_xmlfield_get_value(OSyncXMLField *xmlfield);
+
+/**
  * @brief Get the value of a attribute of an xmlfield
  * @param xmlfield Pointer to the xmlfield object
  * @param attr The name of the attribute

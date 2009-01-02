@@ -32,14 +32,15 @@
 /*@{*/
 
 /**
- * @brief Creates a new xmlfield object which will be added to the end of xmlfields of the xmlformat object.
+ * @brief Creates a new xmlfield object from xmlNodePtr.
  *  The returned object will be freed with the xmlformat object.
- * @param xmlformat The pointer to a xmlformat object
  * @param node The node must be already inserted at the end of childs of the xmlDoc root element
  * @param error The error which will hold the info in case of an error
  * @return The pointer to the newly allocated xmlfield object or NULL in case of error
  */
-OSyncXMLField *osync_xmlfield_new_node(OSyncXMLFormat *xmlformat, xmlNodePtr node, OSyncError **error);
+OSyncXMLField *osync_xmlfield_new_node(xmlNodePtr node, OSyncError **error);
+
+osync_bool osync_xmlfield_parse(OSyncXMLField *parent, xmlNodePtr node, OSyncXMLField **first_child, OSyncXMLField **last_child, OSyncError **error);
 
 /**
  * @brief Frees a already unlinked xmlfield object

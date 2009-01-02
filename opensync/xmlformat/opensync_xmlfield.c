@@ -27,10 +27,28 @@
 #include "opensync-xmlformat_internals.h"
 #include "opensync_xmlformat_private.h"		/* FIXME: direct access of private header */
 
+#include "opensync_xmlfield.h"
 #include "opensync_xmlfield_private.h"
 #include "opensync_xmlfield_internals.h"
 
-OSyncXMLField *osync_xmlfield_new_node(OSyncXMLFormat *xmlformat, xmlNodePtr node, OSyncError **error)
+OSyncXMLField *osync_xmlfield_new_node(xmlNodePtr node, OSyncError **error)
+{
+	OSyncXMLField *xmlfield = osync_try_malloc0(sizeof(OSyncXMLField), error);
+	if(!xmlfield) {
+		osync_trace(TRACE_ERROR, "%s: %s" , __func__, osync_error_print(error));
+		return NULL;
+	}
+	
+	xmlfield->node = node;
+	node->_private = xmlfield;
+	
+	// We don't know if the parsed xmlformat got sorted xmlfield -> unsorted
+	xmlfield->sorted = FALSE;
+	
+	return xmlfield;
+}
+
+OSyncXMLField *osync_xmlfield_new_xmlfield(OSyncXMLField *parent, xmlNodePtr node, OSyncError **error)
 {
 	OSyncXMLField *xmlfield = osync_try_malloc0(sizeof(OSyncXMLField), error);
 	if(!xmlfield) {
@@ -40,20 +58,64 @@ OSyncXMLField *osync_xmlfield_new_node(OSyncXMLFormat *xmlformat, xmlNodePtr nod
 	
 	xmlfield->next = NULL;
 	xmlfield->node = node;
-	xmlfield->prev = xmlformat->last_child;
+	xmlfield->parent = parent;
 	node->_private = xmlfield;
 	
-	if(!xmlformat->first_child)
-		xmlformat->first_child = xmlfield;
-	if(xmlformat->last_child)
-		xmlformat->last_child->next = xmlfield;
-	xmlformat->last_child = xmlfield;
-	xmlformat->child_count++;
+	if (parent) {
+		xmlfield->prev = parent->child;
+		if (xmlfield->prev)
+			xmlfield->prev->next = xmlfield;
+		parent->child = xmlfield;
+	}
+
 
 	// We don't know if the parsed xmlformat got sorted xmlfield -> unsorted
 	xmlfield->sorted = FALSE;
 	
 	return xmlfield;
+}
+
+osync_bool osync_xmlfield_parse(OSyncXMLField *parent, xmlNodePtr node, OSyncXMLField **first_child, OSyncXMLField **last_child, OSyncError **error)
+{
+	OSyncXMLField *xmlfield = NULL;
+
+	if (first_child)
+		*first_child = NULL;
+
+	while (node != NULL) {
+
+		xmlfield = osync_xmlfield_new_xmlfield(parent, node, error);
+		if (!xmlfield)
+			goto error;
+
+		if (first_child && !(*first_child)) {
+			*first_child = xmlfield;
+		}
+
+		if (node->children && node->children->type == XML_ELEMENT_NODE)
+			if (!osync_xmlfield_parse(xmlfield, node->children, NULL, NULL, error))
+				goto error_and_free;
+
+		node = node->next;
+	}
+
+	if (last_child)
+		*last_child = xmlfield;
+
+	return TRUE;
+
+error_and_free:
+	osync_xmlfield_free(xmlfield);
+error:
+
+	if (last_child)
+		*last_child = NULL;
+
+	if (first_child)
+		*first_child = NULL;
+
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
+	return FALSE;
 }
 
 void osync_xmlfield_free(OSyncXMLField *xmlfield)
@@ -150,7 +212,7 @@ OSyncXMLField *osync_xmlfield_new(OSyncXMLFormat *xmlformat, const char *name, O
 	
 	node = xmlNewTextChild(xmlDocGetRootElement(xmlformat->doc), NULL, BAD_CAST name, NULL);
 	
-	xmlfield = osync_xmlfield_new_node(xmlformat, node, error);
+	xmlfield = osync_xmlfield_new_xmlfield(xmlformat->last_child, node, error);
 	if(!xmlfield) {
 		xmlUnlinkNode(node);
 		xmlFreeNode(node);
@@ -185,9 +247,32 @@ void osync_xmlfield_set_name(OSyncXMLField *xmlfield, const char *name)
 
 OSyncXMLField *osync_xmlfield_get_next(OSyncXMLField *xmlfield)
 {
-	osync_assert(xmlfield);
-	
+	osync_return_val_if_fail(xmlfield, NULL);
 	return xmlfield->next;
+}
+
+OSyncXMLField *osync_xmlfield_get_prev(OSyncXMLField *xmlfield)
+{
+	osync_return_val_if_fail(xmlfield, NULL);
+	return xmlfield->prev;
+}
+
+OSyncXMLField *osync_xmlfield_get_parent(OSyncXMLField *xmlfield)
+{
+	osync_return_val_if_fail(xmlfield, NULL);
+	return xmlfield->parent;
+}
+
+OSyncXMLField *osync_xmlfield_get_child(OSyncXMLField *xmlfield)
+{
+	osync_return_val_if_fail(xmlfield, NULL);
+	return xmlfield->child;
+}
+
+const char *osync_xmlfield_get_value(OSyncXMLField *xmlfield)
+{
+	osync_return_val_if_fail(xmlfield, "");
+	return (const char *)osync_xml_node_get_content(xmlfield->node);
 }
 
 const char *osync_xmlfield_get_attr(OSyncXMLField *xmlfield, const char *attr)
