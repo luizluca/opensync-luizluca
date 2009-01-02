@@ -155,7 +155,10 @@ typedef enum  {
 /**************************************************************
  * Structs
  *************************************************************/
- 
+
+/* Archive component */
+typedef struct OSyncArchive OSyncArchive;
+
 /* Data component */
 typedef struct OSyncData OSyncData;
 typedef struct OSyncChange OSyncChange;
@@ -217,10 +220,8 @@ typedef struct OSyncGroupEnv OSyncGroupEnv;
 typedef struct OSyncMember OSyncMember;
 
 /* Merger component */
-typedef struct OSyncArchive OSyncArchive;
 typedef struct OSyncCapabilities OSyncCapabilities;
 typedef struct OSyncCapability OSyncCapability;
-typedef struct OSyncMerger OSyncMerger;
 
 /* XMLFormat component */
 typedef struct OSyncXMLFormat OSyncXMLFormat;

@@ -20,8 +20,8 @@
  * 
  */
  
-#ifndef OPENSYNC_MERGER_INTERNALS_H_
-#define OPENSYNC_MERGER_INTERNALS_H_
+#ifndef OPENSYNC_MERGER_PRIVATE_H_
+#define OPENSYNC_MERGER_PRIVATE_H_
 
 /**
  * @defgroup OSyncMergerPrivate OpenSync Merger Module Private
@@ -44,4 +44,4 @@ struct OSyncMerger {
 
 /*@}*/
 
-#endif /*OPENSYNC_MERGER_INTERNALS_H_*/
+#endif /*OPENSYNC_MERGER_PRIVATE_H_*/

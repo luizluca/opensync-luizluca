@@ -328,27 +328,3 @@ typedef struct {} XMLField;
 %}
 }
 
-
-typedef struct {} Merger;
-%extend Merger {
-	Merger(Capabilities *capabilities) {
-		Error *err = NULL;
-		Merger *merger = osync_merger_new(capabilities, &err);
-		if (raise_exception_on_error(err))
-			return NULL;
-		else
-			return merger;
-	}
-
-	~Merger() {
-		osync_merger_unref(self);
-	}
-
-	void merge(XMLFormat *xmlformat, XMLFormat *entire) {
-		osync_merger_merge(self, xmlformat, entire);
-	}
-
-	void demerge(XMLFormat *xmlformat) {
-		osync_merger_demerge(self, xmlformat);
-	}
-}

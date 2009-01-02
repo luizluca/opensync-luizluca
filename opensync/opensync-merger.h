@@ -25,7 +25,6 @@ OPENSYNC_BEGIN_DECLS
 
 #include "merger/opensync_capabilities.h"
 #include "merger/opensync_capability.h"
-#include "merger/opensync_merger.h"
 
 OPENSYNC_END_DECLS
 

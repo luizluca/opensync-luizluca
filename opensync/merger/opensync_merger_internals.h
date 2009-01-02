@@ -20,8 +20,9 @@
  * 
  */
 
-#ifndef OPENSYNC_MERGER_H_
-#define OPENSYNC_MERGER_H_
+#ifndef OPENSYNC_MERGER_INTERNALS_H_
+#define OPENSYNC_MERGER_INTERNALS_H_
+
 
 /**
  * @defgroup OSyncMerger OpenSync Merger Module
@@ -33,27 +34,28 @@
  */
 /*@{*/
 
+typedef struct OSyncMerger OSyncMerger;
+
 /**
  * @brief Creates a new merger object
  * @param capabilities Pointer to capabilities which should be taken in account by the Merger
  * @param error The error which will hold the info in case of an error
  * @return The pointer to the newly allocated merger object or NULL in case of error
  */
-OSYNC_EXPORT OSyncMerger *osync_merger_new(OSyncCapabilities *capabilities, OSyncError **error);
+OSYNC_TEST_EXPORT OSyncMerger *osync_merger_new(OSyncCapabilities *capabilities, OSyncError **error);
 
 /**
  * @brief Increments the reference counter
  * @param merger The pointer to a merger object
  */
-OSYNC_EXPORT OSyncMerger *osync_merger_ref(OSyncMerger *merger);
+OSYNC_TEST_EXPORT OSyncMerger *osync_merger_ref(OSyncMerger *merger);
 
 /**
  * @brief Decrement the reference counter. The merger object will 
  *  be freed if there is no more reference to it.
  * @param merger The pointer to a merger object
  */
-OSYNC_EXPORT void osync_merger_unref(OSyncMerger *merger);
-
+OSYNC_TEST_EXPORT void osync_merger_unref(OSyncMerger *merger);
 
 /**
  * @brief Merge all xmlfields from the entire xmlformat into the
@@ -62,7 +64,7 @@ OSYNC_EXPORT void osync_merger_unref(OSyncMerger *merger);
  * @param xmlformat The pointer to a xmlformat object
  * @param entire The pointer to a entire xmlformat object
  */
-OSYNC_EXPORT void osync_merger_merge(OSyncMerger *merger, OSyncXMLFormat *xmlformat, OSyncXMLFormat *entire);
+OSYNC_TEST_EXPORT void osync_merger_merge(OSyncMerger *merger, OSyncXMLFormat *xmlformat, OSyncXMLFormat *entire);
 
 /**
  * @brief Remove all xmlfields from the xmlformat if they are
@@ -70,8 +72,8 @@ OSYNC_EXPORT void osync_merger_merge(OSyncMerger *merger, OSyncXMLFormat *xmlfor
  * @param merger The pointer to a merger object
  * @param xmlformat The pointer to a xmlformat object
  */
-OSYNC_EXPORT void osync_merger_demerge(OSyncMerger *merger, OSyncXMLFormat *xmlformat);
+OSYNC_TEST_EXPORT void osync_merger_demerge(OSyncMerger *merger, OSyncXMLFormat *xmlformat);
 
 /*@}*/
 
-#endif /*OPENSYNC_MERGER_H_*/
+#endif /*OPENSYNC_MERGER_INTERNALS_H_*/

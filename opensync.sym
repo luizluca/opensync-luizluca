@@ -301,7 +301,6 @@ osync_member_get_config_or_default
 osync_member_get_configdir
 osync_member_get_id
 osync_member_get_main_sink
-osync_member_get_merger
 osync_member_get_name
 osync_member_get_objformats
 osync_member_get_pluginname
@@ -321,11 +320,6 @@ osync_member_set_name
 osync_member_set_objtype_enabled
 osync_member_set_pluginname
 osync_member_unref
-osync_merger_demerge
-osync_merger_merge
-osync_merger_new
-osync_merger_ref
-osync_merger_unref
 osync_message_get_buffer
 osync_message_get_cmd
 osync_message_get_command

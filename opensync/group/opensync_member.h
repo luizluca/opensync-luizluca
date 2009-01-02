@@ -303,15 +303,6 @@ OSYNC_EXPORT OSyncCapabilities *osync_member_get_capabilities(OSyncMember *membe
  */
 OSYNC_EXPORT osync_bool osync_member_set_capabilities(OSyncMember *member, OSyncCapabilities *capabilities, OSyncError **error);
 
-
-/** @brief Get pointer of the Merger 
- * 
- * @param member The member
- * @returns The pointer of the Merger, NULL if merger is disabled
- */
-OSYNC_EXPORT OSyncMerger *osync_member_get_merger(OSyncMember *member);
-
-
 /** @brief Remove all object types from member. 
  * 
  * @param member The member

@@ -34,6 +34,7 @@
 
 #include "opensync-merger.h"
 #include "opensync_capabilities_internals.h"
+#include "opensync_merger_internals.h"
 #include "opensync_merger_private.h"
 
 

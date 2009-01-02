@@ -34,7 +34,9 @@
 
 #include "archive/opensync_archive_internals.h"
 #include "client/opensync_client_proxy_internals.h"
+#include "merger/opensync_merger_internals.h"
 #include "group/opensync_group_internals.h"
+#include "group/opensync_member_internals.h"
 
 #include "opensync_status_internals.h"
 #include "opensync_obj_engine_internals.h"

@@ -46,6 +46,8 @@
 #include "archive/opensync_archive_internals.h"
 #include "data/opensync_change_internals.h"
 #include "client/opensync_client_proxy_internals.h"
+#include "merger/opensync_merger_internals.h"
+#include "group/opensync_member_internals.h"
 
 OSyncMappingEngine *_osync_obj_engine_create_mapping_engine(OSyncObjEngine *engine, OSyncError **error)
 {

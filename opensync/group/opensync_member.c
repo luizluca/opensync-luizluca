@@ -26,11 +26,12 @@
 
 #include "opensync-group.h"
 #include "opensync-format.h"
-#include "opensync-merger.h"
 #include "opensync_member_internals.h"
 #include "opensync_member_private.h"
 
+#include "opensync-merger.h"
 #include "merger/opensync_capabilities_internals.h"
+#include "merger/opensync_merger_internals.h"
 
 #include "common/opensync_xml_internals.h"
 

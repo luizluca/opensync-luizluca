@@ -396,13 +396,6 @@ typedef struct {} Member;
 			wrapper_exception("osync_member_set_capabilities failed but did not set error code");
 	}
 
-	Merger *get_merger() {
-		Merger *merger = osync_member_get_merger(self);
-		if (merger)
-			osync_merger_ref(merger);
-		return merger;
-	}
-
 	void flush_objtypes() {
 		osync_member_flush_objtypes(self);
 	}
@@ -414,7 +407,6 @@ typedef struct {} Member;
 	config = property(get_config, set_config)
 	id = property(get_id)
 	capabilities = property(get_capabilities, set_capabilities)
-	merger = property(get_merger)
 	
 	# extend the SWIG-generated constructor, so that we can setup our list-wrapper classes
 	__oldinit = __init__
