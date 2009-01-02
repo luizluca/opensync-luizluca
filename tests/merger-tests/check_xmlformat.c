@@ -208,7 +208,7 @@ START_TEST (xmlformat_schema_get_instance)
 	fail_unless(failschema == NULL);
 	osync_xmlformat_unref(xmlformat);
 
-	xmlformat = osync_xmlformat_new("contact", &error);
+	xmlformat = osync_xmlformat_new("mockobjtype", &error);
 	fail_if(xmlformat == NULL, NULL);
 	fail_if(error == NULL, NULL);
 	
@@ -227,7 +227,7 @@ START_TEST (xmlformat_schema_get_instance)
 }
 END_TEST
 
-START_TEST (xmlformat_event_schema)
+START_TEST (xmlformat_schema_validate)
 {
         char *testbed = setup_testbed("xmlformats");
         char *buffer;
@@ -235,7 +235,7 @@ START_TEST (xmlformat_event_schema)
         OSyncError *error = NULL;
         OSyncXMLFormatSchema *schema = NULL;
 
-        fail_unless(osync_file_read("event.xml", &buffer, &size, &error), NULL);
+        fail_unless(osync_file_read("mockobjtype.xml", &buffer, &size, &error), NULL);
         fail_unless(error == NULL, NULL);
 
         OSyncXMLFormat *xmlformat = osync_xmlformat_parse(buffer, size, &error);
@@ -268,7 +268,7 @@ Suite *xmlformat_suite(void)
 
 	// xmlformat schema
 	create_case(s, "xmlformat_schema_get_instance", xmlformat_schema_get_instance);
-	create_case(s, "xmlformat_event_schema", xmlformat_event_schema);
+	create_case(s, "xmlformat_schema_validate", xmlformat_schema_validate);
 
 	// xmlfield
 	create_case(s, "xmlfield_new", xmlfield_new);

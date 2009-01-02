@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mockobjtype>
+  <Status>
+    <Content>CONFIRMED</Content>
+  </Status>
+  <Summary>
+    <Content>Pure evil test</Content>
+  </Summary>  
+  <Uid>
+    <Content>23kj4lkj8fdu</Content>
+  </Uid>
+  <Url>
+    <Content>http://www.opensync.org</Content>
+  </Url>
+</mockobjtype>
