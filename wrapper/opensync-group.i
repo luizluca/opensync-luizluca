@@ -200,10 +200,6 @@ typedef struct {} Group;
 	}
         */
 
-	void set_last_synchronization(time_t last_sync) {
-		osync_group_set_last_synchronization(self, last_sync);
-	}
-
 	time_t get_last_synchronization() {
 		return osync_group_get_last_synchronization(self);
 	}
