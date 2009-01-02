@@ -1,7 +1,6 @@
 #include "support.h"
 
 #include <opensync/opensync-xmlformat.h>
-#include "formats/xmlformat.h"
 
 #include "opensync/xmlformat/opensync-xmlformat_internals.h"
 #include "opensync/xmlformat/opensync_xmlformat_schema_private.h"	/* FIXME: dierct access of private header */
@@ -124,208 +123,6 @@ START_TEST (xmlformat_search_field)
 }
 END_TEST
 
-START_TEST (xmlformat_compare_test)
-{
-	char *testbed = setup_testbed("xmlformats");
-
-	OSyncConvCmpResult result1, result2;
-
-	char *buffer;
-	unsigned int size;
-	OSyncError *error = NULL;
-
-
-	fail_unless(osync_file_read( "contact.xml", &buffer, &size, &error), NULL);
-
-	OSyncXMLFormat *xmlformat = osync_xmlformat_parse(buffer, size, &error);
-	fail_unless(xmlformat != NULL, NULL);
-	fail_unless(error == NULL, NULL);
-
-	OSyncXMLFormat *xmlformat2 = osync_xmlformat_parse(buffer, size, &error);
-	fail_unless(xmlformat2 != NULL, NULL);
-	fail_unless(error == NULL, NULL);
-
-	g_free(buffer);
-
-        char* keys_content[] =  {"Content", NULL};
-        char* keys_name[] = {"FirstName", "LastName", NULL};
-        OSyncXMLPoints points[] = {
-                {"EMail",               10,     keys_content},
-                {"Name",                90,     keys_name},
-                {"Telephone",   10,     keys_content},
-                {NULL}
-        };
-
-
-        result1 = xmlformat_compare((OSyncXMLFormat*)xmlformat, (OSyncXMLFormat*)xmlformat2, points, 0, 100);
-
-	// Check for left-right / right-left compare issues
-        result2 = xmlformat_compare((OSyncXMLFormat*)xmlformat2, (OSyncXMLFormat*)xmlformat, points, 0, 100);
-	fail_unless(result1 == result2);
-
-	osync_xmlformat_unref((OSyncXMLFormat*)xmlformat);
-	osync_xmlformat_unref((OSyncXMLFormat*)xmlformat2);
-
-
-	destroy_testbed(testbed);
-}
-END_TEST
-
-START_TEST (xmlformat_compare_field2null)
-{
-	char *testbed = setup_testbed("xmlformats");
-
-	char *buffer1;
-	char *buffer2;
-	unsigned int size1;
-	unsigned int size2;
-	OSyncError *error = NULL;
-
-
-	fail_unless(osync_file_read( "contact1.xml", &buffer1, &size1, &error), NULL);
-
-	OSyncXMLFormat *xmlformat1 = osync_xmlformat_parse(buffer1, size1, &error);
-	fail_unless(xmlformat1 != NULL, NULL);
-	fail_unless(error == NULL, NULL);
-
-	fail_unless(osync_file_read( "contact2.xml", &buffer2, &size2, &error), NULL);
-	
-	OSyncXMLFormat *xmlformat2 = osync_xmlformat_parse(buffer2, size2, &error);
-	fail_unless(xmlformat2 != NULL, NULL);
-	fail_unless(error == NULL, NULL);
-
-	g_free(buffer1);
-	g_free(buffer2);
-
-        char* keys_content[] =  {"Content", NULL};
-        char* keys_name[] = {"FirstName", "LastName", NULL};
-        OSyncXMLPoints points[] = {
-                {"EMail",               10,     keys_content},
-                {"Name",                90,     keys_name},
-                {"Telephone",   10,     keys_content},
-                {NULL}
-        };
-
-        xmlformat_compare((OSyncXMLFormat*)xmlformat1, (OSyncXMLFormat*)xmlformat2, points, 0, 100);
-
-
-	osync_xmlformat_unref((OSyncXMLFormat*)xmlformat1);
-	osync_xmlformat_unref((OSyncXMLFormat*)xmlformat2);
-
-
-	destroy_testbed(testbed);
-}
-END_TEST
-
-
-START_TEST (xmlformat_compare_ignore_fields)
-{
-	char *testbed = setup_testbed("xmlformats");
-
-	char *buffer1;
-	char *buffer2;
-	unsigned int size1;
-	unsigned int size2;
-	OSyncError *error = NULL;
-	OSyncConvCmpResult result;
-
-
-	fail_unless(osync_file_read( "contact3_unique.xml", &buffer1, &size1, &error), NULL);
-
-	OSyncXMLFormat *xmlformat1 = osync_xmlformat_parse(buffer1, size1, &error);
-	fail_unless(xmlformat1 != NULL, NULL);
-	fail_unless(error == NULL, NULL);
-
-	fail_unless(osync_file_read( "contact3.xml", &buffer2, &size2, &error), NULL);
-	
-	OSyncXMLFormat *xmlformat2 = osync_xmlformat_parse(buffer2, size2, &error);
-	fail_unless(xmlformat2 != NULL, NULL);
-	fail_unless(error == NULL, NULL);
-
-	g_free(buffer1);
-	g_free(buffer2);
-
-        char* keys_content[] =  {"Content", NULL};
-	char* keys_name[] = {"FirstName", "LastName", NULL};
-        OSyncXMLPoints points[] = {
-                {"EMail",               10,     keys_content},
-                {"Name",                90,     keys_name},
-                {"Revision",            -1,     keys_content},
-                {"Telephone",           10,     keys_content},
-                {"Uid",                 -1,     keys_content},
-                {NULL}
-        };
-
-        result = xmlformat_compare((OSyncXMLFormat*)xmlformat1, (OSyncXMLFormat*)xmlformat2, points, 0, 100);
-	fail_unless(result == OSYNC_CONV_DATA_SAME, NULL);
-
-        result = xmlformat_compare((OSyncXMLFormat*)xmlformat2, (OSyncXMLFormat*)xmlformat1, points, 0, 100);
-	fail_unless(result == OSYNC_CONV_DATA_SAME, NULL);
-
-
-	osync_xmlformat_unref((OSyncXMLFormat*)xmlformat1);
-	osync_xmlformat_unref((OSyncXMLFormat*)xmlformat2);
-
-	/* Testcase: ignored fields on both side shouldn't change the compare result. */
-
-	fail_unless(osync_file_read( "contact4_unique.xml", &buffer1, &size1, &error), NULL);
-
-	xmlformat1 = osync_xmlformat_parse(buffer1, size1, &error);
-	fail_unless(xmlformat1 != NULL, NULL);
-	fail_unless(error == NULL, NULL);
-
-	fail_unless(osync_file_read( "contact4.xml", &buffer2, &size2, &error), NULL);
-	
-	xmlformat2 = osync_xmlformat_parse(buffer2, size2, &error);
-	fail_unless(xmlformat2 != NULL, NULL);
-	fail_unless(error == NULL, NULL);
-
-	g_free(buffer1);
-	g_free(buffer2);
-
-        result = xmlformat_compare((OSyncXMLFormat*)xmlformat1, (OSyncXMLFormat*)xmlformat2, points, 0, 100);
-	fail_unless(result == OSYNC_CONV_DATA_SAME, NULL);
-
-        result = xmlformat_compare((OSyncXMLFormat*)xmlformat2, (OSyncXMLFormat*)xmlformat1, points, 0, 100);
-	fail_unless(result == OSYNC_CONV_DATA_SAME, NULL);
-
-
-	osync_xmlformat_unref((OSyncXMLFormat*)xmlformat1);
-	osync_xmlformat_unref((OSyncXMLFormat*)xmlformat2);
-
-
-	destroy_testbed(testbed);
-}
-END_TEST
-
-
-START_TEST (xmlformat_event_schema)
-{
-	char *testbed = setup_testbed("xmlformats");
-	char *buffer;
-	unsigned int size;
-	OSyncError *error = NULL;
-	OSyncXMLFormatSchema *schema = NULL;
-
-	fail_unless(osync_file_read("event.xml", &buffer, &size, &error), NULL);
-	fail_unless(error == NULL, NULL);
-
-	OSyncXMLFormat *xmlformat = osync_xmlformat_parse(buffer, size, &error);
-	fail_unless(error == NULL, NULL);
-
-	g_free(buffer);
-	schema = osync_xmlformat_schema_new(xmlformat, testbed, &error);
-	fail_if( schema == NULL );
-	fail_unless( osync_xmlformat_schema_validate(schema, xmlformat, &error) );
-	
-	osync_xmlformat_schema_unref(schema);
-	
-	osync_xmlformat_unref(xmlformat);
-
-	destroy_testbed(testbed);
-}
-END_TEST
-
 START_TEST (xmlfield_new)
 {
 	char *testbed = setup_testbed("merger");
@@ -430,6 +227,33 @@ START_TEST (xmlformat_schema_get_instance)
 }
 END_TEST
 
+START_TEST (xmlformat_event_schema)
+{
+        char *testbed = setup_testbed("xmlformats");
+        char *buffer;
+        unsigned int size;
+        OSyncError *error = NULL;
+        OSyncXMLFormatSchema *schema = NULL;
+
+        fail_unless(osync_file_read("event.xml", &buffer, &size, &error), NULL);
+        fail_unless(error == NULL, NULL);
+
+        OSyncXMLFormat *xmlformat = osync_xmlformat_parse(buffer, size, &error);
+        fail_unless(error == NULL, NULL);
+
+        g_free(buffer);
+        schema = osync_xmlformat_schema_new(xmlformat, testbed, &error);
+        fail_if( schema == NULL );
+        fail_unless( osync_xmlformat_schema_validate(schema, xmlformat, &error) );
+
+        osync_xmlformat_schema_unref(schema);
+
+        osync_xmlformat_unref(xmlformat);
+
+        destroy_testbed(testbed);
+}
+END_TEST
+
 Suite *xmlformat_suite(void)
 {
 	Suite *s = suite_create("XMLFormat");
@@ -441,13 +265,10 @@ Suite *xmlformat_suite(void)
 	create_case(s, "xmlformat_sort", xmlformat_sort);
 	create_case(s, "xmlformat_is_sorted", xmlformat_is_sorted);
 	create_case(s, "xmlformat_search_field", xmlformat_search_field);
-	create_case(s, "xmlformat_compare_test", xmlformat_compare_test);
-	create_case(s, "xmlformat_compare_field2null", xmlformat_compare_field2null);
-	create_case(s, "xmlformat_compare_ignore_fields", xmlformat_compare_ignore_fields);
-	create_case(s, "xmlformat_event_schema", xmlformat_event_schema);
 
 	// xmlformat schema
 	create_case(s, "xmlformat_schema_get_instance", xmlformat_schema_get_instance);
+	create_case(s, "xmlformat_event_schema", xmlformat_event_schema);
 
 	// xmlfield
 	create_case(s, "xmlfield_new", xmlfield_new);
