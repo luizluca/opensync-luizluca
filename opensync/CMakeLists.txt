@@ -17,6 +17,7 @@ SET( libopensync_LIB_SRCS
    data/opensync_change.c
    data/opensync_data.c
    db/opensync_db.c
+   debug/opensync_trace.c
    engine/opensync_engine.c
    engine/opensync_mapping_engine.c
    engine/opensync_mapping_entry_engine.c
@@ -89,6 +90,7 @@ INSTALL( DIRECTORY
   common
   data
   db
+  debug
   engine
   format
   group
@@ -114,6 +116,7 @@ INSTALL( FILES
    opensync-context.h
    opensync-common.h
    opensync-data.h
+   opensync-debug.h
    opensync-engine.h
    opensync-error.h
    opensync-format.h

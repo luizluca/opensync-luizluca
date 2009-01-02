@@ -23,72 +23,9 @@
 
 /* FIXME: Drop opensync-support.h with 0.39 release */
 #include "opensync-common.h"
+#include "opensync-debug.h"
 
 OPENSYNC_BEGIN_DECLS
-
-/**
- * @defgroup OSyncDebugAPI OpenSync Debugging 
- * @ingroup OSyncDebug
- * @brief Functions for debugging
- */
-
-/*@{*/
-
-/*! @brief The type of the trace
- *
- */
-typedef enum {
-	/** Used when entering a function. This will indent the callgraph */
-	TRACE_ENTRY,
-	/** Used when exiting a function. This will unindent the callgraph */
-	TRACE_EXIT,
-	/** Used for traces inside a function. Does not indent. */
-	TRACE_INTERNAL,
-	/** Used for traces with sensitive content inside a function. Does not indent. */
-	TRACE_SENSITIVE,
-	/** Used when exiting a function with a error. This will unindent the callgraph */
-	TRACE_EXIT_ERROR,
-	/** Used to log a general error. This will not unindent the callgraph */
-	TRACE_ERROR
-} OSyncTraceType;
-
-
-/*! @brief Reset the indentation of the trace function. 
- *
- * Use this function after when process got forked. It's up to the forked
- * process (child) to reset the indent.
- * 
- */
-OSYNC_EXPORT void osync_trace_reset_indent(void);
-
-/*! @brief Used for tracing the application
- * 
- * use this function to trace calls. The call graph will be saved into
- * the file that is given in the OSYNC_TRACE environment variable
- * 
- * @param type The type of the trace
- * @param message The message to save
- * 
- */
-OSYNC_EXPORT void osync_trace(OSyncTraceType type, const char *message, ...);
-
-/*! @brief Disable tracing
- *
- */
-OSYNC_EXPORT void osync_trace_disable(void);
-
-/*! @brief Enable tracing
- *
- */
-OSYNC_EXPORT void osync_trace_enable(void);
-
-/*! @brief Is tracing enabled?
- *
- * @returns TRUE if tracing is enabled, FALSE if disabled.
- */
-OSYNC_EXPORT osync_bool osync_trace_is_enabled(void);
-
-/*@} */
 
 /**
  * @defgroup OSyncSupportAPI OpenSync Support Module 
