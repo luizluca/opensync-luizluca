@@ -4,11 +4,11 @@ INCLUDE_DIRECTORIES( ${GLIB2_INCLUDE_DIRS} ${LIBXML2_INCLUDE_DIRS} ${LIBXSLT_INC
 INCLUDE( Compiler )
 
 SET( libopensync_LIB_SRCS
-   opensync_error.c
    opensync_support.c
    archive/opensync_archive.c
    client/opensync_client.c
    client/opensync_client_proxy.c
+   common/opensync_error.c
    common/opensync_file.c
    common/opensync_list.c
    common/opensync_memory.c
