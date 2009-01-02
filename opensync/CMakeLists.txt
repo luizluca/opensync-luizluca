@@ -8,6 +8,7 @@ SET( libopensync_LIB_SRCS
    archive/opensync_archive.c
    client/opensync_client.c
    client/opensync_client_proxy.c
+   common/opensync.c
    common/opensync_error.c
    common/opensync_file.c
    common/opensync_list.c

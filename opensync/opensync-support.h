@@ -24,6 +24,7 @@
 /* FIXME: Drop opensync-support.h with 0.39 release */
 #include "opensync-common.h"
 #include "opensync-debug.h"
+#include "opensync.h"
 
 OPENSYNC_BEGIN_DECLS
 
@@ -32,17 +33,6 @@ OPENSYNC_BEGIN_DECLS
  * @ingroup OSyncPublic
  */
 /*@{*/
-
-/*! @brief Returns the version of opensync
- * 
- * Returns a string identifying the major and minor version
- * of opensync (something like "0.11")
- * 
- * @returns String with version
- * 
- */
-OSYNC_EXPORT const char *osync_get_version(void);
-
 
 /*@} */
 

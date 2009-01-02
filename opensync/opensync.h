@@ -225,6 +225,16 @@ typedef struct OSyncQueue OSyncQueue;
 typedef struct OSyncDB OSyncDB;
 typedef int osync_bool;
 
+/*! @brief Returns the version of opensync
+ * 
+ * Returns a string identifying the major and minor version
+ * of opensync (something like "0.11")
+ * 
+ * @returns String with version
+ * 
+ */
+OSYNC_EXPORT const char *osync_get_version(void);
+
 OPENSYNC_END_DECLS
 
 #include "opensync/opensync-support.h"
