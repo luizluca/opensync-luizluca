@@ -162,7 +162,6 @@ static void _osync_engine_set_internal_schema(OSyncEngine *engine, const char *o
 {
 	OSyncXMLFormat *xmlformat = NULL;
 	OSyncXMLFormatSchema *schema = NULL;
-	osync_trace(TRACE_INTERNAL, "Setting internal schema for objtype %s", objtype);
 
 	// init OSyncXMLFormatSchemas
 	xmlformat = osync_xmlformat_new(objtype, NULL);
@@ -172,14 +171,21 @@ static void _osync_engine_set_internal_schema(OSyncEngine *engine, const char *o
 	schema = osync_xmlformat_schema_get_instance(xmlformat, error);
 #endif
 	osync_xmlformat_unref(xmlformat);
+
+	if (!schema)
+		return;
+
+	osync_trace(TRACE_INTERNAL, "Setting internal schema for objtype %s", objtype);
+
 	g_hash_table_insert(engine->internalSchemas, g_strdup(objtype), schema);
 }
 
 static void _osync_engine_set_internal_format(OSyncEngine *engine, const char *objtype, OSyncObjFormat *format)
 {
-	osync_trace(TRACE_INTERNAL, "Setting internal format of %s to %p:%s", objtype, format, osync_objformat_get_name(format));
 	if (!format)
 		return;
+
+	osync_trace(TRACE_INTERNAL, "Setting internal format of %s to %p:%s", objtype, format, osync_objformat_get_name(format));
 	g_hash_table_insert(engine->internalFormats, g_strdup(objtype), g_strdup(osync_objformat_get_name(format)));
 }
 
