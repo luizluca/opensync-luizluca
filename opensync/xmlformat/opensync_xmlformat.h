@@ -63,6 +63,13 @@ OSYNC_EXPORT OSyncXMLFormat *osync_xmlformat_ref(OSyncXMLFormat *xmlformat);
 OSYNC_EXPORT void osync_xmlformat_unref(OSyncXMLFormat *xmlformat);
 
 /**
+ * @brief Get the objtype of a xmlformat
+ * @param xmlformat The pointer to a xmlformat object
+ * @return The objtype of the xmlformat
+ */
+OSYNC_EXPORT const char *osync_xmlformat_get_objtype(OSyncXMLFormat *xmlformat);
+
+/**
  * @brief Get the first field of a xmlformat
  * @param xmlformat The pointer to the xmlformat object
  * @return The first field of the xmlformat

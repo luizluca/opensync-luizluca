@@ -39,14 +39,6 @@
 const char *osync_xmlformat_root_name(OSyncXMLFormat *xmlformat);
 
 /**
- * @brief Get the objtype of a xmlformat
- * @param xmlformat The pointer to a xmlformat object
- * @return The objtype of the xmlformat
- */
-const char *osync_xmlformat_get_objtype(OSyncXMLFormat *xmlformat);
-
-
-/**
  * @brief Mark/Taint the xmlformat as unsorted
  * @param xmlformat The pointer to a xmlformat object
  */
