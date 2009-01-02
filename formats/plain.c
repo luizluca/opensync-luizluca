@@ -17,14 +17,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  * 
  */
+
+#include <string.h>
+#include <glib.h>
  
 #include <opensync/opensync.h>
-#include <opensync/opensync_internals.h>
-#include <opensync/opensync-support.h>
 #include <opensync/opensync-serializer.h>
 #include <opensync/opensync-format.h>
 #include <opensync/opensync-xmlformat.h>
-#include <glib.h>
 
 static OSyncConvCmpResult compare_plain(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize)
 {
@@ -181,3 +181,4 @@ int get_version(void)
 {
 	return 1;
 }
+
