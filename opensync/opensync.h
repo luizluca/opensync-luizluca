@@ -109,6 +109,8 @@ OPENSYNC_BEGIN_DECLS
 #define osync_assert_msg(x, msg)
 #endif
 
+typedef int osync_bool;
+
 /**************************************************************
  * Enums
  *************************************************************/
@@ -154,11 +156,14 @@ typedef enum  {
  * Structs
  *************************************************************/
  
-/* Data Component */
+/* Data component */
 typedef struct OSyncData OSyncData;
 typedef struct OSyncChange OSyncChange;
+
+/* Database component */
+typedef struct OSyncDB OSyncDB;
  
-/* Format Component */
+/* Format component */
 typedef struct OSyncFormatEnv OSyncFormatEnv;
 typedef struct OSyncObjFormat OSyncObjFormat;
 typedef struct OSyncFormatConverterPath OSyncFormatConverterPath;
@@ -166,10 +171,10 @@ typedef struct OSyncFormatConverter OSyncFormatConverter;
 typedef struct OSyncObjFormatSink OSyncObjFormatSink;
 
 /* Plugin component */
+typedef struct OSyncContext OSyncContext;
 typedef struct OSyncPlugin OSyncPlugin;
 typedef struct OSyncPluginInfo OSyncPluginInfo;
 typedef struct OSyncPluginEnv OSyncPluginEnv;
-typedef struct OSyncModule OSyncModule;
 typedef struct OSyncObjTypeSink OSyncObjTypeSink;
 typedef struct OSyncPluginConfig OSyncPluginConfig;
 typedef struct OSyncPluginAuthentication OSyncPluginAuthentication;
@@ -183,7 +188,10 @@ typedef struct OSyncPluginResource OSyncPluginResource;
 typedef struct OSyncEngine OSyncEngine;
 typedef struct OSyncObjEngine OSyncObjEngine;
 typedef struct OSyncSinkEngine OSyncSinkEngine;
+typedef struct OSyncMappingEntryEngine OSyncMappingEntryEngine;
+typedef struct OSyncMappingEngine OSyncMappingEngine;
 
+/* Client component */
 typedef struct OSyncClient OSyncClient;
 typedef struct OSyncClientProxy OSyncClientProxy;
 
@@ -191,11 +199,17 @@ typedef struct OSyncClientProxy OSyncClientProxy;
 typedef struct OSyncMapping OSyncMapping;
 typedef struct OSyncMappingTable OSyncMappingTable;
 typedef struct OSyncMappingEntry OSyncMappingEntry;
-typedef struct OSyncMappingEntryEngine OSyncMappingEntryEngine;
-typedef struct OSyncMappingEngine OSyncMappingEngine;
+
+/* Module component */
+typedef struct OSyncModule OSyncModule;
 
 /* Helper component */
 typedef struct OSyncAnchorDB OSyncAnchorDB;
+typedef struct OSyncHashTable OSyncHashTable;
+
+/* IPC component */
+typedef struct OSyncMessage OSyncMessage;
+typedef struct OSyncQueue OSyncQueue;
 
 /* Group component */
 typedef struct OSyncGroup OSyncGroup;
@@ -206,22 +220,19 @@ typedef struct OSyncMember OSyncMember;
 typedef struct OSyncArchive OSyncArchive;
 typedef struct OSyncCapabilities OSyncCapabilities;
 typedef struct OSyncCapability OSyncCapability;
+typedef struct OSyncMerger OSyncMerger;
+
+/* XMLFormat component */
 typedef struct OSyncXMLFormat OSyncXMLFormat;
 typedef struct OSyncXMLFormatSchema OSyncXMLFormatSchema;
 typedef struct OSyncXMLField OSyncXMLField;
 typedef struct OSyncXMLFieldList OSyncXMLFieldList;
-typedef struct OSyncMerger OSyncMerger;
-typedef struct OSyncVersion OSyncVersion;
 
+/* Common component */
 typedef struct OSyncError OSyncError;
-typedef struct OSyncUserInfo OSyncUserInfo;
-typedef struct OSyncContext OSyncContext;
-typedef struct OSyncHashTable OSyncHashTable;
-typedef struct OSyncFormatProperty OSyncFormatProperty;
-typedef struct OSyncMessage OSyncMessage;
-typedef struct OSyncQueue OSyncQueue;
-typedef struct OSyncDB OSyncDB;
-typedef int osync_bool;
+
+/* Version component */
+typedef struct OSyncVersion OSyncVersion;
 
 /*! @brief Returns the version of opensync
  * 
