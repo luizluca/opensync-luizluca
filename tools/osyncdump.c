@@ -1,5 +1,4 @@
 #include <opensync/opensync.h>
-#include <opensync/opensync_internals.h>
 #include <opensync/opensync-group.h>
 #include <opensync/opensync-archive.h>
 #include <opensync/opensync-mapping.h>
@@ -11,6 +10,8 @@
 #include <sys/types.h>
 //#include <sys/wait.h>
 #include <sqlite3.h>
+
+#include <glib.h>
 
 static void usage (char *name, int ecode)
 {
