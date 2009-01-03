@@ -1105,44 +1105,51 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 				OSyncMappingEntryEngine *entry_engine = o->data;
 				osync_assert(entry_engine);
 
-				/* Merger - Save the entire xml and demerge */
-				/* TODO: is here the right place to save the xml???? */
+				/* Merger - Save the entire data and demerge */
 				if (osync_group_get_merger_enabled(osync_engine_get_group(engine->parent)) &&
 						osync_group_get_converter_enabled(osync_engine_get_group(engine->parent)) &&	
 						entry_engine->change &&
 						(osync_change_get_changetype(entry_engine->change) != OSYNC_CHANGE_TYPE_DELETED) &&
-						!strncmp(osync_objformat_get_name(osync_change_get_objformat(entry_engine->change)), "xmlformat-", 10) )
+						osync_objformat_has_merger(osync_change_get_objformat(entry_engine->change)) )
+
+
 					{
-						char *buffer = NULL;
-						unsigned int xmlformat_size = 0, size = 0;
-						OSyncXMLFormat *xmlformat = NULL;
+						char *buffer = NULL, *outbuf;
+						unsigned int outsize = 0, size = 0;
 						const char *objtype = NULL;
 						OSyncMapping *mapping = NULL;
 						OSyncMerger *merger = NULL; 
+						OSyncCapabilities *caps;
+						OSyncMember *member = osync_client_proxy_get_member(sinkengine->proxy);
+						OSyncObjFormat *objformat = osync_change_get_objformat(entry_engine->change);
 
 						osync_trace(TRACE_INTERNAL, "Entry %s for member %lli: Dirty: %i", osync_change_get_uid(entry_engine->change), memberid, osync_entry_engine_is_dirty(entry_engine));
 
-						osync_trace(TRACE_INTERNAL, "Save the entire XMLFormat and demerge.");
+						osync_trace(TRACE_INTERNAL, "Save the entire data and demerge.");
 						objtype = osync_change_get_objtype(entry_engine->change);
 						mapping = entry_engine->mapping_engine->mapping;
 						
-						osync_data_get_data(osync_change_get_data(entry_engine->change), (char **) &xmlformat, &xmlformat_size);
-						osync_assert(xmlformat_size == osync_xmlformat_size());
-
-						if(!osync_xmlformat_assemble(xmlformat, &buffer, &size)) {
-							osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not assamble the xmlformat");
-							goto error;	
-						}
+						osync_data_get_data(osync_change_get_data(entry_engine->change),  &buffer, &size);
 
 						if(!osync_archive_save_data(engine->archive, osync_mapping_get_id(mapping), objtype, buffer, size, error)) {
-							g_free(buffer);	
+							osync_free(buffer);	
 							goto error;			
 						}
-						g_free(buffer);
 						
-						merger = osync_member_get_merger(osync_client_proxy_get_member(sinkengine->proxy));
-						if(merger)
-							osync_merger_demerge(merger, xmlformat);
+
+						merger = osync_member_get_merger(member);
+						caps = osync_member_get_capabilities(member); 
+						if (!caps) {
+							osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "No capabilities defined for Member %lli.", memberid);
+							goto error;
+						}
+
+						if (!osync_objformat_demerge(objformat, buffer, size, &outbuf, &outsize, error))
+							goto error;
+
+						osync_free(buffer);
+
+						osync_data_set_data(osync_change_get_data(entry_engine->change), outbuf, outsize);
 					}
 
 

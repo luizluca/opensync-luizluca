@@ -289,38 +289,41 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 	if( osync_group_get_merger_enabled(engine->group) &&
 			osync_group_get_converter_enabled(engine->group) &&	
 			(osync_change_get_changetype(change) != OSYNC_CHANGE_TYPE_DELETED) &&
-			/* only use the merger if the objformat name starts with "xmlformat-" (10 chars) */
-			( !strncmp(osync_objformat_get_name(osync_change_get_objformat(change)), "xmlformat-", 10)))
+			/* only use the merger if the objformat has merger registered. */
+			osync_objformat_has_merger(osync_change_get_objformat(change)) )
 
 		{
-			char *buffer = NULL;
-			unsigned int xmlformat_size = 0, size = 0;
-			OSyncXMLFormat *xmlformat = NULL;
-			OSyncXMLFormat *xmlformat_entire = NULL;
+			OSyncCapabilities *caps;
+			OSyncObjFormat *objformat = osync_change_get_objformat(change);
+			char *entirebuf, *buffer, *outbuf;
+			unsigned int entsize, size = 0, outsize;
 			OSyncMerger *merger = NULL;
-			osync_trace(TRACE_INTERNAL, "Merge the XMLFormat.");
+			osync_trace(TRACE_INTERNAL, "Merge.");
 
 			member = osync_client_proxy_get_member(proxy);
 			merger = osync_member_get_merger(member);
+
 			if(merger) {
+
+				caps = osync_member_get_capabilities(member);
+				osync_assert_msg(caps, "Merger active, but not capabilities!");
+
 				/* TODO: Merger save the archive data with the member so we have to load it only for one time*/
 				// osync_archive_load_data() is fetching the mappingid by uid in the db
-				int ret = osync_archive_load_data(engine->archive, uid, osync_change_get_objtype(change), &buffer, &size, &error);
+				int ret = osync_archive_load_data(engine->archive, uid, osync_change_get_objtype(change), &entirebuf, &entsize, &error);
 				if (ret < 0) {
 					goto error; 
 				}
 			
 				if (ret > 0) {
-					xmlformat_entire = osync_xmlformat_parse(buffer, size, &error);
-					free(buffer);
-					if(!xmlformat_entire)
-						goto error;
 					
-					osync_data_get_data(osync_change_get_data(change), (char **) &xmlformat, &xmlformat_size);
-					osync_assert(xmlformat_size == osync_xmlformat_size());
+					osync_data_get_data(osync_change_get_data(change), &buffer, &size);
 
-					osync_merger_merge(merger, xmlformat, xmlformat_entire);
-					osync_xmlformat_unref(xmlformat_entire);
+					ret = osync_objformat_merge(format, buffer, size, &outbuf, &outsize, entirebuf, entsize, caps, error);
+					osync_free(entirebuf);
+					
+					if (ret != TRUE)
+						goto error;
 				}
 			}
 		}
