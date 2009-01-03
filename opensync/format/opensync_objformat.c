@@ -248,7 +248,7 @@ osync_bool osync_objformat_demarshal(OSyncObjFormat *format, OSyncMessage *messa
 
 void osync_objformat_set_validate_func(OSyncObjFormat *format, OSyncFormatValidateFunc validate_func)
 {
-	osync_assert(format);
+	osync_return_if_fail(format);
 	format->validate_func = validate_func;
 }
 
@@ -265,4 +265,36 @@ osync_bool osync_objformat_must_validate(OSyncObjFormat *format)
 	return format->validate_func ? TRUE : FALSE;
 }
 
-/*@}*/
+void osync_objformat_set_merge_func(OSyncObjFormat *format, OSyncFormatMergeFunc merge_func)
+{
+	osync_return_if_fail(format);
+	format->merge_func = merge_func;
+}
+
+osync_bool osync_objformat_merge(OSyncObjFormat *format,
+		const char *input, unsigned int inpsize,
+		char **output, unsigned int *outpsize,
+		const char *entire, unsigned int entsize,
+		OSyncCapabilities *caps, OSyncError **error)
+{
+	osync_assert(format);
+	osync_assert(format->merge_func);
+	return format->merge_func(input, inpsize, output, outpsize, entire, entsize, caps, error);
+}
+
+void osync_objformat_set_demerge_func(OSyncObjFormat *format, OSyncFormatDemergeFunc demerge_func)
+{
+	osync_return_if_fail(format);
+	format->demerge_func = demerge_func;
+}
+
+osync_bool osync_objformat_demerge(OSyncObjFormat *format,
+		const char *input, unsigned int inpsize,
+		char **output, unsigned int *outpsize,
+		OSyncCapabilities *caps, OSyncError **error)
+{
+	osync_assert(format);
+	osync_assert(format->demerge_func);
+	return format->demerge_func(input, inpsize, output, outpsize, caps, error);
+}
+

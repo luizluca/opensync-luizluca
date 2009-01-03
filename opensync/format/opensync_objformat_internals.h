@@ -131,7 +131,7 @@ OSYNC_TEST_EXPORT osync_bool osync_objformat_marshal(OSyncObjFormat *format, con
 OSYNC_TEST_EXPORT osync_bool osync_objformat_demarshal(OSyncObjFormat *format, OSyncMessage *message, char **output, unsigned int *outpsize, OSyncError **error);
 
 /**
- * @brief Validate supplied ata in format specific way
+ * @brief Validate supplied data in format specific way
  *
  * @param format Pointer to the object format
  * @param data Pointer to the object to validate
@@ -153,6 +153,44 @@ osync_bool osync_objformat_validate(OSyncObjFormat *format, const char *data, un
 
  */
 osync_bool osync_objformat_must_validate(OSyncObjFormat *format);
+
+/**
+ * @brief Merge supplied data in format specific way
+ *
+ * @param format Pointer to the object format
+ * @param input Pointer to a buffer to merge 
+ * @param inpsize Size in bytes of the buffer specified by the input parameter
+ * @param output Pointer to the output buffer for the result of the merge
+ * @param outpsize Size in bytes of the output buffer specified by the output parameter
+ * @param entire Pointer to the base data ("entire"-data) to merge with the buffer of parameter input
+ * @param entsize Size in bytes of the base data buffer specified by the entire parameter
+ * @param caps The capabilities list which describes what must get merged: entire -> input
+ * @param error Pointer to an error struct
+ * @returns TRUE if data got merged successfully, otherwise FALSE
+ */
+OSYNC_TEST_EXPORT osync_bool osync_objformat_merge(OSyncObjFormat *format,
+		const char *input, unsigned int inpsize,
+		char **output, unsigned int *outpsize,
+		const char *entire, unsigned int entsize,
+		OSyncCapabilities *caps, OSyncError **error);
+
+/**
+ * @brief Demrge supplied data in format specific way
+ *
+ * @param format Pointer to the object format
+ * @param input Pointer to a buffer to demerge 
+ * @param inpsize Size in bytes of the buffer specified by the input parameter
+ * @param output Pointer to the output buffer for the result of the demerge
+ * @param outpsize Size in bytes of the output buffer specified by the output parameter
+ * @param caps The capabilities list which describes what must get demerged
+ * @param error Pointer to an error struct
+ * @returns TRUE if data got demerged successfully, otherwise FALSE
+ */
+OSYNC_TEST_EXPORT osync_bool osync_objformat_demerge(OSyncObjFormat *format,
+		const char *input, unsigned int inpsize,
+		char **output, unsigned int *outpsize,
+		OSyncCapabilities *caps, OSyncError **error);
+
 
 /*@}*/
 

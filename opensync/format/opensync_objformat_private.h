@@ -53,6 +53,8 @@ struct OSyncObjFormat {
 	OSyncFormatMarshalFunc marshal_func;
 	OSyncFormatDemarshalFunc demarshal_func;
 	OSyncFormatValidateFunc validate_func;
+	OSyncFormatMergeFunc merge_func;
+	OSyncFormatDemergeFunc demerge_func;
 };
 
 /*@}*/

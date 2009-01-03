@@ -41,6 +41,9 @@ typedef osync_bool (* OSyncFormatMarshalFunc) (const char *input, unsigned int i
 typedef osync_bool (* OSyncFormatDemarshalFunc) (OSyncMessage *message, char **output, unsigned int *outpsize, OSyncError **error);
 typedef osync_bool (* OSyncFormatValidateFunc) (const char *data, unsigned int size, OSyncError **error);
 
+typedef osync_bool (* OSyncFormatMergeFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize,  const char *entire, unsigned int entsize, OSyncCapabilities *caps, OSyncError **error);
+typedef osync_bool (* OSyncFormatDemergeFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, OSyncCapabilities *caps, OSyncError **error);
+
 /**
  * @brief Creates a new object format
  * @param name the name of the object format
@@ -189,6 +192,28 @@ OSYNC_EXPORT void osync_objformat_set_demarshal_func(OSyncObjFormat *format, OSy
  * @param validate_func The validation function to use
  */
 OSYNC_EXPORT void osync_objformat_set_validate_func(OSyncObjFormat *format, OSyncFormatValidateFunc validate_func);
+
+/**
+ * @brief Sets the optional merge function for an object format
+ *
+ * The merge function can be used to merge data for the specific
+ * format. This is optional.
+ *
+ * @param format Pointer to the object format
+ * @param merge_func The merge function to use
+ */
+OSYNC_EXPORT void osync_objformat_set_merge_func(OSyncObjFormat *format, OSyncFormatMergeFunc merge_func);
+
+/**
+ * @brief Sets the optional demerge function for an object format
+ *
+ * The demerge function can be used to demerge data for the specific
+ * format. This is optional.
+ *
+ * @param format Pointer to the object format
+ * @param demerge_func The demerge function to use
+ */
+OSYNC_EXPORT void osync_objformat_set_demerge_func(OSyncObjFormat *format, OSyncFormatDemergeFunc demerge_func);
 
 /**
  * @brief Prints the specified object
