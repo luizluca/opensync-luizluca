@@ -1144,8 +1144,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 							osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "No capabilities defined for Member %lli.", memberid);
 							goto error;
 						}
-						/* FIXME: pass capabilities */
-						if (!osync_objformat_demerge(objformat, buffer, size, &outbuf, &outsize, NULL, error))
+						if (!osync_objformat_demerge(objformat, buffer, size, &outbuf, &outsize, caps, error))
 							goto error;
 
 						osync_free(buffer);
