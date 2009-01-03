@@ -320,7 +320,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 					
 					osync_data_get_data(osync_change_get_data(change), &buffer, &size);
 
-					ret = osync_objformat_merge(format, buffer, size, &outbuf, &outsize, entirebuf, entsize, caps, &error);
+					ret = osync_objformat_merge(objformat, buffer, size, &outbuf, &outsize, entirebuf, entsize, caps, &error);
 					osync_free(entirebuf);
 					
 					if (ret != TRUE)
