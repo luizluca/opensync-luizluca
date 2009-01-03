@@ -47,19 +47,98 @@ OSyncCapability *osync_capability_new_node(OSyncCapabilitiesObjType *capabilitie
 	capability->prev = capabilitiesobjtype->last_child;
 	node->_private = capability;
 	
-	if(!capabilitiesobjtype->first_child)
-		capabilitiesobjtype->first_child = capability;
-	if(capabilitiesobjtype->last_child)
-		capabilitiesobjtype->last_child->next = capability;
-	capabilitiesobjtype->last_child = capability;
-	capabilitiesobjtype->child_count++;
+	capabilitiesobjtype->capability = capability;
 	
 	return capability;
 }
 
+OSyncCapability *osync_capability_new_capability(OSyncCapability *parent, xmlNodePtr node, OSyncError **error)
+{
+	OSyncCapability *temp, *capability = NULL;
+	osync_assert(node);
+	
+	capability = osync_try_malloc0(sizeof(OSyncCapability), error);
+
+	if (!capability) {
+		osync_trace(TRACE_ERROR, "%s: %s" , __func__, osync_error_print(error));
+		return NULL;
+	}
+	
+	capability->next = NULL;
+	capability->node = node;
+	capability->parent = parent;
+	node->_private = capability;
+
+	if (parent) {
+		capability->prev = parent->child;
+		if (capability->prev)
+			capability->prev->next = capability;
+		parent->child = capability;
+	}
+	
+	return capability;
+}
+
+osync_bool osync_capability_parse(OSyncCapability *parent, xmlNodePtr node, OSyncCapability **first_child, OSyncCapability **last_child, unsigned int *child_count, OSyncError **error)
+{
+	OSyncCapability *capability = NULL;
+	unsigned int count = 0;
+
+	if (first_child)
+		*first_child = NULL;
+
+	while (node != NULL) {
+
+		capability = osync_capability_new_capability(parent, node, error);
+		if (!capability)
+			goto error;
+
+		if (first_child && !(*first_child)) {
+			*first_child = capability;
+		}
+
+		count++;
+
+		if (node->children && node->children->type == XML_ELEMENT_NODE)
+			if (!osync_capability_parse(capability, node->children, NULL, NULL, NULL, error))
+				goto error_and_free;
+
+		node = node->next;
+	}
+
+	if (last_child)
+		*last_child = capability;
+
+	if (child_count)
+		*child_count = count;
+
+	return TRUE;
+
+error_and_free:
+	osync_capability_free(capability);
+error:
+
+	if (last_child)
+		*last_child = NULL;
+
+	if (first_child)
+		*first_child = NULL;
+
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
+	return FALSE;
+
+}
+
 void osync_capability_free(OSyncCapability *capability)
 {
+	OSyncCapability *tmp;
 	osync_assert(capability);
+
+	while (capability->child) {
+		tmp = osync_capability_get_next(capability->child);
+		osync_capability_free(capability->child);
+		capability->child = tmp;
+	}
 	
 	g_free(capability);
 }

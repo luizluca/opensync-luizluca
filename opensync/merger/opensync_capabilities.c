@@ -99,6 +99,7 @@ OSyncCapabilities *osync_capabilities_new(OSyncError **error)
 
 OSyncCapabilities *osync_capabilities_parse(const char *buffer, unsigned int size, OSyncError **error)
 {
+	OSyncCapability *capability = NULL;
 	OSyncCapabilities *capabilities = NULL;
 	xmlNodePtr cur = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %u, %p)", __func__, buffer, size, error);
@@ -115,43 +116,39 @@ OSyncCapabilities *osync_capabilities_parse(const char *buffer, unsigned int siz
 	capabilities->last_objtype = NULL;	
 	capabilities->doc = xmlReadMemory(buffer, size, NULL, NULL, XML_PARSE_NOBLANKS);
 	if(capabilities->doc == NULL) {
-		g_free(capabilities);
+		osync_free(capabilities);
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not parse XML.");
-		osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
-		return NULL;
+		goto error;
 	}
 	capabilities->doc->_private = capabilities;
 	
 	cur = xmlDocGetRootElement(capabilities->doc);
+
 	cur = cur->children;
 	for(; cur != NULL; cur = cur->next) {
 		OSyncCapabilitiesObjType *capabilitiesobjtype = osync_capabilitiesobjtype_new(capabilities, cur, error);
-		xmlNodePtr tmp =NULL;
 		if(!capabilitiesobjtype) {
 			osync_capabilities_unref(capabilities);
-			osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
-			return NULL;
+			goto error;
 		}
-		
-		tmp = cur->children;
-		for(; tmp != NULL; tmp = tmp->next) {
-			OSyncCapability *capability = NULL;
-			/* TODO: its to slow to check the name */
-			/* Skip nodes which are comments to keep the capabilities sorted. */
-			if (!strcmp((const char *) tmp->name, "comment"))
-				continue;
 
-			capability = osync_capability_new_node(capabilitiesobjtype, tmp, error);
-			if(!capability) {
-				osync_capabilities_unref(capabilities);
-				osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
-				return NULL;
-			}
-		}
+		if (!(capability = osync_capability_new_node(capabilitiesobjtype, cur, error)))
+			goto error;
+		
+		if (!osync_capability_parse(capability, cur->children, &capabilitiesobjtype->first_child, &capabilitiesobjtype->last_child, &capabilitiesobjtype->child_count, error))
+			goto error_and_free;
+
 	}
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, capabilities);
 	return capabilities;
+
+error_and_free:
+	if (capability)
+		osync_capability_free(capability);
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
+	return NULL;
 }
 
 OSyncCapabilities *osync_capabilities_ref(OSyncCapabilities *capabilities)
@@ -172,21 +169,14 @@ void osync_capabilities_unref(OSyncCapabilities *capabilities)
 		objtype = capabilities->first_objtype;
 		while(objtype)
 			{
-				OSyncCapability *capability, *tmp2;
-				capability = objtype->first_child;
-				while(capability)
-					{
-						tmp2 = osync_capability_get_next(capability);
-						osync_capability_free(capability);
-						capability = tmp2;
-					}				
-			
+				osync_capability_free(objtype->capability);
+
 				tmp = objtype->next;
-				g_free(objtype);
+				osync_free(objtype);
 				objtype = tmp;
 			}
 		osync_xml_free_doc(capabilities->doc);
-		g_free(capabilities);
+		osync_free(capabilities);
 	}
 }
 

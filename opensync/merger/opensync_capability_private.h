@@ -35,6 +35,10 @@
  * @brief Represents a Capability object
  */
 struct OSyncCapability {
+	/** The pointer to the parent capability */
+	OSyncCapability *parent;
+	/** The pointer to the child capability */
+	OSyncCapability *child;
 	/** The pointer to the next capability */
 	OSyncCapability *next;
 	/** The pointer to the previous capability */

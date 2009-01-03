@@ -42,6 +42,22 @@
 OSyncCapability *osync_capability_new_node(OSyncCapabilitiesObjType *objtype, xmlNodePtr node, OSyncError **error);
 
 /**
+ * @brief Multi-level parsing of OSyncCapability based on a given XML Node.
+ * 
+ * This function create a Capability-tree out of the given xmlNode pointer. This function
+ * is calling it self in a recursion and parses all siblings and child of the given xmlNode pointer.
+ *
+ * @param parent The parent OSyncCapability 
+ * @param node The node to start parsing the capabilities. 
+ * @param first_child Reference to a pointer to store the first parsed OSyncCapability child 
+ * @param last_child Reference to a pointer to store the last parsed OSyncCapability child 
+ * @param child_count Reference to unsinged int to count the childs of the capability node
+ * @param error The error which will hold the info in case of an error
+ * @returns TRUE on success, FALSE on error
+ */
+osync_bool osync_capability_parse(OSyncCapability *parent, xmlNodePtr node, OSyncCapability **first_child, OSyncCapability **last_child, unsigned int *child_count, OSyncError **error);
+
+/**
  * @brief Frees a capability object 
  * @param capability The pointer to a capability object
  */

@@ -37,6 +37,8 @@
 struct OSyncCapabilitiesObjType {
 	/** The pointer to the next objtype */
 	OSyncCapabilitiesObjType *next;
+	/** The pointer to the root capability */
+	OSyncCapability *capability;
 	/** The pointer to the first capability */
 	OSyncCapability *first_child;
 	/** The pointer to the last capability */
