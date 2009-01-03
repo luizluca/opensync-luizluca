@@ -192,9 +192,30 @@ const char *osync_capability_get_name(OSyncCapability *capability)
 
 OSyncCapability *osync_capability_get_next(OSyncCapability *capability)
 {
-	osync_assert(capability);
+	osync_return_val_if_fail(capability, NULL);
 	
 	return capability->next;
+}
+
+OSyncCapability *osync_capability_get_prev(OSyncCapability *capability)
+{
+	osync_return_val_if_fail(capability, NULL);
+	
+	return capability->prev;
+}
+
+OSyncCapability *osync_capability_get_child(OSyncCapability *capability)
+{
+	osync_return_val_if_fail(capability, NULL);
+	
+	return capability->child;
+}
+
+OSyncCapability *osync_capability_get_parent(OSyncCapability *capability)
+{
+	osync_return_val_if_fail(capability, NULL);
+	
+	return capability->parent;
 }
 
 osync_bool osync_capability_has_key(OSyncCapability *capability)

@@ -57,6 +57,26 @@ OSYNC_EXPORT const char *osync_capability_get_name(OSyncCapability *capability);
  */
 OSYNC_EXPORT OSyncCapability *osync_capability_get_next(OSyncCapability *capability);
 
+/**
+ * @brief Get the previous capability
+ * @param capability The pointer to a capability object
+ * @return The pointer to the previous capability or NULL if there is no more capability
+ */
+OSYNC_EXPORT OSyncCapability *osync_capability_get_prev(OSyncCapability *capability);
+
+/**
+ * @brief Get the child capability
+ * @param capability The pointer to a capability object
+ * @return The pointer to the child capability or NULL if there is no more capability
+ */
+OSYNC_EXPORT OSyncCapability *osync_capability_get_child(OSyncCapability *capability);
+
+/**
+ * @brief Get the parent capability
+ * @param capability The pointer to a capability object
+ * @return The pointer to the parent capability or NULL if there is no more capability
+ */
+OSYNC_EXPORT OSyncCapability *osync_capability_get_parent(OSyncCapability *capability);
 
 /**
  * @brief Check if the capability has a key
