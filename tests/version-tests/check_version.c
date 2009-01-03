@@ -5,7 +5,7 @@
 
 START_TEST (version_new)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed(NULL);
 
 	OSyncError *error = NULL;
 	OSyncVersion *version = osync_version_new(&error);
@@ -23,7 +23,7 @@ END_TEST
 
 START_TEST (version_matches)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed(NULL);
 
 	OSyncError *error = NULL;
 	OSyncVersion *version = osync_version_new(&error);
@@ -61,7 +61,7 @@ END_TEST
 
 START_TEST (version_load_from_descriptions)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed(NULL);
 
 	OSyncError *error = NULL;
 	OSyncList *versions = osync_version_load_from_descriptions(&error, testbed, testbed);
