@@ -34,15 +34,6 @@ typedef struct OSyncCapabilitiesObjType OSyncCapabilitiesObjType;
 /*@{*/
 
 /**
- * @brief Get the first capability for a given objtype from the capabilities
- * @param capabilities The pointer to a capabilities object
- * @param objtype The name of the objtype (e.g.: contact)
- * @return The first capability for a given objtype from the capabilities
- */
-OSyncCapability *osync_capabilities_get_first(OSyncCapabilities *capabilities, const char *objtype);
-
-
-/**
  * @brief Sort all the capabilities of every objtype of the capabilities object. This function has to
  *  be called after a capability was added to the capabilities.
  * @param capabilities The pointer to a capabilities object

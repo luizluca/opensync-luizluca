@@ -6,6 +6,7 @@ osync_archive_new
 osync_archive_ref
 osync_archive_unref
 osync_capabilities_assemble
+osync_capabilities_get_first
 osync_capabilities_new
 osync_capabilities_parse
 osync_capabilities_ref

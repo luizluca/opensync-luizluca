@@ -63,6 +63,14 @@ OSYNC_EXPORT void osync_capabilities_unref(OSyncCapabilities *capabilities);
 
 
 /**
+ * @brief Get the first capability for a given objtype from the capabilities
+ * @param capabilities The pointer to a capabilities object
+ * @param objtype The name of the objtype (e.g.: contact)
+ * @return The first capability for a given objtype from the capabilities
+ */
+OSYNC_EXPORT OSyncCapability *osync_capabilities_get_first(OSyncCapabilities *capabilities, const char *objtype);
+
+/**
  * @brief Dump the capabilities into memory.
  * @param capabilities The pointer to a capabilities object 
  * @param buffer The pointer to the buffer which will hold the xml document
