@@ -7,7 +7,7 @@
 
 START_TEST (xmlformat_new)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed("capabilities");
 
 	OSyncError *error = NULL;
 	OSyncXMLFormat *xmlformat = osync_xmlformat_new("contact", &error);
@@ -25,7 +25,7 @@ END_TEST
 
 START_TEST (xmlformat_parse)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed("capabilities");
 	
 	OSyncError *error = NULL;
 	char* buffer;
@@ -46,7 +46,7 @@ END_TEST
 
 START_TEST (xmlformat_sort)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed("capabilities");
 	
 	OSyncError *error = NULL;
 	char* buffer;
@@ -97,7 +97,7 @@ END_TEST
 
 START_TEST (xmlformat_search_field)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed("capabilities");
 
 	char *buffer;
 	unsigned int size;
@@ -125,7 +125,7 @@ END_TEST
 
 START_TEST (xmlfield_new)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed("capabilities");
 
 	OSyncError *error = NULL;
 	OSyncXMLFormat *xmlformat = osync_xmlformat_new("contact", &error);

@@ -23,8 +23,8 @@
 #include "opensync.h"
 #include "opensync_internals.h"
 
-#include "opensync-merger.h"
-#include "merger/opensync_capabilities_internals.h"
+#include "opensync-capabilities.h"
+#include "capabilities/opensync-capabilities_internals.h"
 
 #include "opensync-version.h"
 #include "opensync-version_internals.h"

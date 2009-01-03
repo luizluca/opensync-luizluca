@@ -1,6 +1,6 @@
 /*
  * libopensync - A synchronization framework
- * Copyright (C) 2006  NetNix Finland Ltd <netnix@netnix.fi>
+ * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,14 +16,17 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  * 
- * Author: Daniel Friedrich <daniel.friedrich@opensync.org>
- * 
  */
- 
-#ifndef OPENSYNCMERGER_INTERNALS_H_
-#define OPENSYNCMERGER_INTERNALS_H_
 
-#include "opensync_capabilities_internals.h"
-#include "opensync_capability_internals.h"
+#ifndef OPENSYNC_CAPABILITIES_H_COLLECT
+#define OPENSYNC_CAPABILITIES_H_COLLECT
 
-#endif /*OPENSYNCMERGER_INTERNALS_H_*/
+OPENSYNC_BEGIN_DECLS
+
+#include "capabilities/opensync_capabilities.h"
+#include "capabilities/opensync_capability.h"
+
+OPENSYNC_END_DECLS
+
+#endif /* OPENSYNC_CAPABILITIES_H_COLLECT */
+

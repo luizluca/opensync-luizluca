@@ -1,11 +1,11 @@
 #include "support.h"
 
-#include <opensync/opensync-merger.h>
-#include "opensync/merger/opensync-merger_internals.h"
+#include <opensync/opensync-capabilities.h>
+#include "opensync/capabilities/opensync-capabilities_internals.h"
 
 START_TEST (capabilities_new)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed("capabilities");
 
 	OSyncError *error = NULL;
 	OSyncCapabilities *capabilities = osync_capabilities_new(&error);
@@ -23,7 +23,7 @@ END_TEST
 
 START_TEST (capability_new)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed("capabilities");
 
 	OSyncError *error = NULL;
 	OSyncCapabilities *capabilities = osync_capabilities_new(&error);
@@ -42,7 +42,7 @@ END_TEST
 
 START_TEST (capabilities_parse)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed("capabilities");
 	
 	OSyncError *error = NULL;
 	char* buffer;
@@ -63,7 +63,7 @@ END_TEST
 
 START_TEST (capabilities_sort)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed("capabilities");
 	
 	OSyncError *error = NULL;
 	char* buffer;

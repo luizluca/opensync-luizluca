@@ -5,6 +5,8 @@ INCLUDE( Compiler )
 
 SET( libopensync_LIB_SRCS
    archive/opensync_archive.c
+   capabilities/opensync_capabilities.c
+   capabilities/opensync_capability.c
    client/opensync_client.c
    client/opensync_client_proxy.c
    common/opensync.c
@@ -43,8 +45,6 @@ SET( libopensync_LIB_SRCS
    mapping/opensync_mapping.c
    mapping/opensync_mapping_entry.c
    mapping/opensync_mapping_table.c
-   merger/opensync_capabilities.c
-   merger/opensync_capability.c
    module/opensync_module.c
    plugin/opensync_context.c
    plugin/opensync_plugin_advancedoptions.c
@@ -98,7 +98,7 @@ INSTALL( DIRECTORY
   helper
   ipc
   mapping
-  merger
+  capabilities
   module
   plugin
   version
@@ -113,6 +113,7 @@ PATTERN "*.h.*" EXCLUDE )
 INSTALL( FILES
    opensync.h
    opensync-archive.h
+   opensync-capabilities.h
    opensync-client.h
    opensync-context.h
    opensync-common.h

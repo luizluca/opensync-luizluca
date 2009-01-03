@@ -30,7 +30,7 @@
 #include "opensync_member_private.h"
 
 #include "opensync-merger.h"
-#include "merger/opensync_capabilities_internals.h"
+#include "capabilities/opensync-capabilities_internals.h"
 
 #include "common/opensync_xml_internals.h"
 
