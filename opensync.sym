@@ -714,6 +714,8 @@ osync_version_set_softwareversion
 osync_version_set_vendor
 osync_version_unref
 osync_xmlfield_add_key_value
+osync_xmlfield_adopt_xmlfield_before_field
+osync_xmlfield_delete
 osync_xmlfield_get_attr
 osync_xmlfield_get_attr_count
 osync_xmlfield_get_child
@@ -734,6 +736,7 @@ osync_xmlfield_set_key_value
 osync_xmlfield_set_name
 osync_xmlfield_set_nth_key_value
 osync_xmlfield_sort
+osync_xmlfield_unlink
 osync_xmlfieldlist_free
 osync_xmlfieldlist_get_length
 osync_xmlfieldlist_item

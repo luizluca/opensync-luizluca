@@ -50,32 +50,11 @@ void osync_xmlfield_free(OSyncXMLField *xmlfield);
 
 
 /**
- * @brief Unlink a xmlfield from its context and frees it
- * @param xmlfield The pointer to a xmlfield object
- */
-void osync_xmlfield_delete(OSyncXMLField *xmlfield);
-
-/**
- * @brief Links a xmlfield object from a xmlformat object before a other xmlfield object of a other xmlformat object
- * @param xmlfield The pointer to a xmlfield object
- * @param to_link The pointer to a xmlfield object
- */
-void osync_xmlfield_adopt_xmlfield_before_field(OSyncXMLField *xmlfield, OSyncXMLField *to_link);
-
-/**
  * @brief Links a xmlfield object from a xmlformat object after a other xmlfield object of a other xmlformat object
  * @param xmlfield The pointer to a xmlfield object
  * @param to_link The pointer to a xmlfield object
  */
 void osync_xmlfield_adopt_xmlfield_after_field(OSyncXMLField *xmlfield, OSyncXMLField *to_link);
-
-
-/**
- * @brief Unlink a xmlfield object
- * @param xmlfield The pointer to a xmlfield object
- */
-void osync_xmlfield_unlink(OSyncXMLField *xmlfield);
-
 
 /**
  * @brief Compare the names of two xmlfields

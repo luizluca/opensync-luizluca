@@ -43,6 +43,18 @@ OSYNC_EXPORT OSyncXMLField *osync_xmlfield_new(OSyncXMLFormat *xmlformat, const 
 
 
 /**
+ * @brief Unlink a xmlfield from its context and frees it
+ * @param xmlfield The pointer to a xmlfield object
+ */
+OSYNC_EXPORT void osync_xmlfield_delete(OSyncXMLField *xmlfield);
+
+/**
+ * @brief Unlink a xmlfield object
+ * @param xmlfield The pointer to a xmlfield object
+ */
+OSYNC_EXPORT void osync_xmlfield_unlink(OSyncXMLField *xmlfield);
+
+/**
  * @brief Get the name of an xmlfield
  * @param xmlfield Pointer to the xmlfield object
  * @return The name of the xmlfield
@@ -83,6 +95,13 @@ OSYNC_EXPORT OSyncXMLField *osync_xmlfield_get_parent(OSyncXMLField *xmlfield);
  * @return A pointer to the child xmlfield or NULL if there is no child xmlfield
  */
 OSYNC_EXPORT OSyncXMLField *osync_xmlfield_get_child(OSyncXMLField *xmlfield);
+
+/**
+ * @brief Links a xmlfield object from a xmlformat object before a other xmlfield object of a other xmlformat object
+ * @param xmlfield The pointer to a xmlfield object
+ * @param to_link The pointer to a xmlfield object
+ */
+OSYNC_EXPORT void osync_xmlfield_adopt_xmlfield_before_field(OSyncXMLField *xmlfield, OSyncXMLField *to_link);
 
 /**
  * @brief Get the value of the xmlfield
