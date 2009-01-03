@@ -34,7 +34,6 @@
 
 #include "archive/opensync_archive_internals.h"
 #include "client/opensync_client_proxy_internals.h"
-#include "merger/opensync_merger_internals.h"
 #include "group/opensync_group_internals.h"
 #include "group/opensync_member_internals.h"
 #include "format/opensync_objformat_internals.h"
@@ -298,16 +297,12 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 			OSyncObjFormat *objformat = osync_change_get_objformat(change);
 			char *entirebuf, *buffer, *outbuf;
 			unsigned int entsize, size = 0, outsize;
-			OSyncMerger *merger = NULL;
 			osync_trace(TRACE_INTERNAL, "Merge.");
 
 			member = osync_client_proxy_get_member(proxy);
-			merger = osync_member_get_merger(member);
+			caps = osync_member_get_capabilities(member);
 
-			if(merger) {
-
-				caps = osync_member_get_capabilities(member);
-				osync_assert_msg(caps, "Merger active, but not capabilities!");
+			if(caps) {
 
 				/* TODO: Merger save the archive data with the member so we have to load it only for one time*/
 				// osync_archive_load_data() is fetching the mappingid by uid in the db

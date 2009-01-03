@@ -45,7 +45,6 @@ SET( libopensync_LIB_SRCS
    mapping/opensync_mapping_table.c
    merger/opensync_capabilities.c
    merger/opensync_capability.c
-   merger/opensync_merger.c
    module/opensync_module.c
    plugin/opensync_context.c
    plugin/opensync_plugin_advancedoptions.c

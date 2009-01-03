@@ -31,20 +31,8 @@
 
 #include "opensync-merger.h"
 #include "merger/opensync_capabilities_internals.h"
-#include "merger/opensync_merger_internals.h"
 
 #include "common/opensync_xml_internals.h"
-
-static void osync_member_set_merger(OSyncMember *member, OSyncMerger *merger)
-{
-	osync_assert(member);
-	
-	if (member->merger)
-		osync_merger_unref(member->merger);
-	member->merger = merger;
-	if(merger)
-		osync_merger_ref(member->merger);
-}
 
 void osync_member_parse_timeout(xmlNode *cur, OSyncObjTypeSink *sink)
 {
@@ -193,9 +181,6 @@ void osync_member_unref(OSyncMember *member)
 		if (osync_member_get_capabilities(member))
 			osync_capabilities_unref(osync_member_get_capabilities(member));
 			
-		if (osync_member_get_merger(member))
-			osync_merger_unref(osync_member_get_merger(member));
-		
 		osync_member_flush_objtypes(member);
 
 #ifdef OPENSYNC_UNITTESTS
@@ -764,23 +749,13 @@ osync_bool osync_member_set_capabilities(OSyncMember *member, OSyncCapabilities 
 	
 	if (member->capabilities)
 		osync_capabilities_unref(member->capabilities);
+
 	member->capabilities = capabilities;
+
 	if(capabilities) {
-		OSyncMerger* merger = NULL;
 		osync_capabilities_ref(member->capabilities);
-		merger = osync_merger_new(member->capabilities, error);
-		if(!merger)
-			return FALSE;
-		osync_member_set_merger(member, merger);
-		osync_merger_unref(merger);
 	}
 	return TRUE;
-}
-
-OSyncMerger *osync_member_get_merger(OSyncMember *member)
-{
-	osync_assert(member);
-	return member->merger;
 }
 
 void osync_member_flush_objtypes(OSyncMember *member)

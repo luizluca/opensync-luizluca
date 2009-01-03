@@ -31,14 +31,6 @@
  */
 /*@{*/
 
-/** @brief Set Merger of Member 
- * 
- * @param member The Member pointer 
- * @param merger Pointer to the merger object to set
- * 
- */
-static void osync_member_set_merger(OSyncMember *member, OSyncMerger *merger);
-
 /** @brief Parser for the "timeout" node in the member configuration
  * 
  * @param cur Pointer to the xmlNode 

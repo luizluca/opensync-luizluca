@@ -21,8 +21,6 @@
 #ifndef _OPENSYNC_MEMBER_INTERNALS_H_
 #define _OPENSYNC_MEMBER_INTERNALS_H_
 
-#include "merger/opensync_merger_internals.h"
-
 /**
  * @defgroup OSyncMemberInternalsAPI OpenSync Member Internals
  * @ingroup OSyncGroupPrivate
@@ -51,19 +49,11 @@ struct OSyncMember {
 	int ref_count;
 	
 	OSyncCapabilities *capabilities;
-	OSyncMerger *merger;
 
 #ifdef OPENSYNC_UNITTESTS
 	char *schemadir;
 #endif /* OPENSYNC_UNITTESTS */
 };
-
-/** @brief Get pointer of the Merger 
- * 
- * @param member The member
- * @returns The pointer of the Merger, NULL if merger is disabled
- */
-OSYNC_TEST_EXPORT OSyncMerger *osync_member_get_merger(OSyncMember *member);
 
 #ifdef OPENSYNC_UNITTESTS
 /** @brief Set the schemadir for configuration validation to a custom directory.

@@ -46,7 +46,6 @@
 #include "archive/opensync_archive_internals.h"
 #include "data/opensync_change_internals.h"
 #include "client/opensync_client_proxy_internals.h"
-#include "merger/opensync_merger_internals.h"
 #include "group/opensync_member_internals.h"
 #include "format/opensync_objformat_internals.h"
 
@@ -1119,7 +1118,6 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 						unsigned int outsize = 0, size = 0;
 						const char *objtype = NULL;
 						OSyncMapping *mapping = NULL;
-						OSyncMerger *merger = NULL; 
 						OSyncCapabilities *caps;
 						OSyncMember *member = osync_client_proxy_get_member(sinkengine->proxy);
 						OSyncObjFormat *objformat = osync_change_get_objformat(entry_engine->change);
@@ -1138,7 +1136,6 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 						}
 						
 
-						merger = osync_member_get_merger(member);
 						caps = osync_member_get_capabilities(member); 
 						if (!caps) {
 							osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "No capabilities defined for Member %lli.", memberid);
