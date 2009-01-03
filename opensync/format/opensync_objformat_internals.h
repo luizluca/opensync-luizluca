@@ -191,6 +191,18 @@ OSYNC_TEST_EXPORT osync_bool osync_objformat_demerge(OSyncObjFormat *format,
 		char **output, unsigned int *outpsize,
 		OSyncCapabilities *caps, OSyncError **error);
 
+/**
+ * @brief Check if specific format is able to merge/demerge 
+ *
+ * If merge and demerge function are set for the specific format then merger
+ * and demerger get invoked. Merger/Demerge still can be disabled in group
+ * configuration, by disabling the merger, or not providing capabilities for
+ * the member.
+ *
+ * @param format Pointer to the object format
+ * @returns TRUE if merge and demerge is support for this format, otherwise FALSE
+ */
+osync_bool osync_objformat_has_merger(OSyncObjFormat *format);
 
 /*@}*/
 

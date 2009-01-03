@@ -298,3 +298,10 @@ osync_bool osync_objformat_demerge(OSyncObjFormat *format,
 	return format->demerge_func(input, inpsize, output, outpsize, caps, error);
 }
 
+
+osync_objformat_has_merger(OSyncObjFormat *format)
+{
+	osync_return_val_if_fail(format, FALSE);
+	return (format->demerge_func && format->merge_func) ? TRUE : FALSE;
+}
+
