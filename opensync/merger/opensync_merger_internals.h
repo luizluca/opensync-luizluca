@@ -57,23 +57,6 @@ OSYNC_TEST_EXPORT OSyncMerger *osync_merger_ref(OSyncMerger *merger);
  */
 OSYNC_TEST_EXPORT void osync_merger_unref(OSyncMerger *merger);
 
-/**
- * @brief Merge all xmlfields from the entire xmlformat into the
- *  xmlformat if they are not listed in the capabilities.
- * @param merger The pointer to a merger object
- * @param xmlformat The pointer to a xmlformat object
- * @param entire The pointer to a entire xmlformat object
- */
-OSYNC_TEST_EXPORT void osync_merger_merge(OSyncMerger *merger, OSyncXMLFormat *xmlformat, OSyncXMLFormat *entire);
-
-/**
- * @brief Remove all xmlfields from the xmlformat if they are
- *  not listed in the capabilities.
- * @param merger The pointer to a merger object
- * @param xmlformat The pointer to a xmlformat object
- */
-OSYNC_TEST_EXPORT void osync_merger_demerge(OSyncMerger *merger, OSyncXMLFormat *xmlformat);
-
 /*@}*/
 
 #endif /*OPENSYNC_MERGER_INTERNALS_H_*/
