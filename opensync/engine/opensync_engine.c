@@ -37,6 +37,7 @@
 #include "merger/opensync_merger_internals.h"
 #include "group/opensync_group_internals.h"
 #include "group/opensync_member_internals.h"
+#include "format/opensync_objformat_internals.h"
 
 #include "opensync_status_internals.h"
 #include "opensync_obj_engine_internals.h"
@@ -319,7 +320,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 					
 					osync_data_get_data(osync_change_get_data(change), &buffer, &size);
 
-					ret = osync_objformat_merge(format, buffer, size, &outbuf, &outsize, entirebuf, entsize, caps, error);
+					ret = osync_objformat_merge(format, buffer, size, &outbuf, &outsize, entirebuf, entsize, caps, &error);
 					osync_free(entirebuf);
 					
 					if (ret != TRUE)

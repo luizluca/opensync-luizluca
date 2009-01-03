@@ -48,6 +48,7 @@
 #include "client/opensync_client_proxy_internals.h"
 #include "merger/opensync_merger_internals.h"
 #include "group/opensync_member_internals.h"
+#include "format/opensync_objformat_internals.h"
 
 OSyncMappingEngine *_osync_obj_engine_create_mapping_engine(OSyncObjEngine *engine, OSyncError **error)
 {
@@ -1143,8 +1144,8 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 							osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "No capabilities defined for Member %lli.", memberid);
 							goto error;
 						}
-
-						if (!osync_objformat_demerge(objformat, buffer, size, &outbuf, &outsize, error))
+						/* FIXME: pass capabilities */
+						if (!osync_objformat_demerge(objformat, buffer, size, &outbuf, &outsize, NULL, error))
 							goto error;
 
 						osync_free(buffer);

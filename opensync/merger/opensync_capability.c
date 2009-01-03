@@ -54,7 +54,7 @@ OSyncCapability *osync_capability_new_node(OSyncCapabilitiesObjType *capabilitie
 
 OSyncCapability *osync_capability_new_capability(OSyncCapability *parent, xmlNodePtr node, OSyncError **error)
 {
-	OSyncCapability *temp, *capability = NULL;
+	OSyncCapability *capability = NULL;
 	osync_assert(node);
 	
 	capability = osync_try_malloc0(sizeof(OSyncCapability), error);

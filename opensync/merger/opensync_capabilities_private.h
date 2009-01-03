@@ -44,7 +44,7 @@ struct OSyncCapabilitiesObjType {
 	/** The pointer to the last capability */
 	OSyncCapability *last_child;
 	/** Counter which holds the number of capabilities for one objtype*/
-	int child_count;
+	unsigned int child_count;
 	/** The wrapped xml node */
 	xmlNodePtr node;	
 };

@@ -24,10 +24,13 @@
 #include "opensync_internals.h"
 
 #include "opensync-xmlformat.h"
-
 #include "opensync-merger.h"
+
 #include "opensync_capabilities_internals.h"
 #include "opensync_merger_internals.h"
+
+#include "xmlformat/opensync_xmlfield_internals.h"
+
 #include "opensync_merger_private.h"
 
 
