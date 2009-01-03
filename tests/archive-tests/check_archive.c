@@ -7,7 +7,7 @@
 
 START_TEST (archive_new)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed(NULL);
 
 	OSyncError *error = NULL;
 	OSyncArchive *archive = osync_archive_new((const char *)"archive.db", &error);
@@ -25,7 +25,7 @@ END_TEST
 
 START_TEST (archive_load_changes)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed(NULL);
 
 	OSyncError *error = NULL;
 	OSyncArchive *archive = osync_archive_new("archive.db", &error);
@@ -46,7 +46,7 @@ END_TEST
 
 START_TEST (archive_save_change)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed(NULL);
 
 	OSyncError *error = NULL;
 	OSyncArchive *archive = osync_archive_new("archive.db", &error);
@@ -71,7 +71,7 @@ END_TEST
 
 START_TEST (archive_save_data)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed(NULL);
 
 	OSyncError *error = NULL;
 	OSyncArchive *archive = osync_archive_new("archive.db", &error);
@@ -101,7 +101,7 @@ END_TEST
 
 START_TEST (archive_load_data)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed(NULL);
 
 	OSyncError *error = NULL;
 	OSyncArchive *archive = osync_archive_new("archive.db", &error);
@@ -140,7 +140,7 @@ END_TEST
 
 START_TEST (archive_load_data_with_closing_db)
 {
-	char *testbed = setup_testbed("merger");
+	char *testbed = setup_testbed(NULL);
 
 	OSyncError *error = NULL;
 	OSyncArchive *archive = osync_archive_new("archive.db", &error);
