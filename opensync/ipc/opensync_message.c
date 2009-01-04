@@ -21,6 +21,8 @@
 #include "opensync.h"
 #include "opensync_internals.h"
 
+#include "common/opensync_marshal.h"
+
 #include "opensync_serializer_internals.h"
 #include "opensync_message.h"
 
@@ -34,11 +36,11 @@ OSyncMessage *osync_message_new(OSyncMessageCommand cmd, unsigned int size, OSyn
 
 	message->cmd = cmd;
 	message->refCount = 1;
-	if (size > 0)
-		message->buffer = g_byte_array_sized_new( size );
-	else
-		message->buffer = g_byte_array_new();
-	message->buffer_read_pos = 0;
+
+	message->marshal = osync_marshal_sized_new(size, error);
+	if (!message->marshal)
+		return NULL;
+
 	return message;
 }
 
@@ -53,9 +55,9 @@ void osync_message_unref(OSyncMessage *message)
 {
 	if (g_atomic_int_dec_and_test(&(message->refCount))) {
 		
-		g_byte_array_free(message->buffer, TRUE);
+		osync_marshal_unref(message->marshal);
 		
-		g_free(message);
+		osync_free(message);
 	}
 }
 
@@ -83,27 +85,25 @@ long long int osync_message_get_id(OSyncMessage *message)
 	return message->id;
 }
 
+OSyncMarshal *osync_message_get_marshal(OSyncMessage *message)
+{
+	osync_return_val_if_fail(message, NULL);
+	return message->marshal;
+}
+
 unsigned int osync_message_get_message_size(OSyncMessage *message)
 {
-	osync_assert(message);
-	return message->buffer->len;
+	return osync_marshal_get_marshal_size(message->marshal);
 }
 
 void osync_message_set_message_size(OSyncMessage *message, unsigned int size)
 {
-	osync_assert(message);
-	message->buffer->len = size;
+	osync_marshal_set_marshal_size(message->marshal, size);
 }
 
 void osync_message_get_buffer(OSyncMessage *message, char **data, unsigned int *size)
 {
-	osync_assert(message);
-	
-	if (data)
-		*data = (char *)message->buffer->data;
-	
-	if (size)
-		*size = message->buffer->len;
+	osync_marshal_get_buffer(message->marshal, data, size);
 }
 
 void osync_message_set_handler(OSyncMessage *message, OSyncMessageHandler handler, void *user_data)
@@ -194,135 +194,74 @@ OSyncMessageCommand osync_message_get_command(OSyncMessage *message)
 
 void osync_message_write_int(OSyncMessage *message, int value)
 {
-	g_byte_array_append( message->buffer, (unsigned char*)&value, sizeof( int ) );
+	osync_marshal_write_int(message->marshal, value);
 }
 
 void osync_message_write_uint(OSyncMessage *message, unsigned int value)
 {
-	g_byte_array_append( message->buffer, (unsigned char*)&value, sizeof( unsigned int ) );
+	osync_marshal_write_uint(message->marshal, value);
 }
 
 void osync_message_write_long_long_int(OSyncMessage *message, long long int value)
 {
-	g_byte_array_append( message->buffer, (unsigned char*)&value, sizeof( long long int ) );
+	osync_marshal_write_long_long_int(message->marshal, value);
 }
 
 void osync_message_write_string(OSyncMessage *message, const char *value)
 {
-	int length = 0;
-	if (value == NULL) {
-		length = -1;
-		g_byte_array_append( message->buffer, (unsigned char*)&length, sizeof( int ) );
-	} else {
-		int length = strlen( value ) + 1;
-		g_byte_array_append( message->buffer, (unsigned char*)&length, sizeof( int ) );
-		g_byte_array_append( message->buffer, (unsigned char*)value, length );
-	}
+	osync_marshal_write_string(message->marshal, value);
 }
 
 void osync_message_write_data(OSyncMessage *message, const void *value, int size)
 {
-	/* TODO move this to PRIVATE API */
-	g_byte_array_append( message->buffer, value, size );
+	osync_marshal_write_data(message->marshal, value, size);
 }
 
 void osync_message_write_buffer(OSyncMessage *message, const void *value, int size)
 {
-	/* serialize the length of the data to make it possible to determine the end
-	   of this data blob in the serialized blob. This makes demarshaling possible! */
-	osync_message_write_int(message, size);
-	if (size > 0)
-		osync_message_write_data(message, value, size);
+	osync_marshal_write_buffer(message->marshal, value, size);
 }
 
 void osync_message_read_int(OSyncMessage *message, int *value)
 {
-	osync_assert(message->buffer->len >= message->buffer_read_pos + sizeof(int));
-	
-	memcpy(value, &(message->buffer->data[ message->buffer_read_pos ]), sizeof(int));
-	message->buffer_read_pos += sizeof(int);
+	osync_marshal_read_int(message->marshal, value);
 }
 
 void osync_message_read_uint(OSyncMessage *message, unsigned int *value)
 {
-	osync_assert(message->buffer->len >= message->buffer_read_pos + sizeof(unsigned int));
-	
-	memcpy(value, &(message->buffer->data[ message->buffer_read_pos ]), sizeof(unsigned int));
-	message->buffer_read_pos += sizeof(unsigned int);
+	osync_marshal_read_uint(message->marshal, value);
 }
 
 void osync_message_read_long_long_int(OSyncMessage *message, long long int *value)
 {
-	osync_assert(message->buffer->len >= message->buffer_read_pos + sizeof(long long int));
-	
-	memcpy(value, &(message->buffer->data[ message->buffer_read_pos ]), sizeof(long long int));
-	message->buffer_read_pos += sizeof(long long int);
+	osync_marshal_read_long_long_int(message->marshal, value);
 }
 
 /* TODO Change char** to const char ** */
 void osync_message_read_const_string(OSyncMessage *message, char **value)
 {
-	int length = 0;
-	osync_message_read_int(message, &length);
-
-	if (length == -1) {
-		*value = NULL;
-		return;
-	}
-	
-	osync_assert(message->buffer->len >= message->buffer_read_pos + length);
-	*value = (char *)&(message->buffer->data[message->buffer_read_pos]);
-	message->buffer_read_pos += length;
+	osync_marshal_read_const_string(message->marshal, value);
 }
 
 void osync_message_read_string(OSyncMessage *message, char **value)
 {
-	int length = 0;
-	osync_message_read_int(message, &length);
-
-	if (length == -1) {
-		*value = NULL;
-		return;
-	}
-	
-	osync_assert(message->buffer->len >= message->buffer_read_pos + length);
-	
-	/* TODO: Error handling? */
-	*value = (char*) osync_try_malloc0(length, NULL);
-	if (!*value)
-		return;
-
-	memcpy(*value, &(message->buffer->data[ message->buffer_read_pos ]), length );
-	message->buffer_read_pos += length;
+	osync_marshal_read_string(message->marshal, value);
 }
 
 void osync_message_read_const_data(OSyncMessage *message, void **value, int size)
 {
-	osync_assert(message->buffer->len >= message->buffer_read_pos + size);
-	
-	*value = &(message->buffer->data[message->buffer_read_pos]);
-	message->buffer_read_pos += size;
+	osync_marshal_read_const_data(message->marshal, value, size);
 }
 
 void osync_message_read_data(OSyncMessage *message, void *value, int size)
 {
-	osync_assert(message->buffer->len >= message->buffer_read_pos + size);
-	
-	memcpy(value, &(message->buffer->data[ message->buffer_read_pos ]), size );
-	message->buffer_read_pos += size;
+	osync_marshal_read_data(message->marshal, value, size);
 }
 
 void osync_message_read_buffer(OSyncMessage *message, void **value, int *size)
 {
-	/* Now, read the data from the message */
-	osync_message_read_int(message, size);
-	
-	if (*size > 0) {
-		*value = g_malloc0(*size);
-		osync_message_read_data(message, *value, *size);
-	}
+	osync_marshal_read_buffer(message->marshal, value, size);
 }
-
 
 char* osync_message_get_commandstr(OSyncMessage *message)
 {
@@ -380,5 +319,4 @@ char* osync_message_get_commandstr(OSyncMessage *message)
 	
 	return cmdstr;	
 }
-
 

@@ -159,6 +159,15 @@ OSYNC_EXPORT void osync_message_set_id(OSyncMessage *message, long long int id);
  */
 OSYNC_EXPORT long long int osync_message_get_id(OSyncMessage *message);
 
+/** @brief Get marshal object of supplied message object
+ * 
+ * @param message The message
+ * @returns Pointer of the marshal object, NULL if no marshal object is
+ *          associated with the message 
+ *
+ */
+OSYNC_TEST_EXPORT OSyncMarshal *osync_message_get_marshal(OSyncMessage *message);
+
 /** @brief Get message size of supplied message object
  * 
  * @param message The message

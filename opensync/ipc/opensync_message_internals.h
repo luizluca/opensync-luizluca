@@ -48,12 +48,11 @@ struct OSyncMessage {
 	//timeout_info *to_info;
 	/** If this message has already been answered */
 	osync_bool is_answered;
-	/** The pointer to the internal **/
-	GByteArray *buffer;
-	/** The current read position **/
-	int buffer_read_pos;
+	/** The internal OSyncMarshal object **/
+	OSyncMarshal *marshal;
 };
 
 /*@}*/
 
-#endif /*_OPENSYNC_MESSAGES_INTERNALS_H*/
+#endif /* _OPENSYNC_MESSAGES_INTERNALS_H */
+
