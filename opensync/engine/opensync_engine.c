@@ -229,12 +229,12 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 	if ((internalFormat || detected_format) && osync_group_get_converter_enabled(engine->group) && (osync_change_get_changetype(change) != OSYNC_CHANGE_TYPE_DELETED)) {
 		OSyncFormatConverterPath *path = NULL;
 		OSyncObjFormatSink *formatsink = NULL;
-		OSyncObjFormat *temp_format = internalFormat ? internalFormat : detected_format;
-		osync_trace(TRACE_INTERNAL, "converting to format %s", osync_objformat_get_name(temp_format));
+		OSyncObjFormat *common_format = internalFormat ? internalFormat : detected_format;
+		osync_trace(TRACE_INTERNAL, "converting to format %s", osync_objformat_get_name(common_format));
 
 		path = _osync_engine_get_converter_path(engine, member_objtype);
 		if(!path) {
-			path = osync_format_env_find_path_with_detectors(engine->formatenv, osync_change_get_data(change), temp_format, NULL, &error);
+			path = osync_format_env_find_path_with_detectors(engine->formatenv, osync_change_get_data(change), common_format, NULL, &error);
 			_osync_engine_set_converter_path(engine, member_objtype, path);
 		}
 
