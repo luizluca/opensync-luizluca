@@ -688,7 +688,7 @@ START_TEST (no_objtype_error)
 }
 END_TEST
 
-START_TEST (dual_connect_error)
+OSYNC_UNUSED START_TEST (dual_connect_error)
 {
 	char *testbed = setup_testbed("sync_setup");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);

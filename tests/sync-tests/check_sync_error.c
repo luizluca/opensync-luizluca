@@ -43,7 +43,7 @@ START_TEST (single_init_error_noerror)
 }
 END_TEST
 
-START_TEST (single_init_error)
+OSYNC_UNUSED START_TEST (single_init_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -79,7 +79,7 @@ START_TEST (single_init_error)
 }
 END_TEST
 
-START_TEST (dual_connect_error)
+OSYNC_UNUSED START_TEST (dual_connect_error)
 {
 	char *testbed = setup_testbed("sync_easy_new");
 	
@@ -119,7 +119,7 @@ START_TEST (dual_connect_error)
 }
 END_TEST
 
-START_TEST (one_of_two_connect_error)
+OSYNC_UNUSED START_TEST (one_of_two_connect_error)
 {
 	char *testbed = setup_testbed("sync_easy_new");
 	
@@ -160,7 +160,7 @@ START_TEST (one_of_two_connect_error)
 }
 END_TEST
 
-START_TEST (two_of_three_connect_error)
+OSYNC_UNUSED START_TEST (two_of_three_connect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -201,7 +201,7 @@ START_TEST (two_of_three_connect_error)
 }
 END_TEST
 
-START_TEST (two_of_three_connect_error2)
+OSYNC_UNUSED START_TEST (two_of_three_connect_error2)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -242,7 +242,7 @@ START_TEST (two_of_three_connect_error2)
 }
 END_TEST
 
-START_TEST (three_of_three_connect_error)
+OSYNC_UNUSED START_TEST (three_of_three_connect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -283,7 +283,7 @@ START_TEST (three_of_three_connect_error)
 }
 END_TEST
 
-START_TEST (one_of_three_connect_error)
+OSYNC_UNUSED START_TEST (one_of_three_connect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 
@@ -324,7 +324,7 @@ START_TEST (one_of_three_connect_error)
 }
 END_TEST
 
-START_TEST (no_connect_error)
+OSYNC_UNUSED START_TEST (no_connect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -366,7 +366,7 @@ START_TEST (no_connect_error)
 }
 END_TEST
 
-START_TEST (single_connect_timeout)
+OSYNC_UNUSED START_TEST (single_connect_timeout)
 {
 	char *testbed = setup_testbed("sync_easy_new");
 	
@@ -408,7 +408,7 @@ START_TEST (single_connect_timeout)
 }
 END_TEST
 
-START_TEST (dual_connect_timeout)
+OSYNC_UNUSED START_TEST (dual_connect_timeout)
 {
 	char *testbed = setup_testbed("sync_easy_new");
 	
@@ -450,7 +450,7 @@ START_TEST (dual_connect_timeout)
 }
 END_TEST
 
-START_TEST (one_of_three_timeout)
+OSYNC_UNUSED START_TEST (one_of_three_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -492,7 +492,7 @@ START_TEST (one_of_three_timeout)
 }
 END_TEST
 
-START_TEST (timeout_and_error)
+OSYNC_UNUSED START_TEST (timeout_and_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -535,7 +535,7 @@ START_TEST (timeout_and_error)
 }
 END_TEST
 
-START_TEST (single_get_changes_error)
+OSYNC_UNUSED START_TEST (single_get_changes_error)
 {
 	char *testbed = setup_testbed("sync_easy_conflict");
 	
@@ -580,7 +580,7 @@ START_TEST (single_get_changes_error)
 }
 END_TEST
 
-START_TEST (dual_get_changes_error)
+OSYNC_UNUSED START_TEST (dual_get_changes_error)
 {
 	char *testbed = setup_testbed("sync_easy_conflict");
 	
@@ -625,7 +625,7 @@ START_TEST (dual_get_changes_error)
 }
 END_TEST
 
-START_TEST (two_of_three_get_changes_error)
+OSYNC_UNUSED START_TEST (two_of_three_get_changes_error)
 {
 	char *testbed = setup_testbed("multisync_conflict_data_choose2");
 	
@@ -669,7 +669,7 @@ START_TEST (two_of_three_get_changes_error)
 }
 END_TEST
 
-START_TEST (one_of_three_get_changes_error)
+OSYNC_UNUSED START_TEST (one_of_three_get_changes_error)
 {
 	char *testbed = setup_testbed("multisync_conflict_data_choose2");
 	
@@ -714,7 +714,7 @@ START_TEST (one_of_three_get_changes_error)
 }
 END_TEST
 
-START_TEST (one_of_three_get_changes_timeout)
+OSYNC_UNUSED START_TEST (one_of_three_get_changes_timeout)
 {
 	char *testbed = setup_testbed("multisync_conflict_data_choose2");
 	
@@ -761,7 +761,7 @@ START_TEST (one_of_three_get_changes_timeout)
 }
 END_TEST
 
-START_TEST (get_changes_timeout_and_error)
+OSYNC_UNUSED START_TEST (get_changes_timeout_and_error)
 {
 	char *testbed = setup_testbed("multisync_conflict_data_choose2");
 	
@@ -807,7 +807,7 @@ START_TEST (get_changes_timeout_and_error)
 }
 END_TEST
 
-START_TEST (get_changes_timeout_sleep)
+OSYNC_UNUSED START_TEST (get_changes_timeout_sleep)
 {
 	char *testbed = setup_testbed("multisync_conflict_data_choose2");
 	
@@ -856,7 +856,7 @@ START_TEST (get_changes_timeout_sleep)
 }
 END_TEST
 
-START_TEST (single_commit_error)
+OSYNC_UNUSED START_TEST (single_commit_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -908,7 +908,7 @@ START_TEST (single_commit_error)
 }
 END_TEST
 
-START_TEST (dual_commit_error)
+OSYNC_UNUSED START_TEST (dual_commit_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -960,7 +960,7 @@ START_TEST (dual_commit_error)
 }
 END_TEST
 
-START_TEST (single_commit_timeout)
+OSYNC_UNUSED START_TEST (single_commit_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1012,7 +1012,7 @@ START_TEST (single_commit_timeout)
 }
 END_TEST
 
-START_TEST (dual_commit_timeout)
+OSYNC_UNUSED START_TEST (dual_commit_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1064,7 +1064,7 @@ START_TEST (dual_commit_timeout)
 }
 END_TEST
 
-START_TEST (commit_timeout_and_error)
+OSYNC_UNUSED START_TEST (commit_timeout_and_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1117,7 +1117,7 @@ START_TEST (commit_timeout_and_error)
 }
 END_TEST
 
-START_TEST (commit_timeout_and_error2)
+OSYNC_UNUSED START_TEST (commit_timeout_and_error2)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1170,7 +1170,7 @@ START_TEST (commit_timeout_and_error2)
 }
 END_TEST
 
-START_TEST (commit_error_modify)
+OSYNC_UNUSED START_TEST (commit_error_modify)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1231,7 +1231,7 @@ START_TEST (commit_error_modify)
 }
 END_TEST
 
-START_TEST (commit_error_delete)
+OSYNC_UNUSED START_TEST (commit_error_delete)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1292,7 +1292,7 @@ START_TEST (commit_error_delete)
 }
 END_TEST
 
-START_TEST (committed_all_error)
+OSYNC_UNUSED START_TEST (committed_all_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1344,7 +1344,7 @@ START_TEST (committed_all_error)
 }
 END_TEST
 
-START_TEST (committed_all_batch_error)
+OSYNC_UNUSED START_TEST (committed_all_batch_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1397,7 +1397,7 @@ START_TEST (committed_all_batch_error)
 }
 END_TEST
 
-START_TEST (single_sync_done_error)
+OSYNC_UNUSED START_TEST (single_sync_done_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1450,7 +1450,7 @@ START_TEST (single_sync_done_error)
 }
 END_TEST
 
-START_TEST (dual_sync_done_error)
+OSYNC_UNUSED START_TEST (dual_sync_done_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1503,7 +1503,7 @@ START_TEST (dual_sync_done_error)
 }
 END_TEST
 
-START_TEST (triple_sync_done_error)
+OSYNC_UNUSED START_TEST (triple_sync_done_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1556,7 +1556,7 @@ START_TEST (triple_sync_done_error)
 }
 END_TEST
 
-START_TEST (single_sync_done_timeout)
+OSYNC_UNUSED START_TEST (single_sync_done_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1609,7 +1609,7 @@ START_TEST (single_sync_done_timeout)
 }
 END_TEST
 
-START_TEST (dual_sync_done_timeout)
+OSYNC_UNUSED START_TEST (dual_sync_done_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1662,7 +1662,7 @@ START_TEST (dual_sync_done_timeout)
 }
 END_TEST
 
-START_TEST (sync_done_timeout_and_error)
+OSYNC_UNUSED START_TEST (sync_done_timeout_and_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1716,7 +1716,7 @@ START_TEST (sync_done_timeout_and_error)
 }
 END_TEST
 
-START_TEST (single_disconnect_error)
+OSYNC_UNUSED START_TEST (single_disconnect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1769,7 +1769,7 @@ START_TEST (single_disconnect_error)
 }
 END_TEST
 
-START_TEST (dual_disconnect_error)
+OSYNC_UNUSED START_TEST (dual_disconnect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1822,7 +1822,7 @@ START_TEST (dual_disconnect_error)
 }
 END_TEST
 
-START_TEST (triple_disconnect_error)
+OSYNC_UNUSED START_TEST (triple_disconnect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1875,7 +1875,7 @@ START_TEST (triple_disconnect_error)
 }
 END_TEST
 
-START_TEST (single_disconnect_timeout)
+OSYNC_UNUSED START_TEST (single_disconnect_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1928,7 +1928,7 @@ START_TEST (single_disconnect_timeout)
 }
 END_TEST
 
-START_TEST (dual_disconnect_timeout)
+OSYNC_UNUSED START_TEST (dual_disconnect_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -1981,7 +1981,7 @@ START_TEST (dual_disconnect_timeout)
 }
 END_TEST
 
-START_TEST (disconnect_timeout_and_error)
+OSYNC_UNUSED START_TEST (disconnect_timeout_and_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -2035,7 +2035,7 @@ START_TEST (disconnect_timeout_and_error)
 }
 END_TEST
 
-START_TEST (get_changes_disconnect_error)
+OSYNC_UNUSED START_TEST (get_changes_disconnect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	

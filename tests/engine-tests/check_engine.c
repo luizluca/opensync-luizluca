@@ -1763,7 +1763,7 @@ static OSyncDebugGroup *_create_group6(char *testbed)
 	return debug;
 }
 
-START_TEST (engine_sync_read_write_stress)
+OSYNC_UNUSED START_TEST (engine_sync_read_write_stress)
 {
 	char *testbed = setup_testbed("sync_setup");
 	char *formatdir = g_strdup_printf("%s/formats",  testbed);
