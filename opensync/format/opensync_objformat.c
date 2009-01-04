@@ -290,7 +290,7 @@ osync_bool osync_objformat_validate(OSyncObjFormat *format, const char *data, un
 {
 	osync_assert(format);
 	osync_assert(format->validate_func);
-	return format->validate_func(data, size, error);
+	return format->validate_func(data, size, format->user_data, error);
 }
 
 osync_bool osync_objformat_must_validate(OSyncObjFormat *format)

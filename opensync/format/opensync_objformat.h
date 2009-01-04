@@ -42,7 +42,7 @@ typedef char *(* OSyncFormatPrintFunc) (const char *data, unsigned int size);
 typedef time_t (* OSyncFormatRevisionFunc) (const char *data, unsigned int size, OSyncError **error);
 typedef osync_bool (* OSyncFormatMarshalFunc) (const char *input, unsigned int inpsize, OSyncMessage *message, OSyncError **error);
 typedef osync_bool (* OSyncFormatDemarshalFunc) (OSyncMessage *message, char **output, unsigned int *outpsize, OSyncError **error);
-typedef osync_bool (* OSyncFormatValidateFunc) (const char *data, unsigned int size, OSyncError **error);
+typedef osync_bool (* OSyncFormatValidateFunc) (const char *data, unsigned int size, void *user_data, OSyncError **error);
 
 typedef osync_bool (* OSyncFormatMergeFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize,  const char *entire, unsigned int entsize, OSyncCapabilities *caps, OSyncError **error);
 typedef osync_bool (* OSyncFormatDemergeFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, OSyncCapabilities *caps, OSyncError **error);
