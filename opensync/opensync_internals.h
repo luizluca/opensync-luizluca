@@ -35,7 +35,6 @@
 extern int errno;
 #endif
 
-
 #define osync_return_if_fail(condition) do {    \
     if (!(condition)) {                         \
       return;                                   \
@@ -45,6 +44,13 @@ extern int errno;
     if (!(condition)) {                                 \
       return (val);                                     \
     } } while (0)
+
+
+#ifdef __GNUC__
+#define OSYNC_UNUSED __attribute__ ((unused))
+#else
+#define OSYNC_UNUSED
+#endif
 
 #include "opensync/common/opensync_common_internals.h"
 
