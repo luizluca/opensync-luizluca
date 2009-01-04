@@ -164,29 +164,29 @@ static char *print_file(const char *data, unsigned int size)
 	return printable;
 }
 
-static osync_bool marshal_file(const char *input, unsigned int inpsize, OSyncMessage *message, OSyncError **error)
+static osync_bool marshal_file(const char *input, unsigned int inpsize, OSyncMarshal *marshal, OSyncError **error)
 {
 	OSyncFileFormat *file = (OSyncFileFormat *)input;
-	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p, %p)", __func__, input, inpsize, message, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p, %p)", __func__, input, inpsize, marshal, error);
 	
-	osync_message_write_string(message, file->path);
-	osync_message_write_buffer(message, file->data, file->size);
+	osync_marshal_write_string(marshal, file->path);
+	osync_marshal_write_buffer(marshal, file->data, file->size);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
 }
 
-static osync_bool demarshal_file(OSyncMessage *message, char **output, unsigned int *outpsize, OSyncError **error)
+static osync_bool demarshal_file(OSyncMarshal *marshal, char **output, unsigned int *outpsize, OSyncError **error)
 {
 	OSyncFileFormat *file = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, message, output, outpsize, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, marshal, output, outpsize, error);
 	
 	file = osync_try_malloc0(sizeof(OSyncFileFormat), error);
 	if (!file)
 		goto error;
 	
-	osync_message_read_string(message, &(file->path));
-	osync_message_read_buffer(message, (void *)&(file->data), (int *)&(file->size));
+	osync_marshal_read_string(marshal, &(file->path));
+	osync_marshal_read_buffer(marshal, (void *)&(file->data), (int *)&(file->size));
 	
 	*output = (char *)file;
 	*outpsize = sizeof(OSyncFileFormat);
