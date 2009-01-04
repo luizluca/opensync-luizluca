@@ -47,15 +47,15 @@ time_t revision_format(const char *data, unsigned int size, OSyncError **error)
 	return atoi(data);
 }
 
-osync_bool marshal_format(const char *input, unsigned int inpsize, OSyncMessage *message, OSyncError **error)
+osync_bool marshal_format(const char *input, unsigned int inpsize, OSyncMarshal *marshal, OSyncError **error)
 {
-	osync_message_write_buffer(message, input, inpsize);
+	osync_marshal_write_buffer(marshal, input, inpsize);
 	return TRUE;
 }
 
-osync_bool demarshal_format(OSyncMessage *message, char **output, unsigned int *outsize, OSyncError **error)
+osync_bool demarshal_format(OSyncMarshal *marshal, char **output, unsigned int *outsize, OSyncError **error)
 {
-	osync_message_read_buffer(message, (void *)output, (int *)outsize);
+	osync_marshal_read_buffer(marshal, (void *)output, (int *)outsize);
 	return TRUE;
 }
 
@@ -293,14 +293,14 @@ START_TEST (objformat_marshal)
 	
 	fail_unless(osync_objformat_must_marshal(format) == TRUE, NULL);
 
-	OSyncMessage *message = osync_message_new(0, 0, &error);
-	fail_unless(message != NULL, NULL);
+	OSyncMarshal *marshal = osync_marshal_new(&error);
+	fail_unless(marshal != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 
-	fail_unless(osync_objformat_marshal(format, "test", 5, message, &error), NULL);
+	fail_unless(osync_objformat_marshal(format, "test", 5, marshal, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_message_unref(message);
+	osync_marshal_unref(marshal);
 	
 	osync_objformat_unref(format);
 	
@@ -320,16 +320,16 @@ START_TEST (objformat_demarshal)
 	osync_objformat_set_marshal_func(format, marshal_format);
 	osync_objformat_set_destroy_func(format, destroy_format);
 	
-	OSyncMessage *message = osync_message_new(0, 0, &error);
-	fail_unless(message != NULL, NULL);
+	OSyncMarshal *marshal = osync_marshal_new(&error);
+	fail_unless(marshal != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 
-	fail_unless(osync_objformat_marshal(format, "test", 5, message, &error), NULL);
+	fail_unless(osync_objformat_marshal(format, "test", 5, marshal, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
 	char *outdata = NULL;
 	unsigned int outsize = 0;
-	fail_unless(osync_objformat_demarshal(format, message, &outdata, &outsize, &error), NULL);
+	fail_unless(osync_objformat_demarshal(format, marshal, &outdata, &outsize, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
 	fail_unless(!strcmp(outdata, "test"), NULL);
@@ -337,7 +337,7 @@ START_TEST (objformat_demarshal)
 	g_free(outdata);
 	
 	osync_objformat_unref(format);
-	osync_message_unref(message);
+	osync_marshal_unref(marshal);
 	
 	destroy_testbed(testbed);
 }
