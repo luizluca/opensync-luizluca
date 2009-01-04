@@ -29,6 +29,30 @@
 /*@{*/
 
 /**
+ * @brief Initialize an object format
+ *
+ * Call the object format specific initialize function. If no finalize function for
+ * this object format got registered this function is NOOP.
+ *
+ * Functions returns FALSE when error by the initialize_func call get set.
+ *
+ * @param format Pointer to the object format
+ * @param error Pointer to error struct, which get failed when initialization fails
+ * @returns TRUE on success, FALSE otherwise 
+ */
+OSYNC_TEST_EXPORT osync_bool osync_objformat_initialize(OSyncObjFormat *format, OSyncError **error);
+
+/**
+ * @brief Finalize an object format
+ *
+ * Call the finalize function of an object format. If no finalize function for
+ * this object format got registered this function is NOOP.
+ *
+ * @param format Pointer to the object format
+ */
+OSYNC_TEST_EXPORT void osync_objformat_finalize(OSyncObjFormat *format);
+
+/**
  * @brief Compares two objects of the same object format
  *
  * Compares two objects of the same object format using the format's compare function

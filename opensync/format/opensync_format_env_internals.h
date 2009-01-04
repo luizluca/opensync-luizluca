@@ -109,6 +109,22 @@ OSYNC_TEST_EXPORT int osync_format_env_num_filters(OSyncFormatEnv *env);
  */
 OSYNC_TEST_EXPORT OSyncCustomFilter *osync_format_env_nth_filter(OSyncFormatEnv *env, int nth);
 
+
+/** @brief Initialize all object formats of the format environment 
+ * 
+ * @param env The format environment
+ * @param error Pointer to an error struct, which get set on any error intialize error 
+ * 
+ */
+OSYNC_TEST_EXPORT void osync_format_env_objformat_initialize(OSyncFormatEnv *env, OSyncError **error);
+
+/** @brief Finalize all object fromats of the format environment 
+ * 
+ * @param env The format environment
+ * 
+ */
+OSYNC_TEST_EXPORT void osync_format_env_objformat_finalize(OSyncFormatEnv *env);
+
 /*@}*/
 
 #endif /* _OPENSYNC_FORMAT_ENV_INTERNALS_H_ */

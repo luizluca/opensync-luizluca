@@ -167,6 +167,42 @@ static void osync_format_env_converter_finalize(OSyncFormatEnv *env)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
+void osync_format_env_objformat_initialize(OSyncFormatEnv *env, OSyncError **error)
+{
+	OSyncObjFormat *objformat = NULL;
+	unsigned int i, num_objformats;
+
+	osync_return_if_fail(env);	
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, env);
+
+	num_objformats = osync_format_env_num_objformats(env);
+	
+	for (i = 0; i < num_objformats; i++) {
+		objformat = osync_format_env_nth_objformat(env, i);
+		osync_assert(objformat);
+		osync_objformat_initialize(objformat, error);
+	}
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
+void osync_format_env_objformat_finalize(OSyncFormatEnv *env)
+{
+	OSyncObjFormat *objformat = NULL;
+	unsigned int i, num_objformats;
+
+	osync_return_if_fail(env);	
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, env);
+
+	num_objformats = osync_format_env_num_objformats(env);
+	
+	for (i = 0; i < num_objformats; i++ ) {
+		objformat = osync_format_env_nth_objformat(env, i);
+		osync_assert(objformat);
+		osync_objformat_finalize(objformat);
+	}
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
 static int osync_format_converter_path_vertice_compare_distance(const void *a, const void *b)
 {
 	const OSyncFormatConverterPathVertice *va = a;
@@ -710,6 +746,10 @@ void osync_format_env_unref(OSyncFormatEnv *env)
 	osync_assert(env);
 
 	if (g_atomic_int_dec_and_test(&(env->ref_count))) {
+
+		/* Finailze the object formats */
+		osync_format_env_objformat_finalize(env);
+
 		/* Free the formats */
 		while (env->objformats) {
 			osync_trace(TRACE_INTERNAL, "FORMAT: %s", osync_objformat_get_name(env->objformats->data));
@@ -753,15 +793,20 @@ osync_bool osync_format_env_load_plugins(OSyncFormatEnv *env, const char *path, 
 		must_exist = FALSE;
 	}
 	
-	if (!osync_format_env_load_modules(env, path, must_exist, error)) {
-		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-		return FALSE;
-	}
+	if (!osync_format_env_load_modules(env, path, must_exist, error))
+		goto error;
 	
 	osync_format_env_converter_initialize(env, error);
+
+	/* Initialize the object formats */
+	osync_format_env_objformat_initialize(env, error);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
 }
 
 void osync_format_env_register_objformat(OSyncFormatEnv *env, OSyncObjFormat *format)

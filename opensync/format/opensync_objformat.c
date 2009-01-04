@@ -81,22 +81,56 @@ const char *osync_objformat_get_objtype(OSyncObjFormat *format)
 
 osync_bool osync_objformat_is_equal(OSyncObjFormat *leftformat, OSyncObjFormat *rightformat)
 {
-	osync_assert(leftformat);
-	osync_assert(rightformat);
+	osync_return_val_if_fail(leftformat, FALSE);
+	osync_return_val_if_fail(rightformat, FALSE);
 	
 	return (!strcmp(leftformat->name, rightformat->name)) ? TRUE : FALSE;
 }
 
-void osync_objformat_set_compare_func(OSyncObjFormat *format, OSyncFormatCompareFunc cmp_func)
+void osync_objformat_set_initialize_func(OSyncObjFormat *format, OSyncFormatInitializeFunc initialize_func)
+{
+	osync_return_if_fail(format);
+	format->initialize_func = initialize_func;
+}
+
+osync_bool osync_objformat_initialize(OSyncObjFormat *format, OSyncError **error)
 {
 	osync_assert(format);
+	
+	/* Just return, if no initialize_func is registered */
+	osync_return_val_if_fail(format->initialize_func, TRUE);
+
+	format->user_data = format->initialize_func(error);
+
+	if (osync_error_is_set(error))
+		return FALSE;
+
+	return TRUE;
+}
+
+void osync_objformat_set_finalize_func(OSyncObjFormat *format, OSyncFormatFinalizeFunc finalize_func)
+{
+	osync_return_if_fail(format);
+	format->finalize_func = finalize_func;
+}
+
+void osync_objformat_finalize(OSyncObjFormat *format)
+{
+	osync_return_if_fail(format);
+	osync_return_if_fail(format->finalize_func);
+	format->finalize_func(format->user_data);
+}
+
+void osync_objformat_set_compare_func(OSyncObjFormat *format, OSyncFormatCompareFunc cmp_func)
+{
+	osync_return_if_fail(format);
 	format->cmp_func = cmp_func;
 }
 
 OSyncConvCmpResult osync_objformat_compare(OSyncObjFormat *format, const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize)
 {
-	osync_assert(format);
-	osync_assert(format->cmp_func);
+	osync_return_val_if_fail(format, OSYNC_CONV_DATA_UNKNOWN);
+	osync_return_val_if_fail(format->cmp_func, OSYNC_CONV_DATA_UNKNOWN);
 	return format->cmp_func(leftdata, leftsize, rightdata, rightsize);
 }
 

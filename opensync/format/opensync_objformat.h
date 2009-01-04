@@ -30,6 +30,9 @@
  */
 /*@{*/
 
+typedef void * (* OSyncFormatInitializeFunc) (OSyncError **error);
+typedef void (* OSyncFormatFinalizeFunc) (void *userdata);
+
 typedef OSyncConvCmpResult (* OSyncFormatCompareFunc) (const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize);
 typedef osync_bool (* OSyncFormatCopyFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, OSyncError **error);
 typedef osync_bool (* OSyncFormatDuplicateFunc) (const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, OSyncError **error);
@@ -91,6 +94,31 @@ OSYNC_EXPORT const char *osync_objformat_get_objtype(OSyncObjFormat *format);
  * @returns Revision of the specified object in seconds since 1970, -1 on error
  */
 OSYNC_EXPORT time_t osync_objformat_get_revision(OSyncObjFormat *format, const char *data, unsigned int size, OSyncError **error);
+
+/**
+ * @brief Sets the optional initialize function for an object format
+ *
+ * The initialize function can be used to allocate internal structures or other
+ * required data, which get passed as void pointer to each object format plugin
+ * call.
+ *
+ * This option set require that also a finalize function get set.
+ *
+ * @param format Pointer to the object format
+ * @param initialize_func The initialize function to use
+ */
+OSYNC_EXPORT void osync_objformat_set_initialize_func(OSyncObjFormat *format, OSyncFormatInitializeFunc initialize_func);
+
+/**
+ * @brief Sets the optional finalize function for an object format
+ *
+ * The finalize function has to be use to release memory which got allocated
+ * with the object format initialize function.
+ *
+ * @param format Pointer to the object format
+ * @param finalize_func The finalize function to use
+ */
+OSYNC_EXPORT void osync_objformat_set_finalize_func(OSyncObjFormat *format, OSyncFormatFinalizeFunc finalize_func);
 
 /**
  * @brief Sets the optional compare function for an object format

@@ -43,6 +43,14 @@ struct OSyncObjFormat {
 	 * would be "contact" */
 	char *objtype_name;
 
+	/** userdata pointer returned by initialize_func */
+	void *user_data;
+
+	/** Initialize format plugin function */
+	OSyncFormatInitializeFunc initialize_func;
+	/** Finalize format plugin function */
+	OSyncFormatFinalizeFunc finalize_func;
+
 	OSyncFormatCompareFunc cmp_func;
 	OSyncFormatDuplicateFunc duplicate_func;
 	OSyncFormatCopyFunc copy_func;
@@ -60,3 +68,4 @@ struct OSyncObjFormat {
 /*@}*/
 
 #endif /* _OPENSYNC_OBJFORMAT_PRIVATE_H_ */
+
