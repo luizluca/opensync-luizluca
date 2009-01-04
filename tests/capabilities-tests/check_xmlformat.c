@@ -195,38 +195,6 @@ START_TEST (xmlfield_sort)
 }
 END_TEST
 
-START_TEST (xmlformat_schema_get_instance)
-{
-	char *testbed = setup_testbed("xmlformats");	
-
-	OSyncError *error = NULL;
-
-	//TODO disable libxml2 output to stderr
-
-	OSyncXMLFormat *xmlformat = osync_xmlformat_new("abc", &error);
-	OSyncXMLFormatSchema *failschema = osync_xmlformat_schema_get_instance_with_path(xmlformat, testbed, &error);
-	fail_unless(failschema == NULL);
-	osync_xmlformat_unref(xmlformat);
-
-	xmlformat = osync_xmlformat_new("mockobjtype", &error);
-	fail_if(xmlformat == NULL, NULL);
-	fail_if(error == NULL, NULL);
-	
-	OSyncXMLFormatSchema *schema1 = osync_xmlformat_schema_get_instance_with_path(xmlformat, testbed, &error);
-	OSyncXMLFormatSchema *schema2 = osync_xmlformat_schema_get_instance_with_path(xmlformat, testbed, &error);
-	fail_if(schema1 == NULL);
-	fail_if(schema2 == NULL);
-	fail_unless( schema1 == schema2 );
-	fail_unless( schema1->ref_count == 2 );
-
-	osync_xmlformat_schema_unref(schema1);
-	osync_xmlformat_schema_unref(schema2);
-
-	destroy_testbed(testbed);
-
-}
-END_TEST
-
 START_TEST (xmlformat_schema_validate)
 {
         char *testbed = setup_testbed("xmlformats");
@@ -267,7 +235,6 @@ Suite *xmlformat_suite(void)
 	create_case(s, "xmlformat_search_field", xmlformat_search_field);
 
 	// xmlformat schema
-	create_case(s, "xmlformat_schema_get_instance", xmlformat_schema_get_instance);
 	create_case(s, "xmlformat_schema_validate", xmlformat_schema_validate);
 
 	// xmlfield

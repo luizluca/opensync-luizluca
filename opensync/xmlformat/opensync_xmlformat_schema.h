@@ -41,18 +41,6 @@
 OSYNC_EXPORT OSyncXMLFormatSchema *osync_xmlformat_schema_new(const char *objtype, OSyncError **error);
 
 /**
- * @brief Get a schema for an xmlformat.
- *
- * This function creates only one instance of a schema for each objtype. If an xmlformat is passed as a parameter with the same
- * objtype as passed in previously, the returned pointer to an OSyncXMLFormatSchema instance is the same as before.
- *
- * @param xmlformat The pointer to a xmlformat object
- * @param error The error which will hold the info in case of an error
- * @return Pointer to a instance of OSyncXMLFormatSchema
- */
-OSYNC_EXPORT OSyncXMLFormatSchema *osync_xmlformat_schema_get_instance(OSyncXMLFormat *xmlformat, OSyncError **error);
-
-/**
  * @brief Decrement the reference counter. The OSyncXMLFormatSchema object will
  *  be freed if the reference count reaches zero.
  * @param schema Pointer to the OSyncXMLFormatSchema to be freed

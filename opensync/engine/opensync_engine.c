@@ -144,42 +144,6 @@ static int _osync_engine_get_objengine_position(OSyncEngine *engine, OSyncObjEng
 	return ret;
 }
 
-gboolean foreach_schema(void *key, void *value, void *userdata) {
-	osync_xmlformat_schema_unref((OSyncXMLFormatSchema *)value);
-	return TRUE;
-}
-
-static void _osync_engine_finalize_internal_schemas(OSyncEngine *engine)
-{
-
-	if ( engine->internalSchemas != NULL ) {
-		g_hash_table_foreach_remove(engine->internalSchemas, foreach_schema, NULL);
-	} 
-
-}
-
-static void _osync_engine_set_internal_schema(OSyncEngine *engine, const char *objtype, OSyncError **error) 
-{
-	OSyncXMLFormat *xmlformat = NULL;
-	OSyncXMLFormatSchema *schema = NULL;
-
-	// init OSyncXMLFormatSchemas
-	xmlformat = osync_xmlformat_new(objtype, NULL);
-#ifdef OPENSYNC_UNITTESTS
-	schema = osync_xmlformat_schema_get_instance_with_path(xmlformat, engine->schema_dir, error);
-#else
-	schema = osync_xmlformat_schema_get_instance(xmlformat, error);
-#endif
-	osync_xmlformat_unref(xmlformat);
-
-	if (!schema)
-		return;
-
-	osync_trace(TRACE_INTERNAL, "Setting internal schema for objtype %s", objtype);
-
-	g_hash_table_insert(engine->internalSchemas, g_strdup(objtype), schema);
-}
-
 static void _osync_engine_set_internal_format(OSyncEngine *engine, const char *objtype, OSyncObjFormat *format)
 {
 	if (!format)
@@ -1369,15 +1333,6 @@ osync_bool osync_engine_initialize_formats(OSyncEngine *engine, OSyncError **err
 	_osync_engine_set_internal_format(engine, "event", osync_format_env_find_objformat(engine->formatenv, "xmlformat-event"));
 	_osync_engine_set_internal_format(engine, "todo", osync_format_env_find_objformat(engine->formatenv, "xmlformat-todo"));
 	_osync_engine_set_internal_format(engine, "note", osync_format_env_find_objformat(engine->formatenv, "xmlformat-note"));
-	/* init schemas */
-
-	/* TODO: DROP engine-central valdation.
-	 * This should be done after MULTPLIY and WRITE engine command.
-	_osync_engine_set_internal_schema(engine, "contact", error);
-	_osync_engine_set_internal_schema(engine, "event", error);
-	_osync_engine_set_internal_schema(engine, "todo", error);
-	_osync_engine_set_internal_schema(engine, "note", error);
-	*/
 	
 	return TRUE;
 
@@ -1527,9 +1482,6 @@ osync_bool osync_engine_finalize(OSyncEngine *engine, OSyncError **error)
 		engine->pluginenv = NULL;
 	}
 	
-	/* free internal schemas */
-	_osync_engine_finalize_internal_schemas(engine);
-
 	/* Store group modificiations (i.e. last_sync timestamp) */
 	if (!osync_group_save(engine->group, error))
 		goto error;
