@@ -75,6 +75,32 @@ OSyncXMLField *osync_xmlfield_new_xmlfield(OSyncXMLField *parent, xmlNodePtr nod
 	return xmlfield;
 }
 
+OSyncXMLField *osync_xmlfield_new_xmlformat(OSyncXMLFormat *xmlformat, xmlNodePtr node, OSyncError **error)
+{
+	OSyncXMLField *xmlfield = osync_try_malloc0(sizeof(OSyncXMLField), error);
+	if(!xmlfield) {
+		osync_trace(TRACE_ERROR, "%s: %s" , __func__, osync_error_print(error));
+		return NULL;
+	}
+	
+	xmlfield->next = NULL;
+	xmlfield->node = node;
+	xmlfield->prev = xmlformat->last_child;
+	node->_private = xmlfield;
+	
+	if(!xmlformat->first_child)
+		xmlformat->first_child = xmlfield;
+	if(xmlformat->last_child)
+		xmlformat->last_child->next = xmlfield;
+	xmlformat->last_child = xmlfield;
+	xmlformat->child_count++;
+
+	// We don't know if the parsed xmlformat got sorted xmlfield -> unsorted
+	xmlfield->sorted = FALSE;
+	
+	return xmlfield;
+}
+
 osync_bool osync_xmlfield_parse(OSyncXMLField *parent, xmlNodePtr node, OSyncXMLField **first_child, OSyncXMLField **last_child, OSyncError **error)
 {
 	OSyncXMLField *xmlfield = NULL;
@@ -212,7 +238,7 @@ OSyncXMLField *osync_xmlfield_new(OSyncXMLFormat *xmlformat, const char *name, O
 	
 	node = xmlNewTextChild(xmlDocGetRootElement(xmlformat->doc), NULL, BAD_CAST name, NULL);
 	
-	xmlfield = osync_xmlfield_new_xmlfield(xmlformat->last_child, node, error);
+	xmlfield = osync_xmlfield_new_xmlformat(xmlformat, node, error);
 	if(!xmlfield) {
 		xmlUnlinkNode(node);
 		xmlFreeNode(node);

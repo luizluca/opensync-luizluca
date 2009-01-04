@@ -51,10 +51,8 @@ OSyncXMLFormat *osync_xmlformat_new(const char *objtype, OSyncError **error)
 	osync_assert(objtype);
 	
 	xmlformat = osync_try_malloc0(sizeof(OSyncXMLFormat), error);
-	if(!xmlformat) {
-		osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
-		return NULL;
-	}
+	if (!xmlformat)
+		goto error;
 
 	xmlformat->doc = xmlNewDoc(BAD_CAST "1.0");
 	xmlformat->doc->children = xmlNewDocNode(xmlformat->doc, NULL, BAD_CAST objtype, NULL);
@@ -64,9 +62,16 @@ OSyncXMLFormat *osync_xmlformat_new(const char *objtype, OSyncError **error)
 	xmlformat->child_count = 0;
 	xmlformat->sorted = FALSE;
 	xmlformat->doc->_private = xmlformat;
+
+	if (!(xmlformat->xmlfield = osync_xmlfield_new_node(xmlformat->doc->children, error)))
+		goto error;
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, xmlformat);
 	return xmlformat;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
+	return NULL;
 }
 
 OSyncXMLFormat *osync_xmlformat_parse(const char *buffer, unsigned int size, OSyncError **error)
@@ -100,6 +105,9 @@ OSyncXMLFormat *osync_xmlformat_parse(const char *buffer, unsigned int size, OSy
 		goto error;
 
 	xmlformat->xmlfield = xmlfield;
+	/* TODO: get key-count value with a sepcial parase function which
+	 * counts the first-level, by incrementing the node->doc->_private pointer
+	 */
 	xmlformat->child_count = osync_xmlfield_get_key_count(xmlfield);
 
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, xmlformat);
