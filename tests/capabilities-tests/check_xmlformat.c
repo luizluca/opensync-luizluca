@@ -242,7 +242,7 @@ START_TEST (xmlformat_schema_validate)
         fail_unless(error == NULL, NULL);
 
         g_free(buffer);
-        schema = osync_xmlformat_schema_new(xmlformat, testbed, &error);
+        schema = osync_xmlformat_schema_new_xmlformat(xmlformat, testbed, &error);
         fail_if( schema == NULL );
         fail_unless( osync_xmlformat_schema_validate(schema, xmlformat, &error) );
 

@@ -32,6 +32,15 @@
 /*@{*/
 
 /**
+ * @brief Create new OSyncXMLFormatSchema for a certain object type
+ *
+ * @param objtype The object type name to create a OSyncXMLFormatSchema object for 
+ * @param error The error which will hold the info in case of an error
+ * @return new OSyncXMLFormatSchema or NULL in case of an error
+ */
+OSYNC_EXPORT OSyncXMLFormatSchema *osync_xmlformat_schema_new(const char *objtype, OSyncError **error);
+
+/**
  * @brief Get a schema for an xmlformat.
  *
  * This function creates only one instance of a schema for each objtype. If an xmlformat is passed as a parameter with the same

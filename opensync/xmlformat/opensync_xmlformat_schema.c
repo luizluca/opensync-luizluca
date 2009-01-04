@@ -42,14 +42,17 @@ static void _osync_xmlformat_schema_unlock_mutex() {
 }
 
 
-OSyncXMLFormatSchema * osync_xmlformat_schema_new(OSyncXMLFormat *xmlformat, const char *path, OSyncError **error) {
+OSyncXMLFormatSchema *osync_xmlformat_schema_new_path(const char *objtype, const char *path, OSyncError **error) {
 	OSyncXMLFormatSchema * osyncschema = NULL;
 	char *schemafilepath = NULL;
 	xmlSchemaParserCtxtPtr xmlSchemaParserCtxt;
-	
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, xmlformat, path, error);
-	
-	osync_assert(xmlformat);
+
+	osync_trace(TRACE_ENTRY, "%s(%s, %p, %p)", __func__, __NULLSTR(objtype), path, error);
+
+	if (!objtype) {
+		osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "Can't load XML Schema without defined object type.");
+		goto error;
+	}
 	
 	osyncschema = osync_try_malloc0(sizeof(OSyncXMLFormatSchema), error);
 	if(!osyncschema) {
@@ -57,7 +60,7 @@ OSyncXMLFormatSchema * osync_xmlformat_schema_new(OSyncXMLFormat *xmlformat, con
 		// release mutex
 		return NULL;
 	}
-	osyncschema->objtype = g_strdup(osync_xmlformat_get_objtype(xmlformat));
+	osyncschema->objtype = g_strdup(objtype);
 
 	schemafilepath = g_strdup_printf("%s%c%s%s%s",
 	                                 path ? path : OPENSYNC_SCHEMASDIR,
@@ -96,6 +99,15 @@ OSyncXMLFormatSchema * osync_xmlformat_schema_new(OSyncXMLFormat *xmlformat, con
 	return NULL;
 }
 
+OSyncXMLFormatSchema *osync_xmlformat_schema_new_xmlformat(OSyncXMLFormat *xmlformat, const char *path, OSyncError **error) {
+	return osync_xmlformat_schema_new_path(osync_xmlformat_get_objtype(xmlformat), path, error);
+}
+
+
+OSyncXMLFormatSchema *osync_xmlformat_schema_new(const char *objtype, OSyncError **error) {
+	return osync_xmlformat_schema_new_path(objtype, NULL, error);
+}
+
 /**
  * @brief Get a schema for the xmlformat.
  *
@@ -132,7 +144,7 @@ OSyncXMLFormatSchema *osync_xmlformat_schema_get_instance_with_path(OSyncXMLForm
 		osyncschema = NULL;
 	}
 	if ( osyncschema == NULL ) {
-		osyncschema = osync_xmlformat_schema_new(xmlformat, schemadir, error);
+		osyncschema = osync_xmlformat_schema_new_xmlformat(xmlformat, schemadir, error);
 		if ( osyncschema != NULL ) {
 			schemas = g_list_append(schemas, osyncschema);
 		}

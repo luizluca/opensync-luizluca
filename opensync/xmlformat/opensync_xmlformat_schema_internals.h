@@ -38,8 +38,16 @@
  * @param error The error which will hold the info in case of an error
  * @return new OSyncXMLFormatSchema or NULL in case of an error
  */
-OSYNC_TEST_EXPORT OSyncXMLFormatSchema *osync_xmlformat_schema_new(OSyncXMLFormat *xmlformat, const char *path, OSyncError **error);
+OSYNC_TEST_EXPORT OSyncXMLFormatSchema *osync_xmlformat_schema_new_xmlformat(OSyncXMLFormat *xmlformat, const char *path, OSyncError **error);
 
+/**
+ * @brief Create new OSyncXMLFormatSchema for a certain object type
+ * @param objtype The object type name to create a OSyncXMLFormatSchema object for 
+ * @param path The individual schema path. If NULL the default OPENSYNC_SCHEMASDIR is used.
+ * @param error The error which will hold the info in case of an error
+ * @return new OSyncXMLFormatSchema or NULL in case of an error
+ */
+OSYNC_TEST_EXPORT OSyncXMLFormatSchema *osync_xmlformat_schema_new_path(const char *objtype, const char *path, OSyncError **error);
 
 /**
  * @brief Get a  schema for the xmlformat.
