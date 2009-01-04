@@ -205,7 +205,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 	data = osync_change_get_data(change);
 
 	/* try to detect encapsulated formats */
-	if (!strcmp(objtype, "data")) { /* @TODO: restricted to objtype data, due to the testsuite (and perforamnce)! */
+	if (!strstr(objtype, "mockobjtype")) { /* @TODO: exclude "mockobjtype"s, due to the testsuite issues! */
 		detected_format = osync_format_env_detect_objformat_full(engine->formatenv, data, &error);
 		if (detected_format && detected_format != osync_change_get_objformat(change)) {
 			osync_trace(TRACE_INTERNAL, "Detected format (%s) different then the reported format (%s)!",
