@@ -131,28 +131,28 @@ OSYNC_TEST_EXPORT osync_bool osync_objformat_is_equal(OSyncObjFormat *leftformat
 OSYNC_TEST_EXPORT osync_bool osync_objformat_must_marshal(OSyncObjFormat *format);
 
 /**
- * @brief Marshals supplied input in format specific way into a serialized OSyncMessage
+ * @brief Marshals supplied input in format specific way into a serialized OSyncMarshal
  *
  * @param format Pointer to the object format
  * @param input Data to marshal
  * @param inpsize Size of supplied data
- * @param message Marshaled data in a OSyncMessage
+ * @param marshal Marshaled data in a OSyncMarshal
  * @param error Pointer to an error struct
  * @returns TRUE on success, FALSE otherwise
  */
-OSYNC_TEST_EXPORT osync_bool osync_objformat_marshal(OSyncObjFormat *format, const char *input, unsigned int inpsize, OSyncMessage *message, OSyncError **error);
+OSYNC_TEST_EXPORT osync_bool osync_objformat_marshal(OSyncObjFormat *format, const char *input, unsigned int inpsize, OSyncMarshal *marshal, OSyncError **error);
 
 /**
- * @brief Demarshals supplied OSyncMessage in format specific way
+ * @brief Demarshals supplied OSyncMarshal in format specific way
  *
  * @param format Pointer to the object format
- * @param message Marshaled data as OSyncMessage
+ * @param marshal Marshaled data as OSyncMarshal
  * @param output Data to store unserialized Message content
  * @param outpsize Size of demarshled data in output parameter
  * @param error Pointer to an error struct
  * @returns TRUE on success, FALSE otherwise
  */
-OSYNC_TEST_EXPORT osync_bool osync_objformat_demarshal(OSyncObjFormat *format, OSyncMessage *message, char **output, unsigned int *outpsize, OSyncError **error);
+OSYNC_TEST_EXPORT osync_bool osync_objformat_demarshal(OSyncObjFormat *format, OSyncMarshal *marshal, char **output, unsigned int *outpsize, OSyncError **error);
 
 /**
  * @brief Validate supplied data in format specific way

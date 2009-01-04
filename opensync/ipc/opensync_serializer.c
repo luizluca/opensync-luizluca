@@ -65,7 +65,8 @@ osync_bool osync_marshal_data(OSyncMessage *message, OSyncData *data, OSyncError
 		/* If the format must be marshalled, we call the marshal function
 		 * and the send the marshalled data. Otherwise we send the unmarshalled data */
 		if (osync_objformat_must_marshal(objformat) == TRUE) {
-			if (!osync_objformat_marshal(objformat, input_data, input_size, message, error))
+			OSyncMarshal *marshal = osync_message_get_marshal(message);
+			if (!osync_objformat_marshal(objformat, input_data, input_size, marshal, error))
 				goto error;
 		} else {
 			/* If the format is a plain format, then we have to add
@@ -119,7 +120,8 @@ osync_bool osync_demarshal_data(OSyncMessage *message, OSyncData **data, OSyncFo
 	
 	if (has_data) {
 		if (osync_objformat_must_marshal(format) == TRUE) {
-			if (!osync_objformat_demarshal(format, message, &input_data, &input_size, error))
+			OSyncMarshal *marshal = osync_message_get_marshal(message);
+			if (!osync_objformat_demarshal(format, marshal, &input_data, &input_size, error))
 				goto error;
 		} else {
 			osync_message_read_buffer(message, (void *)&input_data, (int *)&input_size);

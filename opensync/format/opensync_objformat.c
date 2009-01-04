@@ -260,11 +260,11 @@ osync_bool osync_objformat_must_marshal(OSyncObjFormat *format)
 	return format->marshal_func ? TRUE : FALSE;
 }
 
-osync_bool osync_objformat_marshal(OSyncObjFormat *format, const char *input, unsigned int inpsize, OSyncMessage *message, OSyncError **error)
+osync_bool osync_objformat_marshal(OSyncObjFormat *format, const char *input, unsigned int inpsize, OSyncMarshal *marshal, OSyncError **error)
 {
 	osync_assert(format);
 	osync_return_val_if_fail(format->marshal_func, TRUE);
-	return format->marshal_func(input, inpsize, message, error);
+	return format->marshal_func(input, inpsize, marshal, error);
 }
 
 void osync_objformat_set_demarshal_func(OSyncObjFormat *format, OSyncFormatDemarshalFunc demarshal_func)
@@ -273,11 +273,11 @@ void osync_objformat_set_demarshal_func(OSyncObjFormat *format, OSyncFormatDemar
 	format->demarshal_func = demarshal_func;
 }
 
-osync_bool osync_objformat_demarshal(OSyncObjFormat *format, OSyncMessage *message, char **output, unsigned int *outpsize, OSyncError **error)
+osync_bool osync_objformat_demarshal(OSyncObjFormat *format, OSyncMarshal *marshal, char **output, unsigned int *outpsize, OSyncError **error)
 {
 	osync_assert(format);
 	osync_return_val_if_fail(format->demarshal_func, TRUE);
-	return format->demarshal_func(message, output, outpsize, error);
+	return format->demarshal_func(marshal, output, outpsize, error);
 }
 
 void osync_objformat_set_validate_func(OSyncObjFormat *format, OSyncFormatValidateFunc validate_func)
