@@ -205,14 +205,12 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 	data = osync_change_get_data(change);
 
 	/* try to detect encapsulated formats */
-	if (!strstr(objtype, "mockobjtype")) { /* @TODO: exclude "mockobjtype"s, due to the testsuite issues! */
-		detected_format = osync_format_env_detect_objformat_full(engine->formatenv, data, &error);
-		if (detected_format && detected_format != osync_change_get_objformat(change)) {
-			osync_trace(TRACE_INTERNAL, "Detected format (%s) different then the reported format (%s)!",
-			osync_objformat_get_name(detected_format),
-			osync_objformat_get_name(osync_change_get_objformat(change)));
-			objtype = osync_objformat_get_objtype(detected_format);
-		}
+	detected_format = osync_format_env_detect_objformat_full(engine->formatenv, data, &error);
+	if (detected_format && detected_format != osync_change_get_objformat(change)) {
+		osync_trace(TRACE_INTERNAL, "Detected format (%s) different then the reported format (%s)!",
+		osync_objformat_get_name(detected_format),
+		osync_objformat_get_name(osync_change_get_objformat(change)));
+		objtype = osync_objformat_get_objtype(detected_format);
 	}
 	
 	member_objtype = g_strdup_printf("%lli_%s", memberid, objtype); 

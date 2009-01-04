@@ -296,13 +296,16 @@ const char *osync_converter_path_get_config(OSyncFormatConverterPath *path)
 
 void osync_converter_path_set_config(OSyncFormatConverterPath *path, const char *config)
 {
-	osync_assert(path);
-	osync_assert(config);
+	osync_return_if_fail(path);
+	osync_return_if_fail(config);
 
-	if (path->config)
+	if (path->config) {
 		g_free(path->config);
+		path->config = NULL;
+	}
 
-	path->config = g_strdup(config);
+	if (config)
+		path->config = g_strdup(config);
 }
 
 void osync_converter_set_initialize_func(OSyncFormatConverter *converter, OSyncFormatConverterInitializeFunc initialize_func)

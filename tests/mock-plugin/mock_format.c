@@ -77,7 +77,7 @@ static OSyncConvCmpResult compare_file(const char *leftdata, unsigned int leftsi
 	return OSYNC_CONV_DATA_MISMATCH;
 }
 
-static osync_bool conv_file_to_plain(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
+static osync_bool conv_mockformat1_to_mockformat2(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
 {
 	osync_trace(TRACE_INTERNAL, "Converting file to plain");
 	
@@ -94,7 +94,7 @@ static osync_bool conv_file_to_plain(char *input, unsigned int inpsize, char **o
 	return TRUE;
 }
 
-static osync_bool conv_plain_to_file(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
+static osync_bool conv_mockformat2_to_mockformat1(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
 {
 	osync_trace(TRACE_INTERNAL, "Converting plain to file");
 	
@@ -124,6 +124,14 @@ static void destroy_file(char *input, unsigned int inpsize)
 		g_free(file->path);
 	
 	g_free(file);
+}
+
+static void destroy_mockformat2(char *input, unsigned int inpsize)
+{
+	if (!input || inpsize == 0)
+		return;
+
+	osync_free(input);
 }
 
 static osync_bool duplicate_file(const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, OSyncError **error)
@@ -252,6 +260,7 @@ osync_bool get_format_info(OSyncFormatEnv *env, OSyncError **error)
 	osync_assert(format);
 
 	_format_set_functions(format);
+	osync_objformat_set_destroy_func(format, destroy_mockformat2);
 
 	osync_format_env_register_objformat(env, format);
 	osync_objformat_unref(format);
@@ -279,13 +288,13 @@ osync_bool get_conversion_info(OSyncFormatEnv *env, OSyncError **error)
 	OSyncObjFormat *mockformat2 = osync_format_env_find_objformat(env, "mockformat2");
 	osync_assert(mockformat2);
 	
-	conv = osync_converter_new(OSYNC_CONVERTER_DECAP, mockformat1, mockformat2, conv_file_to_plain, error);
+	conv = osync_converter_new(OSYNC_CONVERTER_ENCAP, mockformat1, mockformat2, conv_mockformat1_to_mockformat2, error);
 	osync_assert(conv);
 	
 	osync_format_env_register_converter(env, conv);
 	osync_converter_unref(conv);
 	
-	conv = osync_converter_new(OSYNC_CONVERTER_ENCAP, mockformat2, mockformat1, conv_plain_to_file, error);
+	conv = osync_converter_new(OSYNC_CONVERTER_DECAP, mockformat2, mockformat1, conv_mockformat2_to_mockformat1, error);
 	osync_assert(conv);
 	
 	osync_format_env_register_converter(env, conv);
