@@ -1110,6 +1110,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 				/* Merger - Save the entire data and demerge */
 				if (osync_group_get_merger_enabled(osync_engine_get_group(engine->parent)) &&
+						osync_member_get_capabilities(member) &&
 						osync_group_get_converter_enabled(osync_engine_get_group(engine->parent)) &&	
 						entry_engine->change &&
 						(osync_change_get_changetype(entry_engine->change) != OSYNC_CHANGE_TYPE_DELETED) &&
@@ -1122,7 +1123,6 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 						const char *objtype = NULL;
 						OSyncMapping *mapping = NULL;
 						OSyncCapabilities *caps;
-						OSyncMember *member = osync_client_proxy_get_member(sinkengine->proxy);
 						OSyncObjFormat *objformat = osync_change_get_objformat(entry_engine->change);
 
 						osync_trace(TRACE_INTERNAL, "Entry %s for member %lli: Dirty: %i", osync_change_get_uid(entry_engine->change), memberid, osync_entry_engine_is_dirty(entry_engine));
