@@ -231,6 +231,7 @@ typedef struct OSyncXMLFieldList OSyncXMLFieldList;
 
 /* Common component */
 typedef struct OSyncError OSyncError;
+typedef struct OSyncMarshal OSyncMarshal;
 
 /* Version component */
 typedef struct OSyncVersion OSyncVersion;

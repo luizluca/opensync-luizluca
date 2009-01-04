@@ -13,6 +13,7 @@ SET( libopensync_LIB_SRCS
    common/opensync_error.c
    common/opensync_file.c
    common/opensync_list.c
+   common/opensync_marshal.c
    common/opensync_memory.c
    common/opensync_string.c
    common/opensync_thread.c

@@ -1,7 +1,6 @@
 /*
  * libopensync - A synchronization framework
  * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
- * Copyright (C) 2006-2009  Daniel Gollub <dgollub@suse.de>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,19 +18,32 @@
  * 
  */
 
-#ifndef _OPENSYNC_COMMON_H
-#define _OPENSYNC_COMMON_H
+#ifndef _OPENSYNC_MARSHAL_PRIVATE_H
+#define _OPENSYNC_MARSHAL_PRIVATE_H
 
-OPENSYNC_BEGIN_DECLS
+/**
+ * @defgroup OSyncCommonPrivate OpenSync Common Module Private
+ * @ingroup OSyncPrivate
+ * @defgroup OSyncMarshalPrivateAPI OpenSync Marshal Private 
+ * @ingroup OSyncMarshalPrivate
+ * @brief Serialized buffer 
+ * 
+ */
 
-#include "opensync/common/opensync_error.h"
-#include "opensync/common/opensync_file.h"
-#include "opensync/common/opensync_list.h"
-#include "opensync/common/opensync_memory.h"
-#include "opensync/common/opensync_marshal.h"
-#include "opensync/common/opensync_string.h"
+/*@{*/
+/*! @brief A OSyncMarshal object 
+ * 
+ */
+struct OSyncMarshal {
+	/** Reference counting */
+	int  ref_count;
+	/** The pointer to the internal **/
+	GByteArray *buffer;
+	/** The current read position **/
+	int buffer_read_pos;
+};
 
-OPENSYNC_END_DECLS
+/*@}*/
 
-#endif /* _OPENSYNC_COMMON_H */
+#endif /* _OPENSYNC_MARSHAL_PRIVATE_H */
 
