@@ -221,24 +221,30 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 	internalFormat = _osync_engine_get_internal_format(engine, objtype);
 	osync_trace(TRACE_INTERNAL, "common format %p for objtype %s", internalFormat, objtype);
 
-	/* Only convert if the engine is allowed to convert and if a internal format is available. 
+	/* Only convert if the engine is allowed to convert and if an "internal" or detected format is available. 
 		 The reason that the engine isn't allowed to convert could be backup. dumping the changes. 
 		 Do not convert anything if the chagetype is DELETED. */
-	if (internalFormat && osync_group_get_converter_enabled(engine->group) && (osync_change_get_changetype(change) != OSYNC_CHANGE_TYPE_DELETED)) {
+
+	/* TODO: Move common format conversion into objengine. Use this conversion only for
+	 * encapsulating formats, if required.
+	 */
+	if ((internalFormat || detected_format) && osync_group_get_converter_enabled(engine->group) && (osync_change_get_changetype(change) != OSYNC_CHANGE_TYPE_DELETED)) {
 		OSyncFormatConverterPath *path = NULL;
 		OSyncObjFormatSink *formatsink = NULL;
-		osync_trace(TRACE_INTERNAL, "converting to common format %s", osync_objformat_get_name(internalFormat));
+		OSyncObjFormat *temp_format = internalFormat ? internalFormat : detected_format;
+		osync_trace(TRACE_INTERNAL, "converting to format %s", osync_objformat_get_name(temp_format));
 
 		path = _osync_engine_get_converter_path(engine, member_objtype);
 		if(!path) {
-			path = osync_format_env_find_path_with_detectors(engine->formatenv, osync_change_get_data(change), internalFormat, NULL, &error);
+			path = osync_format_env_find_path_with_detectors(engine->formatenv, osync_change_get_data(change), temp_format, NULL, &error);
 			_osync_engine_set_converter_path(engine, member_objtype, path);
 		}
 
 		if (!path)
 			goto error;
 	
-		formatsink = osync_objtype_sink_find_objformat_sink(objtype_sink, internalFormat);
+		/* Get the current configured format to honor the plugin configuration! */
+		formatsink = osync_objtype_sink_find_objformat_sink(objtype_sink, osync_change_get_objformat(change));
 		if (formatsink) {
 			const char *config = osync_objformat_sink_get_config(formatsink); 
 			osync_converter_path_set_config(path, config);
@@ -249,6 +255,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 		}
 	}
 	
+	/* TODO: Move this into the objengine. */
 	/* Merger - Merge lost information to the change (don't merger anything when changetype is DELETED.) */
 	if( osync_group_get_merger_enabled(engine->group) &&
 			osync_group_get_converter_enabled(engine->group) &&	
