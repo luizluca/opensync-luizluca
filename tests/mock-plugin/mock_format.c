@@ -29,24 +29,24 @@
 
 static osync_bool mock_format_get_error(const char *domain)
 {
-        const char *env = g_getenv(domain);
+	const char *env = g_getenv(domain);
 
-        if (!env)
-                return FALSE;
+	if (!env)
+		return FALSE;
 
-        char *chancestr = g_strdup_printf("%s_PROB", domain);
-        const char *chance = g_getenv(chancestr);
-        g_free(chancestr);
-        if (!chance)
-                return TRUE;
-        int prob = atoi(chance);
-        if (prob >= g_random_int_range(0, 100))
-                return TRUE;
+	char *chancestr = g_strdup_printf("%s_PROB", domain);
+	const char *chance = g_getenv(chancestr);
+	g_free(chancestr);
+	if (!chance)
+		return TRUE;
+	int prob = atoi(chance);
+	if (prob >= g_random_int_range(0, 100))
+		return TRUE;
 
-        return FALSE;
+	return FALSE;
 }
 
-static OSyncConvCmpResult compare_file(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize)
+static OSyncConvCmpResult compare_file(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *user_data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p, %i)", __func__, leftdata, leftsize, rightdata, rightsize);
 	osync_assert(leftdata);
@@ -112,7 +112,7 @@ static osync_bool conv_mockformat2_to_mockformat1(char *input, unsigned int inps
 	return TRUE;
 }
 
-static void destroy_file(char *input, unsigned int inpsize)
+static void destroy_file(char *input, unsigned int inpsize, void *user_data)
 {
 	OSyncFileFormat *file = (OSyncFileFormat *)input;
 	osync_assert(sizeof(OSyncFileFormat) == inpsize);
@@ -126,7 +126,7 @@ static void destroy_file(char *input, unsigned int inpsize)
 	g_free(file);
 }
 
-static void destroy_mockformat2(char *input, unsigned int inpsize)
+static void destroy_mockformat2(char *input, unsigned int inpsize, void *user_data)
 {
 	if (!input || inpsize == 0)
 		return;
@@ -134,7 +134,7 @@ static void destroy_mockformat2(char *input, unsigned int inpsize)
 	osync_free(input);
 }
 
-static osync_bool duplicate_file(const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, OSyncError **error)
+static osync_bool duplicate_file(const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, void *user_data, OSyncError **error)
 {
 	OSyncFileFormat *file = (OSyncFileFormat *)input;
 	
@@ -146,7 +146,7 @@ static osync_bool duplicate_file(const char *uid, const char *input, unsigned in
 	return TRUE;
 }
 
-static osync_bool copy_file(const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, OSyncError **error)
+static osync_bool copy_file(const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, void *user_data, OSyncError **error)
 {
 	OSyncFileFormat *inpfile = (OSyncFileFormat *)input;
 	
@@ -166,7 +166,7 @@ static osync_bool copy_file(const char *input, unsigned int inpsize, char **outp
 	return TRUE;
 }
 
-static void create_file(char **buffer, unsigned int *size)
+static void create_file(char **buffer, unsigned int *size, void *user_data)
 {
 	OSyncFileFormat *outfile = osync_try_malloc0(sizeof(OSyncFileFormat), NULL);
 	
@@ -179,7 +179,7 @@ static void create_file(char **buffer, unsigned int *size)
 	*size = sizeof(OSyncFileFormat);
 }
 
-static time_t revision_file(const char *input, unsigned int inpsize, OSyncError **error)
+static time_t revision_file(const char *input, unsigned int inpsize, void *user_data, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p)", __func__, input, inpsize, error);
 	
@@ -190,7 +190,7 @@ static time_t revision_file(const char *input, unsigned int inpsize, OSyncError 
 	return lastmod;
 }
 
-static char *print_file(const char *data, unsigned int size)
+static char *print_file(const char *data, unsigned int size, void *user_data)
 {
 	OSyncFileFormat *file = (OSyncFileFormat *)data;
 	
@@ -198,7 +198,7 @@ static char *print_file(const char *data, unsigned int size)
 	return printable;
 }
 
-static osync_bool marshal_file(const char *input, unsigned int inpsize, OSyncMarshal *marshal, OSyncError **error)
+static osync_bool marshal_file(const char *input, unsigned int inpsize, OSyncMarshal *marshal, void *user_data, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p, %p)", __func__, input, inpsize, marshal, error);
 	
@@ -211,7 +211,7 @@ static osync_bool marshal_file(const char *input, unsigned int inpsize, OSyncMar
 	return TRUE;
 }
 
-static osync_bool demarshal_file(OSyncMarshal *marshal, char **output, unsigned int *outpsize, OSyncError **error)
+static osync_bool demarshal_file(OSyncMarshal *marshal, char **output, unsigned int *outpsize, void *user_data, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, marshal, output, outpsize, error);
 	

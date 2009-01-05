@@ -31,21 +31,21 @@
 /*@{*/
 
 typedef void * (* OSyncFormatInitializeFunc) (OSyncError **error);
-typedef void (* OSyncFormatFinalizeFunc) (void *userdata);
+typedef void (* OSyncFormatFinalizeFunc) (void *user_data);
 
-typedef OSyncConvCmpResult (* OSyncFormatCompareFunc) (const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize);
-typedef osync_bool (* OSyncFormatCopyFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, OSyncError **error);
-typedef osync_bool (* OSyncFormatDuplicateFunc) (const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, OSyncError **error);
-typedef void (* OSyncFormatCreateFunc) (char **data, unsigned int *size);
-typedef void (* OSyncFormatDestroyFunc) (char *data, unsigned int size);
-typedef char *(* OSyncFormatPrintFunc) (const char *data, unsigned int size);
-typedef time_t (* OSyncFormatRevisionFunc) (const char *data, unsigned int size, OSyncError **error);
-typedef osync_bool (* OSyncFormatMarshalFunc) (const char *input, unsigned int inpsize, OSyncMarshal *marshal, OSyncError **error);
-typedef osync_bool (* OSyncFormatDemarshalFunc) (OSyncMarshal *marshal, char **output, unsigned int *outpsize, OSyncError **error);
+typedef OSyncConvCmpResult (* OSyncFormatCompareFunc) (const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *user_data);
+typedef osync_bool (* OSyncFormatCopyFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, void *user_data, OSyncError **error);
+typedef osync_bool (* OSyncFormatDuplicateFunc) (const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, void *user_data, OSyncError **error);
+typedef void (* OSyncFormatCreateFunc) (char **data, unsigned int *size, void *user_data);
+typedef void (* OSyncFormatDestroyFunc) (char *data, unsigned int size, void *user_data);
+typedef char *(* OSyncFormatPrintFunc) (const char *data, unsigned int size, void *user_data);
+typedef time_t (* OSyncFormatRevisionFunc) (const char *data, unsigned int size, void *user_data, OSyncError **error);
+typedef osync_bool (* OSyncFormatMarshalFunc) (const char *input, unsigned int inpsize, OSyncMarshal *marshal, void *user_data, OSyncError **error);
+typedef osync_bool (* OSyncFormatDemarshalFunc) (OSyncMarshal *marshal, char **output, unsigned int *outpsize, void *user_data, OSyncError **error);
 typedef osync_bool (* OSyncFormatValidateFunc) (const char *data, unsigned int size, void *user_data, OSyncError **error);
 
-typedef osync_bool (* OSyncFormatMergeFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize,  const char *entire, unsigned int entsize, OSyncCapabilities *caps, OSyncError **error);
-typedef osync_bool (* OSyncFormatDemergeFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, OSyncCapabilities *caps, OSyncError **error);
+typedef osync_bool (* OSyncFormatMergeFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize,  const char *entire, unsigned int entsize, OSyncCapabilities *caps,void *user_data, OSyncError **error);
+typedef osync_bool (* OSyncFormatDemergeFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, OSyncCapabilities *caps, void *user_data, OSyncError **error);
 
 /**
  * @brief Creates a new object format

@@ -131,7 +131,7 @@ OSyncConvCmpResult osync_objformat_compare(OSyncObjFormat *format, const char *l
 {
 	osync_return_val_if_fail(format, OSYNC_CONV_DATA_UNKNOWN);
 	osync_return_val_if_fail(format->cmp_func, OSYNC_CONV_DATA_UNKNOWN);
-	return format->cmp_func(leftdata, leftsize, rightdata, rightsize);
+	return format->cmp_func(leftdata, leftsize, rightdata, rightsize, format->user_data);
 }
 
 void osync_objformat_set_destroy_func(OSyncObjFormat *format, OSyncFormatDestroyFunc destroy_func)
@@ -149,7 +149,7 @@ void osync_objformat_destroy(OSyncObjFormat *format, char *data, unsigned int si
 		return;
 	}
 	
-	format->destroy_func(data, size);
+	format->destroy_func(data, size, format->user_data);
 }
 
 void osync_objformat_set_copy_func(OSyncObjFormat *format, OSyncFormatCopyFunc copy_func)
@@ -173,7 +173,7 @@ osync_bool osync_objformat_copy(OSyncObjFormat *format, const char *indata, unsi
 		memcpy(*outdata, indata, insize);
 		*outsize = insize;
 	} else {
-		if (!format->copy_func(indata, insize, outdata, outsize, error)) {
+		if (!format->copy_func(indata, insize, outdata, outsize, format->user_data, error)) {
 			osync_error_set(error, OSYNC_ERROR_GENERIC, "Something went wrong during copying");
 			return FALSE;
 		}
@@ -196,7 +196,7 @@ osync_bool osync_objformat_duplicate(OSyncObjFormat *format, const char *uid, co
 		return FALSE;
 	}
 
-	return format->duplicate_func(uid, input, insize, newuid, output, outsize, dirty, error);
+	return format->duplicate_func(uid, input, insize, newuid, output, outsize, dirty, format->user_data, error);
 }
 
 void osync_objformat_set_create_func(OSyncObjFormat *format, OSyncFormatCreateFunc create_func)
@@ -210,7 +210,7 @@ void osync_objformat_create(OSyncObjFormat *format, char **data, unsigned int *s
 	osync_return_if_fail(format);
 	osync_return_if_fail(format->create_func);
 
-	format->create_func(data, size);
+	format->create_func(data, size, format->user_data);
 }
 
 void osync_objformat_set_print_func(OSyncObjFormat *format, OSyncFormatPrintFunc print_func)
@@ -226,7 +226,7 @@ char *osync_objformat_print(OSyncObjFormat *format, const char *data, unsigned i
 	if (!format->print_func)
 		return g_strndup(data, size);
 	
-	return format->print_func(data, size);
+	return format->print_func(data, size, format->user_data);
 }
 
 void osync_objformat_set_revision_func(OSyncObjFormat *format, OSyncFormatRevisionFunc revision_func)
@@ -245,7 +245,7 @@ time_t osync_objformat_get_revision(OSyncObjFormat *format, const char *data, un
 		return -1;
 	}
 	
-	return format->revision_func(data, size, error);
+	return format->revision_func(data, size, format->user_data, error);
 }
 
 void osync_objformat_set_marshal_func(OSyncObjFormat *format, OSyncFormatMarshalFunc marshal_func)
@@ -264,7 +264,7 @@ osync_bool osync_objformat_marshal(OSyncObjFormat *format, const char *input, un
 {
 	osync_assert(format);
 	osync_return_val_if_fail(format->marshal_func, TRUE);
-	return format->marshal_func(input, inpsize, marshal, error);
+	return format->marshal_func(input, inpsize, marshal, format->user_data, error);
 }
 
 void osync_objformat_set_demarshal_func(OSyncObjFormat *format, OSyncFormatDemarshalFunc demarshal_func)
@@ -277,7 +277,7 @@ osync_bool osync_objformat_demarshal(OSyncObjFormat *format, OSyncMarshal *marsh
 {
 	osync_assert(format);
 	osync_return_val_if_fail(format->demarshal_func, TRUE);
-	return format->demarshal_func(marshal, output, outpsize, error);
+	return format->demarshal_func(marshal, output, outpsize, format->user_data, error);
 }
 
 void osync_objformat_set_validate_func(OSyncObjFormat *format, OSyncFormatValidateFunc validate_func)
@@ -313,7 +313,7 @@ osync_bool osync_objformat_merge(OSyncObjFormat *format,
 {
 	osync_assert(format);
 	osync_return_val_if_fail(format->merge_func, TRUE);
-	return format->merge_func(input, inpsize, output, outpsize, entire, entsize, caps, error);
+	return format->merge_func(input, inpsize, output, outpsize, entire, entsize, caps, format->user_data, error);
 }
 
 void osync_objformat_set_demerge_func(OSyncObjFormat *format, OSyncFormatDemergeFunc demerge_func)
@@ -329,7 +329,7 @@ osync_bool osync_objformat_demerge(OSyncObjFormat *format,
 {
 	osync_assert(format);
 	osync_return_val_if_fail(format->demerge_func, TRUE);
-	return format->demerge_func(input, inpsize, output, outpsize, caps, error);
+	return format->demerge_func(input, inpsize, output, outpsize, caps, format->user_data, error);
 }
 
 

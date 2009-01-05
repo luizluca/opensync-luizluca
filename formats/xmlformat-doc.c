@@ -98,7 +98,7 @@ static osync_bool to_xml(char *input, unsigned int inpsize, char **output, unsig
 	return TRUE;
 }
 
-static void destroy(char *input, unsigned int inpsize)
+static void destroy(char *input, unsigned int inpsize, void *user_data)
 {
 	free(input);
 }

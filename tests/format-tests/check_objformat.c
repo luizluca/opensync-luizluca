@@ -4,7 +4,7 @@
 #include <opensync/opensync-serializer.h>
 #include "opensync/format/opensync_objformat_internals.h"
 
-static OSyncConvCmpResult compare_format(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize)
+static OSyncConvCmpResult compare_format(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *user_data)
 {
 	if (rightsize == leftsize && !strcmp(leftdata, rightdata))
 		return OSYNC_CONV_DATA_SAME;
@@ -12,48 +12,48 @@ static OSyncConvCmpResult compare_format(const char *leftdata, unsigned int left
 	return OSYNC_CONV_DATA_MISMATCH;
 }
 
-void destroy_format(char *data, unsigned int size)
+void destroy_format(char *data, unsigned int size, void *user_data)
 {
 	g_free(data);
 }
 
-osync_bool copy_format(const char *indata, unsigned int insize, char **outdata, unsigned int *outsize, OSyncError **error)
+osync_bool copy_format(const char *indata, unsigned int insize, char **outdata, unsigned int *outsize, void *user_data, OSyncError **error)
 {
 	*outdata = strdup(indata);
 	*outsize = insize;
 	return TRUE;
 }
 
-static osync_bool duplicate_format(const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, OSyncError **error)
+static osync_bool duplicate_format(const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, void *user_data, OSyncError **error)
 {
 	fail_unless(!strcmp(uid, "uid"), NULL);
 	*newuid = strdup("newuid");
 	return TRUE;
 }
 
-void create_format(char **data, unsigned int *size)
+void create_format(char **data, unsigned int *size, void *user_data)
 {
 	*data = strdup("data");
 	*size = 5;
 }
 
-char *print_format(const char *data, unsigned int size)
+char *print_format(const char *data, unsigned int size, void *user_data)
 {
 	return strdup(data);
 }
 
-time_t revision_format(const char *data, unsigned int size, OSyncError **error)
+time_t revision_format(const char *data, unsigned int size, void *user_data, OSyncError **error)
 {
 	return atoi(data);
 }
 
-osync_bool marshal_format(const char *input, unsigned int inpsize, OSyncMarshal *marshal, OSyncError **error)
+osync_bool marshal_format(const char *input, unsigned int inpsize, OSyncMarshal *marshal, void *user_data, OSyncError **error)
 {
 	osync_marshal_write_buffer(marshal, input, inpsize);
 	return TRUE;
 }
 
-osync_bool demarshal_format(OSyncMarshal *marshal, char **output, unsigned int *outsize, OSyncError **error)
+osync_bool demarshal_format(OSyncMarshal *marshal, char **output, unsigned int *outsize, void *user_data, OSyncError **error)
 {
 	osync_marshal_read_buffer(marshal, (void *)output, (int *)outsize);
 	return TRUE;

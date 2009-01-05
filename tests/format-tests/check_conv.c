@@ -117,7 +117,7 @@ START_TEST (conv_env_objformat_find_false)
 }
 END_TEST
 
-osync_bool convert_func(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void* userdata, OSyncError **error)
+osync_bool convert_func(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void* user_data, OSyncError **error)
 {
 	*free_input = TRUE;
 	*output = g_strdup("test");
@@ -360,7 +360,7 @@ static OSyncChange *create_change(OSyncObjFormat *fmt, char *data, size_t datasi
 }
 #endif
 
-static void format_simple_destroy(char *data, unsigned int size)
+static void format_simple_destroy(char *data, unsigned int size, void *user_data)
 {
 	osync_assert(data);
 	if (size)

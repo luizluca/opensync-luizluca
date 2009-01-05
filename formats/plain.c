@@ -26,7 +26,7 @@
 #include <opensync/opensync-format.h>
 #include <opensync/opensync-xmlformat.h>
 
-static OSyncConvCmpResult compare_plain(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize)
+static OSyncConvCmpResult compare_plain(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *user_data)
 {
 	/* Consider empty block equal NULL pointers */
 	if (!leftsize) leftdata = NULL;
@@ -45,7 +45,7 @@ static OSyncConvCmpResult compare_plain(const char *leftdata, unsigned int lefts
 	return OSYNC_CONV_DATA_MISMATCH;
 }
 
-static osync_bool copy_plain(const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, OSyncError **error)
+static osync_bool copy_plain(const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, void *user_data, OSyncError **error)
 {
 	char *r = g_malloc0(inpsize);
 
@@ -115,7 +115,7 @@ static osync_bool conv_memo_to_xmlformatnote(char *input, unsigned int inpsize, 
 	return TRUE;
 }
 
-static void destroy_plain(char *input, unsigned int inpsize)
+static void destroy_plain(char *input, unsigned int inpsize, void *user_data)
 {
 	g_free(input);
 }
