@@ -21,6 +21,9 @@
 #ifndef _OPENSYNC_PLUGIN_INTERNALS_H_
 #define _OPENSYNC_PLUGIN_INTERNALS_H_
 
+/* TODO: Removed from 0.40 Public API. Untested and uncomplete. */
+typedef osync_bool (* usable_fn) (OSyncError **);
+
 /**
  * @defgroup OSyncPluginPrivateAPI OpenSync Plugin Internals
  * @ingroup OSyncPrivate
@@ -29,6 +32,22 @@
  */
 /*@{*/
 
+/*! @brief Checks if a plugin is available and usable
+ * 
+ * @param plugin The plugin to check
+ * @param error If the return was FALSE, will contain information on why the plugin is not available
+ * @returns TRUE if the plugin was found and is usable, FALSE otherwise
+ * 
+ */
+OSYNC_TEST_EXPORT osync_bool osync_plugin_is_usable(OSyncPlugin *plugin, OSyncError **error);
+
+/*! @brief Set timeout interval for plugin "usable" function
+ * 
+ * @param plugin The plugin to check
+ * @param timeout Timeout value 
+ * 
+ */
+OSYNC_TEST_EXPORT void osync_plugin_set_useable_timeout(OSyncPlugin *plugin, unsigned int timeout);
 
 /*! @brief Get timeout interval for plugin "usable" function
  * 
@@ -36,7 +55,7 @@
  * @return Timeout value
  * 
  */
-OSYNC_EXPORT unsigned int osync_plugin_get_useable_timeout(OSyncPlugin *plugin);
+OSYNC_TEST_EXPORT unsigned int osync_plugin_get_useable_timeout(OSyncPlugin *plugin);
 
 /*! @brief Get timeout interval for plugin initialization 
  * 
@@ -44,7 +63,7 @@ OSYNC_EXPORT unsigned int osync_plugin_get_useable_timeout(OSyncPlugin *plugin);
  * @return Timeout value
  * 
  */
-OSYNC_EXPORT unsigned int osync_plugin_get_initialize_timeout(OSyncPlugin *plugin);
+OSYNC_TEST_EXPORT unsigned int osync_plugin_get_initialize_timeout(OSyncPlugin *plugin);
 
 /*! @brief Get timeout interval for plugin finalization
  * 
@@ -52,7 +71,7 @@ OSYNC_EXPORT unsigned int osync_plugin_get_initialize_timeout(OSyncPlugin *plugi
  * @return Timeout value
  * 
  */
-OSYNC_EXPORT unsigned int osync_plugin_get_finalize_timeout(OSyncPlugin *plugin);
+OSYNC_TEST_EXPORT unsigned int osync_plugin_get_finalize_timeout(OSyncPlugin *plugin);
 
 /*! @brief Get timeout interval for plugin discovery
  * 
@@ -60,7 +79,7 @@ OSYNC_EXPORT unsigned int osync_plugin_get_finalize_timeout(OSyncPlugin *plugin)
  * @return Timeout value 
  * 
  */
-OSYNC_EXPORT unsigned int osync_plugin_get_discover_timeout(OSyncPlugin *plugin);
+OSYNC_TEST_EXPORT unsigned int osync_plugin_get_discover_timeout(OSyncPlugin *plugin);
 
 /*@}*/
 

@@ -22,8 +22,8 @@
 #include "opensync_internals.h"
 
 #include "opensync-plugin.h"
-#include "opensync_plugin_private.h"
 #include "opensync_plugin_internals.h"
+#include "opensync_plugin_private.h"
 
 OSyncPlugin *osync_plugin_new(OSyncError **error)
 {

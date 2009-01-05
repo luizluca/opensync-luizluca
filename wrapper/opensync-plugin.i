@@ -77,19 +77,11 @@ typedef struct {} Plugin;
 			wrapper_exception("osync_plugin_discover failed but did not set error code");
 	}
 
-	bool is_usable() {
-		Error *err = NULL;
-		bool ret = osync_plugin_is_usable(self, &err);
-		raise_exception_on_error(err);
-		return ret;
-	}
-
 %pythoncode %{
 	name = property(get_name, set_name)
 	longname = property(get_longname, set_longname)
 	description = property(get_description, set_description)
 	config_type = property(get_config_type, set_config_type)
-	is_usable = property(is_usable)
 %}
 };
 
@@ -136,13 +128,6 @@ typedef struct {} PluginEnv;
 		if (plugin)
 			osync_plugin_ref(plugin);
 		return plugin;
-	}
-
-	bool plugin_is_usable(const char *pluginname) {
-		Error *err = NULL;
-		bool ret = osync_plugin_env_plugin_is_usable(self, pluginname, &err);
-		raise_exception_on_error(err);
-		return ret;
 	}
 
 %pythoncode %{

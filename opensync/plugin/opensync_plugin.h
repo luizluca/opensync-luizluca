@@ -24,7 +24,6 @@
 typedef void * (* initialize_fn) (OSyncPlugin *, OSyncPluginInfo *, OSyncError **);
 typedef void (* finalize_fn) (void *);
 typedef osync_bool (* discover_fn) (void *, OSyncPluginInfo *, OSyncError **);
-typedef osync_bool (* usable_fn) (OSyncError **);
 
 /*! @brief Gives information about wether the plugin
  * has to be configured or not
@@ -213,17 +212,6 @@ OSYNC_EXPORT void *osync_plugin_get_data(OSyncPlugin *plugin);
  */
 OSYNC_EXPORT void osync_plugin_set_data(OSyncPlugin *plugin, void *data);
 
-
-/*! @brief Checks if a plugin is available and usable
- * 
- * @param plugin The plugin to check
- * @param error If the return was FALSE, will contain information on why the plugin is not available
- * @returns TRUE if the plugin was found and is usable, FALSE otherwise
- * 
- */
-OSYNC_EXPORT osync_bool osync_plugin_is_usable(OSyncPlugin *plugin, OSyncError **error);
-
-
 /*! @brief Set timeout interval for plugin discovery
  * 
  * @param plugin The plugin to check
@@ -247,15 +235,6 @@ OSYNC_EXPORT void osync_plugin_set_initialize_timeout(OSyncPlugin *plugin, unsig
  * 
  */
 OSYNC_EXPORT void osync_plugin_set_finalize_timeout(OSyncPlugin *plugin, unsigned int timeout);
-
-/*! @brief Set timeout interval for plugin "usable" function
- * 
- * @param plugin The plugin to check
- * @param timeout Timeout value 
- * 
- */
-OSYNC_EXPORT void osync_plugin_set_useable_timeout(OSyncPlugin *plugin, unsigned int timeout);
-
 
 /*! @brief Initialize Plugin 
  *
