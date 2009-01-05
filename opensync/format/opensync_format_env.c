@@ -958,7 +958,7 @@ OSyncObjFormat *osync_format_env_detect_objformat(OSyncFormatEnv *env, OSyncData
 			osync_trace(TRACE_INTERNAL, "running detector %s for format %s", osync_objformat_get_name(osync_converter_get_targetformat(converter)), osync_objformat_get_name(osync_data_get_objformat(data)));
 			if (osync_converter_detect(converter, data)) {
 				OSyncObjFormat *detected_format = osync_converter_get_targetformat(converter);
-				osync_trace(TRACE_EXIT, "%s: %p", __func__, detected_format);
+				osync_trace(TRACE_EXIT, "%s: %p:%s", __func__, detected_format, osync_objformat_get_name(detected_format));
 				return detected_format;
 			}
 		}
@@ -986,11 +986,7 @@ OSyncObjFormat *osync_format_env_detect_objformat_full(OSyncFormatEnv *env, OSyn
 	*/
 	while (TRUE) {
 		OSyncFormatConverter *converter = NULL;
-		if ((detected_format = osync_format_env_detect_objformat(env, new_data))) {
-			/* We detected the format. So we replace the original format. */
-			osync_data_set_objformat(new_data, detected_format);
-		} else
-			detected_format = osync_data_get_objformat(new_data);
+
 		/* Try to decap the change */
 		for (d = env->converters; d; d = d->next) {
 			converter = d->data;
@@ -1005,10 +1001,17 @@ OSyncObjFormat *osync_format_env_detect_objformat_full(OSyncFormatEnv *env, OSyn
 			} else
 				converter = NULL;
 		}
-		
+
 		/* We couldnt find a decap, so we quit. */
 		if (!converter)
 			break;
+
+		if ((detected_format = osync_format_env_detect_objformat(env, new_data))) {
+			/* We detected the format. So we replace the original format. */
+			osync_data_set_objformat(new_data, detected_format);
+		} else
+			detected_format = osync_data_get_objformat(new_data);
+		
 	}
 	osync_data_unref(new_data);
 	

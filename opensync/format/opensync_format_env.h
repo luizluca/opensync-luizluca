@@ -181,8 +181,8 @@ OSYNC_EXPORT OSyncObjFormat *osync_format_env_detect_objformat(OSyncFormatEnv *e
 /** @brief Tries to detect the encapsulated format of the given data object
  * 
  * This will try to detect the encapsulated format of the specified data object
- * and return it, but not set it. It will try to detect the format of the data object,
- * deencapsulate it, detect again etc until it cannot deencapsulate further.
+ * and return it, but not set it. It will try to deencapsulate it, detect it,
+ * deencapuslate it again etc until it cannot deencapsulate further.
  * 
  * @param env The conversion environment to use
  * @param input The data object to detect
