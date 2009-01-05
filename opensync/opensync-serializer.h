@@ -24,7 +24,6 @@
 OPENSYNC_BEGIN_DECLS
 
 #include "common/opensync_marshal.h"
-#include "ipc/opensync_message.h"
 #include "ipc/opensync_serializer.h"
 
 OPENSYNC_END_DECLS

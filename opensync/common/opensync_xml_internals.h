@@ -78,9 +78,6 @@ OSyncConvCmpResult osync_xml_compare(xmlDoc *leftinpdoc, xmlDoc *rightinpdoc, OS
 char *osync_xml_write_to_string(xmlDoc *doc);
 osync_bool osync_xml_copy(const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, OSyncError **error);
 
-osync_bool osync_xml_marshal(const char *input, unsigned int inpsize, OSyncMessage *message, OSyncError **error);
-osync_bool osync_xml_demarshal(OSyncMessage *message, char **output, unsigned int *outpsize, OSyncError **error);
-
 osync_bool osync_xml_validate_document(xmlDocPtr doc, char *schemafilepath);
 
 xmlChar *osync_xml_node_get_content(xmlNodePtr node);

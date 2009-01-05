@@ -1,6 +1,7 @@
 #include "support.h"
 
 #include <opensync/opensync-ipc.h>
+#include "opensync/ipc/opensync_message_internals.h"
 #include "opensync/ipc/opensync_serializer_internals.h"
 #include <opensync/opensync-plugin.h>
 

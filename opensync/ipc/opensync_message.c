@@ -24,9 +24,10 @@
 #include "common/opensync_marshal.h"
 
 #include "opensync_serializer_internals.h"
-#include "opensync_message.h"
 
 #include "opensync_message_internals.h"
+#include "opensync_message_private.h"
+
 
 OSyncMessage *osync_message_new(OSyncMessageCommand cmd, unsigned int size, OSyncError **error)
 {

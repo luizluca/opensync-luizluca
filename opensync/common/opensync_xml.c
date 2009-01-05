@@ -444,38 +444,6 @@ osync_bool osync_xml_copy(const char *input, unsigned int inpsize, char **output
 	return TRUE;
 }
 
-osync_bool osync_xml_marshal(const char *input, unsigned int inpsize, OSyncMessage *message, OSyncError **error)
-{
-	xmlDoc *doc = (xmlDoc*)input;
-	xmlChar *result;
-	int size;
-	xmlDocDumpMemory(doc, &result, &size);
-	osync_message_write_buffer(message, result, size);
-	
-	return TRUE;
-}
-
-osync_bool osync_xml_demarshal(OSyncMessage *message, char **output, unsigned int *outpsize, OSyncError **error)
-{
-	void *input = NULL;
-	int size = 0;
-	xmlDoc *doc = NULL;
-	osync_message_read_buffer(message, &input, &size);
-	
-	doc = xmlParseMemory((char *)input, size);
-	if (!doc) {
-		osync_error_set(error, OSYNC_ERROR_GENERIC, "Invalid XML data received");
-		goto error;
-	}
-
-	*output = (char*)doc;
-	*outpsize = sizeof(*doc);
-	return TRUE;
-
- error:
-	return FALSE;
-}
-
 osync_bool osync_xml_validate_document(xmlDocPtr doc, char *schemafilepath)
 {
 	int rc = 0;

@@ -24,6 +24,7 @@
 #include "opensync-data.h"
 
 #include "opensync-ipc.h"
+#include "ipc/opensync_message_internals.h"
 #include "ipc/opensync_serializer_internals.h"
 #include "ipc/opensync_queue_internals.h"
 #include "plugin/opensync_objtype_sink_internals.h"

@@ -22,7 +22,7 @@
 #include "opensync.h"
 #include "opensync_internals.h"
 
-#include "opensync_message.h"
+#include "opensync_message_internals.h"
 #include "opensync_queue.h"
 
 #include "opensync_queue_internals.h"

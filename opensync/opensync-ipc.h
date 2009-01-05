@@ -25,7 +25,6 @@ OPENSYNC_BEGIN_DECLS
 
 #include "opensync-data.h"
 
-#include "ipc/opensync_message.h"
 #include "ipc/opensync_queue.h"
 
 OPENSYNC_END_DECLS
