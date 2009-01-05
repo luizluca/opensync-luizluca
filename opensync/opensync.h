@@ -207,7 +207,7 @@ typedef struct OSyncMappingEntry OSyncMappingEntry;
 typedef struct OSyncModule OSyncModule;
 
 /* Helper component */
-typedef struct OSyncAnchorDB OSyncAnchorDB;
+typedef struct OSyncAnchor OSyncAnchor;
 typedef struct OSyncHashTable OSyncHashTable;
 
 /* IPC component */

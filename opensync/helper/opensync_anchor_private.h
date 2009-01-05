@@ -32,6 +32,16 @@
 /*@{*/
 
 /**
+ * @brief OSyncAnchor struct
+ */
+struct OSyncAnchor {
+	/* Reference counting */
+	int ref_count;
+	/* Pointer to the OSyncDatabase */
+	OSyncDB *db;
+};
+
+/**
  * @brief Create the anchor table in the specified database
  *
  * @param db Pointer to the database
