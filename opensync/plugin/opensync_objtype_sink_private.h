@@ -68,10 +68,17 @@ typedef struct OSyncObjTypeSinkFunctionTimeouts {
 } OSyncObjTypeSinkFunctionTimeouts;
 
 struct OSyncObjTypeSink {
+	/** The sink anchor if requested by the plugin */
+	OSyncAnchor *anchor;
+
+	/** Flag if anchor is requested by plugin */
+	osync_bool anchor_requested;
+
 	/** The preferred step or target format for the conversion path of this sink */
 	char *preferred_format;
 	/** The format which can be synchronized by this sink */
 	OSyncList *objformatsinks;
+
 	/** The functions to be called */
 	OSyncObjTypeSinkFunctions functions;
 	void *userdata;
@@ -103,7 +110,9 @@ struct OSyncObjTypeSink {
 	/** The request status of a slow-sync of this sink */
 	osync_bool slowsync;
 
+	/** Referce counting */
 	int ref_count;
+
 	/** List to pile up changes for batch commit */
 	GList *commit_changes;
 	GList *commit_contexts;

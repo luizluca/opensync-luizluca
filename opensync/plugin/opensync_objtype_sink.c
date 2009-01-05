@@ -24,6 +24,8 @@
 #include "opensync-context.h"
 #include "opensync-format.h"
 
+#include "opensync/helper/opensync_anchor_internals.h"
+
 #include "opensync_objtype_sink.h"
 #include "opensync_objtype_sink_private.h"
 
@@ -72,6 +74,9 @@ void osync_objtype_sink_unref(OSyncObjTypeSink *sink)
 			osync_objformat_sink_unref(sink->objformatsinks->data);
 			sink->objformatsinks = osync_list_remove(sink->objformatsinks, sink->objformatsinks->data);
 		}
+
+		if (sink->anchor)
+			osync_anchor_unref(sink->anchor);
 		
 		if (sink->preferred_format)
 			g_free(sink->preferred_format);
@@ -81,6 +86,33 @@ void osync_objtype_sink_unref(OSyncObjTypeSink *sink)
 		
 		g_free(sink);
 	}
+}
+
+void osync_objtype_sink_enable_anchor(OSyncObjTypeSink *sink, osync_bool enable)
+{
+	osync_return_if_fail(sink);
+	sink->anchor_requested = enable;
+}
+
+osync_bool osync_objtype_sink_has_anchor(OSyncObjTypeSink *sink)
+{
+	osync_return_val_if_fail(sink, FALSE);
+	return sink->anchor_requested; 
+}
+
+OSyncAnchor *osync_objtype_sink_get_anchor(OSyncObjTypeSink *sink)
+{
+	osync_return_val_if_fail(sink, NULL);
+	return sink->anchor;
+}
+
+void osync_objtype_sink_set_anchor(OSyncObjTypeSink *sink, OSyncAnchor *anchor)
+{
+	osync_return_if_fail(sink);
+	if (sink->anchor)
+		osync_anchor_unref(sink->anchor);
+
+	sink->anchor = osync_anchor_ref(anchor);
 }
 
 const char *osync_objtype_sink_get_name(OSyncObjTypeSink *sink)

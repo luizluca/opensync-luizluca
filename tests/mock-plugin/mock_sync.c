@@ -52,7 +52,9 @@ static char *mock_generate_hash(struct stat *buf)
 
 static void mock_connect(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 {
+	osync_bool anchor_compare_match;
 	OSyncObjTypeSink *sink = osync_plugin_info_get_sink(info);
+	OSyncAnchor *anchor = osync_objtype_sink_get_anchor(sink); 
 	MockDir *dir = osync_objtype_sink_get_userdata(sink);
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -86,14 +88,11 @@ static void mock_connect(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	 */
 	dir->connect_done = FALSE;
 
-	char *anchorpath = g_strdup_printf("%s/anchor.db", osync_plugin_info_get_configdir(info));
-	char *path_field = g_strdup_printf("path_%s", osync_objtype_sink_get_name(sink));
-	if (!osync_anchor_compare(anchorpath, path_field, dir->path))
+	osync_assert_msg(osync_anchor_compare(anchor, dir->path, &anchor_compare_match, NULL), "Not expected to fail");
+
+	if (!anchor_compare_match)
 		osync_objtype_sink_set_slowsync(sink, TRUE);
 
-	g_free(anchorpath);
-	g_free(path_field);
-	
 	osync_assert(g_file_test(dir->path, G_FILE_TEST_IS_DIR));
 
 end:	
@@ -542,6 +541,7 @@ static void mock_sync_done(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	OSyncObjTypeSink *sink = osync_plugin_info_get_sink(info);
+	OSyncAnchor *anchor = osync_objtype_sink_get_anchor(sink);
 	MockDir *dir = osync_objtype_sink_get_userdata(sink);
 
 	if (mock_get_error(info->memberid, "SYNC_DONE_ERROR")) {
@@ -551,12 +551,7 @@ static void mock_sync_done(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	if (mock_get_error(info->memberid, "SYNC_DONE_TIMEOUT"))
 		return;
 	
-	char *anchorpath = g_strdup_printf("%s/anchor.db", osync_plugin_info_get_configdir(info));
-	char *path_field = g_strdup_printf("path_%s", osync_objtype_sink_get_name(sink));
-	osync_anchor_update(anchorpath, path_field, dir->path);
-	g_free(anchorpath);
-	g_free(path_field);
-
+	osync_assert_msg(osync_anchor_update(anchor, dir->path, NULL), "Not expected to fail!");
 	osync_assert(osync_hashtable_save(dir->hashtable, NULL));
 	
 	osync_context_report_success(ctx);
@@ -679,6 +674,9 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 		/* We pass the MockDir object to the sink, so we dont have to look it up
 		 * again once the functions are called */
 		osync_objtype_sink_set_functions(sink, functions, dir);
+
+		/* Request an Anchor */
+		osync_objtype_sink_enable_anchor(sink, TRUE);
 
 		//Lets reduce the timeouts a bit so the checks work faster
 		osync_objtype_sink_set_connect_timeout(sink, 2);

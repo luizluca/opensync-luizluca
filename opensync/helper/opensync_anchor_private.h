@@ -39,55 +39,9 @@ struct OSyncAnchor {
 	int ref_count;
 	/* Pointer to the OSyncDatabase */
 	OSyncDB *db;
+	/* Associated object type */
+	char *objtype;
 };
-
-/**
- * @brief Create the anchor table in the specified database
- *
- * @param db Pointer to the database
- * @param error Pointer to an error struct
- * @returns TRUE if the table was created successfully, FALSE otherwise
- *
- */
-static osync_bool osync_anchor_db_create(OSyncDB *db, OSyncError **error);
-
-/**
- * @brief Create an anchor database
- *
- * @param filename the full path to the database file to create
- * @param error Pointer to an error struct
- * @returns a pointer to the new database
- *
- */
-static OSyncDB *osync_anchor_db_new(const char *filename, OSyncError **error);
-
-/**
- * @brief Close and free an anchor database handle
- *
- * @param db Pointer to the database
- *
- */
-static void osync_anchor_db_free(OSyncDB *db);
-
-/**
- * @brief Retrieves the value of an anchor
- *
- * @param db Pointer to the database
- * @param key the key of the anchor to look up
- * @returns the value of the anchor if it was found, otherwise NULL
- *
- */
-static char *osync_anchor_db_retrieve(OSyncDB *db, const char *key);
-
-/**
- * @brief Updates the value of an anchor
- *
- * @param db Pointer to the database
- * @param key the key of the anchor to look up
- * @param anchor the new value to set
- *
- */
-static void osync_anchor_db_update(OSyncDB *db, const char *key, const char *anchor);
 
 /*@}*/
 

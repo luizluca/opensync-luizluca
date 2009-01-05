@@ -29,6 +29,27 @@
  */
 /*@{*/
 
+
+/*! @brief Check if sink has an anchor request. 
+ *
+ * @param sink Pointer to the sink
+ * @returns TRUE if the sink has an anchor request, FALSE otherwise
+ */
+osync_bool osync_objtype_sink_has_anchor(OSyncObjTypeSink *sink);
+
+/*! @brief Set the OSyncAnchor for this sink
+ *
+ * This Anchor is sink specific and can store persistent, sink specific data.
+ * Originally designed to detect if a certain value changed since last
+ * synchronization on the peer. E.g. to decided if a slow-sync is requried
+ * or not.
+ * 
+ * @param sink Pointer to the sink
+ * @param anchor Pointer to the Anchor object
+ * 
+ */
+void osync_objtype_sink_set_anchor(OSyncObjTypeSink *sink, OSyncAnchor *anchor);
+
 /*! @brief Checks if sink has a read single entries function (read)
  *
  * @param sink Pointer to the sink

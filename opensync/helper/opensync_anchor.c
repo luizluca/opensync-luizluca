@@ -24,18 +24,17 @@
 #include "opensync-helper.h"
 #include "opensync-db.h"
 
+#include "opensync_anchor_internals.h"
 #include "opensync_anchor_private.h"
 
-/* start private api */
-
-static osync_bool osync_anchor_db_create(OSyncDB *db, OSyncError **error)
+osync_bool osync_anchor_create(OSyncAnchor *anchor, OSyncError **error)
 {
 	char *query = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, db, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, anchor, error);
 
 	query = g_strdup("CREATE TABLE tbl_anchor (id INTEGER PRIMARY KEY, anchor VARCHAR, objtype VARCHAR UNIQUE)");
 
-	if (!osync_db_query(db, query, error)) {
+	if (!osync_db_query(anchor->db, query, error)) {
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 		g_free(query);
 		return FALSE;
@@ -47,162 +46,161 @@ static osync_bool osync_anchor_db_create(OSyncDB *db, OSyncError **error)
 	return TRUE;
 }
 
-static OSyncDB *osync_anchor_db_new(const char *filename, OSyncError **error)
+OSyncAnchor *osync_anchor_new(const char *filename, const char *objtype, OSyncError **error)
 {
-	OSyncDB *db = NULL;
+	OSyncAnchor *anchor = NULL;
 	int ret = 0;
-	osync_trace(TRACE_ENTRY, "%s(%s, %p)", __func__, filename, error);
+	osync_trace(TRACE_ENTRY, "%s(%s, %s, %p)", __func__, __NULLSTR(filename), __NULLSTR(objtype), error);
 
-	db = osync_db_new(error);
-	if (!db)
+	anchor = osync_try_malloc0(sizeof(OSyncAnchor), error);
+	if (!anchor)
 		goto error;
 
-	if (!osync_db_open(db, filename, error)) {
+	anchor->ref_count = 1;
+
+	/* Could be NULL, which means object type neutral
+	 * or data for the main-sink.
+	 */
+	if (objtype)
+		anchor->objtype = osync_strdup(objtype);
+
+	anchor->db = osync_db_new(error);
+	if (!anchor->db)
+		goto error_free_anchor;
+
+	if (!osync_db_open(anchor->db, filename, error)) {
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 		goto error_free_db;
 	}
 
-	ret = osync_db_table_exists(db, "tbl_anchor", error);
+	ret = osync_db_table_exists(anchor->db, "tbl_anchor", error);
 	if (ret > 0) {
-		osync_trace(TRACE_EXIT, "%s: %p", __func__, db);
-		return db;
+		osync_trace(TRACE_EXIT, "%s: %p", __func__, anchor->db);
+		return anchor;
 		/* error if ret == -1 */
 	} else if (ret < 0) {
 		goto error_free_db;
 	}
-	/* ret equal 0 means table does not exist yet. continue and create one. */
 
-	if (!osync_anchor_db_create(db, error))
+	/* ret equal 0 means table does not exist yet. continue and create one. */
+	if (!osync_anchor_create(anchor, error))
 		goto error_free_db;
 
-	osync_trace(TRACE_EXIT, "%s: %p", __func__, db);
-	return db;
+	osync_trace(TRACE_EXIT, "%s: %p", __func__, anchor);
+	return anchor;
 
  error_free_db:
-	g_free(db);
+	g_free(anchor->db);
+ error_free_anchor:
+	osync_anchor_unref(anchor);
  error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return NULL;
 }
 
-static void osync_anchor_db_free(OSyncDB *db)
+OSyncAnchor *osync_anchor_ref(OSyncAnchor *anchor)
 {
-	osync_assert(db);
+	osync_return_val_if_fail(anchor, NULL);
+	
+	g_atomic_int_inc(&(anchor->ref_count));
 
-	if (!osync_db_close(db, NULL))
-		osync_trace(TRACE_INTERNAL, "Can't close database");
-
-	g_free(db);
+	return anchor;
 }
 
-static char *osync_anchor_db_retrieve(OSyncDB *db, const char *key)
+void osync_anchor_unref(OSyncAnchor *anchor)
+{
+	osync_return_if_fail(anchor);
+	
+	if (g_atomic_int_dec_and_test(&(anchor->ref_count))) {
+
+		if (!osync_db_close(anchor->db, NULL))
+			osync_trace(TRACE_INTERNAL, "Can't close database");
+
+		if (anchor->objtype)
+			osync_free(anchor->objtype);
+
+		g_free(anchor->db);
+
+		osync_free(anchor);
+	}
+}
+
+char *osync_anchor_retrieve(OSyncAnchor *anchor, OSyncError **error)
 {
 	char *retanchor = NULL;
-	char *escaped_key = NULL;
 	char *query = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%p, %s)", __func__, db, key);
-	osync_assert(db);
-	osync_assert(key);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, anchor, error);
+	osync_assert(anchor);
+	osync_assert(anchor->db);
 
-	escaped_key = osync_db_sql_escape(key);
-	query = g_strdup_printf("SELECT anchor FROM tbl_anchor WHERE objtype='%s'", escaped_key);
-	retanchor = osync_db_query_single_string(db, query, NULL);
+	query = g_strdup_printf("SELECT anchor FROM tbl_anchor WHERE objtype='%s'", anchor->objtype ? anchor->objtype : "");
+	retanchor = osync_db_query_single_string(anchor->db, query, error);
 	g_free(query);
-	g_free(escaped_key);
+
+	if (osync_error_is_set(error))
+		goto error;
+
+	if (!retanchor)
+		retanchor = osync_strdup("");
 
 	osync_trace(TRACE_EXIT, "%s: %s", __func__, retanchor);
 	return retanchor;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return NULL;
 }
 
-static void osync_anchor_db_update(OSyncDB *db, const char *key, const char *anchor)
+osync_bool osync_anchor_update(OSyncAnchor *anchor, const char *value, OSyncError **error)
 {
-	char *escaped_key = NULL;
-	char *escaped_anchor = NULL;
+	char *escaped_value = NULL;
 	char *query = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%p, %, %s)", __func__, db, key, anchor);
-	osync_assert(db);
-	osync_assert(key);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p)", __func__, anchor, __NULLSTR(value), error);
+	osync_assert(anchor);
+	osync_assert(anchor->db);
+	osync_assert(value);
 
-	escaped_key = osync_db_sql_escape(key);
-	escaped_anchor = osync_db_sql_escape(anchor);
-	query = g_strdup_printf("REPLACE INTO tbl_anchor (objtype, anchor) VALUES('%s', '%s')", escaped_key, escaped_anchor);
-	g_free(escaped_key);
-	g_free(escaped_anchor);
+	escaped_value = osync_db_sql_escape(value);
+	query = g_strdup_printf("REPLACE INTO tbl_anchor (objtype, anchor) VALUES('%s', '%s')",
+			anchor->objtype ? anchor->objtype : "", escaped_value);
+	g_free(escaped_value);
 
-	/* TODO: Add Error handling in this function for osync_db_query() */
-	if (!osync_db_query(db, query, NULL)) {
-		osync_trace(TRACE_INTERNAL, "Unable put anchor!");
-	}
+	if (!osync_db_query(anchor->db, query, error))
+		goto error;
+
 	g_free(query);
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
 }
 
-/* end private api */
-
-osync_bool osync_anchor_compare(const char *anchordb, const char *key, const char *new_anchor)
+osync_bool osync_anchor_compare(OSyncAnchor *anchor, const char *new_anchor, osync_bool *same, OSyncError **error)
 {
-	OSyncDB *db = NULL;
 	char *old_anchor = NULL;
-	osync_bool retval = FALSE;
 
-	osync_trace(TRACE_ENTRY, "%s(%s, %s, %s)", __func__, anchordb, key, new_anchor);
-	osync_assert(anchordb);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p, %p)", __func__, anchor, __NULLSTR(new_anchor), same, error);
+	osync_assert(anchor);
 
-	db = osync_anchor_db_new(anchordb, NULL);
-	if (!db)
-		return FALSE;
+	old_anchor = osync_anchor_retrieve(anchor, error);
+	if (!old_anchor)
+		goto error;
 
-	old_anchor = osync_anchor_db_retrieve(db, key);
-	if (old_anchor) {
-		if (!strcmp(old_anchor, new_anchor)) {
-			retval = TRUE;
-		} else {
-			retval = FALSE;
-		}
-		g_free(old_anchor);
-	}
+	if (!strcmp(old_anchor, new_anchor))
+		*same = TRUE;
+	else
+		*same = FALSE;
 
-	osync_anchor_db_free(db);
-
-	osync_trace(TRACE_EXIT, "%s: %i", __func__, retval);
-	return retval;
-}
-
-void osync_anchor_update(const char *anchordb, const char *key, const char *new_anchor)
-{
-	OSyncDB *db = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%s, %s, %s)", __func__, anchordb, key, new_anchor);
-	osync_assert(anchordb);
-
-	db = osync_anchor_db_new(anchordb, NULL);
-	if (!db)
-		return;
-
-	osync_anchor_db_update(db, key, new_anchor);
-
-	osync_anchor_db_free(db);
+	g_free(old_anchor);
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
-	return;
+	return TRUE;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
 }
 
-char *osync_anchor_retrieve(const char *anchordb, const char *key)
-{
-	OSyncDB *db = NULL;
-	char *retval = NULL;
-
-	osync_trace(TRACE_ENTRY, "%s(%s, %s)", __func__, anchordb, key);
-	osync_assert(anchordb);
-
-	db = osync_anchor_db_new(anchordb, NULL);
-	if (!db)
-		return NULL;
-
-	retval = osync_anchor_db_retrieve(db, key);
-
-	osync_anchor_db_free(db);
-
-	osync_trace(TRACE_EXIT, "%s: %s", __func__, retval);
-	return retval;
-}

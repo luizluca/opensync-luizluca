@@ -52,31 +52,35 @@
 
 /** @brief Compares the value of an anchor with the supplied value
  *
- * @param anchordb the full path to the anchor database file
- * @param key the key of the anchor to look up
+ * @param anchor Pointer to the anchor object
  * @param new_anchor the value to compare with the stored value
- * @returns TRUE if the anchor matches, FALSE otherwise
+ * @param issame Pointer to osync_bool to determine the comaprsion result
+ * @param error Pointer to error struct, which get set on any error
+ * @returns TRUE if the anchor compare completed successful, FALSE on error. Not the return value of the comparsion!
  *
  */
-OSYNC_EXPORT osync_bool osync_anchor_compare(const char *anchordb, const char *key, const char *new_anchor);
+OSYNC_EXPORT osync_bool osync_anchor_compare(OSyncAnchor *anchor, const char *new_anchor, osync_bool *issame, OSyncError **error);
 
 /** @brief Updates the value of an anchor
  *
- * @param anchordb the full path to the anchor database file
- * @param key the key of the anchor to look up
+ * @param anchor Pointer to the anchor object
  * @param new_anchor the new value to set
+ * @param error Pointer to error struct, which get set on any error
+ * @returns TRUE if anchor update completed successful, FALSE on error.
  *
  */
-OSYNC_EXPORT void osync_anchor_update(const char *anchordb, const char *key, const char *new_anchor);
+OSYNC_EXPORT osync_bool osync_anchor_update(OSyncAnchor *anchor, const char *new_anchor, OSyncError **error);
 
 /** @brief Retrieves the value of an anchor
  *
- * @param anchordb the full path to the anchor database file
- * @param key the key of the anchor to look up
- * @returns the value of the anchor if it was found, otherwise NULL
+ * @param anchor Pointer to the anchor object
+ * @param error Pointer to error struct, which get set on any error
+ * @returns the value of the anchor if it was found, otherwise an empty string get retruned.
+ *          Caller is responsible for freeing the return value with osync_free().
+ *          NULL on error of retrieving the anchor information.
  *
  */
-OSYNC_EXPORT char *osync_anchor_retrieve(const char *anchordb, const char *key);
+OSYNC_EXPORT char *osync_anchor_retrieve(OSyncAnchor *anchor, OSyncError **error);
 
 /*@}*/
 

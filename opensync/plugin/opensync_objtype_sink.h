@@ -90,6 +90,35 @@ OSYNC_EXPORT OSyncObjTypeSink *osync_objtype_sink_ref(OSyncObjTypeSink *sink);
  */
 OSYNC_EXPORT void osync_objtype_sink_unref(OSyncObjTypeSink *sink);
 
+/*! @brief Request an anchor for this Sink 
+ *
+ * If for this sink an anchor is required, this needs to be requested by this
+ * function. If anchor gets enabled/requested inside the plugin, the framework
+ * will take care about preparing the anchor. The created anchor can be accessed
+ * by using the function osync_objtype_sink_get_anchor()
+ *
+ * By default no anchor is requested/enabled.
+ *
+ * @param sink Pointer to the sink
+ * @param enable Flag to enable, disbable anchor.
+ * 
+ */
+OSYNC_EXPORT void osync_objtype_sink_enable_anchor(OSyncObjTypeSink *sink, osync_bool enable);
+
+/*! @brief Get the pointer to the sink OSyncAnchor
+ *
+ * This Anchor is sink specific and can store persistent, sink specific data.
+ * Originally designed to detect if a certain value changed since last
+ * synchronization on the peer. E.g. to decided if a slow-sync is requried
+ * or not.
+ * 
+ * @param sink Pointer to the sink
+ * @returns the name of the object type of the specified sink
+ * 
+ */
+OSYNC_EXPORT OSyncAnchor *osync_objtype_sink_get_anchor(OSyncObjTypeSink *sink);
+
+
 /*! @brief Return the name of the object type of a sink
  * 
  * @param sink Pointer to the sink

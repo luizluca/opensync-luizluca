@@ -1,14 +1,34 @@
 %inline %{
-	static bool anchor_compare(const char *anchordb, const char *key, const char *new_anchor) {
-		return osync_anchor_compare(anchordb, key, new_anchor);
+	static bool anchor_compare(OSyncAnchor *anchor, const char *new_anchor) {
+		Error *err = NULL;
+                bool ret;
+
+		osync_anchor_compare(anchor, new_anchor, &ret, &err);
+
+                if (raise_exception_on_error(err))
+                        return FALSE;
+
+                return ret;
 	}
 
-	static void anchor_update(const char *anchordb, const char *key, const char *new_anchor) {
-		osync_anchor_update(anchordb, key, new_anchor);
+	static bool anchor_update(OSyncAnchor *anchor, const char *new_anchor) {
+		Error *err = NULL;
+		osync_anchor_update(anchor, new_anchor, &err);
+                if (raise_exception_on_error(err))
+                        return FALSE;
+
+                return TRUE;
 	}
 
-	static char *anchor_retrieve(const char *anchordb, const char *key) {
-		return osync_anchor_retrieve(anchordb, key);
+	static char *anchor_retrieve(OSyncAnchor *anchor) {
+                Error *err = NULL;
+                char *ret;
+		ret = osync_anchor_retrieve(anchor, &err);
+
+                if (raise_exception_on_error(err))
+                        return NULL;
+
+                return ret;
 	}
 %}
 
