@@ -39,6 +39,16 @@
  */
 osync_bool osync_plugin_env_load_module(OSyncPluginEnv *env, const char *filename, OSyncError **error);
 
+/*! @brief Checks if plugin is usable 
+ * 
+ * @param env Pointer to a OSyncPluginEnv environment
+ * @param pluginname The name of the plugin
+ * @param error Pointer to error-struct
+ * @returns TRUE if plugin is usable, FALSE otherwise 
+ * 
+ */
+OSYNC_TEST_EXPORT osync_bool osync_plugin_env_plugin_is_usable(OSyncPluginEnv *env, const char *pluginname, OSyncError **error);
+
 /*@}*/
 
 #endif /* _OPENSYNC_PLUGIN_ENV_INTERNALS_H_ */

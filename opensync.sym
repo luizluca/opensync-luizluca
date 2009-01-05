@@ -546,7 +546,6 @@ osync_plugin_env_load
 osync_plugin_env_new
 osync_plugin_env_nth_plugin
 osync_plugin_env_num_plugins
-osync_plugin_env_plugin_is_usable
 osync_plugin_env_ref
 osync_plugin_env_register_plugin
 osync_plugin_env_unref
@@ -554,13 +553,9 @@ osync_plugin_finalize
 osync_plugin_get_config_type
 osync_plugin_get_data
 osync_plugin_get_description
-osync_plugin_get_discover_timeout
-osync_plugin_get_finalize_timeout
-osync_plugin_get_initialize_timeout
 osync_plugin_get_longname
 osync_plugin_get_name
 osync_plugin_get_start_type
-osync_plugin_get_useable_timeout
 osync_plugin_info_add_objtype
 osync_plugin_info_find_objtype
 osync_plugin_info_get_capabilities
@@ -587,7 +582,6 @@ osync_plugin_info_set_sink
 osync_plugin_info_set_version
 osync_plugin_info_unref
 osync_plugin_initialize
-osync_plugin_is_usable
 osync_plugin_localization_get_encoding
 osync_plugin_localization_get_language
 osync_plugin_localization_get_timezone
@@ -635,7 +629,6 @@ osync_plugin_set_initialize_timeout
 osync_plugin_set_longname
 osync_plugin_set_name
 osync_plugin_set_start_type
-osync_plugin_set_useable_timeout
 osync_plugin_unref
 osync_queue_connect
 osync_queue_create

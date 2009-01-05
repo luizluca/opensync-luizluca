@@ -122,16 +122,6 @@ OSYNC_EXPORT int osync_plugin_env_num_plugins(OSyncPluginEnv *env);
  */
 OSYNC_EXPORT OSyncPlugin *osync_plugin_env_nth_plugin(OSyncPluginEnv *env, int nth);
 
-/*! @brief Checks if plugin is usable 
- * 
- * @param env Pointer to a OSyncPluginEnv environment
- * @param pluginname The name of the plugin
- * @param error Pointer to error-struct
- * @returns TRUE if plugin is usable, FALSE otherwise 
- * 
- */
-OSYNC_EXPORT osync_bool osync_plugin_env_plugin_is_usable(OSyncPluginEnv *env, const char *pluginname, OSyncError **error);
-
 /*@}*/
 
 #endif /* _OPENSYNC_PLUGIN_ENV_H_ */
