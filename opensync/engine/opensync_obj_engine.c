@@ -1118,11 +1118,12 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 
 					{
-						char *buffer = NULL, *outbuf;
-						unsigned int outsize = 0, size = 0;
+						char *buffer = NULL, *outbuf, *marshalbuf;
+						unsigned int outsize = 0, size = 0, marshalsize;
 						const char *objtype = NULL;
 						OSyncMapping *mapping = NULL;
-						OSyncCapabilities *caps;
+						OSyncMarshal *marshal = NULL;
+						OSyncCapabilities *caps = osync_member_get_capabilities(member); 
 						OSyncObjFormat *objformat = osync_change_get_objformat(entry_engine->change);
 
 						osync_trace(TRACE_INTERNAL, "Entry %s for member %lli: Dirty: %i", osync_change_get_uid(entry_engine->change), memberid, osync_entry_engine_is_dirty(entry_engine));
@@ -1133,21 +1134,25 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 						
 						osync_data_get_data(osync_change_get_data(entry_engine->change),  &buffer, &size);
 
-						if(!osync_archive_save_data(engine->archive, osync_mapping_get_id(mapping), objtype, buffer, size, error)) {
+						marshal = osync_marshal_new(error);
+						if (!marshal)
+							goto error;
+
+						if (!osync_objformat_marshal(objformat, buffer, size, marshal, error))
+							goto error;
+
+						osync_marshal_get_buffer(marshal, &marshalbuf, &marshalsize);
+
+						if (!osync_archive_save_data(engine->archive, osync_mapping_get_id(mapping), objtype, marshalbuf, marshalsize, error)) {
+							osync_marshal_unref(marshal);
 							osync_free(buffer);	
 							goto error;			
 						}
-						
 
-						caps = osync_member_get_capabilities(member); 
-						if (!caps) {
-							osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "No capabilities defined for Member %lli.", memberid);
-							goto error;
-						}
+						osync_marshal_unref(marshal);
+						
 						if (!osync_objformat_demerge(objformat, buffer, size, &outbuf, &outsize, caps, error))
 							goto error;
-
-						osync_free(buffer);
 
 						osync_data_set_data(osync_change_get_data(entry_engine->change), outbuf, outsize);
 					}
