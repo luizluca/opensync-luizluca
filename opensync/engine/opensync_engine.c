@@ -287,7 +287,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 					if (!marshal)
 						goto error;
 
-					osync_marshal_write_buffer(marshal, entirebuf, entsize);
+					osync_marshal_write_data(marshal, entirebuf, entsize);
 
 					if (!osync_objformat_demarshal(objformat, marshal, &entirebuf, &entsize, &error)) {
 						osync_marshal_unref(marshal);
