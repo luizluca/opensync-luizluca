@@ -21,11 +21,11 @@
 #ifndef _OPENSYNC_PLUGIN_H_
 #define _OPENSYNC_PLUGIN_H_
 
-typedef void * (* initialize_fn) (OSyncPlugin *, OSyncPluginInfo *, OSyncError **);
-typedef void (* finalize_fn) (void *);
-typedef osync_bool (* discover_fn) (void *, OSyncPluginInfo *, OSyncError **);
+typedef void * (* initialize_fn) (OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error);
+typedef void (* finalize_fn) (void * plugin_data);
+typedef osync_bool (* discover_fn) (OSyncPluginInfo *info, void * plugin_data, OSyncError **error);
 
-/*! @brief Gives information about wether the plugin
+/** @brief Gives information about wether the plugin
  * has to be configured or not
  * 
  * @ingroup OSyncPluginAPI 
@@ -48,7 +48,7 @@ typedef enum {
 /*@{*/
 
 
-/*! @brief Registers a new plugin
+/** @brief Registers a new plugin
  *
  * This function creates a new OSyncPlugin object, that
  * can be used to register a new plugin dynamically. This
@@ -61,14 +61,14 @@ typedef enum {
  */
 OSYNC_EXPORT OSyncPlugin *osync_plugin_new(OSyncError **error);
 
-/*! @brief Decrease the reference count on a plugin
+/** @brief Decrease the reference count on a plugin
  * 
  * @param plugin Pointer to the plugin
  * 
  */
 OSYNC_EXPORT void osync_plugin_unref(OSyncPlugin *plugin);
 
-/*! @brief Increase the reference count on a plugin
+/** @brief Increase the reference count on a plugin
  * 
  * @param plugin Pointer to the plugin
  * 
@@ -76,7 +76,7 @@ OSYNC_EXPORT void osync_plugin_unref(OSyncPlugin *plugin);
 OSYNC_EXPORT OSyncPlugin *osync_plugin_ref(OSyncPlugin *plugin);
 
 
-/*! @brief Returns the name of a plugin
+/** @brief Returns the name of a plugin
  * 
  * @param plugin Pointer to the plugin
  * @returns Name of the plugin
@@ -84,7 +84,7 @@ OSYNC_EXPORT OSyncPlugin *osync_plugin_ref(OSyncPlugin *plugin);
  */
 OSYNC_EXPORT const char *osync_plugin_get_name(OSyncPlugin *plugin);
 
-/*! @brief Sets the name of a plugin
+/** @brief Sets the name of a plugin
  * 
  * Sets the name of a plugin. This is a short name (maybe < 15 chars).
  *
@@ -95,7 +95,7 @@ OSYNC_EXPORT const char *osync_plugin_get_name(OSyncPlugin *plugin);
 OSYNC_EXPORT void osync_plugin_set_name(OSyncPlugin *plugin, const char *name);
 
 
-/*! @brief Returns the long name of a plugin
+/** @brief Returns the long name of a plugin
  * 
  * @param plugin Pointer to the plugin
  * @returns Long name of the plugin
@@ -103,7 +103,7 @@ OSYNC_EXPORT void osync_plugin_set_name(OSyncPlugin *plugin, const char *name);
  */
 OSYNC_EXPORT const char *osync_plugin_get_longname(OSyncPlugin *plugin);
 
-/*! @brief Sets the long name of a plugin
+/** @brief Sets the long name of a plugin
  * 
  * Sets the long name of a plugin (maybe < 50 chars).
  *
@@ -114,14 +114,14 @@ OSYNC_EXPORT const char *osync_plugin_get_longname(OSyncPlugin *plugin);
 OSYNC_EXPORT void osync_plugin_set_longname(OSyncPlugin *plugin, const char *longname);
 
 
-/*! @brief Returns whether or not the plugin requires configuration
+/** @brief Returns whether or not the plugin requires configuration
  *
  * @param plugin Pointer to the plugin
  * @returns The configuration requirement type of the plugin
  */
 OSYNC_EXPORT OSyncConfigurationType osync_plugin_get_config_type(OSyncPlugin *plugin);
 
-/*! @brief Sets whether or not the plugin requires configuration
+/** @brief Sets whether or not the plugin requires configuration
  *
  * @param plugin Pointer to the plugin
  * @param type The configuration requirement type of the plugin
@@ -129,14 +129,14 @@ OSYNC_EXPORT OSyncConfigurationType osync_plugin_get_config_type(OSyncPlugin *pl
 OSYNC_EXPORT void osync_plugin_set_config_type(OSyncPlugin *plugin, OSyncConfigurationType type);
 
 
-/*! @brief Returns start type of plugin 
+/** @brief Returns start type of plugin 
  *
  * @param plugin Pointer to the plugin
  * @returns The start type of the plugin
  */
 OSYNC_EXPORT OSyncStartType osync_plugin_get_start_type(OSyncPlugin *plugin);
 
-/*! @brief Sets the start type of the plugin 
+/** @brief Sets the start type of the plugin 
  *
  * @param plugin Pointer to the plugin
  * @param type The start type of the plugin
@@ -144,7 +144,7 @@ OSYNC_EXPORT OSyncStartType osync_plugin_get_start_type(OSyncPlugin *plugin);
 OSYNC_EXPORT void osync_plugin_set_start_type(OSyncPlugin *plugin, OSyncStartType type);
 
 
-/*! @brief Returns the description of a plugin
+/** @brief Returns the description of a plugin
  * 
  * @param plugin Pointer to the plugin
  * @returns Description of the plugin
@@ -152,7 +152,7 @@ OSYNC_EXPORT void osync_plugin_set_start_type(OSyncPlugin *plugin, OSyncStartTyp
  */
 OSYNC_EXPORT const char *osync_plugin_get_description(OSyncPlugin *plugin);
 
-/*! @brief Sets the description of a plugin
+/** @brief Sets the description of a plugin
  * 
  * Sets a longer description for the plugin (maybe < 200 chars).
  *
@@ -163,7 +163,7 @@ OSYNC_EXPORT const char *osync_plugin_get_description(OSyncPlugin *plugin);
 OSYNC_EXPORT void osync_plugin_set_description(OSyncPlugin *plugin, const char *description);
 
 
-/*! @brief Sets the initialize function for a plugin
+/** @brief Sets the initialize function for a plugin
  *
  * The initialize function of a plugin sets up sinks for the plugin as well
  * as other plugin-wide structures.
@@ -173,7 +173,7 @@ OSYNC_EXPORT void osync_plugin_set_description(OSyncPlugin *plugin, const char *
  */
 OSYNC_EXPORT void osync_plugin_set_initialize(OSyncPlugin *plugin, initialize_fn init);
 
-/*! @brief Sets the finalize function for a plugin
+/** @brief Sets the finalize function for a plugin
  *
  * The finalize function of a plugin frees any plugin-wide structures
  * that were created in the initialize function.
@@ -183,7 +183,7 @@ OSYNC_EXPORT void osync_plugin_set_initialize(OSyncPlugin *plugin, initialize_fn
  */
 OSYNC_EXPORT void osync_plugin_set_finalize(OSyncPlugin *plugin, finalize_fn fin);
 
-/*! @brief Sets the optional discover function for a plugin
+/** @brief Sets the optional discover function for a plugin
  *
  * The discover function of a plugin can be used to specify which 
  * of the sinks in the plugin are currently available, and to declare
@@ -198,21 +198,21 @@ OSYNC_EXPORT void osync_plugin_set_finalize(OSyncPlugin *plugin, finalize_fn fin
 OSYNC_EXPORT void osync_plugin_set_discover(OSyncPlugin *plugin, discover_fn discover);
 
 
-/*! @brief Returns the plugin_info data, set by the plugin
+/** @brief Returns the plugin_info data, set by the plugin
  *
  * @param plugin Pointer to the plugin
  * @returns The void pointer set on plugin->info.plugin_data
  */
 OSYNC_EXPORT void *osync_plugin_get_data(OSyncPlugin *plugin);
 
-/*! @brief Set the plugin_info data for the plugin object
+/** @brief Set the plugin_info data for the plugin object
  *
  * @param plugin Pointer to the plugin
  * @param data Pointer to data which should get set 
  */
 OSYNC_EXPORT void osync_plugin_set_data(OSyncPlugin *plugin, void *data);
 
-/*! @brief Set timeout interval for plugin discovery
+/** @brief Set timeout interval for plugin discovery
  * 
  * @param plugin The plugin to check
  * @param timeout Timeout value 
@@ -220,7 +220,7 @@ OSYNC_EXPORT void osync_plugin_set_data(OSyncPlugin *plugin, void *data);
  */
 OSYNC_EXPORT void osync_plugin_set_discover_timeout(OSyncPlugin *plugin, unsigned int timeout);
 
-/*! @brief Set timeout interval for plugin initialization 
+/** @brief Set timeout interval for plugin initialization 
  * 
  * @param plugin The plugin to check
  * @param timeout Timeout value 
@@ -228,7 +228,7 @@ OSYNC_EXPORT void osync_plugin_set_discover_timeout(OSyncPlugin *plugin, unsigne
  */
 OSYNC_EXPORT void osync_plugin_set_initialize_timeout(OSyncPlugin *plugin, unsigned int timeout);
 
-/*! @brief Set timeout interval for plugin finalization 
+/** @brief Set timeout interval for plugin finalization 
  * 
  * @param plugin The plugin to check
  * @param timeout Timeout value 
@@ -236,7 +236,7 @@ OSYNC_EXPORT void osync_plugin_set_initialize_timeout(OSyncPlugin *plugin, unsig
  */
 OSYNC_EXPORT void osync_plugin_set_finalize_timeout(OSyncPlugin *plugin, unsigned int timeout);
 
-/*! @brief Initialize Plugin 
+/** @brief Initialize Plugin 
  *
  * @param plugin Pointer to the plugin
  * @param info Pointer to OSyncPluginInfo which describes the plugin 
@@ -245,14 +245,14 @@ OSYNC_EXPORT void osync_plugin_set_finalize_timeout(OSyncPlugin *plugin, unsigne
  */
 OSYNC_EXPORT void *osync_plugin_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error);
 
-/*! @brief Finalize Plugin 
+/** @brief Finalize Plugin 
  *
  * @param plugin Pointer to the plugin
  * @param data Pointer to userdata which got returned by plugin initialize function
  */
 OSYNC_EXPORT void osync_plugin_finalize(OSyncPlugin *plugin, void *data);
 
-/*! @brief Call plugin discovery
+/** @brief Call plugin discovery
  *
  * @param plugin Pointer to the plugin
  * @param data Pointer to userdata which got returned by plugin initialize function

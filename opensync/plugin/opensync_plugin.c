@@ -185,7 +185,7 @@ osync_bool osync_plugin_discover(OSyncPlugin *plugin, void *data, OSyncPluginInf
 	if (!plugin->discover)
 		return TRUE;
 		
-	return plugin->discover(data, info, error);
+	return plugin->discover(info, data, error);
 }
 
 osync_bool osync_plugin_is_usable(OSyncPlugin *plugin, OSyncError **error)
