@@ -107,6 +107,20 @@ void osync_entry_engine_update(OSyncMappingEntryEngine *engine, OSyncChange *cha
  */
 void osync_entry_engine_set_dirty(OSyncMappingEntryEngine *engine, osync_bool dirty);
 
+
+/*! @brief Demerge the entry in the OSyncMappingEntryEngine
+ *
+ * The demerge includes storing the "entire" entry in the Archive. The demerging is done
+ * based on the supplied OSyncCapabilities.
+ *
+ * @param engine Pointer to an OSyncMappingEntryEngine
+ * @param archive Pointer to the Archive to store the "entire" entry before demerging
+ * @param caps Pointer to Capabilities to use for demerging
+ * @param error Pointer to error struct, which get set on any error
+ * @returns TRUE on successful demerge, FALSE otherwise
+ */
+osync_bool osync_entry_engine_demerge(OSyncMappingEntryEngine *engine, OSyncArchive *archive, OSyncCapabilities *caps, OSyncError **error);
+
 /*@}*/
 
 #endif /* OPENSYNC_MAPPING_ENTRY_ENGINE_INTERNALS_H_ */

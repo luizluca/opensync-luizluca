@@ -1083,6 +1083,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 			long long int memberid = 0;
 			OSyncObjTypeSink *objtype_sink = NULL;
 			OSyncFormatConverterPath *path = NULL;
+			OSyncCapabilities *caps;
 
 			sinkengine = p->data;
 
@@ -1097,6 +1098,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 			member = osync_client_proxy_get_member(sinkengine->proxy);
 			memberid = osync_member_get_id(member);
+			caps = osync_member_get_capabilities(member); 
 			objtype_sink = osync_member_find_objtype_sink(member, engine->objtype);
 				
 			/* If sink could not be found use "data" sink if available */
@@ -1108,54 +1110,23 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 				OSyncMappingEntryEngine *entry_engine = o->data;
 				osync_assert(entry_engine);
 
+
+
 				/* Merger - Save the entire data and demerge */
+				/* TODO: Review those conditionals!
+				 * Candidates to drop are:
+				 */
 				if (osync_group_get_merger_enabled(osync_engine_get_group(engine->parent)) &&
-						osync_member_get_capabilities(member) &&
-						osync_group_get_converter_enabled(osync_engine_get_group(engine->parent)) &&	
+						osync_member_get_capabilities(member) && /* Candidate to drop */
+						osync_group_get_converter_enabled(osync_engine_get_group(engine->parent)) && /* Candidate to drop */	
 						entry_engine->change &&
 						(osync_change_get_changetype(entry_engine->change) != OSYNC_CHANGE_TYPE_DELETED) &&
 						osync_objformat_has_merger(osync_change_get_objformat(entry_engine->change)) )
 
 
 					{
-						char *buffer = NULL, *marshalbuf;
-						unsigned int size = 0, marshalsize;
-						const char *objtype = NULL;
-						OSyncMapping *mapping = NULL;
-						OSyncMarshal *marshal = NULL;
-						OSyncCapabilities *caps = osync_member_get_capabilities(member); 
-						OSyncObjFormat *objformat = osync_change_get_objformat(entry_engine->change);
-
-						osync_trace(TRACE_INTERNAL, "Entry %s for member %lli: Dirty: %i", osync_change_get_uid(entry_engine->change), memberid, osync_entry_engine_is_dirty(entry_engine));
-
-						osync_trace(TRACE_INTERNAL, "Save the entire data and demerge.");
-						objtype = osync_change_get_objtype(entry_engine->change);
-						mapping = entry_engine->mapping_engine->mapping;
-						
-						osync_data_get_data(osync_change_get_data(entry_engine->change),  &buffer, &size);
-
-						marshal = osync_marshal_new(error);
-						if (!marshal)
+						if (!osync_entry_engine_demerge(entry_engine, engine->archive, caps, error))
 							goto error;
-
-						if (!osync_objformat_marshal(objformat, buffer, size, marshal, error))
-							goto error;
-
-						osync_marshal_get_buffer(marshal, &marshalbuf, &marshalsize);
-
-						if (!osync_archive_save_data(engine->archive, osync_mapping_get_id(mapping), objtype, marshalbuf, marshalsize, error)) {
-							osync_marshal_unref(marshal);
-							osync_free(buffer);	
-							goto error;			
-						}
-
-						osync_marshal_unref(marshal);
-						
-						if (!osync_objformat_demerge(objformat, &buffer, &size, caps, error))
-							goto error;
-
-						osync_trace(TRACE_SENSITIVE, "Post Demerge:\n%s\n",
-								osync_objformat_print(objformat, buffer, size));
 					}
 
 

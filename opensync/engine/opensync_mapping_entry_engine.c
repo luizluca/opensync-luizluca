@@ -26,7 +26,12 @@
 #include "opensync-engine.h"
 #include "opensync-data.h"
 #include "opensync-mapping.h"
+#include "opensync-format.h"
 
+#include "archive/opensync_archive_internals.h"
+#include "format/opensync_objformat_internals.h"
+
+#include "opensync_obj_engine.h"
 #include "opensync_obj_engine.h"
 
 #include "opensync_mapping_engine.h"
@@ -34,7 +39,6 @@
 
 #include "opensync_mapping_entry_engine_internals.h"
 #include "opensync_mapping_engine_internals.h"
-
 
 OSyncMappingEntryEngine *osync_entry_engine_new(OSyncMappingEntry *entry, OSyncMappingEngine *mapping_engine, OSyncSinkEngine *sink_engine, OSyncObjEngine *objengine, OSyncError **error)
 {
@@ -151,5 +155,53 @@ void osync_entry_engine_set_dirty(OSyncMappingEntryEngine *engine, osync_bool di
 {
 	osync_assert(engine);
 	engine->dirty = dirty;
+}
+
+osync_bool osync_entry_engine_demerge(OSyncMappingEntryEngine *entry_engine, OSyncArchive *archive, OSyncCapabilities *caps, OSyncError **error)
+{
+
+	char *buffer = NULL, *marshalbuf;
+	unsigned int size = 0, marshalsize;
+	const char *objtype = NULL;
+	OSyncMapping *mapping = NULL;
+	OSyncMarshal *marshal = NULL;
+	OSyncObjFormat *objformat = osync_change_get_objformat(entry_engine->change);
+
+	osync_trace(TRACE_INTERNAL, "Entry %s Dirty: %i", osync_change_get_uid(entry_engine->change), osync_entry_engine_is_dirty(entry_engine));
+
+	osync_trace(TRACE_INTERNAL, "Save the entire data and demerge.");
+	objtype = osync_change_get_objtype(entry_engine->change);
+	mapping = entry_engine->mapping_engine->mapping;
+	
+	osync_data_get_data(osync_change_get_data(entry_engine->change),  &buffer, &size);
+
+	marshal = osync_marshal_new(error);
+	if (!marshal)
+		goto error;
+
+	if (!osync_objformat_marshal(objformat, buffer, size, marshal, error))
+		goto error_free_marshal;
+
+	osync_marshal_get_buffer(marshal, &marshalbuf, &marshalsize);
+
+	if (!osync_archive_save_data(archive, osync_mapping_get_id(mapping), objtype, marshalbuf, marshalsize, error)) {
+		osync_free(buffer); /* TODO: Is this a valid free? */
+		goto error_free_marshal;
+	}
+
+	if (!osync_objformat_demerge(objformat, &buffer, &size, caps, error))
+		goto error_free_marshal;
+
+	osync_trace(TRACE_SENSITIVE, "Post Demerge:\n%s\n",
+			osync_objformat_print(objformat, buffer, size));
+
+	osync_marshal_unref(marshal);
+
+	return TRUE;
+
+error_free_marshal:
+	osync_marshal_unref(marshal);
+error:
+	return FALSE;
 }
 
