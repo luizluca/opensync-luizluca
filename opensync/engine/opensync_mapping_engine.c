@@ -72,7 +72,12 @@ OSyncMappingEngine *osync_mapping_engine_new(OSyncObjEngine *parent, OSyncMappin
 		
 		OSyncMember *member = osync_client_proxy_get_member(sink_engine->proxy);
 		OSyncMappingEntry *mapping_entry = osync_mapping_find_entry_by_member_id(mapping, osync_member_get_id(member));
-		osync_assert(mapping_entry);
+		if (!mapping_entry) {
+			osync_error_set(error, OSYNC_ERROR_GENERIC, "Inconsistency in Mapping Table "
+					"for Object Type \"%s\" detected.",
+					osync_obj_engine_get_objtype(engine->parent));
+			goto error;
+		}
 		
 		entry_engine = osync_entry_engine_new(mapping_entry, engine, sink_engine, parent, error);
 		if (!entry_engine)
