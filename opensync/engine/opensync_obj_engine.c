@@ -1118,8 +1118,8 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 
 					{
-						char *buffer = NULL, *outbuf, *marshalbuf;
-						unsigned int outsize = 0, size = 0, marshalsize;
+						char *buffer = NULL, *marshalbuf;
+						unsigned int size = 0, marshalsize;
 						const char *objtype = NULL;
 						OSyncMapping *mapping = NULL;
 						OSyncMarshal *marshal = NULL;
@@ -1151,10 +1151,11 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 						osync_marshal_unref(marshal);
 						
-						if (!osync_objformat_demerge(objformat, buffer, size, &outbuf, &outsize, caps, error))
+						if (!osync_objformat_demerge(objformat, &buffer, &size, caps, error))
 							goto error;
 
-						osync_data_set_data(osync_change_get_data(entry_engine->change), outbuf, outsize);
+						osync_trace(TRACE_SENSITIVE, "Post Demerge:\n%s\n",
+								osync_objformat_print(objformat, buffer, size));
 					}
 
 

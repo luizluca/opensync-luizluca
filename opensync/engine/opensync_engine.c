@@ -264,8 +264,8 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 		{
 			OSyncCapabilities *caps;
 			OSyncObjFormat *objformat = osync_change_get_objformat(change);
-			char *entirebuf, *buffer, *outbuf;
-			unsigned int entsize, size = 0, outsize;
+			char *entirebuf, *buffer;
+			unsigned int entsize, size = 0;
 			osync_trace(TRACE_INTERNAL, "Merge.");
 
 			member = osync_client_proxy_get_member(proxy);
@@ -278,19 +278,34 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 				int ret = osync_archive_load_data(engine->archive, uid, osync_change_get_objtype(change), &entirebuf, &entsize, &error);
 				if (ret < 0) {
 					goto error; 
-				}
+				} 
 			
 				if (ret > 0) {
+					OSyncMarshal *marshal;
+
+					marshal = osync_marshal_new(&error);
+					if (!marshal)
+						goto error;
+
+					osync_marshal_write_buffer(marshal, entirebuf, entsize);
+
+					if (!osync_objformat_demarshal(objformat, marshal, &entirebuf, &entsize, &error)) {
+						osync_marshal_unref(marshal);
+						goto error;
+					}
+
+					osync_marshal_unref(marshal);
 					
 					osync_data_get_data(osync_change_get_data(change), &buffer, &size);
 
-					ret = osync_objformat_merge(objformat, buffer, size, &outbuf, &outsize, entirebuf, entsize, caps, &error);
+					ret = osync_objformat_merge(objformat, &buffer, &size, entirebuf, entsize, caps, &error);
 					osync_free(entirebuf);
 
-					osync_data_set_data(osync_change_get_data(change), outbuf, outsize);
-					
 					if (ret != TRUE)
 						goto error;
+
+					osync_trace(TRACE_SENSITIVE, "Merge result:\n%s\n",
+						osync_objformat_print(objformat, buffer, size));
 				}
 			}
 		}

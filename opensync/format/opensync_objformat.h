@@ -44,8 +44,8 @@ typedef osync_bool (* OSyncFormatMarshalFunc) (const char *input, unsigned int i
 typedef osync_bool (* OSyncFormatDemarshalFunc) (OSyncMarshal *marshal, char **output, unsigned int *outpsize, void *user_data, OSyncError **error);
 typedef osync_bool (* OSyncFormatValidateFunc) (const char *data, unsigned int size, void *user_data, OSyncError **error);
 
-typedef osync_bool (* OSyncFormatMergeFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize,  const char *entire, unsigned int entsize, OSyncCapabilities *caps,void *user_data, OSyncError **error);
-typedef osync_bool (* OSyncFormatDemergeFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, OSyncCapabilities *caps, void *user_data, OSyncError **error);
+typedef osync_bool (* OSyncFormatMergeFunc) (char **data, unsigned int *size, const char *entire, unsigned int entsize, OSyncCapabilities *caps, void *user_data, OSyncError **error);
+typedef osync_bool (* OSyncFormatDemergeFunc) (char **data, unsigned int *size, OSyncCapabilities *caps, void *user_data, OSyncError **error);
 
 /**
  * @brief Creates a new object format

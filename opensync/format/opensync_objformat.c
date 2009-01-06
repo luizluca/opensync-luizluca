@@ -306,14 +306,13 @@ void osync_objformat_set_merge_func(OSyncObjFormat *format, OSyncFormatMergeFunc
 }
 
 osync_bool osync_objformat_merge(OSyncObjFormat *format,
-		const char *input, unsigned int inpsize,
-		char **output, unsigned int *outpsize,
+		char **data, unsigned int *size,
 		const char *entire, unsigned int entsize,
 		OSyncCapabilities *caps, OSyncError **error)
 {
 	osync_assert(format);
 	osync_return_val_if_fail(format->merge_func, TRUE);
-	return format->merge_func(input, inpsize, output, outpsize, entire, entsize, caps, format->user_data, error);
+	return format->merge_func(data, size, entire, entsize, caps, format->user_data, error);
 }
 
 void osync_objformat_set_demerge_func(OSyncObjFormat *format, OSyncFormatDemergeFunc demerge_func)
@@ -323,13 +322,12 @@ void osync_objformat_set_demerge_func(OSyncObjFormat *format, OSyncFormatDemerge
 }
 
 osync_bool osync_objformat_demerge(OSyncObjFormat *format,
-		const char *input, unsigned int inpsize,
-		char **output, unsigned int *outpsize,
+		char **data, unsigned int *size,
 		OSyncCapabilities *caps, OSyncError **error)
 {
 	osync_assert(format);
 	osync_return_val_if_fail(format->demerge_func, TRUE);
-	return format->demerge_func(input, inpsize, output, outpsize, caps, format->user_data, error);
+	return format->demerge_func(data, size, caps, format->user_data, error);
 }
 
 
