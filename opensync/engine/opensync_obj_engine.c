@@ -1102,6 +1102,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 			objtype_sink = osync_member_find_objtype_sink(member, engine->objtype);
 				
 			/* If sink could not be found use "data" sink if available */
+			/* TODO: Get rid of hardcoded-"data". Make this indepdendent of "data" */
 			if (!objtype_sink)
 				objtype_sink = osync_member_find_objtype_sink(member, "data");
 			/* TODO: Review if objtype_sink = NULL is valid at all. */
@@ -1137,49 +1138,9 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 					/* Convert to requested target format if the changetype is not DELETED */
 					if (osync_group_get_converter_enabled(osync_engine_get_group(engine->parent)) && (osync_change_get_changetype(change) != OSYNC_CHANGE_TYPE_DELETED)) {
-
-						char *objtype = NULL;
-						OSyncList *format_sinks = NULL;
-						unsigned int length = 0;
-						OSyncFormatConverter *converter = NULL;
-
-						osync_trace(TRACE_INTERNAL, "Starting to convert from objtype %s and format %s", osync_change_get_objtype(entry_engine->change), osync_objformat_get_name(osync_change_get_objformat(entry_engine->change)));
-						/* We have to save the objtype of the change so that it does not get
-						 * overwritten by the conversion */
-						objtype = g_strdup(osync_change_get_objtype(change));
-							
-						/* Now we have to convert to one of the formats
-						 * that the client can understand */
-						format_sinks = osync_objtype_sink_get_objformat_sinks(objtype_sink);
-						if (!format_sinks) {
-							osync_error_set(error, OSYNC_ERROR_GENERIC, "There are no available format sinks.");
-							goto error;
-						}
-						
-						/* We cache the converter path for each sink/member couple */
-						if (!path) {
-							path = osync_format_env_find_path_formats_with_detectors(engine->formatenv, osync_change_get_data(entry_engine->change), format_sinks, osync_objtype_sink_get_preferred_format(objtype_sink), error);
-						}
-						if (!path)
+						if (!osync_entry_engine_convert(entry_engine, engine->formatenv, objtype_sink, &path, error))
 							goto error;
 
-						length = osync_converter_path_num_edges(path);
-						converter = osync_converter_path_nth_edge(path, length - 1);
-						if (converter) {
-							OSyncObjFormat *format = osync_converter_get_targetformat(converter);
-							OSyncObjFormatSink *formatsink = osync_objtype_sink_find_objformat_sink(objtype_sink, format);
-							osync_converter_path_set_config(path, osync_objformat_sink_get_config(formatsink));
-						}
-
-						if (!osync_format_env_convert(engine->formatenv, path, osync_change_get_data(entry_engine->change), error)) {
-							osync_converter_path_unref(path);
-							goto error;
-						}
-						osync_trace(TRACE_INTERNAL, "converted to format %s", osync_objformat_get_name(osync_change_get_objformat(entry_engine->change)));
-							
-							
-						osync_change_set_objtype(change, objtype);
-						g_free(objtype);
 					}
 						
 					osync_trace(TRACE_INTERNAL, "Writing change %s, changetype %i, format %s , objtype %s from member %lli", 

@@ -107,7 +107,6 @@ void osync_entry_engine_update(OSyncMappingEntryEngine *engine, OSyncChange *cha
  */
 void osync_entry_engine_set_dirty(OSyncMappingEntryEngine *engine, osync_bool dirty);
 
-
 /*! @brief Demerge the entry in the OSyncMappingEntryEngine
  *
  * The demerge includes storing the "entire" entry in the Archive. The demerging is done
@@ -120,6 +119,25 @@ void osync_entry_engine_set_dirty(OSyncMappingEntryEngine *engine, osync_bool di
  * @returns TRUE on successful demerge, FALSE otherwise
  */
 osync_bool osync_entry_engine_demerge(OSyncMappingEntryEngine *engine, OSyncArchive *archive, OSyncCapabilities *caps, OSyncError **error);
+
+/*! @brief convert the entry in the OSyncMappingEntryEngine 
+ *
+ * The conversion of the entry of OSyncMappingEntryEngine, uses the format
+ * configurations of OSyncObjTypeSink (i.e. which supported formats, preferred
+ * formats and format-configuration).
+ *
+ * The OSyncFormatConverterPath can be "cached" by supplied a refernce to the parameter.
+ * Which should be reused, since this avoids conversion-path building and detection.
+ *
+ * @param engine Pointer to an OSyncMappingEntryEngine
+ * @param formatenv Pointer to format environment 
+ * @param objtype_sink Pointer to Object Type Sink which stores format configurations 
+ * @param path Reference to OSyncFormatConverterPath to supplied or store the cache conversion path
+ * @param error Pointer to error struct, which get set on any error
+ * @returns TRUE on successful demerge, FALSE otherwise
+ */
+
+osync_bool osync_entry_engine_convert(OSyncMappingEntryEngine *engine, OSyncFormatEnv *formatenv, OSyncObjTypeSink *objtype_sink, OSyncFormatConverterPath **path, OSyncError **error);
 
 /*@}*/
 
