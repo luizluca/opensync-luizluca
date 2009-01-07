@@ -837,7 +837,7 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
 
-	if (!osync_plugin_discover(client->plugin, client->plugin_data, client->plugin_info, error))
+	if (!osync_plugin_discover(client->plugin, client->plugin_info, error))
 		goto error;
 
 	reply = osync_message_new_reply(message, error);

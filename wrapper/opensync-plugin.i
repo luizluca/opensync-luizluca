@@ -70,9 +70,9 @@ typedef struct {} Plugin;
 		osync_plugin_finalize(self, data);
 	}
 
-	void discover(void *data, PluginInfo *info) {
+	void discover(PluginInfo *info, void *data) {
 		Error *err = NULL;
-		bool ret = osync_plugin_discover(self, data, info, &err);
+		bool ret = osync_plugin_discover(self, info, &err);
 		if (!raise_exception_on_error(err) && !ret)
 			wrapper_exception("osync_plugin_discover failed but did not set error code");
 	}
