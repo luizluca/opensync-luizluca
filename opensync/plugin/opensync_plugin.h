@@ -35,6 +35,7 @@
 
 /**
  * @brief Prototype of the plugin initialize function
+ * 
  * In this function a plugin should initialize and allocate 
  * all plugin specific data which is required in the other plugin
  * functions. This data could be e.g. connections, directories, ...
@@ -47,6 +48,7 @@ typedef void * (* initialize_fn) (OSyncPlugin *plugin, OSyncPluginInfo *info, OS
 
 /**
  * @brief Prototype of the plugin finalize function
+ * 
  * This plugin function is called to give a plugin the possibility
  * to free all allocated data.
  * @param plugin_data Plugin specific data that was returned by the initialize function
@@ -55,6 +57,7 @@ typedef void (* finalize_fn) (void * plugin_data);
 
 /**
  * @brief Prototype of the plugin discovery function
+ * 
  * TODO Add detailed description
  * @param info the OSyncPluginInfo
  * @param plugin_data Plugin specific data that was returned in the plugin initialize function
