@@ -30,7 +30,7 @@
  */
 
 /**
- * @defgroup OSyncPluginEnvAPI OpenSync Environment
+ * @defgroup OSyncPluginEnvAPI OpenSync Plugin Environment
  * @ingroup OSyncPlugin
  * @brief The public API of the opensync environment
  * 
