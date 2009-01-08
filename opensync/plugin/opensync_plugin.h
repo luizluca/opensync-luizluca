@@ -21,14 +21,50 @@
 #ifndef _OPENSYNC_PLUGIN_H_
 #define _OPENSYNC_PLUGIN_H_
 
+/**
+ * @defgroup OSyncPlugin OpenSync Plugin Module
+ * @ingroup OSyncPublic
+ * @defgroup OSyncPluginAPI OpenSync Plugin
+ * @ingroup OSyncPlugin
+ * @brief The public part of the OSyncPlugin
+ * 
+ * Functions to register and manage plugins
+ */
+
+/*@{*/
+
+/**
+ * @brief Prototype of the plugin initialize function
+ * In this function a plugin should initialize and allocate 
+ * all plugin specific data which is required in the other plugin
+ * functions. This data could be e.g. connections, directories, ...
+ * @param plugin
+ * @param info the OSyncPluginInfo
+ * @param error An OSyncError struct that should be used to set an error
+ * @return The plugin specific data that is passed to the other plugin functions
+ */
 typedef void * (* initialize_fn) (OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error);
+
+/**
+ * @brief Prototype of the plugin finalize function
+ * This plugin function is called to give a plugin the possibility
+ * to free all allocated data.
+ * @param plugin_data Plugin specific data that was returned by the initialize function
+ */
 typedef void (* finalize_fn) (void * plugin_data);
+
+/**
+ * @brief Prototype of the plugin discovery function
+ * TODO Add detailed description
+ * @param info the OSyncPluginInfo
+ * @param plugin_data Plugin specific data that was returned in the plugin initialize function
+ * @param error An OSyncError struct that should be used to set an error
+ * @return TRUE if discovery was successful
+ */
 typedef osync_bool (* discover_fn) (OSyncPluginInfo *info, void * plugin_data, OSyncError **error);
 
 /** @brief Gives information about wether the plugin
  * has to be configured or not
- * 
- * @ingroup OSyncPluginAPI 
  **/
 typedef enum {
 	/** Plugin has no configuration options */
@@ -38,15 +74,6 @@ typedef enum {
 	/** Plugin must be configured to run correctly */
 	OSYNC_PLUGIN_NEEDS_CONFIGURATION = 2
 } OSyncConfigurationType;
-
-/**
- * @defgroup OSyncPluginAPI OpenSync Plugin
- * @ingroup OSyncPublic
- * @brief Functions to register and manage plugins
- * 
- */
-/*@{*/
-
 
 /** @brief Registers a new plugin
  *
