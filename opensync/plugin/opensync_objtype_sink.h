@@ -23,7 +23,7 @@
 
 /**
  * @defgroup OSyncObjTypeSinkAPI OpenSync Object Type Sink
- * @ingroup OSyncPublic
+ * @ingroup OSyncPlugin
  * @brief Functions to register and manage object type sinks
  * 
  */
@@ -53,7 +53,7 @@ typedef struct OSyncObjTypeSinkFunctions {
 	OSyncSinkConnectDoneFn connect_done;
 } OSyncObjTypeSinkFunctions;
 
-/*! @brief Creates a new main sink
+/** @brief Creates a new main sink
  *
  * Main sink is objtype neutral and should be used for object type
  * neutral actions. Actions like connecting/disconnecting which could
@@ -68,7 +68,7 @@ typedef struct OSyncObjTypeSinkFunctions {
  */
 OSYNC_EXPORT OSyncObjTypeSink *osync_objtype_main_sink_new(OSyncError **error);
 
-/*! @brief Creates a new sink for an object type
+/** @brief Creates a new sink for an object type
  *
  * @param objtype The name of the object type for the sink
  * @param error Pointer to an error struct
@@ -76,21 +76,21 @@ OSYNC_EXPORT OSyncObjTypeSink *osync_objtype_main_sink_new(OSyncError **error);
  */
 OSYNC_EXPORT OSyncObjTypeSink *osync_objtype_sink_new(const char *objtype, OSyncError **error);
 
-/*! @brief Increase the reference count on a sink
+/** @brief Increase the reference count on a sink
  * 
  * @param sink Pointer to the sink
  * 
  */
 OSYNC_EXPORT OSyncObjTypeSink *osync_objtype_sink_ref(OSyncObjTypeSink *sink);
 
-/*! @brief Decrease the reference count on a sink
+/** @brief Decrease the reference count on a sink
  * 
  * @param sink Pointer to the sink
  * 
  */
 OSYNC_EXPORT void osync_objtype_sink_unref(OSyncObjTypeSink *sink);
 
-/*! @brief Request an anchor for this Sink 
+/** @brief Request an anchor for this Sink 
  *
  * If for this sink an anchor is required, this needs to be requested by this
  * function. If anchor gets enabled/requested inside the plugin, the framework
@@ -105,7 +105,7 @@ OSYNC_EXPORT void osync_objtype_sink_unref(OSyncObjTypeSink *sink);
  */
 OSYNC_EXPORT void osync_objtype_sink_enable_anchor(OSyncObjTypeSink *sink, osync_bool enable);
 
-/*! @brief Get the pointer to the sink OSyncAnchor
+/** @brief Get the pointer to the sink OSyncAnchor
  *
  * This Anchor is sink specific and can store persistent, sink specific data.
  * Originally designed to detect if a certain value changed since last
@@ -119,7 +119,7 @@ OSYNC_EXPORT void osync_objtype_sink_enable_anchor(OSyncObjTypeSink *sink, osync
 OSYNC_EXPORT OSyncAnchor *osync_objtype_sink_get_anchor(OSyncObjTypeSink *sink);
 
 
-/*! @brief Return the name of the object type of a sink
+/** @brief Return the name of the object type of a sink
  * 
  * @param sink Pointer to the sink
  * @returns the name of the object type of the specified sink
@@ -128,7 +128,7 @@ OSYNC_EXPORT OSyncAnchor *osync_objtype_sink_get_anchor(OSyncObjTypeSink *sink);
 OSYNC_EXPORT const char *osync_objtype_sink_get_name(OSyncObjTypeSink *sink);
 
 
-/*! @brief Set the object type of a sink
+/** @brief Set the object type of a sink
  * 
  * @param sink Pointer to the sink
  * @param name the name of the object type to set
@@ -137,7 +137,7 @@ OSYNC_EXPORT const char *osync_objtype_sink_get_name(OSyncObjTypeSink *sink);
 OSYNC_EXPORT void osync_objtype_sink_set_name(OSyncObjTypeSink *sink, const char *name);
 
 
-/*! @brief Return the preferred format for the conversion 
+/** @brief Return the preferred format for the conversion 
  * 
  * @param sink Pointer to the sink
  * @returns the name of the preferred format
@@ -145,7 +145,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_name(OSyncObjTypeSink *sink, const char
  */
 OSYNC_EXPORT const char *osync_objtype_sink_get_preferred_format(OSyncObjTypeSink *sink);
 
-/*! @brief Set the preferred format for the conversion
+/** @brief Set the preferred format for the conversion
  * 
  * @param sink Pointer to the sink
  * @param preferred_format the name of the preferred format to set
@@ -154,7 +154,7 @@ OSYNC_EXPORT const char *osync_objtype_sink_get_preferred_format(OSyncObjTypeSin
 OSYNC_EXPORT void osync_objtype_sink_set_preferred_format(OSyncObjTypeSink *sink, const char *preferred_format);
 
 
-/*! @brief Returns the number of object formats in the sink
+/** @brief Returns the number of object formats in the sink
  * 
  * @param sink Pointer to the sink
  * @returns the number of object formats in the sink
@@ -162,7 +162,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_preferred_format(OSyncObjTypeSink *sink
  */
 OSYNC_EXPORT unsigned int osync_objtype_sink_num_objformat_sinks(OSyncObjTypeSink *sink);
 
-/*! @brief Returns the nth object format in the sink
+/** @brief Returns the nth object format in the sink
  * 
  * @param sink Pointer to the sink
  * @param nth the index of the object format to return
@@ -171,7 +171,7 @@ OSYNC_EXPORT unsigned int osync_objtype_sink_num_objformat_sinks(OSyncObjTypeSin
  */
 OSYNC_EXPORT OSyncObjFormatSink *osync_objtype_sink_nth_objformat_sink(OSyncObjTypeSink *sink, unsigned int nth);
 
-/*! @brief Finds the objformat sink for the corresponding objformat 
+/** @brief Finds the objformat sink for the corresponding objformat 
  * 
  * @param sink Pointer to the sink
  * @param objformat the objformat to look for the corresponding objformat sink
@@ -180,7 +180,7 @@ OSYNC_EXPORT OSyncObjFormatSink *osync_objtype_sink_nth_objformat_sink(OSyncObjT
  */
 OSYNC_EXPORT OSyncObjFormatSink *osync_objtype_sink_find_objformat_sink(OSyncObjTypeSink *sink, OSyncObjFormat *objformat);
 
-/*! @brief Get list of object format sinks 
+/** @brief Get list of object format sinks 
  * 
  * @param sink Pointer to the sink
  * @returns List of object format sinks 
@@ -230,7 +230,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_functions(OSyncObjTypeSink *sink, OSync
 OSYNC_EXPORT void *osync_objtype_sink_get_userdata(OSyncObjTypeSink *sink);
 
 
-/*! @brief Checks if a sink is enabled
+/** @brief Checks if a sink is enabled
  * 
  * @param sink Pointer to the sink
  * @returns TRUE if the sink is enabled, FALSE otherwise
@@ -238,7 +238,7 @@ OSYNC_EXPORT void *osync_objtype_sink_get_userdata(OSyncObjTypeSink *sink);
  */
 OSYNC_EXPORT osync_bool osync_objtype_sink_is_enabled(OSyncObjTypeSink *sink);
 
-/*! @brief Sets the enabled/disabled state of a sink
+/** @brief Sets the enabled/disabled state of a sink
  * 
  * @param sink Pointer to the sink
  * @param enabled TRUE if the sink is enabled, FALSE otherwise
@@ -247,7 +247,7 @@ OSYNC_EXPORT osync_bool osync_objtype_sink_is_enabled(OSyncObjTypeSink *sink);
 OSYNC_EXPORT void osync_objtype_sink_set_enabled(OSyncObjTypeSink *sink, osync_bool enabled);
 
 
-/*! @brief Checks if a sink is available
+/** @brief Checks if a sink is available
  * 
  * @param sink Pointer to the sink
  * @returns TRUE if the sink is available, FALSE otherwise
@@ -255,7 +255,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_enabled(OSyncObjTypeSink *sink, osync_b
  */
 OSYNC_EXPORT osync_bool osync_objtype_sink_is_available(OSyncObjTypeSink *sink);
 
-/*! @brief Sets the available state of a sink
+/** @brief Sets the available state of a sink
  * 
  * @param sink Pointer to the sink
  * @param available TRUE if the sink is available, FALSE otherwise
@@ -264,7 +264,7 @@ OSYNC_EXPORT osync_bool osync_objtype_sink_is_available(OSyncObjTypeSink *sink);
 OSYNC_EXPORT void osync_objtype_sink_set_available(OSyncObjTypeSink *sink, osync_bool available);
 
 
-/*! @brief Checks if sink is allowed to write (commit)
+/** @brief Checks if sink is allowed to write (commit)
  *
  * If the sink is not allowed to write, then no changes will be commited to
  * the sink.
@@ -274,7 +274,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_available(OSyncObjTypeSink *sink, osync
  */
 OSYNC_EXPORT osync_bool osync_objtype_sink_get_write(OSyncObjTypeSink *sink);
 
-/*! @brief Sets the write status of the sink (commit)
+/** @brief Sets the write status of the sink (commit)
  *
  * See osync_objtype_sink_get_write()
  *
@@ -285,7 +285,7 @@ OSYNC_EXPORT osync_bool osync_objtype_sink_get_write(OSyncObjTypeSink *sink);
 OSYNC_EXPORT void osync_objtype_sink_set_write(OSyncObjTypeSink *sink, osync_bool write);
 
 
-/*! @brief Checks if sink is allowed to get latest changes 
+/** @brief Checks if sink is allowed to get latest changes 
  *
  * @param sink Pointer to the sink
  * @returns TRUE if the sink is allowed to get latest changed entries, FALSE otherwise
@@ -293,7 +293,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_write(OSyncObjTypeSink *sink, osync_boo
  */
 OSYNC_EXPORT osync_bool osync_objtype_sink_get_getchanges(OSyncObjTypeSink *sink);
 
-/*! @brief Sets the get latest changes status of the sink (get_change)
+/** @brief Sets the get latest changes status of the sink (get_change)
  *
  * See osync_objtype_sink_get_getchanges()
  *
@@ -304,7 +304,7 @@ OSYNC_EXPORT osync_bool osync_objtype_sink_get_getchanges(OSyncObjTypeSink *sink
 OSYNC_EXPORT void osync_objtype_sink_set_getchanges(OSyncObjTypeSink *sink, osync_bool getchanges);
 
 
-/*! @brief Checks if sink is allowed to read single entries
+/** @brief Checks if sink is allowed to read single entries
  *
  * "Read" means to request a single entry and does not mean to get the
  * latest changes since last sink. See osync_objtype_sink_get_getchanges().
@@ -319,7 +319,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_getchanges(OSyncObjTypeSink *sink, osyn
  */
 OSYNC_EXPORT osync_bool osync_objtype_sink_get_read(OSyncObjTypeSink *sink);
 
-/*! @brief Sets the (single) read status of a sink 
+/** @brief Sets the (single) read status of a sink 
  *
  * See osync_objtype_sink_get_read()
  *
@@ -330,7 +330,7 @@ OSYNC_EXPORT osync_bool osync_objtype_sink_get_read(OSyncObjTypeSink *sink);
 OSYNC_EXPORT void osync_objtype_sink_set_read(OSyncObjTypeSink *sink, osync_bool read);
 
 
-/*! @brief Checks if slow-sync has been requested
+/** @brief Checks if slow-sync has been requested
  * 
  * When slow-sync is requested, OpenSync synchronizes all entries rather than
  * just the changes.
@@ -347,7 +347,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_read(OSyncObjTypeSink *sink, osync_bool
  */
 OSYNC_EXPORT osync_bool osync_objtype_sink_get_slowsync(OSyncObjTypeSink *sink);
 
-/*! @brief Sets the slow-sync state of a sink
+/** @brief Sets the slow-sync state of a sink
  * 
  * When slow-sync is requested, OpenSync synchronizes all entries rather than
  * just the changes.
@@ -463,7 +463,7 @@ OSYNC_EXPORT void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, void 
 OSYNC_EXPORT void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx);
 
 
-/*! @brief Sets the connect timeout in seconds for the OSyncObjTypeSink 
+/** @brief Sets the connect timeout in seconds for the OSyncObjTypeSink 
  * 
  * @param sink Pointer to the sink
  * @param timeout The timeout in seconds 
@@ -471,7 +471,7 @@ OSYNC_EXPORT void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, void 
  */
 OSYNC_EXPORT void osync_objtype_sink_set_connect_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
 
-/*! @brief Sets the disconnect timeout in seconds for the OSyncObjTypeSink 
+/** @brief Sets the disconnect timeout in seconds for the OSyncObjTypeSink 
  * 
  * @param sink Pointer to the sink
  * @param timeout The timeout in seconds 
@@ -479,7 +479,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_connect_timeout(OSyncObjTypeSink *sink,
  */
 OSYNC_EXPORT void osync_objtype_sink_set_disconnect_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
 
-/*! @brief Sets the get_changes timeout in seconds for the OSyncObjTypeSink 
+/** @brief Sets the get_changes timeout in seconds for the OSyncObjTypeSink 
  * 
  * @param sink Pointer to the sink
  * @param timeout The timeout in seconds 
@@ -487,7 +487,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_disconnect_timeout(OSyncObjTypeSink *si
  */
 OSYNC_EXPORT void osync_objtype_sink_set_getchanges_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
 
-/*! @brief Sets the commit timeout in seconds for the OSyncObjTypeSink 
+/** @brief Sets the commit timeout in seconds for the OSyncObjTypeSink 
  * 
  * @param sink Pointer to the sink
  * @param timeout The timeout in seconds 
@@ -495,7 +495,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_getchanges_timeout(OSyncObjTypeSink *si
  */
 OSYNC_EXPORT void osync_objtype_sink_set_commit_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
 
-/*! @brief Sets the batchcommit timeout in seconds for the OSyncObjTypeSink 
+/** @brief Sets the batchcommit timeout in seconds for the OSyncObjTypeSink 
  * 
  * @param sink Pointer to the sink
  * @param timeout The timeout in seconds 
@@ -503,7 +503,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_commit_timeout(OSyncObjTypeSink *sink, 
  */
 OSYNC_EXPORT void osync_objtype_sink_set_batchcommit_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
 
-/*! @brief Sets the committedall timeout in seconds for the OSyncObjTypeSink 
+/** @brief Sets the committedall timeout in seconds for the OSyncObjTypeSink 
  * 
  * @param sink Pointer to the sink
  * @param timeout The timeout in seconds 
@@ -511,7 +511,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_batchcommit_timeout(OSyncObjTypeSink *s
  */
 OSYNC_EXPORT void osync_objtype_sink_set_committedall_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
 
-/*! @brief Sets the syncdone timeout in seconds for the OSyncObjTypeSink 
+/** @brief Sets the syncdone timeout in seconds for the OSyncObjTypeSink 
  * 
  * @param sink Pointer to the sink
  * @param timeout The timeout in seconds 
@@ -519,7 +519,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_committedall_timeout(OSyncObjTypeSink *
  */
 OSYNC_EXPORT void osync_objtype_sink_set_syncdone_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
 
-/*! @brief Sets the write timeout in seconds for the OSyncObjTypeSink 
+/** @brief Sets the write timeout in seconds for the OSyncObjTypeSink 
  * 
  * @param sink Pointer to the sink
  * @param timeout The timeout in seconds 
@@ -527,7 +527,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_syncdone_timeout(OSyncObjTypeSink *sink
  */
 OSYNC_EXPORT void osync_objtype_sink_set_write_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
 
-/*! @brief Sets the read timeout in seconds for the OSyncObjTypeSink 
+/** @brief Sets the read timeout in seconds for the OSyncObjTypeSink 
  * 
  * @param sink Pointer to the sink
  * @param timeout The timeout in seconds 

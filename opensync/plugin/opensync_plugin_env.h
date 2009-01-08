@@ -31,14 +31,14 @@
 
 /**
  * @defgroup OSyncPluginEnvAPI OpenSync Environment
- * @ingroup OSyncPublic
+ * @ingroup OSyncPlugin
  * @brief The public API of the opensync environment
  * 
  */
 /*@{*/
 
 
-/*! @brief This will create a new opensync environment
+/** @brief This will create a new opensync environment
  * 
  * The environment will hold all information about plugins, groups etc
  * 
@@ -47,7 +47,7 @@
  */
 OSYNC_EXPORT OSyncPluginEnv *osync_plugin_env_new(OSyncError **error);
 
-/*! @brief Increases the reference counton an opensync plugin environment
+/** @brief Increases the reference counton an opensync plugin environment
  * 
  * The reference count on the OSyncPluginEnv is incremented. When the
  * reference is no longer needed it should be removed with 
@@ -58,7 +58,7 @@ OSYNC_EXPORT OSyncPluginEnv *osync_plugin_env_new(OSyncError **error);
  */
 OSYNC_EXPORT OSyncPluginEnv *osync_plugin_env_ref(OSyncPluginEnv *env);
 
-/*! @brief Removes a reference to an OSyncPluginEnv
+/** @brief Removes a reference to an OSyncPluginEnv
  * 
  * Decrements the reference count on an osync plugin environment.  If
  * the reference count reaches zero the environment is freed and all
@@ -69,7 +69,7 @@ OSYNC_EXPORT OSyncPluginEnv *osync_plugin_env_ref(OSyncPluginEnv *env);
  */
 OSYNC_EXPORT void osync_plugin_env_unref(OSyncPluginEnv *env);
 
-/*! @brief Loads the sync modules from a given directory
+/** @brief Loads the sync modules from a given directory
  * 
  * Loads all sync modules from a directory into a osync environment
  * 
@@ -82,7 +82,7 @@ OSYNC_EXPORT void osync_plugin_env_unref(OSyncPluginEnv *env);
 OSYNC_EXPORT osync_bool osync_plugin_env_load(OSyncPluginEnv *env, const char *path, OSyncError **error);
 
 
-/*! @brief Register plugin to plugin environment 
+/** @brief Register plugin to plugin environment 
  * 
  * @param env Pointer to a plugin environment
  * @param plugin Pointer to plugin which should get added to environment
@@ -90,7 +90,7 @@ OSYNC_EXPORT osync_bool osync_plugin_env_load(OSyncPluginEnv *env, const char *p
  */
 OSYNC_EXPORT void osync_plugin_env_register_plugin(OSyncPluginEnv *env, OSyncPlugin *plugin);
 
-/*! @brief Finds the plugin with the given name
+/** @brief Finds the plugin with the given name
  * 
  * Finds the plugin with the given name
  * 
@@ -101,7 +101,7 @@ OSYNC_EXPORT void osync_plugin_env_register_plugin(OSyncPluginEnv *env, OSyncPlu
  */
 OSYNC_EXPORT OSyncPlugin *osync_plugin_env_find_plugin(OSyncPluginEnv *env, const char *name);
 
-/*! @brief Returns the number of loaded plugins
+/** @brief Returns the number of loaded plugins
  * 
  * Returns the number of loaded plugins. 0 if used before initialization
  * 
@@ -111,7 +111,7 @@ OSYNC_EXPORT OSyncPlugin *osync_plugin_env_find_plugin(OSyncPluginEnv *env, cons
  */
 OSYNC_EXPORT int osync_plugin_env_num_plugins(OSyncPluginEnv *env);
 
-/*! @brief Returns pointer to nth plugin
+/** @brief Returns pointer to nth plugin
  * 
  * Returns pointer to nth plugin
  * 

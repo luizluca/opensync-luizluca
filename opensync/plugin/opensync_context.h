@@ -23,6 +23,14 @@
 
 OPENSYNC_BEGIN_DECLS
 
+/**
+ * @defgroup OSyncContextAPI OpenSync Context
+ * @ingroup OSyncPlugin
+ * Public part of OpenSync Context
+ */
+
+/*@{*/
+
 typedef void (* OSyncContextCallbackFn)(void *, OSyncError *);
 typedef void (* OSyncContextChangeFn) (OSyncChange *, void *);
 
@@ -40,6 +48,8 @@ OSYNC_EXPORT void osync_context_report_osyncerror(OSyncContext *context, OSyncEr
 
 OSYNC_EXPORT void osync_context_report_osyncwarning(OSyncContext *context, OSyncError *error);
 OSYNC_EXPORT void osync_context_report_change(OSyncContext *context, OSyncChange *change);
+
+/*@}*/
 
 OPENSYNC_END_DECLS
 

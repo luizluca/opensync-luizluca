@@ -20,6 +20,12 @@
 
 #ifndef _OPENSYNC_PLUGIN_RESOURCE_H_
 #define _OPENSYNC_PLUGIN_RESOURCE_H_
+/**
+ * @defgroup OSyncPluginResourceAPI OpenSync Plugin Resource
+ * @ingroup OSyncPlugin
+*/
+
+/*@{*/
 
 typedef enum {
 	OSYNC_PLUGIN_RESOURCE_NAME	= (1 << 0),
@@ -65,6 +71,7 @@ OSYNC_EXPORT void osync_plugin_resource_set_path(OSyncPluginResource *resource, 
 OSYNC_EXPORT const char *osync_plugin_resource_get_url(OSyncPluginResource *resource);
 OSYNC_EXPORT void osync_plugin_resource_set_url(OSyncPluginResource *resource, const char *url);
 
+/*@}*/
 
 #endif /*_OPENSYNC_PLUGIN_RESOURCE_H_*/
 

@@ -21,6 +21,13 @@
 #ifndef _OPENSYNC_PLUGIN_LOCALIZATION_H_
 #define _OPENSYNC_PLUGIN_LOCALIZATION_H_
 
+/**
+ * @defgroup OSyncPluginLocalizationAPI OpenSync Plugin Localization
+ * @ingroup OSyncPlugin
+*/
+
+/*@{*/
+
 typedef enum {
 	OSYNC_PLUGIN_LOCALIZATION_ENCODING	= (1 << 0),
 	OSYNC_PLUGIN_LOCALIZATION_TIMEZONE	= (1 << 1),
@@ -44,6 +51,8 @@ OSYNC_EXPORT void osync_plugin_localization_set_timezone(OSyncPluginLocalization
 
 OSYNC_EXPORT const char *osync_plugin_localization_get_language(OSyncPluginLocalization *local);
 OSYNC_EXPORT void osync_plugin_localization_set_language(OSyncPluginLocalization *local, const char *language);
+
+/*@}*/
 
 #endif /*_OPENSYNC_PLUGIN_LOCALIZATION_H_*/
 
