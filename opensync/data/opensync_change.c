@@ -184,7 +184,33 @@ OSyncConvCmpResult osync_change_compare(OSyncChange *leftchange, OSyncChange *ri
 	osync_assert(leftchange);
 
 	if (rightchange->changetype == leftchange->changetype) {
-		OSyncConvCmpResult ret = osync_data_compare(leftchange->data, rightchange->data);
+		OSyncConvCmpResult ret;
+
+		if (osync_trace_is_enabled()) {
+			char *leftprint, *rightprint;
+			
+			leftprint = osync_data_get_printable(leftchange->data);
+			rightprint = osync_data_get_printable(rightchange->data);
+
+			osync_trace(TRACE_SENSITIVE, "\nleft change (UID:%s):\n%s\n"
+				"right change (UID:%s):\n%s\n",
+				__NULLSTR(osync_change_get_uid(leftchange)),
+				__NULLSTR(leftprint),
+				__NULLSTR(osync_change_get_uid(rightchange)),
+				__NULLSTR(rightprint));
+
+			/* FIXME: free the result of objformat_print(). There is
+			 * no object format specific destory function for print?
+			 */
+
+			if (leftprint)
+				osync_free(leftprint);
+
+			if (rightprint)
+				osync_free(rightprint);
+		}
+
+		ret = osync_data_compare(leftchange->data, rightchange->data);
 		osync_trace(TRACE_EXIT, "%s: Compare data: %i", __func__, ret);
 		return ret;
 	} else {
