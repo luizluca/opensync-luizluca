@@ -1001,6 +1001,12 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 		}
 
 		break;
+	case OSYNC_ENGINE_COMMAND_PREPARE_MAP:
+
+		/* TODO: PLACEHOLDER for conversion and merge */
+
+		osync_obj_engine_event(engine, OSYNC_ENGINE_EVENT_PREPARED_MAP, *error);
+		break;
 	case OSYNC_ENGINE_COMMAND_MAP:
 		/* We are now done reading the changes. so we can now start to create the mappings, conflicts etc */
 		if (osync_obj_engine_map_changes(engine, error)) {

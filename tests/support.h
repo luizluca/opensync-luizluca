@@ -36,6 +36,7 @@ int num_change_error;
 int num_engine_connected;
 int num_engine_connect_done;
 int num_engine_read;
+int num_engine_prepared_map;
 int num_engine_mapped;
 int num_engine_multiplied;
 int num_engine_prepared_write;

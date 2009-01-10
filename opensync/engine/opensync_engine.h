@@ -73,8 +73,9 @@ typedef enum {
 	/* Check if all conflicts got solved */
 	OSYNC_ENGINE_COMMAND_END_CONFLICTS,
 	/* Prepare write to peers */
-	OSYNC_ENGINE_COMMAND_PREPARE_WRITE
-
+	OSYNC_ENGINE_COMMAND_PREPARE_WRITE,
+	/* Prepare mapping of changes */
+	OSYNC_ENGINE_COMMAND_PREPARE_MAP
 } OSyncEngineCmd;
 
 
@@ -132,8 +133,10 @@ typedef enum {
 	OSYNC_ENGINE_EVENT_MAPPED,
 	/** Multiplying of all reported changes is completed */
 	OSYNC_ENGINE_EVENT_MULTIPLIED,
-	/* Engine completed with preparing a write */
-	OSYNC_ENGINE_EVENT_PREPARED_WRITE
+	/** Engine completed with preparing a write */
+	OSYNC_ENGINE_EVENT_PREPARED_WRITE,
+	/** Engien completed with preparing for the mapping */
+	OSYNC_ENGINE_EVENT_PREPARED_MAP
 } OSyncEngineEvent;
 
 typedef enum {

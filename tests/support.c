@@ -371,6 +371,10 @@ void engine_status(OSyncEngineUpdate *status, void *user_data)
 			fail_unless(!osync_error_is_set(&(status->error)), NULL);
 			num_engine_read++;
 			break;
+		case OSYNC_ENGINE_EVENT_PREPARED_MAP:
+			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			num_engine_prepared_map++;
+			break;
 		case OSYNC_ENGINE_EVENT_MAPPED:
 			fail_unless(!osync_error_is_set(&(status->error)), NULL);
 			num_engine_mapped++;
@@ -584,6 +588,7 @@ void reset_counters()
 	
 	num_engine_connected = 0;
 	num_engine_read = 0;
+	num_engine_prepared_map = 0;
 	num_engine_mapped = 0;
 	num_engine_multiplied = 0;
 	num_engine_written = 0;
