@@ -451,8 +451,6 @@ static void *plugin_initialize(OSyncError **error)
 {
 	void *plugin_data = osync_plugin_initialize(plugin, plugin_info, error);
 	
-	if (!plugin_data)
-		return NULL;
 
 	return plugin_data;
 }
