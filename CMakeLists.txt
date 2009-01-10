@@ -82,7 +82,6 @@ ENDIF ( CHECK_FOUND )
 # sub directories
 
 ADD_SUBDIRECTORY( opensync )
-ADD_SUBDIRECTORY( formats )
 ADD_SUBDIRECTORY( tools )
 ADD_SUBDIRECTORY( misc )
 ADD_SUBDIRECTORY( cmake )
