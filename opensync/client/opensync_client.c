@@ -701,7 +701,9 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 	 * Later with fruther OSyncDB modifications this should be file-hiarchy indepdendent.
 	 * And The first arg should just consists of the Member ID
 	 */
-	anchorpath = osync_strdup_printf("%s/anchor.db", osync_plugin_info_get_configdir(client->plugin_info));
+	anchorpath = osync_strdup_printf("%s%canchor.db",
+			osync_plugin_info_get_configdir(client->plugin_info),
+			G_DIR_SEPARATOR);
 
 	num_sinks = osync_plugin_info_num_objtypes(client->plugin_info);
 	for (n = 0; n < num_sinks; n++) {
