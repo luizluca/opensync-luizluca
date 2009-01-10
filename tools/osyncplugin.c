@@ -348,8 +348,20 @@ static osync_bool init(OSyncError **error) {
 	if (!osync_format_env_load_plugins(format_env, formatpath, error))
 		goto error_free_formatenv;
 
+	if (osync_error_is_set(error)) {
+		fprintf(stderr, "WARNING! Some plugins couldn't get loaded in "
+				"format plugin environment: %s\n", osync_error_print(error));
+		osync_error_unref(error);
+	}
+
 	if (!osync_plugin_env_load(plugin_env, pluginpath, error))
 		goto error_free_pluginenv;
+
+	if (osync_error_is_set(error)) {
+		fprintf(stderr, "WARNING! Some plugins couldn't get loaded in "
+				"plugin environment: %s\n", osync_error_print(error));
+		osync_error_unref(error);
+	}
 
 	if (!(plugin = osync_plugin_env_find_plugin(plugin_env, pluginname))) {
 		osync_error_set(error, OSYNC_ERROR_PLUGIN_NOT_FOUND, "Plugin not found: \"%s\"", pluginname);
