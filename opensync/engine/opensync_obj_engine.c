@@ -922,9 +922,10 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 	osync_assert(engine);
 	
+	int write_sinks = 0;
+	osync_bool proxy_disconnect = FALSE;
+	
 	switch (cmd) {
-		int write_sinks = 0;
-		osync_bool proxy_disconnect = FALSE;
 	case OSYNC_ENGINE_COMMAND_CONNECT:
 		for (p = engine->sink_engines; p; p = p->next) {
 			sinkengine = p->data;
