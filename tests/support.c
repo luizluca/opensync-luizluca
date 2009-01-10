@@ -103,11 +103,6 @@ char *setup_testbed(const char *fkt_name)
 	if (system(command))
 		abort();
 	g_free(command);
-	
-	command = g_strdup_printf("cp -R ../formats/*.%s %s/formats", G_MODULE_SUFFIX, testbed);
-	if (system(command))
-		abort();
-	g_free(command);
 
 	command = g_strdup_printf("cp -R %s/../../misc/schemas/*.xsd %s", OPENSYNC_TESTDATA, testbed);
 	if (system(command))
