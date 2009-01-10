@@ -38,6 +38,7 @@ int num_engine_connect_done;
 int num_engine_read;
 int num_engine_mapped;
 int num_engine_multiplied;
+int num_engine_prepared_write;
 int num_engine_written;
 int num_engine_disconnected;
 int num_engine_errors;

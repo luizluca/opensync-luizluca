@@ -1065,6 +1065,12 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 		osync_obj_engine_event(engine, OSYNC_ENGINE_EVENT_MULTIPLIED, *error);
 
 		break;
+	case OSYNC_ENGINE_COMMAND_PREPARE_WRITE:
+
+		/* TODO: PLACEHOLDER for demerge and conversion */
+
+		osync_obj_engine_event(engine, OSYNC_ENGINE_EVENT_PREPARED_WRITE, *error);
+		break;
 	case OSYNC_ENGINE_COMMAND_WRITE:
 		if (engine->conflicts) {
 			osync_trace(TRACE_INTERNAL, "We still have conflict. Delaying write");

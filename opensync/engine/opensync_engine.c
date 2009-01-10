@@ -1012,6 +1012,27 @@ static void _osync_engine_generate_multiplied_event(OSyncEngine *engine)
 
 }
 
+static void _osync_engine_generate_prepared_write_event(OSyncEngine *engine)
+{
+	if (osync_bitcount(engine->obj_errors | engine->obj_prepared_write) == g_list_length(engine->object_engines)) {
+		if (osync_bitcount(engine->obj_errors)) {
+			OSyncError *locerror = NULL;
+			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed while preparing the write event. Aborting");
+			osync_trace(TRACE_ERROR, "%s", osync_error_print(&locerror));
+			osync_engine_set_error(engine, locerror);
+			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_ERROR, locerror);
+			osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
+			//osync_error_unref(&locerror);
+		} else {
+			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_PREPARED_WRITE, NULL);
+			osync_engine_event(engine, OSYNC_ENGINE_EVENT_PREPARED_WRITE);
+
+		}
+	} else
+		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->obj_errors | engine->obj_prepared_write));
+
+}
+
 static void _osync_engine_generate_written_event(OSyncEngine *engine)
 {
 	if (osync_bitcount(engine->proxy_errors | engine->proxy_written) != g_list_length(engine->proxies))
@@ -1249,6 +1270,9 @@ static void _osync_engine_get_objengine_event(OSyncEngine *engine, OSyncObjEngin
 	case OSYNC_ENGINE_EVENT_MULTIPLIED:
 		engine->obj_multiplied = engine->obj_multiplied | (0x1 << position);
 		break;
+	case OSYNC_ENGINE_EVENT_PREPARED_WRITE:
+		engine->obj_prepared_write = engine->obj_prepared_write | (0x1 << position);
+		break;
 	case OSYNC_ENGINE_EVENT_WRITTEN:
 		engine->obj_written = engine->obj_written | (0x1 << position);
 		break;
@@ -1286,6 +1310,9 @@ static void _osync_engine_generate_event(OSyncEngine *engine, OSyncEngineEvent e
 		break;
 	case OSYNC_ENGINE_EVENT_MULTIPLIED:
 		_osync_engine_generate_multiplied_event(engine);
+		break;
+	case OSYNC_ENGINE_EVENT_PREPARED_WRITE:
+		_osync_engine_generate_prepared_write_event(engine);
 		break;
 	case OSYNC_ENGINE_EVENT_WRITTEN:
 		_osync_engine_generate_written_event(engine);
@@ -1574,6 +1601,14 @@ void osync_engine_command(OSyncEngine *engine, OSyncEngineCommand *command)
 				goto error;
 		}
 		break;
+	case OSYNC_ENGINE_COMMAND_PREPARE_WRITE:
+		/* Now that we have multiplied the change, we prepare the write event. */
+		for (o = engine->object_engines; o; o = o->next) {
+			OSyncObjEngine *objengine = o->data;
+			if (!osync_obj_engine_command(objengine, OSYNC_ENGINE_COMMAND_PREPARE_WRITE, &locerror))
+				goto error;
+		}
+		break;
 	case OSYNC_ENGINE_COMMAND_WRITE:
 	case OSYNC_ENGINE_COMMAND_DISCONNECT:
 	case OSYNC_ENGINE_COMMAND_SYNC_DONE:
@@ -1714,6 +1749,15 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 		/* Now that we have multiplied the changes, we write the changes */
 		for (o = engine->object_engines; o; o = o->next) {
 			OSyncObjEngine *objengine = o->data;
+			if (!osync_obj_engine_command(objengine, OSYNC_ENGINE_COMMAND_PREPARE_WRITE, &locerror))
+				goto error;
+		}
+
+		break;
+	case OSYNC_ENGINE_EVENT_PREPARED_WRITE:
+		/* Now that we have prepared the write event, we finally write the changes */
+		for (o = engine->object_engines; o; o = o->next) {
+			OSyncObjEngine *objengine = o->data;
 			if (!osync_obj_engine_command(objengine, OSYNC_ENGINE_COMMAND_WRITE, &locerror))
 				goto error;
 		}
@@ -1806,6 +1850,7 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 		engine->obj_mapped = 0;
 		engine->obj_solved = 0;
 		engine->obj_multiplied = 0;
+		engine->obj_prepared_write = 0;
 		engine->obj_written = 0;
 		engine->obj_sync_done = 0;
 			
@@ -2213,6 +2258,9 @@ const char *osync_engine_get_cmdstr(OSyncEngineCmd cmd)
 		case OSYNC_ENGINE_COMMAND_END_CONFLICTS:
 			cmdstr = "END_CONFLICTS";
 			break;
+		case OSYNC_ENGINE_COMMAND_PREPARE_WRITE:
+			cmdstr = "PREPARE_WRITE";
+			break;
 	}
 
 	return cmdstr;
@@ -2258,6 +2306,9 @@ const char *osync_engine_get_eventstr(OSyncEngineEvent event)
 			break;
 		case OSYNC_ENGINE_EVENT_MULTIPLIED:
 			eventstr = "MULTIPLIED";
+			break;
+		case OSYNC_ENGINE_EVENT_PREPARED_WRITE:
+			eventstr = "PREPARE_WRITE";
 			break;
 	}
 

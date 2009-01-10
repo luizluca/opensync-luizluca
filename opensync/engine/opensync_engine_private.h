@@ -124,6 +124,7 @@ struct OSyncEngine {
 	int obj_mapped;
 	int obj_solved;
 	int obj_multiplied;
+	int obj_prepared_write;
 	int obj_written;
 	int obj_sync_done;
 	

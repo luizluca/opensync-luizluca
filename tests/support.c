@@ -379,6 +379,10 @@ void engine_status(OSyncEngineUpdate *status, void *user_data)
 			fail_unless(!osync_error_is_set(&(status->error)), NULL);
 			num_engine_multiplied++;
 			break;
+		case OSYNC_ENGINE_EVENT_PREPARED_WRITE:
+			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			num_engine_prepared_write++;
+			break;
 		case OSYNC_ENGINE_EVENT_WRITTEN:
 			fail_unless(!osync_error_is_set(&(status->error)), NULL);
 			num_engine_written++;
