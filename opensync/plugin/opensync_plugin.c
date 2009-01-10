@@ -179,13 +179,13 @@ void osync_plugin_finalize(OSyncPlugin *plugin, void *data)
 	plugin->finalize(data);
 }
 
-osync_bool osync_plugin_discover(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
+osync_bool osync_plugin_discover(OSyncPlugin *plugin, void *data, OSyncPluginInfo *info, OSyncError **error)
 {
 	osync_assert(plugin);
 	if (!plugin->discover)
 		return TRUE;
 		
-	return plugin->discover(info, plugin->plugin_data, error);
+	return plugin->discover(info, data, error);
 }
 
 osync_bool osync_plugin_is_usable(OSyncPlugin *plugin, OSyncError **error)

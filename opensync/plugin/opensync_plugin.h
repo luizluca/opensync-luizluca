@@ -282,15 +282,15 @@ OSYNC_EXPORT void *osync_plugin_initialize(OSyncPlugin *plugin, OSyncPluginInfo 
  */
 OSYNC_EXPORT void osync_plugin_finalize(OSyncPlugin *plugin, void *data);
 
-/** @brief Call plugin discovery. 
- * osync_plugin_discover passes the plugin_data to the discovery function of the plugin.
+/** @brief Call plugin discovery
  *
  * @param plugin Pointer to the plugin
+ * @param data Pointer to userdata which got returned by plugin initialize function
  * @param info Pointer to OSyncPluginInfo which describes the plugin 
  * @param error Pointer to error-struct
  * @return TRUE on success, FALSE otherwise 
  */
-OSYNC_EXPORT osync_bool osync_plugin_discover(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error);
+OSYNC_EXPORT osync_bool osync_plugin_discover(OSyncPlugin *plugin, void *data, OSyncPluginInfo *info, OSyncError **error);
 
 /*@}*/
 
