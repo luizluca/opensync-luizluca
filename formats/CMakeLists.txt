@@ -5,17 +5,14 @@ INCLUDE( OpenSyncPlugin )
 
 OPENSYNC_FORMAT_ADD( file file.c )
 OPENSYNC_FORMAT_ADD( plain plain.c )
-OPENSYNC_FORMAT_ADD( xmlformat-doc xmlformat-doc.c )
 
 TARGET_LINK_LIBRARIES( file opensync ${GLIB2_LIBRARIES} )
 TARGET_LINK_LIBRARIES( plain opensync ${GLIB2_LIBRARIES} )
-TARGET_LINK_LIBRARIES( xmlformat-doc opensync ${GLIB2_LIBRARIES} )
 
 ###### INSTALL ##############	
 
 OPENSYNC_FORMAT_INSTALL( file )
 OPENSYNC_FORMAT_INSTALL( plain )
-OPENSYNC_FORMAT_INSTALL( xmlformat-doc )
 
 
 INSTALL( FILES file.h DESTINATION ${OPENSYNC_INCLUDE_DIR}/opensync )
