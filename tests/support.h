@@ -22,6 +22,8 @@
 
 #define OSYNC_TESTCASE_ADD(x) { (#x), x },
 
+#define OSYNC_TESTCASE_DISABLED(x) { (#x), NULL },
+
 #define OSYNC_TESTCASE_END			\
 	{ NULL, NULL }				\
 	};					\
