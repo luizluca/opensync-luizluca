@@ -7,8 +7,6 @@
 #include "opensync/ipc/opensync_message_internals.h"
 #include "opensync/ipc/opensync_queue_internals.h"
 
-#ifndef _WIN32
-
 START_TEST (ipc_new)
 {
 	char *testbed = setup_testbed(NULL);
@@ -2261,55 +2259,31 @@ START_TEST (ipc_timeout)
 }
 END_TEST
 
+OSYNC_TESTCASE_START("ipc")
+OSYNC_TESTCASE_ADD(ipc_new)
+OSYNC_TESTCASE_ADD(ipc_ref)
+OSYNC_TESTCASE_ADD(ipc_create)
+OSYNC_TESTCASE_ADD(ipc_connect)
+OSYNC_TESTCASE_ADD(ipc_payload)
+OSYNC_TESTCASE_ADD(ipc_payload_wait)
+OSYNC_TESTCASE_ADD(ipc_payload_stress)
+OSYNC_TESTCASE_ADD(ipc_payload_stress2)
+OSYNC_TESTCASE_ADD(ipc_large_payload)
 
-Suite *ipc_suite(void)
-{
-	Suite *s = suite_create("IPC");
-//	Suite *s2 = suite_create("IPC");
-	
-	create_case(s, "ipc_new", ipc_new);
-	create_case(s, "ipc_ref", ipc_ref);
-	create_case(s, "ipc_create", ipc_create);
-	create_case(s, "ipc_connect", ipc_connect);
-	create_case(s, "ipc_payload", ipc_payload);
-	create_case(s, "ipc_payload_wait", ipc_payload_wait);
-	create_case(s, "ipc_payload_stress", ipc_payload_stress);
-	create_case(s, "ipc_payload_stress2", ipc_payload_stress2);
-	create_case(s, "ipc_large_payload", ipc_large_payload);
-	
-	create_case(s, "ipc_error_no_pipe", ipc_error_no_pipe);
-	create_case(s, "ipc_error_perm", ipc_error_perm);
-	create_case(s, "ipc_error_rem", ipc_error_rem);
-	create_case(s, "ipc_error_rem2", ipc_error_rem2);
-	
-	create_case(s, "ipc_loop_payload", ipc_loop_payload);
-	create_case(s, "ipc_loop_stress", ipc_loop_stress);
-	create_case(s, "ipc_loop_callback", ipc_loop_callback);
-	create_case(s, "ipc_callback_break", ipc_callback_break);
-	
-	create_case(s, "ipc_pipes", ipc_pipes);
-	create_case(s, "ipc_pipes_stress", ipc_pipes_stress);
-	create_case(s, "ipc_callback_break_pipes", ipc_callback_break_pipes);
+OSYNC_TESTCASE_ADD(ipc_error_no_pipe)
+OSYNC_TESTCASE_ADD(ipc_error_perm)
+OSYNC_TESTCASE_ADD(ipc_error_rem)
+OSYNC_TESTCASE_ADD(ipc_error_rem2)
 
-	create_case(s, "ipc_timeout", ipc_timeout);
-	
-	return s;
-}
-#endif /* _WIN32*/
-int main(void)
-{
-#ifndef _WIN32
-	int nf;
+OSYNC_TESTCASE_ADD(ipc_loop_payload)
+OSYNC_TESTCASE_ADD(ipc_loop_stress)
+OSYNC_TESTCASE_ADD(ipc_loop_callback)
+OSYNC_TESTCASE_ADD(ipc_callback_break)
 
-	Suite *s = ipc_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-#else
-        return EXIT_FAILURE;
-#endif
-}
+OSYNC_TESTCASE_ADD(ipc_pipes)
+OSYNC_TESTCASE_ADD(ipc_pipes_stress)
+OSYNC_TESTCASE_ADD(ipc_callback_break_pipes)
+
+OSYNC_TESTCASE_ADD(ipc_timeout)
+OSYNC_TESTCASE_END
+
