@@ -201,45 +201,25 @@ START_TEST (error_duplicate)
 }
 END_TEST
 
-Suite *error_suite(void)
-{
-	Suite *s = suite_create("Error");
-	//Suite *s2 = suite_create("Error");
+OSYNC_TESTCASE_START("error")
+OSYNC_TESTCASE_ADD(error_create)
+OSYNC_TESTCASE_ADD(error_create_null)
+OSYNC_TESTCASE_ADD(error_get_name_null)
+OSYNC_TESTCASE_ADD(error_get_name_null2)
+OSYNC_TESTCASE_ADD(error_get_name)
+OSYNC_TESTCASE_ADD(error_free_null)
+OSYNC_TESTCASE_ADD(error_free_null2)
+OSYNC_TESTCASE_ADD(error_free)
+OSYNC_TESTCASE_ADD(error_check_null)
+OSYNC_TESTCASE_ADD(error_check_null2)
+OSYNC_TESTCASE_ADD(error_check)
+OSYNC_TESTCASE_ADD(error_check2)
+OSYNC_TESTCASE_ADD(error_stack_null)
+OSYNC_TESTCASE_ADD(error_stack_null2)
+OSYNC_TESTCASE_ADD(error_stack)
+OSYNC_TESTCASE_ADD(error_stack2)
+OSYNC_TESTCASE_ADD(error_set_null)
+OSYNC_TESTCASE_ADD(error_duplicate_null)
+OSYNC_TESTCASE_ADD(error_duplicate)
+OSYNC_TESTCASE_END
 
-	create_case(s, "error_create", error_create);
-	create_case(s, "error_create_null", error_create_null);
-	create_case(s, "error_get_name_null", error_get_name_null);
-	create_case(s, "error_get_name_null2", error_get_name_null2);
-	create_case(s, "error_get_name", error_get_name);
-	create_case(s, "error_free_null", error_free_null);
-	create_case(s, "error_free_null2", error_free_null2);
-	create_case(s, "error_free", error_free);
-	create_case(s, "error_check_null", error_check_null);
-	create_case(s, "error_check_null2", error_check_null2);
-	create_case(s, "error_check", error_check);
-	create_case(s, "error_check2", error_check2);
-	create_case(s, "error_stack_null", error_stack_null);
-	create_case(s, "error_stack_null2", error_stack_null2);
-	create_case(s, "error_stack", error_stack);
-	create_case(s, "error_stack2", error_stack2);
-	create_case(s, "error_set_null", error_set_null);
-	create_case(s, "error_duplicate_null", error_duplicate_null);
-	create_case(s, "error_duplicate", error_duplicate);
-	
-	return s;
-}
-
-int main(void)
-{
-	int nf;
-	
-	Suite *s = error_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-
-	srunner_run_all(sr, CK_NORMAL);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

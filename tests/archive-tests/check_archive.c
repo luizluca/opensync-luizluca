@@ -182,28 +182,12 @@ START_TEST (archive_load_data_with_closing_db)
 }
 END_TEST
 
-Suite *archive_suite(void)
-{
-	Suite *s = suite_create("Archive");
-	create_case(s, "archive_new", archive_new);
-	create_case(s, "archive_load_changes", archive_load_changes);
-	create_case(s, "archive_save_change", archive_save_change);
-	create_case(s, "archive_save_data", archive_save_data);
-	create_case(s, "archive_load_data", archive_load_data);
-	create_case(s, "archive_load_data_with_closing_db", archive_load_data_with_closing_db);
-	return s;
-}
+OSYNC_TESTCASE_START("archive")
+OSYNC_TESTCASE_ADD(archive_new)
+OSYNC_TESTCASE_ADD(archive_load_changes)
+OSYNC_TESTCASE_ADD(archive_save_change)
+OSYNC_TESTCASE_ADD(archive_save_data)
+OSYNC_TESTCASE_ADD(archive_load_data)
+OSYNC_TESTCASE_ADD(archive_load_data_with_closing_db)
+OSYNC_TESTCASE_END
 
-int main(void)
-{
-	int nf;
-
-	Suite *s = archive_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

@@ -187,28 +187,9 @@ START_TEST (client_run)
 }
 END_TEST
 
-Suite *client_suite(void)
-{
-	Suite *s = suite_create("Client");
-//	Suite *s2 = suite_create("Client");
-	
-	create_case(s, "client_new", client_new);
-	create_case(s, "client_pipes", client_pipes);
-	create_case(s, "client_run", client_run);
-	
-	return s;
-}
+OSYNC_TESTCASE_START("client")
+OSYNC_TESTCASE_ADD(client_new)
+OSYNC_TESTCASE_ADD(client_pipes)
+OSYNC_TESTCASE_ADD(client_run)
+OSYNC_TESTCASE_END
 
-int main(void)
-{
-	int nf;
-
-	Suite *s = client_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

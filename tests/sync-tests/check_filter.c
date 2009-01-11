@@ -446,31 +446,12 @@ START_TEST (filter_sync_read_only)
 }
 END_TEST*/
 
-Suite *filter_suite(void)
-{
-	Suite *s = suite_create("Filter");
-	//Suite *s2 = suite_create("Filter");
-	
-	create_case(s, "filter_setup", filter_setup);
-	create_case(s, "filter_sync_deny_all", filter_sync_deny_all);
-	create_case(s, "filter_sync_custom", filter_sync_custom);
-	create_case(s, "filter_save_and_load", filter_save_and_load);
-	//create_case(s, "filter_sync_vcard_only", filter_sync_vcard_only); // TODO, see testcase description
-	create_case(s, "filter_destobjtype_delete", filter_destobjtype_delete);
-	
-	return s;
-}
+OSYNC_TESTCASE_START("filter")
+OSYNC_TESTCASE_ADD(filter_setup)
+OSYNC_TESTCASE_ADD(filter_sync_deny_all)
+OSYNC_TESTCASE_ADD(filter_sync_custom)
+OSYNC_TESTCASE_ADD(filter_save_and_load)
+/* TODO: Port OSYNC_TESTCASE_ADD(filter_sync_vcard_only) */
+OSYNC_TESTCASE_ADD(filter_destobjtype_delete)
+OSYNC_TESTCASE_END
 
-int main(void)
-{
-	int nf;
-
-	Suite *s = filter_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

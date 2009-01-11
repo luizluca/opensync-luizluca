@@ -189,33 +189,12 @@ START_TEST (data_objtype)
 }
 END_TEST
 
-Suite *data_suite(void)
-{
-	Suite *s = suite_create("Data");
-//	Suite *s2 = suite_create("Data");
-	
-	create_case(s, "data_new", data_new);
-	create_case(s, "data_new_with_data", data_new_with_data);
-	create_case(s, "data_set_data", data_set_data);
-	create_case(s, "data_set_data2", data_set_data2);
-	create_case(s, "data_objformat", data_objformat);
-	create_case(s, "data_objtype", data_objtype);
-	
-	/* OSyncData *osync_data_clone(OSyncData *data, OSyncError **error); */
-	
-	return s;
-}
+OSYNC_TESTCASE_START("data")
+OSYNC_TESTCASE_ADD(data_new)
+OSYNC_TESTCASE_ADD(data_new_with_data)
+OSYNC_TESTCASE_ADD(data_set_data)
+OSYNC_TESTCASE_ADD(data_set_data2)
+OSYNC_TESTCASE_ADD(data_objformat)
+OSYNC_TESTCASE_ADD(data_objtype)
+OSYNC_TESTCASE_END
 
-int main(void)
-{
-	int nf;
-
-	Suite *s = data_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

@@ -84,26 +84,10 @@ START_TEST (capabilities_sort)
 }
 END_TEST
 
-Suite *capabilities_suite(void)
-{
-	Suite *s = suite_create("Capabilities");
-	create_case(s, "capabilities_new", capabilities_new);
-	create_case(s, "capability_new", capability_new);
-	create_case(s, "capabilities_parse", capabilities_parse);
-	create_case(s, "capabilities_sort", capabilities_sort);
-	return s;
-}
+OSYNC_TESTCASE_START("capabilities")
+OSYNC_TESTCASE_ADD(capabilities_new)
+OSYNC_TESTCASE_ADD(capability_new)
+OSYNC_TESTCASE_ADD(capabilities_parse)
+OSYNC_TESTCASE_ADD(capabilities_sort)
+OSYNC_TESTCASE_END
 
-int main(void)
-{
-	int nf;
-
-	Suite *s = capabilities_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

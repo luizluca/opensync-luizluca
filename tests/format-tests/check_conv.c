@@ -2450,55 +2450,10 @@ START_TEST (conv_env_decap_and_detect2)
 END_TEST
 
 
-Suite *format_env_suite(void)
-{
-	Suite *s = suite_create("Format-Env");
-	//Suite *s2 = suite_create("Format-Env");
-
-	create_case(s, "conv_env_create", conv_env_create);
-	
-	create_case(s, "conv_env_register_objformat", conv_env_register_objformat);
-	create_case(s, "conv_env_register_objformat_count", conv_env_register_objformat_count);
-	create_case(s, "conv_env_objformat_find", conv_env_objformat_find);
-	create_case(s, "conv_env_objformat_find_false", conv_env_objformat_find_false);
-	
-	create_case(s, "conv_env_register_converter", conv_env_register_converter);
-	create_case(s, "conv_env_register_converter_count", conv_env_register_converter_count);
-	create_case(s, "conv_env_converter_find", conv_env_converter_find);
-	create_case(s, "conv_env_converter_find_false", conv_env_converter_find_false);
-	
-	create_case(s, "conv_env_register_filter", conv_env_register_filter);
-	create_case(s, "conv_env_register_filter_count", conv_env_register_filter_count);
-	
-	create_case(s, "conv_find_path", conv_find_path);
-	create_case(s, "conv_find_path2", conv_find_path2);
-	create_case(s, "conv_find_path_false", conv_find_path_false);
-	create_case(s, "conv_find_multi_path", conv_find_multi_path);
-	create_case(s, "conv_find_multi_path_with_preferred", conv_find_multi_path_with_preferred);
-	create_case(s, "conv_find_circular_false", conv_find_circular_false);
-	create_case(s, "conv_find_complex", conv_find_complex);
-	
-	create_case(s, "conv_find_multi_target", conv_find_multi_target);
-	create_case(s, "conv_find_multi_target2", conv_find_multi_target2);
-	create_case(s, "conv_find_multi_path_multi_target", conv_find_multi_path_multi_target);
-	create_case(s, "conv_find_multi_path_multi_target_with_preferred", conv_find_multi_path_multi_target_with_preferred);
-
 	// Gone?
 	//create_case(s, "conv_env_osp_circular_false", conv_env_osp_circular_false);
 	//create_case(s, "conv_env_osp_complex", conv_env_osp_complex);
 
-	create_case(s, "conv_env_convert1", conv_env_convert1);
-	create_case(s, "conv_env_convert_back", conv_env_convert_back);
-	create_case(s, "conv_env_convert_desenc", conv_env_convert_desenc);
-
-	create_case(s, "conv_env_convert_desenc_complex", conv_env_convert_desenc_complex); 
-	create_case(s, "conv_env_detect_and_convert", conv_env_detect_and_convert);
-	create_case(s, "conv_prefer_not_desencap", conv_prefer_not_desencap);
-	create_case(s, "conv_prefer_same_objtype", conv_prefer_same_objtype);
-	create_case(s, "conv_prefer_not_lossy_objtype_change", conv_prefer_not_lossy_objtype_change);
-	create_case(s, "conv_env_detect_false", conv_env_detect_false);
-	create_case(s, "conv_env_decap_and_detect", conv_env_decap_and_detect);
-	create_case(s, "conv_env_decap_and_detect2", conv_env_decap_and_detect2);
 
 	/*
 	 * osync_bool osync_format_env_load_plugins(OSyncFormatEnv *env, const char *path, OSyncError **error);
@@ -2512,21 +2467,48 @@ OSyncFormatConverterPath *osync_format_env_find_path(OSyncFormatEnv *env, OSyncO
 OSyncFormatConverterPath *osync_format_env_find_path_formats(OSyncFormatEnv *env, OSyncObjFormat *sourceformat, OSyncObjFormat **targets, OSyncError **error);
 	 * 
 	 */
-	
-	return s;
-}
 
-int main(void)
-{
-	int nf;
-	
-	Suite *s = format_env_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
 
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
+OSYNC_TESTCASE_START("format-env")
+OSYNC_TESTCASE_ADD(conv_env_create)
+
+OSYNC_TESTCASE_ADD(conv_env_register_objformat)
+OSYNC_TESTCASE_ADD(conv_env_register_objformat_count)
+OSYNC_TESTCASE_ADD(conv_env_objformat_find)
+OSYNC_TESTCASE_ADD(conv_env_objformat_find_false)
+
+OSYNC_TESTCASE_ADD(conv_env_register_converter)
+OSYNC_TESTCASE_ADD(conv_env_register_converter_count)
+OSYNC_TESTCASE_ADD(conv_env_converter_find)
+OSYNC_TESTCASE_ADD(conv_env_converter_find_false)
+
+OSYNC_TESTCASE_ADD(conv_env_register_filter)
+OSYNC_TESTCASE_ADD(conv_env_register_filter_count)
+
+OSYNC_TESTCASE_ADD(conv_find_path)
+OSYNC_TESTCASE_ADD(conv_find_path2)
+OSYNC_TESTCASE_ADD(conv_find_path_false)
+OSYNC_TESTCASE_ADD(conv_find_multi_path)
+OSYNC_TESTCASE_ADD(conv_find_multi_path_with_preferred)
+OSYNC_TESTCASE_ADD(conv_find_circular_false)
+OSYNC_TESTCASE_ADD(conv_find_complex)
+
+OSYNC_TESTCASE_ADD(conv_find_multi_target)
+OSYNC_TESTCASE_ADD(conv_find_multi_target2)
+OSYNC_TESTCASE_ADD(conv_find_multi_path_multi_target)
+OSYNC_TESTCASE_ADD(conv_find_multi_path_multi_target_with_preferred)
+
+OSYNC_TESTCASE_ADD(conv_env_convert1)
+OSYNC_TESTCASE_ADD(conv_env_convert_back)
+OSYNC_TESTCASE_ADD(conv_env_convert_desenc)
+
+OSYNC_TESTCASE_ADD(conv_env_convert_desenc_complex)
+OSYNC_TESTCASE_ADD(conv_env_detect_and_convert)
+OSYNC_TESTCASE_ADD(conv_prefer_not_desencap)
+OSYNC_TESTCASE_ADD(conv_prefer_same_objtype)
+OSYNC_TESTCASE_ADD(conv_prefer_not_lossy_objtype_change)
+OSYNC_TESTCASE_ADD(conv_env_detect_false)
+OSYNC_TESTCASE_ADD(conv_env_decap_and_detect)
+OSYNC_TESTCASE_ADD(conv_env_decap_and_detect2)
+OSYNC_TESTCASE_END
+

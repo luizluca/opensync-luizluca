@@ -707,46 +707,26 @@ START_TEST (converter_config)
 }
 END_TEST
 
-Suite *converter_suite(void)
-{
-	Suite *s = suite_create("Converter");
-	//Suite *s2 = suite_create("Converter");
-	
-	create_case(s, "converter_create", converter_create);
-	create_case(s, "converter_get", converter_get);
-	create_case(s, "converter_create_decap", converter_create_decap);
-	create_case(s, "converter_create_detector", converter_create_detector);
-	create_case(s, "converter_matches", converter_matches);
-	create_case(s, "converter_detect", converter_detect);
-	create_case(s, "converter_detector_invoke", converter_detector_invoke);
-	create_case(s, "converter_detect_non_detector", converter_detect_non_detector);
-	
-	create_case(s, "converter_conv_invoke", converter_conv_invoke);
-	create_case(s, "converter_decap_invoke", converter_decap_invoke);
-	create_case(s, "converter_encap_invoke", converter_encap_invoke);
-	
-	create_case(s, "converter_conv_invoke_const", converter_conv_invoke_const);
-	create_case(s, "converter_decap_invoke_const", converter_decap_invoke_const);
-	create_case(s, "converter_encap_invoke_const", converter_encap_invoke_const);
-	
-	create_case(s, "converter_path_create", converter_path_create);
-	create_case(s, "converter_path_add", converter_path_add);
-	create_case(s, "converter_config", converter_config);
-	
-	return s;
-}
+OSYNC_TESTCASE_START("converter")
+OSYNC_TESTCASE_ADD(converter_create)
+OSYNC_TESTCASE_ADD(converter_get)
+OSYNC_TESTCASE_ADD(converter_create_decap)
+OSYNC_TESTCASE_ADD(converter_create_detector)
+OSYNC_TESTCASE_ADD(converter_matches)
+OSYNC_TESTCASE_ADD(converter_detect)
+OSYNC_TESTCASE_ADD(converter_detector_invoke)
+OSYNC_TESTCASE_ADD(converter_detect_non_detector)
 
-int main(void)
-{
-	int nf;
-	
-	Suite *s = converter_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
+OSYNC_TESTCASE_ADD(converter_conv_invoke)
+OSYNC_TESTCASE_ADD(converter_decap_invoke)
+OSYNC_TESTCASE_ADD(converter_encap_invoke)
 
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
+OSYNC_TESTCASE_ADD(converter_conv_invoke_const)
+OSYNC_TESTCASE_ADD(converter_decap_invoke_const)
+OSYNC_TESTCASE_ADD(converter_encap_invoke_const)
+
+OSYNC_TESTCASE_ADD(converter_path_create)
+OSYNC_TESTCASE_ADD(converter_path_add)
+OSYNC_TESTCASE_ADD(converter_config)
+OSYNC_TESTCASE_END
+

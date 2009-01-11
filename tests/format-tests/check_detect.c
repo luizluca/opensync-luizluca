@@ -10,7 +10,7 @@ static osync_bool detect_false(const char *data, int size, void *userdata)
 	return FALSE;
 }
 
-START_TEST (conv_env_detect_smart)
+START_TEST (detect_smart)
 {
 	OSyncError *error = NULL;
 
@@ -40,7 +40,7 @@ START_TEST (conv_env_detect_smart)
 }
 END_TEST
 
-START_TEST (conv_env_detect_different_objtype)
+START_TEST (detect_different_objtype)
 {
 	OSyncError *error = NULL;
 
@@ -72,7 +72,7 @@ START_TEST (conv_env_detect_different_objtype)
 END_TEST
 
 
-START_TEST (conv_env_detect_smart_no)
+START_TEST (detect_smart_no)
 {
 	OSyncError *error = NULL;
 
@@ -102,28 +102,9 @@ START_TEST (conv_env_detect_smart_no)
 }
 END_TEST
 
-Suite *env_suite(void)
-{
-	Suite *s = suite_create("Detect");
+OSYNC_TESTCASE_START("detect")
+OSYNC_TESTCASE_ADD(detect_smart)
+OSYNC_TESTCASE_ADD(detect_different_objtype)
+OSYNC_TESTCASE_ADD(detect_smart_no)
+OSYNC_TESTCASE_END
 
-	create_case(s, "conv_env_detect_smart", conv_env_detect_smart);
-	create_case(s, "conv_env_detect_different_objtype", conv_env_detect_different_objtype);
-	create_case(s, "conv_env_detect_smart_no", conv_env_detect_smart_no);
-
-	return s;
-}
-
-int main(void)
-{
-	int nf;
-	
-	Suite *s = env_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
