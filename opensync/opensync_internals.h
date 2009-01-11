@@ -35,17 +35,6 @@
 extern int errno;
 #endif
 
-#define osync_return_if_fail(condition) do {    \
-    if (!(condition)) {                         \
-      return;                                   \
-    } } while (0)
-
-#define osync_return_val_if_fail(condition, val) do {   \
-    if (!(condition)) {                                 \
-      return (val);                                     \
-    } } while (0)
-
-
 #ifdef __GNUC__
 #define OSYNC_UNUSED __attribute__ ((unused))
 #else

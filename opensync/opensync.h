@@ -109,6 +109,29 @@ OPENSYNC_BEGIN_DECLS
 #define osync_assert_msg(x, msg)
 #endif
 
+#define osync_return_if_fail(condition) do {    \
+    if (!(condition)) {                         \
+      return;                                   \
+    } } while (0)
+
+#define osync_return_val_if_fail(condition, val) do {   \
+    if (!(condition)) {                                 \
+      return (val);                                     \
+    } } while (0)
+
+
+#define osync_return_if_fail_and_set_error(condition, error, format, ...) do {  \
+	if (!(condition)) {													\
+		osync_error_set(error, OSYNC_ERROR_PARAMETER, format, __VA_ARGS__ )		\
+		return;															\
+	}Ê} while(0)
+
+#define osync_return_val_if_fail_and_set_error(condition, val, error, format, ...) do {	\
+	if (!(condition)) {																	\
+		osync_error_set(error, OSYNC_ERROR_PARAMETER, format, __VA_ARGS__ )				\
+		return (val);																	\
+	}Ê} while(0)
+
 typedef int osync_bool;
 
 /**************************************************************
