@@ -26,6 +26,8 @@
 
 #include "opensync/helper/opensync_anchor_internals.h"
 
+#include "opensync_plugin_info.h" /* due to osync_plugin_info_get_configdir() */
+
 #include "opensync_objtype_sink.h"
 #include "opensync_objtype_sink_private.h"
 
@@ -701,5 +703,37 @@ unsigned int osync_objtype_sink_get_read_timeout(OSyncObjTypeSink *sink)
 {
 	osync_assert(sink);
 	return sink->timeout.read;
+}
+
+osync_bool osync_objtype_sink_load_anchor(OSyncObjTypeSink *sink, OSyncPluginInfo *plugin_info, OSyncError **error)
+{
+	char *anchorpath;
+	OSyncAnchor *anchor = NULL;
+
+	osync_assert(sink);
+
+	if (!osync_objtype_sink_has_anchor(sink))
+		return TRUE;
+	
+	/* FIXME: Get rid of file lcoation!
+	 * Later with fruther OSyncDB modifications this should be file-hiarchy indepdendent.
+	 * And The first arg should just consists of the Member ID
+	 */
+	anchorpath = osync_strdup_printf("%s%canchor.db",
+			osync_plugin_info_get_configdir(plugin_info),
+			G_DIR_SEPARATOR);
+
+	anchor = osync_anchor_new(anchorpath, sink->objtype, error);
+	if (!anchor)
+		goto error;
+
+	osync_objtype_sink_set_anchor(sink, anchor);
+
+	osync_free(anchorpath);
+
+	return TRUE;
+error:
+	osync_free(anchorpath);
+	return FALSE;
 }
 

@@ -535,6 +535,19 @@ OSYNC_EXPORT void osync_objtype_sink_set_write_timeout(OSyncObjTypeSink *sink, u
  */
 OSYNC_EXPORT void osync_objtype_sink_set_read_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
 
+/*! @brief Load the Anchor for a specific Sink if requested 
+ * 
+ * Load (i.e. connects) to the Anchor. If no Anchor is requested for this sink
+ * this functions just returns TRUE.
+ *
+ * @param sink Pointer to the sink
+ * @param info Pointer to the plugin info object
+ * @param error Pointer to error struct, get set on any error
+ * @returns TRUE on success, FALSE on any error
+ * 
+ */
+OSYNC_EXPORT osync_bool osync_objtype_sink_load_anchor(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncError **error);
+
 /*@}*/
 
 #endif /* _OPENSYNC_OBJTYPE_SINK_H_ */

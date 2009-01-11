@@ -449,8 +449,16 @@ static osync_bool init(OSyncError **error) {
 
 static void *plugin_initialize(OSyncError **error)
 {
+	unsigned int n, num_sinks = osync_plugin_info_num_objtypes(plugin_info);
 	void *plugin_data = osync_plugin_initialize(plugin, plugin_info, error);
-	
+
+
+	for (n = 0; n < num_sinks; n++) {
+		OSyncObjTypeSink *sink = osync_plugin_info_nth_objtype(plugin_info, n);
+
+		if (!osync_objtype_sink_load_anchor(sink, plugin_info, error))
+			return NULL;
+	}
 
 	return plugin_data;
 }

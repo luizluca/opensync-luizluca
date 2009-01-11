@@ -42,8 +42,6 @@
 #include "opensync_client_internals.h"
 #include "opensync_client_private.h"
 
-#include "helper/opensync_anchor_internals.h"
-
 #ifdef OPENSYNC_UNITTESTS
 #include "plugin/opensync_plugin_info_private.h"	/* FIXME: access directly private header */
 #endif
@@ -564,7 +562,6 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 	char *groupname = NULL;
 	char *configdir = NULL;
 	char *formatdir = NULL;
-	char *anchorpath = NULL;
 	int haspluginconfig = 0;
 	OSyncPluginConfig *config = NULL;
 	OSyncQueue *outgoing = NULL;
@@ -695,35 +692,14 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 		goto error;
 	}
 
-
-	
-	/* FIXME: Get rid of file lcoation!
-	 * Later with fruther OSyncDB modifications this should be file-hiarchy indepdendent.
-	 * And The first arg should just consists of the Member ID
-	 */
-	anchorpath = osync_strdup_printf("%s%canchor.db",
-			osync_plugin_info_get_configdir(client->plugin_info),
-			G_DIR_SEPARATOR);
-
 	num_sinks = osync_plugin_info_num_objtypes(client->plugin_info);
 	for (n = 0; n < num_sinks; n++) {
-		OSyncAnchor *anchor = NULL;
 
 		sink = osync_plugin_info_nth_objtype(client->plugin_info, n);
-
-		if (!osync_objtype_sink_has_anchor(sink))
-			continue;
-
-		anchor = osync_anchor_new(anchorpath, objtype, error);
-		if (!anchor) {
-			osync_free(anchorpath);
+		if (!osync_objtype_sink_load_anchor(sink, client->plugin_info, error)) {
 			goto error_finalize;
 		}
-
-		osync_objtype_sink_set_anchor(sink, anchor);
-		
 	}
-	osync_free(anchorpath);
 
 	reply = osync_message_new_reply(message, error);
 	if (!reply)
