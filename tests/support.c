@@ -25,14 +25,6 @@ unsigned int osync_testsuite_selected(Suite *s, int argc, char **argv,
 			if (strcmp(g_basename(argv[i]), tc[j].name))
 					continue;
 
-			if (!tc[j].func) {
-				fprintf(stderr, "Testcase \"%s\" disabled!", tc[j].name);
-				/* TODO: Return whatever needs to be returned that
-				 * CTest/CDash list this as NOTRUN
-				 */
-				exit(127);
-			}
-
 			create_case(s, tc[j].name, tc[j].func);
 			n++;
 		}

@@ -2017,7 +2017,7 @@ OSYNC_TESTCASE_ADD(engine_sync_read_write)
 /* Disabled due to randomly failing - #994
  *
 */
-OSYNC_TESTCASE_DISABLED(engine_sync_read_write_stress)
+OSYNC_TESTCASE_ADD(engine_sync_read_write_stress)
 
 OSYNC_TESTCASE_ADD(engine_sync_read_write_stress2)
 

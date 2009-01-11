@@ -3,6 +3,9 @@ INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR} ${CHECK_INCLUDE_DIRS} ${GLIB2_I
 
 ADD_SUBDIRECTORY( mock-plugin )
 
+#### Contacts ####################################
+SET( TICKETURL "https://opensync.org/ticket/" )
+
 ########### support #################	
 ADD_LIBRARY( support STATIC support.c )
 TARGET_LINK_LIBRARIES( support opensync-testing ${CHECK_LIBRARIES} )
@@ -31,7 +34,7 @@ OSYNC_TESTCASE( engine engine_sync_out_of_order )
 OSYNC_TESTCASE( engine engine_sync_reuse )
 OSYNC_TESTCASE( engine engine_sync_stress )
 OSYNC_TESTCASE( engine engine_sync_read_write )
-OSYNC_TESTCASE( engine engine_sync_read_write_stress )
+OSYNC_TESTCASE_DISABLED( engine engine_sync_read_write_stress "994" )
 OSYNC_TESTCASE( engine engine_sync_read_write_stress2 )
 
 ADD_CHECK_TEST( engine-error engine-tests/check_engine_error.c ${TEST_TARGET_LIBRARIES} )
@@ -56,3 +59,5 @@ ADD_CHECK_TEST( version version-tests/check_version.c ${TEST_TARGET_LIBRARIES} )
 ADD_CHECK_TEST( updater group-tests/check_updater.c ${TEST_TARGET_LIBRARIES} )
 ADD_CHECK_TEST( xmlformat capabilities-tests/check_xmlformat.c ${TEST_TARGET_LIBRARIES} )
 
+CONFIGURE_FILE( "${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake"
+		"${CMAKE_BINARY_DIR}/CTestCustom.ctest")
