@@ -3347,53 +3347,26 @@ START_TEST (sync_initial_slow_sync)
 }
 END_TEST
 
+OSYNC_TESTCASE_START("sync")
+OSYNC_TESTCASE_ADD(sync_setup_connect)
+OSYNC_TESTCASE_ADD(sync_easy_new)
+OSYNC_TESTCASE_ADD(sync_easy_new_del)
+OSYNC_TESTCASE_ADD(sync_easy_conflict)
+OSYNC_TESTCASE_ADD(sync_easy_new_mapping)
+OSYNC_TESTCASE_ADD(sync_easy_conflict_duplicate)
+OSYNC_TESTCASE_ADD(sync_easy_conflict_abort)
+OSYNC_TESTCASE_ADD(sync_conflict_duplicate2)
+OSYNC_TESTCASE_ADD(sync_conflict_delay)
+OSYNC_TESTCASE_ADD(sync_conflict_deldel)
+OSYNC_TESTCASE_ADD(sync_moddel)
+OSYNC_TESTCASE_ADD(sync_conflict_moddel)
+OSYNC_TESTCASE_ADD(sync_easy_dualdel)
+OSYNC_TESTCASE_ADD(sync_large)
+OSYNC_TESTCASE_ADD(sync_detect_obj)
+OSYNC_TESTCASE_ADD(sync_detect_obj2)
+OSYNC_TESTCASE_ADD(sync_slowsync_connect)
+OSYNC_TESTCASE_ADD(sync_slowsync_mainsink_connect)
+OSYNC_TESTCASE_ADD(sync_initial_slow_sync)
+/* TODO: stateless sync */
+OSYNC_TESTCASE_END
 
-Suite *env_suite(void)
-{
-	Suite *s = suite_create("Sync");
-//	Suite *s2 = suite_create("Sync");
-//	Suite *s3 = suite_create("Sync"); // really broken...
-
-	create_case(s, "sync_setup_connect", sync_setup_connect);
-	create_case(s, "sync_easy_new", sync_easy_new);
-	create_case(s, "sync_easy_new_del", sync_easy_new_del);
-	create_case(s, "sync_easy_conflict", sync_easy_conflict);
-	create_case(s, "sync_easy_new_mapping", sync_easy_new_mapping);
-	create_case(s, "sync_easy_conflict_duplicate", sync_easy_conflict_duplicate);
-	create_case(s, "sync_easy_conflict_abort", sync_easy_conflict_abort);
-	create_case(s, "sync_conflict_duplicate2", sync_conflict_duplicate2);
-	create_case(s, "sync_conflict_delay", sync_conflict_delay);
-	create_case(s, "sync_conflict_deldel", sync_conflict_deldel);
-	create_case(s, "sync_moddel", sync_moddel);
-	create_case(s, "sync_conflict_moddel", sync_conflict_moddel);
-	create_case(s, "sync_easy_dualdel", sync_easy_dualdel);
-	create_case(s, "sync_large", sync_large);
-
-	create_case(s, "sync_detect_obj", sync_detect_obj);
-	create_case(s, "sync_detect_obj2", sync_detect_obj2);
-
-	create_case(s, "sync_slowsync_connect", sync_slowsync_connect);
-	create_case(s, "sync_slowsync_mainsink_connect", sync_slowsync_mainsink_connect);
-
-	create_case(s, "sync_initial_slow_sync", sync_initial_slow_sync);
-
-	//stateless sync
-	
-	return s;
-}
-
-int main(void)
-{
-	int nf;
-
-	check_env();
-
-	Suite *s = env_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
