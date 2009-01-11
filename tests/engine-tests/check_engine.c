@@ -2003,45 +2003,26 @@ START_TEST (engine_sync_read_write_stress2)
 }
 END_TEST
 
-Suite *engine_suite(void)
-{
-	Suite *s = suite_create("Engine");
-//	Suite *s2 = suite_create("Engine");
-	
-	create_case(s, "engine_new", engine_new);
-	create_case(s, "engine_init", engine_init);
-	create_case(s, "engine_sync", engine_sync);
-	create_case(s, "engine_sync_multi_obj", engine_sync_multi_obj);
-	create_case(s, "engine_sync_out_of_order", engine_sync_out_of_order);
-	create_case(s, "engine_sync_reuse", engine_sync_reuse);
-	create_case(s, "engine_sync_stress", engine_sync_stress);
+OSYNC_TESTCASE_START(engine)
 
-	/* Disabled due to randomly failing - #994
-	create_case(s, "engine_sync_read_write_stress", engine_sync_read_write_stress);
-	*/
+OSYNC_TESTCASE_ADD(engine_new)
+OSYNC_TESTCASE_ADD(engine_init)
+OSYNC_TESTCASE_ADD(engine_sync)
+OSYNC_TESTCASE_ADD(engine_sync_multi_obj)
+OSYNC_TESTCASE_ADD(engine_sync_out_of_order)
+OSYNC_TESTCASE_ADD(engine_sync_reuse)
+OSYNC_TESTCASE_ADD(engine_sync_stress)
 
-	create_case(s, "engine_sync_read_write", engine_sync_read_write);
-	create_case(s, "engine_sync_read_write_stress2", engine_sync_read_write_stress2);
-	
-	//batch commit
-	//connect problem
-	//get_changes problem
-	
-	return s;
-}
+/* Disabled due to randomly failing - #994
+OSYNC_TESTCASE_ADD(engine_sync_read_write_stress)
+*/
 
-int main(void)
-{
-	int nf;
+OSYNC_TESTCASE_ADD(engine_sync_read_write)
+OSYNC_TESTCASE_ADD(engine_sync_read_write_stress2)
 
-	check_env();
+//batch commit
+//connect problem
+//get_changes problem
 
-	Suite *s = engine_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
+OSYNC_TESTCASE_END
+

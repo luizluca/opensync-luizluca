@@ -1,3 +1,6 @@
+#ifndef OSYNC_TEST_SUPPORT
+#define OSYNC_TEST_SUPPORT
+
 #include <check.h>
 
 #include <opensync/opensync.h>
@@ -12,6 +15,30 @@
 #include <opensync/opensync-plugin.h>
 
 #include "config.h"
+
+#define OSYNC_TESTCASE_START(x)		\
+	const char *_unittest = (#x);	\
+	struct osync_testcase_s osync_testcase[] = {
+
+#define OSYNC_TESTCASE_ADD(x) { (#x), x },
+
+#define OSYNC_TESTCASE_END			\
+	{ NULL, NULL }				\
+	};					\
+						\
+int main(int argc, char **argv)			\
+{						\
+	return osync_testsuite(argc, argv, _unittest, osync_testcase);	\
+}
+
+struct osync_testcase_s {
+	const char *name;
+	void *func;
+};
+
+
+int osync_testsuite(int argc, char **argv, const char *unittest,
+		struct osync_testcase_s *tc);
 
 
 int num_client_connected;
@@ -119,4 +146,6 @@ OSyncEngine *osync_testing_create_engine_dummy(unsigned int member_size);
 
 /* System Env helper */
 void osync_testing_system_abort(const char *command);
+
+#endif /* OSYNC_TEST_SUPPORT */
 

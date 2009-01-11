@@ -7,6 +7,51 @@
 
 char *olddir = NULL;
 
+
+void osync_testsuite_all(Suite *s, struct osync_testcase_s *tc)
+{
+	unsigned int i;
+	for (i=0; tc[i].name; i++)
+		create_case(s, tc[i].name, tc[i].func);
+}
+
+unsigned int osync_testsuite_selected(Suite *s, int argc, char **argv,
+		struct osync_testcase_s *tc)
+{
+	unsigned int i, j, n=0;
+	/* Also argv[0]! for symlink-ed calls */
+	for (i=0; argc > i; i++) {
+		for (j=0; tc[j].name; j++) {
+			if (strcmp(argv[i], tc[j].name))
+					continue;
+
+			create_case(s, tc[j].name, tc[j].func);
+			n++;
+		}
+	}
+
+	return n;
+}
+
+int osync_testsuite(int argc, char **argv, const char *unittest,
+		struct osync_testcase_s *tc)
+{
+	int nf;
+	Suite *s = suite_create(unittest);
+	SRunner *sr;
+
+	check_env();
+
+	if (!osync_testsuite_selected(s, argc, argv, tc))
+		osync_testsuite_all(s, tc);
+
+	sr = srunner_create(s);
+	srunner_run_all(sr, CK_VERBOSE);
+	nf = srunner_ntests_failed(sr);
+	srunner_free(sr);
+	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
+}
+
 static void reset_env(void)
 {
 	g_unsetenv("CONNECT_ERROR");
