@@ -174,29 +174,8 @@ START_TEST (mapping_engine_same_similar_conflict_multi)
 END_TEST
 
 
+OSYNC_TESTCASE_START("mapping_engine")
+OSYNC_TESTCASE_ADD(mapping_engine_same_similar_conflict)
+OSYNC_TESTCASE_ADD(mapping_engine_same_similar_conflict_multi)
+OSYNC_TESTCASE_END
 
-Suite *mapping_engine_suite(void)
-{
-	Suite *s = suite_create("MappingEngine");
-	
-	create_case(s, "mapping_engine_same_similar_conflict", mapping_engine_same_similar_conflict);
-	create_case(s, "mapping_engine_same_similar_conflict_multi", mapping_engine_same_similar_conflict_multi);
-	
-	return s;
-}
-
-int main(void)
-{
-	int nf;
-
-	check_env();
-
-	Suite *s = mapping_engine_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

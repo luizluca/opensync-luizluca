@@ -115,8 +115,14 @@ OSYNC_TESTCASE(ipc ipc_callback_break_pipes)
 OSYNC_TESTCASE(ipc ipc_timeout)
 ENDIF (NOT WIN32)
 
-ADD_CHECK_TEST( mapping mapping-tests/check_mapping.c ${TEST_TARGET_LIBRARIES} )
-ADD_CHECK_TEST( mapping_engine engine-tests/check_mapping_engine.c ${TEST_TARGET_LIBRARIES} )
+BUILD_CHECK_TEST( mapping mapping-tests/check_mapping.c ${TEST_TARGET_LIBRARIES} )
+OSYNC_TESTCASE(mapping mapping_new)
+OSYNC_TESTCASE(mapping mapping_compare)
+
+BUILD_CHECK_TEST( mapping_engine engine-tests/check_mapping_engine.c ${TEST_TARGET_LIBRARIES} )
+OSYNC_TESTCASE(mapping_engine mapping_engine_same_similar_conflict)
+OSYNC_TESTCASE(mapping_engine mapping_engine_same_similar_conflict_multi)
+
 ADD_CHECK_TEST( member group-tests/check_member.c ${TEST_TARGET_LIBRARIES} )
 ADD_CHECK_TEST( module module-tests/check_module.c ${TEST_TARGET_LIBRARIES} )
 ADD_CHECK_TEST( multisync sync-tests/check_multisync.c ${TEST_TARGET_LIBRARIES} )

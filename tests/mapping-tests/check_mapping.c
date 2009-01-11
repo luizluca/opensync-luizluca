@@ -64,27 +64,8 @@ START_TEST (mapping_compare)
 }
 END_TEST
 
-Suite *client_suite(void)
-{
-	Suite *s = suite_create("Mapping");
-//	Suite *s2 = suite_create("Mapping");
-	
-	create_case(s, "mapping_new", mapping_new);
-	create_case(s, "mapping_compare", mapping_compare);
-	
-	return s;
-}
+OSYNC_TESTCASE_START("mapping")
+OSYNC_TESTCASE_ADD(mapping_new)
+OSYNC_TESTCASE_ADD(mapping_compare)
+OSYNC_TESTCASE_END
 
-int main(void)
-{
-	int nf;
-
-	Suite *s = client_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
