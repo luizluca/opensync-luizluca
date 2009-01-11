@@ -106,5 +106,16 @@ unsigned int osync_obj_engine_num_active_sinkengines(OSyncObjEngine *engine);
  */
 unsigned int osync_obj_engine_num_mapping_engines(OSyncObjEngine *engine);
 
-#endif /*OPENSYNC_OBJ_ENGINE_INTERNALS_H_*/
+/*! @brief Prepare the OSyncObjEngine for writing
+ *
+ * This function prepare the write process, by demerging and converting if
+ * required/configured.
+ *
+ * @param engine Pointer to OSyncObjEngine to prepare
+ * @param engine Pointer to error struct, which get set on any error
+ * @returns TRUE on success, FALSE otherwise
+ */
+osync_bool osync_obj_engine_prepare_write(OSyncObjEngine *engine, OSyncError **error);
+
+#endif /* OPENSYNC_OBJ_ENGINE_INTERNALS_H_ */
 

@@ -1073,7 +1073,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 		break;
 	case OSYNC_ENGINE_COMMAND_PREPARE_WRITE:
 
-		/* TODO: PLACEHOLDER for demerge and conversion */
+		osync_obj_engine_prepare_write(engine, error);
 
 		osync_obj_engine_event(engine, OSYNC_ENGINE_EVENT_PREPARED_WRITE, *error);
 		break;
@@ -1123,26 +1123,6 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 			for (o = sinkengine->entries; o; o = o->next) {
 				OSyncMappingEntryEngine *entry_engine = o->data;
 				osync_assert(entry_engine);
-
-
-
-				/* Merger - Save the entire data and demerge */
-				/* TODO: Review those conditionals!
-				 * Candidates to drop are:
-				 */
-				if (osync_group_get_merger_enabled(osync_engine_get_group(engine->parent)) &&
-						osync_member_get_capabilities(member) && /* Candidate to drop */
-						osync_group_get_converter_enabled(osync_engine_get_group(engine->parent)) && /* Candidate to drop */	
-						entry_engine->change &&
-						(osync_change_get_changetype(entry_engine->change) != OSYNC_CHANGE_TYPE_DELETED) &&
-						osync_objformat_has_merger(osync_change_get_objformat(entry_engine->change)) )
-
-
-					{
-						if (!osync_entry_engine_demerge(entry_engine, engine->archive, caps, error))
-							goto error;
-					}
-
 
 				/* Only commit change if the objtype sink is able/allowed to write. */
 				if (objtype_sink && osync_objtype_sink_get_write(objtype_sink) && osync_entry_engine_is_dirty(entry_engine)) {
@@ -1313,5 +1293,36 @@ unsigned int osync_obj_engine_num_mapping_engines(OSyncObjEngine *engine)
 {
 	osync_assert(engine);
 	return g_list_length(engine->mapping_engines);
+}
+
+
+osync_bool osync_obj_engine_prepare_write(OSyncObjEngine *engine, OSyncError **error)
+{
+	GList *p;
+	osync_bool merger_enabled, converter_enabled;
+	OSyncGroup *group;
+
+	osync_assert(engine);
+
+	group = osync_engine_get_group(engine->parent); 
+	merger_enabled = osync_group_get_merger_enabled(group);
+	converter_enabled = osync_group_get_converter_enabled(group); 
+
+	if (!merger_enabled && !converter_enabled)
+		return TRUE;
+
+	for (p = engine->sink_engines; p; p = p->next) {
+		OSyncSinkEngine *sinkengine = p->data;
+
+		if (merger_enabled
+			&& !osync_sink_engine_demerge(sinkengine, engine->archive, error))
+			goto error;
+
+	}
+
+	return TRUE;
+
+error:
+	return FALSE;
 }
 

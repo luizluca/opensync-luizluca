@@ -32,6 +32,7 @@
 #include "opensync_mapping_entry_engine_internals.h"
 
 #include "client/opensync_client_proxy_internals.h"
+#include "format/opensync_objformat_internals.h" /* osync_objformat_has_merger() */
 
 OSyncSinkEngine *osync_sink_engine_new(int position, OSyncClientProxy *proxy, OSyncObjEngine *objengine, OSyncError **error)
 {
@@ -128,5 +129,44 @@ OSyncMember *osync_sink_engine_get_member(OSyncSinkEngine *engine)
 	osync_return_val_if_fail(engine, NULL);
 	osync_return_val_if_fail(engine->proxy, NULL);
 	return osync_client_proxy_get_member(engine->proxy);
+}
+
+osync_bool osync_sink_engine_demerge(OSyncSinkEngine *engine, OSyncArchive *archive, OSyncError **error)
+{
+	OSyncList *o;
+	OSyncMember *member;
+	OSyncCapabilities *caps;
+
+	osync_assert(engine);
+	osync_assert(archive);
+
+	member = osync_client_proxy_get_member(engine->proxy);
+	osync_assert(member);
+	caps = osync_member_get_capabilities(member); 
+
+	if (!caps)
+		return TRUE;
+
+	for (o = engine->entries; o; o = o->next) {
+		OSyncMappingEntryEngine *entry_engine = o->data;
+		osync_assert(entry_engine);
+
+		if (entry_engine->change == NULL)
+			continue;
+
+		if (osync_change_get_changetype(entry_engine->change) == OSYNC_CHANGE_TYPE_DELETED)
+			continue;
+
+		if (!osync_objformat_has_merger(osync_change_get_objformat(entry_engine->change)))
+			continue;
+
+		if (!osync_entry_engine_demerge(entry_engine, archive, caps, error))
+			goto error;
+
+	}
+
+	return TRUE;
+error:
+	return FALSE;
 }
 

@@ -67,4 +67,18 @@ void osync_sink_engine_set_dummy(OSyncSinkEngine *engine, osync_bool isdummy);
  */
 osync_bool osync_sink_engine_is_dummy(OSyncSinkEngine *engine);
 
+/*! @brief Demerge all entries of OSyncSinkEngine
+ *
+ * If the Member/Client of the OSyncSinkEngine doesn't have capabilities
+ * this functions is NOOP and just returns with TRUE, without error.
+ *
+ * Changes with a current OSyncObjFormat, without merge/demerge get skipped.
+ *
+ * @param engine Pointer to an OSyncSinkEngine which should demerge
+ * @param archive Pointer to an OSyncArchive to store the dermerged information
+ * @param error Pointer to error struct, which get set on any error
+ * @returns TRUE on success, FALSE otherwise
+ */
+osync_bool osync_sink_engine_demerge(OSyncSinkEngine *engine, OSyncArchive *archive, OSyncError **error);
+
 #endif /*OPENSYNC_SINK_ENGINE_INTERNALS_H_*/
