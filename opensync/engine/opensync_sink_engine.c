@@ -25,6 +25,7 @@
 #include "opensync-group.h"
 #include "opensync-engine.h"
 #include "opensync-data.h"
+#include "opensync-format.h"
 #include "opensync-mapping.h"
 
 #include "opensync_obj_engine_internals.h"
@@ -167,6 +168,51 @@ osync_bool osync_sink_engine_demerge(OSyncSinkEngine *engine, OSyncArchive *arch
 
 	return TRUE;
 error:
+	return FALSE;
+}
+
+osync_bool osync_sink_engine_convert_to_dest(OSyncSinkEngine *engine, OSyncFormatEnv *formatenv, OSyncError **error)
+{
+	OSyncList *o;
+	OSyncMember *member;
+	OSyncObjTypeSink *objtype_sink;
+	const char *objtype;
+	OSyncFormatConverterPath *path = NULL;
+
+	osync_assert(engine);
+	osync_assert(formatenv);
+
+	member = osync_client_proxy_get_member(engine->proxy);
+	osync_assert(member);
+
+	objtype = osync_obj_engine_get_objtype(engine->engine);
+	objtype_sink = osync_member_find_objtype_sink(member, objtype);
+	osync_assert(objtype_sink);
+
+	for (o = engine->entries; o; o = o->next) {
+		OSyncMappingEntryEngine *entry_engine = o->data;
+		osync_assert(entry_engine);
+
+		if (entry_engine->change == NULL)
+			continue;
+
+		if (osync_change_get_changetype(entry_engine->change) == OSYNC_CHANGE_TYPE_DELETED)
+			continue;
+
+		if (!osync_entry_engine_convert(entry_engine, formatenv, objtype_sink, &path, error))
+			goto error;
+	}
+
+	if (path)
+		osync_converter_path_unref(path);
+
+
+	return TRUE;
+
+error:
+	if (path)
+		osync_converter_path_unref(path);
+
 	return FALSE;
 }
 

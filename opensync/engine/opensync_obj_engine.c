@@ -1095,7 +1095,6 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 			OSyncMember *member = NULL;
 			long long int memberid = 0;
 			OSyncObjTypeSink *objtype_sink = NULL;
-			OSyncFormatConverterPath *path = NULL;
 			OSyncCapabilities *caps;
 
 			sinkengine = p->data;
@@ -1128,13 +1127,6 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 				if (objtype_sink && osync_objtype_sink_get_write(objtype_sink) && osync_entry_engine_is_dirty(entry_engine)) {
 					OSyncChange *change = entry_engine->change;
 					osync_assert(entry_engine->change);
-
-					/* Convert to requested target format if the changetype is not DELETED */
-					if (osync_group_get_converter_enabled(osync_engine_get_group(engine->parent)) && (osync_change_get_changetype(change) != OSYNC_CHANGE_TYPE_DELETED)) {
-						if (!osync_entry_engine_convert(entry_engine, engine->formatenv, objtype_sink, &path, error))
-							goto error;
-
-					}
 						
 					osync_trace(TRACE_INTERNAL, "Writing change %s, changetype %i, format %s , objtype %s from member %lli", 
 											osync_change_get_uid(change), 
@@ -1162,10 +1154,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 					}
 				}
 			}
-			
-			if (path)
-				osync_converter_path_unref(path);
-
+		
 			if (!osync_client_proxy_committed_all(sinkengine->proxy, _osync_obj_engine_written_callback, sinkengine, engine->objtype, error))
 				goto error;
 		}
@@ -1295,7 +1284,6 @@ unsigned int osync_obj_engine_num_mapping_engines(OSyncObjEngine *engine)
 	return g_list_length(engine->mapping_engines);
 }
 
-
 osync_bool osync_obj_engine_prepare_write(OSyncObjEngine *engine, OSyncError **error)
 {
 	GList *p;
@@ -1316,6 +1304,10 @@ osync_bool osync_obj_engine_prepare_write(OSyncObjEngine *engine, OSyncError **e
 
 		if (merger_enabled
 			&& !osync_sink_engine_demerge(sinkengine, engine->archive, error))
+			goto error;
+
+		if (converter_enabled
+			&& !osync_sink_engine_convert_to_dest(sinkengine, engine->formatenv, error))
 			goto error;
 
 	}

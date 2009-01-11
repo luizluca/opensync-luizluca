@@ -81,4 +81,16 @@ osync_bool osync_sink_engine_is_dummy(OSyncSinkEngine *engine);
  */
 osync_bool osync_sink_engine_demerge(OSyncSinkEngine *engine, OSyncArchive *archive, OSyncError **error);
 
+/*! @brief Convert all entries of OSyncSinkEngine to destitination format
+ *
+ * This function converters all entries of the OSyncSinkEngine to the member
+ * preferd/requested format (destination).
+ *
+ * @param engine Pointer to an OSyncSinkEngine which should convert 
+ * @param archive Pointer to an OSyncFormatEnv for plugins to use
+ * @param error Pointer to error struct, which get set on any error
+ * @returns TRUE on success, FALSE otherwise
+ */
+osync_bool osync_sink_engine_convert_to_dest(OSyncSinkEngine *engine, OSyncFormatEnv *formatenv, OSyncError **error);
+
 #endif /*OPENSYNC_SINK_ENGINE_INTERNALS_H_*/
