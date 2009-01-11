@@ -536,7 +536,7 @@ static void _engine_instrument_pluginenv(OSyncEngine *engine, OSyncDebugGroup *d
 		osync_plugin_env_register_plugin(engine->pluginenv, debug->plugin2);
 }
 
-START_TEST (single_init_error)
+START_TEST (engine_error_single_init_error)
 {
 	char *testbed = setup_testbed("sync_setup");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -574,7 +574,7 @@ START_TEST (single_init_error)
 }
 END_TEST
 
-START_TEST (double_init_error)
+START_TEST (engine_error_double_init_error)
 {
 	char *testbed = setup_testbed("sync_setup");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -612,7 +612,7 @@ START_TEST (double_init_error)
 }
 END_TEST
 
-START_TEST (no_config_error)
+START_TEST (engine_error_no_config_error)
 {
 	char *testbed = setup_testbed("sync_setup");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -650,7 +650,7 @@ START_TEST (no_config_error)
 }
 END_TEST
 
-START_TEST (no_objtype_error)
+START_TEST (engine_error_no_objtype_error)
 {
 	char *testbed = setup_testbed("sync_setup");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -688,7 +688,9 @@ START_TEST (no_objtype_error)
 }
 END_TEST
 
-OSYNC_UNUSED START_TEST (dual_connect_error)
+
+/* FIXME: Temprorarly disabled until reviewed/fixed - see #995 */
+START_TEST (engine_error_dual_connect_error)
 {
 	char *testbed = setup_testbed("sync_setup");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -777,7 +779,7 @@ OSYNC_UNUSED START_TEST (dual_connect_error)
 }
 END_TEST
 
-START_TEST (one_of_two_connect_error)
+START_TEST (engine_error_one_of_two_connect_error)
 {
 	char *testbed = setup_testbed("sync");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -833,7 +835,7 @@ START_TEST (one_of_two_connect_error)
 }
 END_TEST
 
-START_TEST (two_of_three_connect_error)
+START_TEST (engine_error_two_of_three_connect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -887,7 +889,7 @@ START_TEST (two_of_three_connect_error)
 }
 END_TEST
 
-START_TEST (two_of_three_connect_error2)
+START_TEST (engine_error_two_of_three_connect_error2)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -940,7 +942,7 @@ START_TEST (two_of_three_connect_error2)
 }
 END_TEST
 
-START_TEST (three_of_three_connect_error)
+START_TEST (engine_error_three_of_three_connect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -993,7 +995,7 @@ START_TEST (three_of_three_connect_error)
 }
 END_TEST
 
-START_TEST (one_of_three_connect_error)
+START_TEST (engine_error_one_of_three_connect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1046,7 +1048,7 @@ START_TEST (one_of_three_connect_error)
 }
 END_TEST
 
-START_TEST (no_connect_error)
+START_TEST (engine_error_no_connect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1101,7 +1103,7 @@ START_TEST (no_connect_error)
 }
 END_TEST
 
-START_TEST (single_connect_timeout)
+START_TEST (engine_error_single_connect_timeout)
 {
 	char *testbed = setup_testbed("sync");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1160,7 +1162,7 @@ START_TEST (single_connect_timeout)
 }
 END_TEST
 
-START_TEST (dual_connect_timeout)
+START_TEST (engine_error_dual_connect_timeout)
 {
 	char *testbed = setup_testbed("sync");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1219,7 +1221,7 @@ START_TEST (dual_connect_timeout)
 }
 END_TEST
 
-START_TEST (one_of_three_timeout)
+START_TEST (engine_error_one_of_three_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1275,7 +1277,7 @@ START_TEST (one_of_three_timeout)
 }
 END_TEST
 
-START_TEST (timeout_and_error)
+START_TEST (engine_error_timeout_and_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1332,7 +1334,7 @@ START_TEST (timeout_and_error)
 }
 END_TEST
 
-START_TEST (single_get_changes_error)
+START_TEST (engine_error_single_get_changes_error)
 {
 	char *testbed = setup_testbed("sync_easy_conflict");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1390,7 +1392,7 @@ START_TEST (single_get_changes_error)
 }
 END_TEST
 
-START_TEST (dual_get_changes_error)
+START_TEST (engine_error_dual_get_changes_error)
 {
 	char *testbed = setup_testbed("sync_easy_conflict");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1450,7 +1452,7 @@ START_TEST (dual_get_changes_error)
 }
 END_TEST
 
-START_TEST (two_of_three_get_changes_error)
+START_TEST (engine_error_two_of_three_get_changes_error)
 {
 	char *testbed = setup_testbed("multisync_conflict_data_choose2");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1508,7 +1510,7 @@ START_TEST (two_of_three_get_changes_error)
 }
 END_TEST
 
-START_TEST (one_of_three_get_changes_error)
+START_TEST (engine_error_one_of_three_get_changes_error)
 {
 	char *testbed = setup_testbed("multisync_conflict_data_choose2");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1566,7 +1568,7 @@ START_TEST (one_of_three_get_changes_error)
 }
 END_TEST
 
-START_TEST (one_of_three_get_changes_timeout)
+START_TEST (engine_error_one_of_three_get_changes_timeout)
 {
 	char *testbed = setup_testbed("multisync_conflict_data_choose2");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1627,7 +1629,7 @@ START_TEST (one_of_three_get_changes_timeout)
 }
 END_TEST
 
-START_TEST (get_changes_timeout_and_error)
+START_TEST (engine_error_get_changes_timeout_and_error)
 {
 	char *testbed = setup_testbed("multisync_conflict_data_choose2");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1689,9 +1691,12 @@ START_TEST (get_changes_timeout_and_error)
 }
 END_TEST
 
-/* FIXME */
-#if 0 
-START_TEST (get_changes_timeout_sleep)
+
+/* FIXME: If get_changes delays and got timed out .. set change_callback to NULL.
+   Make sure changes from the plugin got completely ignored by the engine when the timout handler got called.
+   Even better would be to abort the get_changes call from the plugin process...
+*/
+START_TEST (engine_error_get_changes_timeout_sleep)
 {
 	char *testbed = setup_testbed("multisync_conflict_data_choose2");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1754,9 +1759,8 @@ START_TEST (get_changes_timeout_sleep)
 	destroy_testbed(testbed);
 }
 END_TEST
-#endif /* FIXME */
 
-START_TEST (single_commit_error)
+START_TEST (engine_error_single_commit_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1821,7 +1825,7 @@ START_TEST (single_commit_error)
 }
 END_TEST
 
-START_TEST (dual_commit_error)
+START_TEST (engine_error_dual_commit_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1882,7 +1886,7 @@ START_TEST (dual_commit_error)
 }
 END_TEST
 
-START_TEST (single_commit_timeout)
+START_TEST (engine_error_single_commit_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -1945,7 +1949,7 @@ START_TEST (single_commit_timeout)
 }
 END_TEST
 
-START_TEST (dual_commit_timeout)
+START_TEST (engine_error_dual_commit_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2008,7 +2012,7 @@ START_TEST (dual_commit_timeout)
 }
 END_TEST
 
-START_TEST (commit_timeout_and_error)
+START_TEST (engine_error_commit_timeout_and_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2072,7 +2076,7 @@ START_TEST (commit_timeout_and_error)
 }
 END_TEST
 
-START_TEST (commit_timeout_and_error2)
+START_TEST (engine_error_commit_timeout_and_error2)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2137,7 +2141,7 @@ START_TEST (commit_timeout_and_error2)
 END_TEST
 
 /* FIXME: timeout */
-START_TEST (commit_error_modify)
+START_TEST (engine_error_commit_error_modify)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2210,7 +2214,7 @@ START_TEST (commit_error_modify)
 }
 END_TEST
 
-START_TEST (commit_error_delete)
+START_TEST (engine_error_commit_error_delete)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2284,7 +2288,7 @@ START_TEST (commit_error_delete)
 }
 END_TEST
 
-START_TEST (committed_all_error)
+START_TEST (engine_error_committed_all_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2345,7 +2349,7 @@ START_TEST (committed_all_error)
 }
 END_TEST
 
-START_TEST (committed_all_batch_error)
+START_TEST (engine_error_committed_all_batch_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2407,7 +2411,7 @@ START_TEST (committed_all_batch_error)
 }
 END_TEST
 
-START_TEST (single_sync_done_error)
+START_TEST (engine_error_single_sync_done_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2468,7 +2472,7 @@ START_TEST (single_sync_done_error)
 }
 END_TEST
 
-START_TEST (dual_sync_done_error)
+START_TEST (engine_error_dual_sync_done_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2529,7 +2533,7 @@ START_TEST (dual_sync_done_error)
 }
 END_TEST
 
-START_TEST (triple_sync_done_error)
+START_TEST (engine_error_triple_sync_done_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2590,7 +2594,7 @@ START_TEST (triple_sync_done_error)
 }
 END_TEST
 
-START_TEST (single_sync_done_timeout)
+START_TEST (engine_error_single_sync_done_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2653,7 +2657,7 @@ START_TEST (single_sync_done_timeout)
 }
 END_TEST
 
-START_TEST (dual_sync_done_timeout)
+START_TEST (engine_error_dual_sync_done_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2716,7 +2720,7 @@ START_TEST (dual_sync_done_timeout)
 }
 END_TEST
 
-START_TEST (sync_done_timeout_and_error)
+START_TEST (engine_error_sync_done_timeout_and_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2780,7 +2784,7 @@ START_TEST (sync_done_timeout_and_error)
 }
 END_TEST
 
-START_TEST (single_disconnect_error)
+START_TEST (engine_error_single_disconnect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2841,7 +2845,7 @@ START_TEST (single_disconnect_error)
 }
 END_TEST
 
-START_TEST (dual_disconnect_error)
+START_TEST (engine_error_dual_disconnect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2902,7 +2906,7 @@ START_TEST (dual_disconnect_error)
 }
 END_TEST
 
-START_TEST (triple_disconnect_error)
+START_TEST (engine_error_triple_disconnect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -2963,7 +2967,7 @@ START_TEST (triple_disconnect_error)
 }
 END_TEST
 
-START_TEST (single_disconnect_timeout)
+START_TEST (engine_error_single_disconnect_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -3026,7 +3030,7 @@ START_TEST (single_disconnect_timeout)
 }
 END_TEST
 
-START_TEST (dual_disconnect_timeout)
+START_TEST (engine_error_dual_disconnect_timeout)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -3089,7 +3093,7 @@ START_TEST (dual_disconnect_timeout)
 }
 END_TEST
 
-START_TEST (disconnect_timeout_and_error)
+START_TEST (engine_error_disconnect_timeout_and_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -3153,7 +3157,7 @@ START_TEST (disconnect_timeout_and_error)
 }
 END_TEST
 
-START_TEST (get_changes_disconnect_error)
+START_TEST (engine_error_get_changes_disconnect_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
@@ -3207,7 +3211,7 @@ START_TEST (get_changes_disconnect_error)
 }
 END_TEST
 
-START_TEST (missing_format_plugin)
+START_TEST (engine_error_missing_format_plugin)
 {
 	char *testbed = setup_testbed("missing_format_plugin");
 	char *formatdir = g_strdup_printf("%s/formats",  testbed);
@@ -3242,96 +3246,69 @@ START_TEST (missing_format_plugin)
 }
 END_TEST
 
-Suite *error_suite(void)
-{
-	Suite *s = suite_create("Engine Errors");
-	//Suite *s2 = suite_create("Engine Errors");
-	
-	create_case(s, "single_init_error", single_init_error);
-	create_case(s, "double_init_error", double_init_error);
+OSYNC_TESTCASE_START("engine_error")
+OSYNC_TESTCASE_ADD(engine_error_single_init_error)
+OSYNC_TESTCASE_ADD(engine_error_double_init_error)
 
-	create_case(s, "no_config_error", no_config_error);
-	create_case(s, "no_objtype_error", no_objtype_error);
+OSYNC_TESTCASE_ADD(engine_error_no_config_error)
+OSYNC_TESTCASE_ADD(engine_error_no_objtype_error)
 
-	/* Temprorarly disabled until reviewed/fixed - see #995
-	create_case(s, "dual_connect_error", dual_connect_error);
-	*/
+OSYNC_TESTCASE_ADD(engine_error_dual_connect_error)
+OSYNC_TESTCASE_ADD(engine_error_one_of_two_connect_error)
+OSYNC_TESTCASE_ADD(engine_error_two_of_three_connect_error)
+OSYNC_TESTCASE_ADD(engine_error_two_of_three_connect_error2)
+OSYNC_TESTCASE_ADD(engine_error_three_of_three_connect_error)
 
-	create_case(s, "one_of_two_connect_error", one_of_two_connect_error);
-	create_case(s, "two_of_three_connect_error", two_of_three_connect_error);
-	create_case(s, "two_of_three_connect_error2", two_of_three_connect_error2);
-	create_case(s, "three_of_three_connect_error", three_of_three_connect_error);
+OSYNC_TESTCASE_ADD(engine_error_one_of_three_connect_error)
+OSYNC_TESTCASE_ADD(engine_error_no_connect_error)
 
-	create_case(s, "one_of_three_connect_error", one_of_three_connect_error);
-	create_case(s, "no_connect_error", no_connect_error);
+OSYNC_TESTCASE_ADD(engine_error_single_connect_timeout)
+OSYNC_TESTCASE_ADD(engine_error_dual_connect_timeout)
+OSYNC_TESTCASE_ADD(engine_error_one_of_three_timeout)
+OSYNC_TESTCASE_ADD(engine_error_timeout_and_error)
 
-	create_case(s, "single_connect_timeout", single_connect_timeout);
-	create_case(s, "dual_connect_timeout", dual_connect_timeout);
-	create_case(s, "one_of_three_timeout", one_of_three_timeout);
-	create_case(s, "timeout_and_error", timeout_and_error);
+OSYNC_TESTCASE_ADD(engine_error_single_get_changes_error)
+OSYNC_TESTCASE_ADD(engine_error_dual_get_changes_error)
+OSYNC_TESTCASE_ADD(engine_error_two_of_three_get_changes_error)
+OSYNC_TESTCASE_ADD(engine_error_one_of_three_get_changes_error)
 
-	create_case(s, "single_get_changes_error", single_get_changes_error);
-	create_case(s, "dual_get_changes_error", dual_get_changes_error);
-	create_case(s, "two_of_three_get_changes_error", two_of_three_get_changes_error);
-	create_case(s, "one_of_three_get_changes_error", one_of_three_get_changes_error);
+OSYNC_TESTCASE_ADD(engine_error_one_of_three_get_changes_timeout)
+OSYNC_TESTCASE_ADD(engine_error_get_changes_timeout_and_error)
+OSYNC_TESTCASE_ADD(engine_error_get_changes_timeout_sleep)
 
-	create_case(s, "one_of_three_get_changes_timeout", one_of_three_get_changes_timeout);
-	create_case(s, "get_changes_timeout_and_error", get_changes_timeout_and_error);
+OSYNC_TESTCASE_ADD(engine_error_single_commit_error)
+OSYNC_TESTCASE_ADD(engine_error_dual_commit_error)
 
-	/* FIXME: If get_changes delays and got timed out .. set change_callback to NULL.
-	   Make sure changes from the plugin got completely ignored by the engine when the timout handler got called.
-	   Even better would be to abort the get_changes call from the plugin process...
+OSYNC_TESTCASE_ADD(engine_error_single_commit_timeout)
+OSYNC_TESTCASE_ADD(engine_error_dual_commit_timeout)
+OSYNC_TESTCASE_ADD(engine_error_commit_timeout_and_error)
+OSYNC_TESTCASE_ADD(engine_error_commit_timeout_and_error2)
 
-	create_case(s2, "get_changes_timeout_sleep", get_changes_timeout_sleep);
-	*/
+OSYNC_TESTCASE_ADD(engine_error_commit_error_modify)
+OSYNC_TESTCASE_ADD(engine_error_commit_error_delete)
 
-	create_case(s, "single_commit_error", single_commit_error);
-	create_case(s, "dual_commit_error", dual_commit_error);
+OSYNC_TESTCASE_ADD(engine_error_committed_all_error)
+OSYNC_TESTCASE_ADD(engine_error_committed_all_batch_error)
 
-	create_case(s, "single_commit_timeout", single_commit_timeout);
-	create_case(s, "dual_commit_timeout", dual_commit_timeout);
-	create_case(s, "commit_timeout_and_error", commit_timeout_and_error);
-	create_case(s, "commit_timeout_and_error2", commit_timeout_and_error2);
+OSYNC_TESTCASE_ADD(engine_error_single_sync_done_error)
+OSYNC_TESTCASE_ADD(engine_error_dual_sync_done_error)
+OSYNC_TESTCASE_ADD(engine_error_triple_sync_done_error)
 
-	create_case(s, "commit_error_modify", commit_error_modify);
-	create_case(s, "commit_error_delete", commit_error_delete);
+OSYNC_TESTCASE_ADD(engine_error_single_sync_done_timeout)
+OSYNC_TESTCASE_ADD(engine_error_dual_sync_done_timeout)
+OSYNC_TESTCASE_ADD(engine_error_sync_done_timeout_and_error)
 
-	create_case(s, "committed_all_error", committed_all_error);
-	create_case(s, "committed_all_batch_error", committed_all_batch_error);
+OSYNC_TESTCASE_ADD(engine_error_single_disconnect_error)
+OSYNC_TESTCASE_ADD(engine_error_dual_disconnect_error)
+OSYNC_TESTCASE_ADD(engine_error_triple_disconnect_error)
 
-	create_case(s, "single_sync_done_error", single_sync_done_error);
-	create_case(s, "dual_sync_done_error", dual_sync_done_error);
-	create_case(s, "triple_sync_done_error", triple_sync_done_error);
+OSYNC_TESTCASE_ADD(engine_error_single_disconnect_timeout)
+OSYNC_TESTCASE_ADD(engine_error_dual_disconnect_timeout)
+OSYNC_TESTCASE_ADD(engine_error_disconnect_timeout_and_error)
 
-	create_case(s, "single_sync_done_timeout", single_sync_done_timeout);
-	create_case(s, "dual_sync_done_timeout", dual_sync_done_timeout);
-	create_case(s, "sync_done_timeout_and_error", sync_done_timeout_and_error);
+OSYNC_TESTCASE_ADD(engine_error_get_changes_disconnect_error)
 
-	create_case(s, "single_disconnect_error", single_disconnect_error);
-	create_case(s, "dual_disconnect_error", dual_disconnect_error);
-	create_case(s, "triple_disconnect_error", triple_disconnect_error);
+OSYNC_TESTCASE_ADD(engine_error_missing_format_plugin)
 
-	create_case(s, "single_disconnect_timeout", single_disconnect_timeout);
-	create_case(s, "dual_disconnect_timeout", dual_disconnect_timeout);
-	create_case(s, "disconnect_timeout_and_error", disconnect_timeout_and_error);
+OSYNC_TESTCASE_END
 
-	create_case(s, "get_changes_disconnect_error", get_changes_disconnect_error);
-
-	create_case(s, "missing_format_plugin", missing_format_plugin);
-	
-	return s;
-}
-
-int main(void)
-{
-	int nf;
-
-	Suite *s = error_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
