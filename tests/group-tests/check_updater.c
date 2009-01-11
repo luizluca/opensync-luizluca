@@ -247,34 +247,13 @@ START_TEST (updater_group_three_steps)
 }
 END_TEST
 
-Suite *group_suite(void)
-{
-  Suite *s = suite_create("Updater");
-  //Suite *s2 = suite_create("Updater");
+OSYNC_TESTCASE_START("updater")
+OSYNC_TESTCASE_ADD(updater_init)
+OSYNC_TESTCASE_ADD(updater_without_loaded_group)
+OSYNC_TESTCASE_ADD(updater_action_required)
+OSYNC_TESTCASE_ADD(updater_updates_directory)
+OSYNC_TESTCASE_ADD(updater_invalid_stylesheet)
+OSYNC_TESTCASE_ADD(updater_valid_stylesheet)
+OSYNC_TESTCASE_ADD(updater_group_three_steps)
+OSYNC_TESTCASE_END
 
-  create_case(s, "updater_init", updater_init);
-  create_case(s, "updater_without_loaded_group", updater_without_loaded_group);
-  create_case(s, "updater_action_required", updater_action_required);
-  create_case(s, "updater_updates_directory", updater_updates_directory);
-  create_case(s, "updater_invalid_stylesheet", updater_invalid_stylesheet);
-
-  create_case(s, "updater_valid_stylesheet", updater_valid_stylesheet);
-  create_case(s, "updater_group_three_steps", updater_group_three_steps);
-
-  return s;
-}
-
-int main(void)
-{
-	int nf;
-	
-	Suite *s = group_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

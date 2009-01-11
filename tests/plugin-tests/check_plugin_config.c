@@ -1196,43 +1196,24 @@ START_TEST (plugin_config_save_and_load_connection_serial)
 }
 END_TEST
 
-Suite *client_suite(void)
-{
-	Suite *s = suite_create("PluginConfig");
-//	Suite *s2 = suite_create("PluginConfig");
-	
-	create_case(s, "plugin_config_new", plugin_config_new);
-	create_case(s, "plugin_config_new_nomemory", plugin_config_new_nomemory);
-	create_case(s, "plugin_config_supported", plugin_config_supported);
-	create_case(s, "plugin_config_subcomponents", plugin_config_subcomponents);
-	create_case(s, "plugin_config_subcomponents_nomemory", plugin_config_subcomponents_nomemory);
-	create_case(s, "plugin_config_advancedoption", plugin_config_advancedoption);
-	create_case(s, "plugin_config_advancedoption_set_get", plugin_config_advancedoption_set_get);
-	create_case(s, "plugin_config_advancedoption_param", plugin_config_advancedoption_param);
-	create_case(s, "plugin_config_authentication", plugin_config_authentication);
-	create_case(s, "plugin_config_connection", plugin_config_connection);
-	create_case(s, "plugin_config_localization", plugin_config_localization);
-	create_case(s, "plugin_config_resources", plugin_config_resources);
-	create_case(s, "plugin_config_save_and_load", plugin_config_save_and_load);
-	create_case(s, "plugin_config_save_and_load_connection_bluetooth", plugin_config_save_and_load_connection_bluetooth);
-	create_case(s, "plugin_config_save_and_load_connection_usb", plugin_config_save_and_load_connection_usb);
-	create_case(s, "plugin_config_save_and_load_connection_irda", plugin_config_save_and_load_connection_irda);
-	create_case(s, "plugin_config_save_and_load_connection_network", plugin_config_save_and_load_connection_network);
-	create_case(s, "plugin_config_save_and_load_connection_serial", plugin_config_save_and_load_connection_serial);
-	
-	return s;
-}
+OSYNC_TESTCASE_START("plugin_config")
+OSYNC_TESTCASE_ADD(plugin_config_new)
+OSYNC_TESTCASE_ADD(plugin_config_new_nomemory)
+OSYNC_TESTCASE_ADD(plugin_config_supported)
+OSYNC_TESTCASE_ADD(plugin_config_subcomponents)
+OSYNC_TESTCASE_ADD(plugin_config_subcomponents_nomemory)
+OSYNC_TESTCASE_ADD(plugin_config_advancedoption)
+OSYNC_TESTCASE_ADD(plugin_config_advancedoption_set_get)
+OSYNC_TESTCASE_ADD(plugin_config_advancedoption_param)
+OSYNC_TESTCASE_ADD(plugin_config_authentication)
+OSYNC_TESTCASE_ADD(plugin_config_connection)
+OSYNC_TESTCASE_ADD(plugin_config_localization)
+OSYNC_TESTCASE_ADD(plugin_config_resources)
+OSYNC_TESTCASE_ADD(plugin_config_save_and_load)
+OSYNC_TESTCASE_ADD(plugin_config_save_and_load_connection_bluetooth)
+OSYNC_TESTCASE_ADD(plugin_config_save_and_load_connection_usb)
+OSYNC_TESTCASE_ADD(plugin_config_save_and_load_connection_irda)
+OSYNC_TESTCASE_ADD(plugin_config_save_and_load_connection_network)
+OSYNC_TESTCASE_ADD(plugin_config_save_and_load_connection_serial)
+OSYNC_TESTCASE_END
 
-int main(void)
-{
-	int nf;
-
-	Suite *s = client_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

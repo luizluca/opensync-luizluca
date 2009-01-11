@@ -222,38 +222,17 @@ START_TEST (xmlformat_schema_validate)
 }
 END_TEST
 
-Suite *xmlformat_suite(void)
-{
-	Suite *s = suite_create("XMLFormat");
-//	Suite *s2 = suite_create("XMLFormat");
+OSYNC_TESTCASE_START("xmlformat")
+// xmlformat
+OSYNC_TESTCASE_ADD(xmlformat_new)
+OSYNC_TESTCASE_ADD(xmlformat_parse)
+OSYNC_TESTCASE_ADD(xmlformat_sort)
+OSYNC_TESTCASE_ADD(xmlformat_is_sorted)
+OSYNC_TESTCASE_ADD(xmlformat_search_field)
+// xmlformat schema
+OSYNC_TESTCASE_ADD(xmlformat_schema_validate)
+// xmlfield
+OSYNC_TESTCASE_ADD(xmlfield_new)
+OSYNC_TESTCASE_ADD(xmlfield_sort)
+OSYNC_TESTCASE_END
 
-	// xmlformat
-	create_case(s, "xmlformat_new", xmlformat_new);
-	create_case(s, "xmlformat_parse", xmlformat_parse);
-	create_case(s, "xmlformat_sort", xmlformat_sort);
-	create_case(s, "xmlformat_is_sorted", xmlformat_is_sorted);
-	create_case(s, "xmlformat_search_field", xmlformat_search_field);
-
-	// xmlformat schema
-	create_case(s, "xmlformat_schema_validate", xmlformat_schema_validate);
-
-	// xmlfield
-	create_case(s, "xmlfield_new", xmlfield_new);
-	create_case(s, "xmlfield_sort", xmlfield_sort);
-
-	return s;
-}
-
-int main(void)
-{
-	int nf;
-
-	Suite *s = xmlformat_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

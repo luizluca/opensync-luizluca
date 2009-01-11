@@ -383,28 +383,8 @@ START_TEST (serializer_pluginconfig_full)
 }
 END_TEST
 
+OSYNC_TESTCASE_START("serializer")
+OSYNC_TESTCASE_ADD(serializer_pluginconfig)
+OSYNC_TESTCASE_ADD(serializer_pluginconfig_full)
+OSYNC_TESTCASE_END
 
-Suite *ipc_suite(void)
-{
-	Suite *s = suite_create("Serializer");
-//	Suite *s2 = suite_create("Serializer");
-	
-	create_case(s, "serializer_pluginconfig", serializer_pluginconfig);
-	create_case(s, "serializer_pluginconfig_full", serializer_pluginconfig_full);
-	
-	return s;
-}
-
-int main(void)
-{
-	int nf;
-
-	Suite *s = ipc_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

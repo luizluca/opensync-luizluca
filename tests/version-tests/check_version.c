@@ -79,25 +79,9 @@ START_TEST (version_load_from_descriptions)
 }
 END_TEST
 
-Suite *version_suite(void)
-{
-	Suite *s = suite_create("Version");
-	create_case(s, "version_new", version_new);
-	create_case(s, "version_matches", version_matches);
-	create_case(s, "version_load_from_descriptions", version_load_from_descriptions);
-	return s;
-}
+OSYNC_TESTCASE_START("version")
+OSYNC_TESTCASE_ADD(version_new)
+OSYNC_TESTCASE_ADD(version_matches)
+OSYNC_TESTCASE_ADD(version_load_from_descriptions)
+OSYNC_TESTCASE_END
 
-int main(void)
-{
-	int nf;
-
-	Suite *s = version_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

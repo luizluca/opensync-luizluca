@@ -264,30 +264,11 @@ START_TEST (proxy_connect)
 }
 END_TEST
 
-Suite *proxy_suite(void)
-{
-	Suite *s = suite_create("Proxy");
-//	Suite *s2 = suite_create("Proxy");
-	
-	create_case(s, "proxy_new", proxy_new);
-	create_case(s, "proxy_spawn", proxy_spawn);
-	create_case(s, "proxy_init", proxy_init);
-	create_case(s, "proxy_discover", proxy_discover);
-	create_case(s, "proxy_connect", proxy_connect);
-	
-	return s;
-}
+OSYNC_TESTCASE_START("proxy")
+OSYNC_TESTCASE_ADD(proxy_new)
+OSYNC_TESTCASE_ADD(proxy_spawn)
+OSYNC_TESTCASE_ADD(proxy_init)
+OSYNC_TESTCASE_ADD(proxy_discover)
+OSYNC_TESTCASE_ADD(proxy_connect)
+OSYNC_TESTCASE_END
 
-int main(void)
-{
-	int nf;
-
-	Suite *s = proxy_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

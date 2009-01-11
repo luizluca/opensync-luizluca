@@ -343,38 +343,18 @@ START_TEST (objformat_demarshal)
 }
 END_TEST
 
-Suite *objformat_suite(void)
-{
-	Suite *s = suite_create("Objformat");
-//	Suite *s2 = suite_create("Objformat");
-	
-	create_case(s, "objformat_new", objformat_new);
-	create_case(s, "objformat_get", objformat_get);
-	create_case(s, "objformat_equal", objformat_equal);
-	create_case(s, "objformat_compare", objformat_compare);
-	create_case(s, "objformat_destroy", objformat_destroy);
-	create_case(s, "objformat_copy", objformat_copy);
-	create_case(s, "objformat_duplicate", objformat_duplicate);
-	create_case(s, "objformat_create", objformat_create);
-	create_case(s, "objformat_print", objformat_print);
-	create_case(s, "objformat_revision", objformat_revision);
-	create_case(s, "objformat_marshal", objformat_marshal);
-	create_case(s, "objformat_demarshal", objformat_demarshal);
-	
-	return s;
-}
+OSYNC_TESTCASE_START("objformat")
+OSYNC_TESTCASE_ADD(objformat_new)
+OSYNC_TESTCASE_ADD(objformat_get)
+OSYNC_TESTCASE_ADD(objformat_equal)
+OSYNC_TESTCASE_ADD(objformat_compare)
+OSYNC_TESTCASE_ADD(objformat_destroy)
+OSYNC_TESTCASE_ADD(objformat_copy)
+OSYNC_TESTCASE_ADD(objformat_duplicate)
+OSYNC_TESTCASE_ADD(objformat_create)
+OSYNC_TESTCASE_ADD(objformat_print)
+OSYNC_TESTCASE_ADD(objformat_revision)
+OSYNC_TESTCASE_ADD(objformat_marshal)
+OSYNC_TESTCASE_ADD(objformat_demarshal)
+OSYNC_TESTCASE_END
 
-int main(void)
-{
-	int nf;
-	
-	Suite *s = objformat_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

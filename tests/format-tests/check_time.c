@@ -7,6 +7,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "support.h"
+
 // this test assumes Eastern time, sorry.
 START_TEST (time_timezone_diff)
 {
@@ -194,38 +196,9 @@ START_TEST (time_unix_converters)
 }
 END_TEST
 
-Suite *env_suite(void)
-{
-	Suite *s = suite_create("Time");
-
-	TCase *tc_timezones = tcase_create("timezones");
-	TCase *tc_relative  = tcase_create("relative");
-	TCase *tc_unix      = tcase_create("unix_converters");
-
-	suite_add_tcase (s, tc_timezones);
-	tcase_add_test(tc_timezones, time_timezone_diff);
-
-	suite_add_tcase (s, tc_relative);
-	tcase_add_test(tc_relative, time_relative2tm);
-
-	suite_add_tcase (s, tc_unix);
-	tcase_add_test(tc_unix, time_unix_converters);
-
-	return s;
-}
-
-int main(void)
-{
-       int nf;
-
-       Suite *s = env_suite();
-
-       SRunner *sr;
-       sr = srunner_create(s);
-
-       srunner_run_all(sr, CK_VERBOSE);
-       nf = srunner_ntests_failed(sr);
-       srunner_free(sr);
-       return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
+OSYNC_TESTCASE_START("time")
+OSYNC_TESTCASE_ADD(time_timezone_diff)
+OSYNC_TESTCASE_ADD(time_relative2tm)
+OSYNC_TESTCASE_ADD(time_unix_converters)
+OSYNC_TESTCASE_END
 
