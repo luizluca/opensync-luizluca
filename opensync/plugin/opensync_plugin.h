@@ -273,7 +273,7 @@ OSYNC_EXPORT void osync_plugin_set_finalize_timeout(OSyncPlugin *plugin, unsigne
  * @param error Pointer to error-struct
  * @return Userdata returned by the plugin on success, NULL on error
  */
-OSYNC_EXPORT void *osync_plugin_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error);
+OSYNC_EXPORT osync_bool osync_plugin_initialize(OSyncPlugin *plugin, void **plugin_data, OSyncPluginInfo *info, OSyncError **error);
 
 /** @brief Finalize Plugin 
  *

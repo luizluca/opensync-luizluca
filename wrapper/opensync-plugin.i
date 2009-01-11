@@ -59,9 +59,9 @@ typedef struct {} Plugin;
 		osync_plugin_set_config_type(self, config_type);
 	}
 
-	void *initialize(PluginInfo *info) {
+	osync_bool initialize(PluginInfo *info, void **plugin_data) {
 		Error *err = NULL;
-		void *ret = osync_plugin_initialize(self, info, &err);
+		osync_bool ret = osync_plugin_initialize(self, plugin_data, info, &err);
 		raise_exception_on_error(err);
 		return ret;
 	}

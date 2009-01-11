@@ -32,8 +32,8 @@ START_TEST (single_init_error_noerror)
 
 	osync_engine_set_memberstatus_callback(engine, member_status, GINT_TO_POINTER(1));
 
-	fail_unless(!osync_engine_initialize(engine, &error), NULL);
-	fail_unless(error != NULL, NULL);
+	fail_unless(osync_engine_initialize(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
 
 	osync_engine_unref(engine);
 	g_free(formatdir);

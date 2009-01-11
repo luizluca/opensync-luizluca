@@ -573,6 +573,7 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 	OSyncList *o = NULL;
 	OSyncObjFormatSink *format_sink = NULL;
 	unsigned int n, num_sinks;
+	osync_bool couldinit;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
 	
@@ -685,9 +686,9 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 		}
 	}
 	
-	client->plugin_data = osync_plugin_initialize(client->plugin, client->plugin_info, error);
-	if (!client->plugin_data) {
-		if (!*error)
+	couldinit = osync_plugin_initialize(client->plugin, &(client->plugin_data), client->plugin_info, error);
+	if (!couldinit) {
+		if (!osync_error_is_set(error))
 			osync_error_set(error, OSYNC_ERROR_GENERIC, "Plugin \"%s\" failed to initialize but gave no reason", pluginname);
 		goto error;
 	}

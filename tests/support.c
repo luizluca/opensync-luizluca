@@ -58,6 +58,7 @@ static void reset_env(void)
 	g_unsetenv("CONNECT_TIMEOUT");
 	g_unsetenv("CONNECT_SLOWSYNC");
 	g_unsetenv("INIT_NULL");
+	g_unsetenv("INIT_NULL_NOERROR");
 	g_unsetenv("GET_CHANGES_ERROR");
 	g_unsetenv("GET_CHANGES_TIMEOUT");
 	g_unsetenv("GET_CHANGES_TIMEOUT2");
