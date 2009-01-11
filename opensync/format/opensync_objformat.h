@@ -252,7 +252,8 @@ OSYNC_EXPORT void osync_objformat_set_demerge_func(OSyncObjFormat *format, OSync
  * @param format Pointer to the object format
  * @param data Pointer to the object to destroy
  * @param size Size in bytes of the object specified by the data parameter
- * @returns Human readable string of the specified object. Caller is responsible for freeing the string
+ * @returns Human readable string of the specified object. Caller is responsible for freeing the string.
+ *          Or NULL if size is 0 or data NULL.
  */
 OSYNC_EXPORT char *osync_objformat_print(OSyncObjFormat *format, const char *data, unsigned int size);
 

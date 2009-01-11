@@ -222,6 +222,8 @@ void osync_objformat_set_print_func(OSyncObjFormat *format, OSyncFormatPrintFunc
 char *osync_objformat_print(OSyncObjFormat *format, const char *data, unsigned int size)
 {
 	osync_return_val_if_fail(format, NULL);
+	osync_return_val_if_fail(data, NULL);
+	osync_return_val_if_fail(size, NULL);
 	
 	if (!format->print_func)
 		return g_strndup(data, size);
