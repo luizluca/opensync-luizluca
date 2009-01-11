@@ -2476,72 +2476,55 @@ START_TEST(multisync_multi_conflict_b2)
 END_TEST
 #endif
 
-Suite *multisync_suite(void)
-{
-	Suite *s = suite_create("Multisync");
-	//Suite *s2 = suite_create("Multisync");
-	create_case(s, "multisync_easy_new", multisync_easy_new);
-	create_case(s, "multisync_dual_new", multisync_dual_new);
-	create_case(s, "multisync_triple_new", multisync_triple_new);
+OSYNC_TESTCASE_START("multisync")
+OSYNC_TESTCASE_ADD(multisync_easy_new)
+OSYNC_TESTCASE_ADD(multisync_dual_new)
+OSYNC_TESTCASE_ADD(multisync_triple_new)
 
 /* FIXME: port testcases, see ticket #981 */
 #if 0
-	create_case(s, "multisync_easy_mod", multisync_easy_mod);
-	create_case(s, "multisync_dual_mod", multisync_dual_mod);
-	create_case(s, "multisync_triple_mod", multisync_triple_mod);
-	create_case(s, "multisync_easy_del", multisync_easy_del);
-	create_case(s, "multisync_dual_del", multisync_dual_del);
-	create_case(s, "multisync_triple_del", multisync_triple_del);
-	
-	create_case(s, "multisync_conflict_data_choose", multisync_conflict_data_choose);
-	create_case(s, "multisync_conflict_data_choose2", multisync_conflict_data_choose2);
-	create_case(s, "multisync_conflict_changetype_choose", multisync_conflict_changetype_choose);
-	create_case(s, "multisync_conflict_changetype_choose2", multisync_conflict_changetype_choose2);
-	create_case(s, "multisync_conflict_hybrid_choose", multisync_conflict_hybrid_choose);
-	create_case(s, "multisync_conflict_hybrid_choose2", multisync_conflict_hybrid_choose2);
-	create_case(s, "multisync_conflict_data_duplicate", multisync_conflict_data_duplicate);
-	create_case(s, "multisync_conflict_data_duplicate2", multisync_conflict_data_duplicate2);
-	create_case(s, "multisync_conflict_changetype_duplicate", multisync_conflict_changetype_duplicate);
-	create_case(s, "multisync_conflict_changetype_duplicate2", multisync_conflict_changetype_duplicate2);
-	create_case(s, "multisync_conflict_hybrid_duplicate", multisync_conflict_hybrid_duplicate);
-	create_case(s, "multisync_multi_conflict", multisync_multi_conflict);
+OSYNC_TESTCASE_ADD(multisync_easy_mod)
+OSYNC_TESTCASE_ADD(multisync_dual_mod)
+OSYNC_TESTCASE_ADD(multisync_triple_mod)
+OSYNC_TESTCASE_ADD(multisync_easy_del)
+OSYNC_TESTCASE_ADD(multisync_dual_del)
+OSYNC_TESTCASE_ADD(multisync_triple_del)
 
-	create_case(s, "multisync_delayed_conflict_handler", multisync_delayed_conflict_handler);
-	create_case(s, "multisync_delayed_slow", multisync_delayed_slow);
-	
-	create_case(s, "multisync_conflict_ignore", multisync_conflict_ignore);
-	create_case(s, "multisync_conflict_ignore2", multisync_conflict_ignore2);
-	
-	create_case(s, "multisync_easy_new_b", multisync_easy_new_b);
-	create_case(s, "multisync_triple_del_b", multisync_triple_del_b);
-	create_case(s, "multisync_conflict_hybrid_choose2_b", multisync_conflict_hybrid_choose2_b);
-	create_case(s, "multisync_delayed_conflict_handler_b", multisync_delayed_conflict_handler_b);
-	create_case(s, "multisync_delayed_slow_b", multisync_delayed_slow_b);
-	create_case(s, "multisync_conflict_ignore_b", multisync_conflict_ignore_b);
-	create_case(s, "multisync_conflict_ignore2_b", multisync_conflict_ignore2_b);
-	create_case(s, "multisync_conflict_hybrid_duplicate_b", multisync_conflict_hybrid_duplicate_b);
-	create_case(s, "multisync_multi_conflict_b", multisync_multi_conflict_b);
-	create_case(s, "multisync_zero_changes_b", multisync_zero_changes_b);
-	
-	create_case(s, "multisync_conflict_hybrid_choose2_b2", multisync_conflict_hybrid_choose2_b2);
-	create_case(s, "multisync_delayed_conflict_handler_b2", multisync_delayed_conflict_handler_b2);
-	create_case(s, "multisync_conflict_ignore_b2", multisync_conflict_ignore_b2);
-	create_case(s, "multisync_multi_conflict_b2", multisync_multi_conflict_b2);
+OSYNC_TESTCASE_ADD(multisync_conflict_data_choose)
+OSYNC_TESTCASE_ADD(multisync_conflict_data_choose2)
+OSYNC_TESTCASE_ADD(multisync_conflict_changetype_choose)
+OSYNC_TESTCASE_ADD(multisync_conflict_changetype_choose2)
+OSYNC_TESTCASE_ADD(multisync_conflict_hybrid_choose)
+OSYNC_TESTCASE_ADD(multisync_conflict_hybrid_choose2)
+OSYNC_TESTCASE_ADD(multisync_conflict_data_duplicate)
+OSYNC_TESTCASE_ADD(multisync_conflict_data_duplicate2)
+OSYNC_TESTCASE_ADD(multisync_conflict_changetype_duplicate)
+OSYNC_TESTCASE_ADD(multisync_conflict_changetype_duplicate2)
+OSYNC_TESTCASE_ADD(multisync_conflict_hybrid_duplicate)
+OSYNC_TESTCASE_ADD(multisync_multi_conflict)
+
+OSYNC_TESTCASE_ADD(multisync_delayed_conflict_handler)
+OSYNC_TESTCASE_ADD(multisync_delayed_slow)
+
+OSYNC_TESTCASE_ADD(multisync_conflict_ignore)
+OSYNC_TESTCASE_ADD(multisync_conflict_ignore2)
+
+OSYNC_TESTCASE_ADD(multisync_easy_new_b)
+OSYNC_TESTCASE_ADD(multisync_triple_del_b)
+OSYNC_TESTCASE_ADD(multisync_conflict_hybrid_choose2_b)
+OSYNC_TESTCASE_ADD(multisync_delayed_conflict_handler_b)
+OSYNC_TESTCASE_ADD(multisync_delayed_slow_b)
+OSYNC_TESTCASE_ADD(multisync_conflict_ignore_b)
+OSYNC_TESTCASE_ADD(multisync_conflict_ignore2_b)
+OSYNC_TESTCASE_ADD(multisync_conflict_hybrid_duplicate_b)
+OSYNC_TESTCASE_ADD(multisync_multi_conflict_b)
+OSYNC_TESTCASE_ADD(multisync_zero_changes_b)
+
+OSYNC_TESTCASE_ADD(multisync_conflict_hybrid_choose2_b2)
+OSYNC_TESTCASE_ADD(multisync_delayed_conflict_handler_b2)
+OSYNC_TESTCASE_ADD(multisync_conflict_ignore_b2)
+OSYNC_TESTCASE_ADD(multisync_multi_conflict_b2)
 #endif
-	
-	return s;
-}
 
-int main(void)
-{
-	int nf;
+OSYNC_TESTCASE_END
 
-	Suite *s = multisync_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

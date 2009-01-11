@@ -178,33 +178,13 @@ START_TEST (module_check)
 }
 END_TEST
 
-Suite *module_suite(void)
-{
-	Suite *s = suite_create("Module");
-	//Suite *s2 = suite_create("Module");
-	
-	create_case(s, "module_create", module_create);
-	create_case(s, "module_load", module_load);
-	create_case(s, "module_load_false", module_load_false);
-	create_case(s, "module_function", module_function);
-	create_case(s, "module_function_false", module_function_false);
-	create_case(s, "module_version", module_version);
-	create_case(s, "module_check", module_check);
-	
-	return s;
-}
+OSYNC_TESTCASE_START("module")
+OSYNC_TESTCASE_ADD(module_create)
+OSYNC_TESTCASE_ADD(module_load)
+OSYNC_TESTCASE_ADD(module_load_false)
+OSYNC_TESTCASE_ADD(module_function)
+OSYNC_TESTCASE_ADD(module_function_false)
+OSYNC_TESTCASE_ADD(module_version)
+OSYNC_TESTCASE_ADD(module_check)
+OSYNC_TESTCASE_END
 
-int main(void)
-{
-	int nf;
-	
-	Suite *s = module_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

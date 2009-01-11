@@ -7,7 +7,9 @@
 #include <glib.h>
 #include <gmodule.h>
 
-START_TEST (test_create)
+#include "support.h"
+
+START_TEST (member_new)
 {
   OSyncMember *member = NULL;
   member = osync_member_new(NULL);
@@ -16,28 +18,7 @@ START_TEST (test_create)
 }
 END_TEST
 
-Suite *member_suite(void)
-{
-  Suite *s = suite_create("Member");
-  TCase *tc_core = tcase_create("Core");
+OSYNC_TESTCASE_START("member")
+OSYNC_TESTCASE_ADD(member_new)
+OSYNC_TESTCASE_END
 
-  suite_add_tcase (s, tc_core);
-  tcase_add_test(tc_core, test_create);
-
-  return s;
-}
-
-int main(void)
-{
-	int nf;
-	
-	Suite *s = member_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

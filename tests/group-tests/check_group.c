@@ -63,26 +63,7 @@ START_TEST (group_last_sync)
 }
 END_TEST
 
-Suite *group_suite(void)
-{
-  Suite *s = suite_create("Group");
+OSYNC_TESTCASE_START("group")
+OSYNC_TESTCASE_ADD(group_last_sync)
+OSYNC_TESTCASE_END
 
-  create_case(s, "group_last_sync", group_last_sync);
-
-  return s;
-}
-
-int main(void)
-{
-	int nf;
-	
-	Suite *s = group_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

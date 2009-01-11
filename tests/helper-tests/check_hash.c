@@ -190,30 +190,9 @@ START_TEST (hashtable_stress)
 }
 END_TEST
 
-Suite *env_suite(void)
-{
-	Suite *s = suite_create("Hashtable");
+OSYNC_TESTCASE_START("hashtable")
+OSYNC_TESTCASE_ADD(hashtable_new)
+OSYNC_TESTCASE_ADD(hashtable_reload)
+OSYNC_TESTCASE_ADD(hashtable_stress)
+OSYNC_TESTCASE_END
 
-	create_case(s, "hashtable_new", hashtable_new);
-	create_case(s, "hashtable_reload", hashtable_reload);
-	create_case(s, "hashtable_stress", hashtable_stress);
-
-	return s;
-}
-
-int main(void)
-{
-	int nf;
-
-	check_env();
-	
-	Suite *s = env_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

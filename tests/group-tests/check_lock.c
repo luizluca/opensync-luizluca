@@ -9,7 +9,7 @@
 
 #include "opensync/group/opensync_group_internals.h"
 
-START_TEST (simple_lock)
+START_TEST (lock_simple_lock)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -27,7 +27,7 @@ START_TEST (simple_lock)
 }
 END_TEST
 
-START_TEST (simple_seq_lock)
+START_TEST (lock_simple_seq_lock)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -48,7 +48,7 @@ START_TEST (simple_seq_lock)
 }
 END_TEST
 
-START_TEST (dual_lock)
+START_TEST (lock_dual_lock)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -66,7 +66,7 @@ START_TEST (dual_lock)
 }
 END_TEST
 
-START_TEST (dual_lock2)
+START_TEST (lock_dual_lock2)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
@@ -88,7 +88,7 @@ START_TEST (dual_lock2)
 }
 END_TEST
 
-START_TEST (dual_sync_engine_lock)
+START_TEST (lock_dual_sync_engine_lock)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats",  testbed);
@@ -155,7 +155,7 @@ START_TEST (dual_sync_engine_lock)
 }
 END_TEST
 
-START_TEST (dual_sync_engine_unclean)
+START_TEST (lock_dual_sync_engine_unclean)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	char *formatdir = g_strdup_printf("%s/formats",  testbed);
@@ -275,30 +275,12 @@ START_TEST (dual_sync_engine_unclean)
 }
 END_TEST
 
-Suite *lock_suite(void)
-{
-	Suite *s = suite_create("Locks");
-	//Suite *s2 = suite_create("Locks");
-	create_case(s, "simple_lock", simple_lock);
-	create_case(s, "simple_seq_lock", simple_seq_lock);
-	create_case(s, "dual_lock", dual_lock);
-	create_case(s, "dual_lock2", dual_lock2);
-	create_case(s, "dual_sync_engine_lock", dual_sync_engine_lock);
-	create_case(s, "dual_sync_engine_unclean", dual_sync_engine_unclean);
-	
-	return s;
-}
+OSYNC_TESTCASE_START("lock")
+OSYNC_TESTCASE_ADD(lock_simple_lock)
+OSYNC_TESTCASE_ADD(lock_simple_seq_lock)
+OSYNC_TESTCASE_ADD(lock_dual_lock)
+OSYNC_TESTCASE_ADD(lock_dual_lock2)
+OSYNC_TESTCASE_ADD(lock_dual_sync_engine_lock)
+OSYNC_TESTCASE_ADD(lock_dual_sync_engine_unclean)
+OSYNC_TESTCASE_END
 
-int main(void)
-{
-	int nf;
-
-	Suite *s = lock_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}

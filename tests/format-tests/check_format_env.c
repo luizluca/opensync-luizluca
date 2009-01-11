@@ -6,7 +6,7 @@
 #include "opensync/format/opensync_format_env_internals.h"
 #include "opensync/module/opensync_module_internals.h"
 
-START_TEST (conv_env_create)
+START_TEST (format_env_create)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -21,7 +21,7 @@ START_TEST (conv_env_create)
 }
 END_TEST
 
-START_TEST (conv_env_register_objformat)
+START_TEST (format_env_register_objformat)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -44,7 +44,7 @@ START_TEST (conv_env_register_objformat)
 }
 END_TEST
 
-START_TEST (conv_env_register_objformat_count)
+START_TEST (format_env_register_objformat_count)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -71,7 +71,7 @@ START_TEST (conv_env_register_objformat_count)
 }
 END_TEST
 
-START_TEST (conv_env_objformat_find)
+START_TEST (format_env_objformat_find)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -95,7 +95,7 @@ START_TEST (conv_env_objformat_find)
 }
 END_TEST
 
-START_TEST (conv_env_objformat_find_false)
+START_TEST (format_env_objformat_find_false)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -124,7 +124,7 @@ osync_bool convert_func(char *input, unsigned int inpsize, char **output, unsign
 	return TRUE;
 }
 
-START_TEST (conv_env_register_converter)
+START_TEST (format_env_register_converter)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -160,7 +160,7 @@ START_TEST (conv_env_register_converter)
 }
 END_TEST
 
-START_TEST (conv_env_register_converter_count)
+START_TEST (format_env_register_converter_count)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -201,7 +201,7 @@ START_TEST (conv_env_register_converter_count)
 }
 END_TEST
 
-START_TEST (conv_env_converter_find)
+START_TEST (format_env_converter_find)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -238,7 +238,7 @@ START_TEST (conv_env_converter_find)
 }
 END_TEST
 
-START_TEST (conv_env_converter_find_false)
+START_TEST (format_env_converter_find_false)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -287,7 +287,7 @@ osync_bool filter_hook(OSyncData *data, const char *config)
 	return TRUE;
 }
 
-START_TEST (conv_env_register_filter)
+START_TEST (format_env_register_filter)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -310,7 +310,7 @@ START_TEST (conv_env_register_filter)
 }
 END_TEST
 
-START_TEST (conv_env_register_filter_count)
+START_TEST (format_env_register_filter_count)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -338,7 +338,7 @@ START_TEST (conv_env_register_filter_count)
 }
 END_TEST
 
-START_TEST (conv_env_load_plugins)
+START_TEST (format_env_load_plugins)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -358,7 +358,7 @@ START_TEST (conv_env_load_plugins)
 }
 END_TEST
 
-START_TEST (conv_env_plugin)
+START_TEST (format_env_plugin)
 {
 	char *testbed = setup_testbed(NULL);
 	
@@ -395,43 +395,23 @@ START_TEST (conv_env_plugin)
 }
 END_TEST
 
-Suite *format_env_suite(void)
-{
-	Suite *s = suite_create("Format-Env");
-//	Suite *s2 = suite_create("Format-Env");
-	
-	create_case(s, "conv_env_create", conv_env_create);
-	
-	create_case(s, "conv_env_register_objformat", conv_env_register_objformat);
-	create_case(s, "conv_env_register_objformat_count", conv_env_register_objformat_count);
-	create_case(s, "conv_env_objformat_find", conv_env_objformat_find);
-	create_case(s, "conv_env_objformat_find_false", conv_env_objformat_find_false);
-	
-	create_case(s, "conv_env_register_converter", conv_env_register_converter);
-	create_case(s, "conv_env_register_converter_count", conv_env_register_converter_count);
-	create_case(s, "conv_env_converter_find", conv_env_converter_find);
-	create_case(s, "conv_env_converter_find_false", conv_env_converter_find_false);
-	
-	create_case(s, "conv_env_register_filter", conv_env_register_filter);
-	create_case(s, "conv_env_register_filter_count", conv_env_register_filter_count);
+OSYNC_TESTCASE_START("format_env")
+OSYNC_TESTCASE_ADD(format_env_create)
 
-	create_case(s, "conv_env_load_plugins", conv_env_load_plugins);
-	create_case(s, "conv_env_plugin", conv_env_plugin);
-	
-	return s;
-}
+OSYNC_TESTCASE_ADD(format_env_register_objformat)
+OSYNC_TESTCASE_ADD(format_env_register_objformat_count)
+OSYNC_TESTCASE_ADD(format_env_objformat_find)
+OSYNC_TESTCASE_ADD(format_env_objformat_find_false)
 
-int main(void)
-{
-	int nf;
-	
-	Suite *s = format_env_suite();
-	
-	SRunner *sr;
-	sr = srunner_create(s);
+OSYNC_TESTCASE_ADD(format_env_register_converter)
+OSYNC_TESTCASE_ADD(format_env_register_converter_count)
+OSYNC_TESTCASE_ADD(format_env_converter_find)
+OSYNC_TESTCASE_ADD(format_env_converter_find_false)
 
-	srunner_run_all(sr, CK_VERBOSE);
-	nf = srunner_ntests_failed(sr);
-	srunner_free(sr);
-	return (nf == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-}
+OSYNC_TESTCASE_ADD(format_env_register_filter)
+OSYNC_TESTCASE_ADD(format_env_register_filter_count)
+
+OSYNC_TESTCASE_ADD(format_env_load_plugins)
+OSYNC_TESTCASE_ADD(format_env_plugin)
+OSYNC_TESTCASE_END
+
