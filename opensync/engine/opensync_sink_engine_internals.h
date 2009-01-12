@@ -87,10 +87,21 @@ osync_bool osync_sink_engine_demerge(OSyncSinkEngine *engine, OSyncArchive *arch
  * preferd/requested format (destination).
  *
  * @param engine Pointer to an OSyncSinkEngine which should convert 
- * @param archive Pointer to an OSyncFormatEnv for plugins to use
+ * @param formatenv Pointer to an OSyncFormatEnv for plugins to use
  * @param error Pointer to error struct, which get set on any error
  * @returns TRUE on success, FALSE otherwise
  */
 osync_bool osync_sink_engine_convert_to_dest(OSyncSinkEngine *engine, OSyncFormatEnv *formatenv, OSyncError **error);
+
+/*! @brief Write/commit all entries of OSyncSinkEngine to the client/peer
+ *
+ * This function writes/commits all entries of the OSyncSinkEngine to the member.
+ *
+ * @param engine Pointer to an OSyncSinkEngine which should write 
+ * @param archive Pointer to an OSyncArchive to update the mappings
+ * @param error Pointer to error struct, which get set on any error
+ * @returns TRUE on success, FALSE otherwise
+ */
+osync_bool osync_sink_engine_write(OSyncSinkEngine *engine, OSyncArchive *archive, OSyncError **error);
 
 #endif /*OPENSYNC_SINK_ENGINE_INTERNALS_H_*/

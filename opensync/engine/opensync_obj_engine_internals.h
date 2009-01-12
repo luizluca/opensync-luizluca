@@ -117,5 +117,39 @@ unsigned int osync_obj_engine_num_mapping_engines(OSyncObjEngine *engine);
  */
 osync_bool osync_obj_engine_prepare_write(OSyncObjEngine *engine, OSyncError **error);
 
+/*! @brief Start write/commit for OSyncObjEngine
+ *
+ * This function writes/commits the entries of all OSyncSinkEngine, which are
+ * related to the OSyncObjEngine
+ *
+ * @param engine Pointer to an OSyncObjEngine which should start writing 
+  @param error Pointer to error struct, which get set on any error
+ * @returns TRUE on success, FALSE otherwise
+ */
+osync_bool osync_obj_engine_write(OSyncObjEngine *engine, OSyncError **error);
+
+/*! @brief Commit Callback function for OSyncClientProxy 
+ *
+ * This is the commit callback function of the OSyncObjEngine gets called
+ * by OSyncClientProxy for each change which got committed.
+ *
+ * @param proxy Pointer to an OSyncClientProxy object
+ * @param userdata Pointer to user data, which got set in the commit-proxy call
+ * @param uid The UID of the commit
+ * @param error Pointer to error struct, which has an error set
+ */
+void osync_obj_engine_commit_change_callback(OSyncClientProxy *proxy, void *userdata, const char *uid, OSyncError *error);
+
+/*! @brief Written Callback function for OSyncClientProxy 
+ *
+ * This is the written callback function of the OSyncObjEngine gets called
+ * by OSyncClientProxy once all changes got committed.
+ *
+ * @param proxy Pointer to an OSyncClientProxy object
+ * @param userdata Pointer to user data, which got set in the written-proxy call
+ * @param error Pointer to error struct, which has an error set
+ */
+void osync_obj_engine_written_callback(OSyncClientProxy *proxy, void *userdata, OSyncError *error);
+
 #endif /* OPENSYNC_OBJ_ENGINE_INTERNALS_H_ */
 

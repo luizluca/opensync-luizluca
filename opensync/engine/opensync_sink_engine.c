@@ -31,7 +31,9 @@
 #include "opensync_obj_engine_internals.h"
 #include "opensync_sink_engine_internals.h"
 #include "opensync_mapping_entry_engine_internals.h"
+#include "opensync_mapping_engine_internals.h"
 
+#include "archive/opensync_archive_internals.h"
 #include "client/opensync_client_proxy_internals.h"
 #include "format/opensync_objformat_internals.h" /* osync_objformat_has_merger() */
 
@@ -213,6 +215,69 @@ error:
 	if (path)
 		osync_converter_path_unref(path);
 
+	return FALSE;
+}
+
+osync_bool osync_sink_engine_write(OSyncSinkEngine *engine, OSyncArchive *archive, OSyncError **error)
+{
+	OSyncList *o;
+	const char *objtype;
+	OSyncMember *member;
+
+	osync_assert(engine);
+	osync_assert(archive);
+
+	objtype = osync_obj_engine_get_objtype(engine->engine);
+	member = osync_client_proxy_get_member(engine->proxy);
+
+	for (o = engine->entries; o; o = o->next) {
+		OSyncMappingEntryEngine *entry_engine = o->data;
+		osync_assert(entry_engine);
+
+		if (osync_entry_engine_is_dirty(entry_engine)) {
+			OSyncChange *change = osync_entry_engine_get_change(entry_engine);
+			osync_assert(change);
+				
+			osync_trace(TRACE_INTERNAL, "Writing change %s, changetype %i, format %s , objtype %s from member %lli", 
+					osync_change_get_uid(change), 
+					osync_change_get_changetype(change), 
+					osync_objformat_get_name(osync_change_get_objformat(change)), 
+					osync_change_get_objtype(change), 
+					osync_member_get_id(member));
+
+			if (!osync_client_proxy_commit_change(engine->proxy, 
+						osync_obj_engine_commit_change_callback, 
+						entry_engine, change, error))
+				goto error;
+
+		} else if (entry_engine->change) {
+			OSyncMapping *mapping = entry_engine->mapping_engine->mapping;
+			OSyncMappingEntry *entry = entry_engine->entry;
+			
+			/* FIXME: Don't mix up in this function objtypes */
+			/* osync_assert_msg(!strcmp(objtype, osync_change_get_objtype(entry_engine->change), "Mixed-objtype in final write!")); */
+			const char *objtype = osync_change_get_objtype(entry_engine->change);
+				
+			if (osync_change_get_changetype(entry_engine->change) == OSYNC_CHANGE_TYPE_DELETED) {
+				if (!osync_archive_delete_change(archive, osync_mapping_entry_get_id(entry), objtype, error))
+					goto error;
+			} else {
+				if (!osync_archive_save_change(archive, 
+							osync_mapping_entry_get_id(entry),
+							osync_change_get_uid(entry_engine->change),
+							objtype, osync_mapping_get_id(mapping),
+							osync_member_get_id(member), error))
+					goto error;
+			}
+		}
+	}
+
+	if (!osync_client_proxy_committed_all(engine->proxy, osync_obj_engine_written_callback, engine, objtype, error))
+		goto error;
+
+	return TRUE;
+
+error:
 	return FALSE;
 }
 

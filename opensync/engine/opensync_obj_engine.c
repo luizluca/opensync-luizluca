@@ -477,7 +477,7 @@ static void _osync_obj_engine_generate_written_event(OSyncObjEngine *engine, OSy
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void _osync_obj_engine_commit_change_callback(OSyncClientProxy *proxy, void *userdata, const char *uid, OSyncError *error)
+void osync_obj_engine_commit_change_callback(OSyncClientProxy *proxy, void *userdata, const char *uid, OSyncError *error)
 {
 	OSyncMappingEntryEngine *entry_engine = userdata;
 	OSyncObjEngine *engine = entry_engine->objengine;
@@ -538,7 +538,7 @@ static void _osync_obj_engine_commit_change_callback(OSyncClientProxy *proxy, vo
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&error));
 }
 
-static void _osync_obj_engine_written_callback(OSyncClientProxy *proxy, void *userdata, OSyncError *error)
+void osync_obj_engine_written_callback(OSyncClientProxy *proxy, void *userdata, OSyncError *error)
 {
 	OSyncSinkEngine *sinkengine = userdata;
 	OSyncObjEngine *engine = sinkengine->engine;
@@ -1090,74 +1090,13 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 				
 		engine->written = TRUE;
 
+
 		osync_trace(TRACE_INTERNAL, "Starting to write");
-		for (p = engine->sink_engines; p; p = p->next) {
-			OSyncMember *member = NULL;
-			long long int memberid = 0;
-			OSyncObjTypeSink *objtype_sink = NULL;
-			OSyncCapabilities *caps;
+		if (!osync_obj_engine_write(engine, error))
+			goto error;
 
-			sinkengine = p->data;
+		/* TODO: Reviewe error handling here! */
 
-			/* FIXME: for "clean" mixed-objtype syncing - all peers should report
-			 * via their native OSyncObjEngine. This temp. solution uses not the
-			 * ObjTypeSink to write/commit changes. Later the "native" ObjEngine
-			 * should be used.
-			
-			 if (osync_sink_engine_is_dummy(sinkengine))
-				continue;
-			*/
-
-			member = osync_client_proxy_get_member(sinkengine->proxy);
-			memberid = osync_member_get_id(member);
-			caps = osync_member_get_capabilities(member); 
-			objtype_sink = osync_member_find_objtype_sink(member, engine->objtype);
-				
-			/* If sink could not be found use "data" sink if available */
-			/* TODO: Get rid of hardcoded-"data". Make this indepdendent of "data" */
-			if (!objtype_sink)
-				objtype_sink = osync_member_find_objtype_sink(member, "data");
-			/* TODO: Review if objtype_sink = NULL is valid at all. */
-
-			for (o = sinkengine->entries; o; o = o->next) {
-				OSyncMappingEntryEngine *entry_engine = o->data;
-				osync_assert(entry_engine);
-
-				/* Only commit change if the objtype sink is able/allowed to write. */
-				if (objtype_sink && osync_objtype_sink_get_write(objtype_sink) && osync_entry_engine_is_dirty(entry_engine)) {
-					OSyncChange *change = entry_engine->change;
-					osync_assert(entry_engine->change);
-						
-					osync_trace(TRACE_INTERNAL, "Writing change %s, changetype %i, format %s , objtype %s from member %lli", 
-											osync_change_get_uid(change), 
-											osync_change_get_changetype(change), 
-											osync_objformat_get_name(osync_change_get_objformat(change)), 
-											osync_change_get_objtype(change), 
-											osync_member_get_id(osync_client_proxy_get_member(sinkengine->proxy)));
-	
-					if (!osync_client_proxy_commit_change(sinkengine->proxy, _osync_obj_engine_commit_change_callback, entry_engine, osync_entry_engine_get_change(entry_engine), error))
-						goto error;
-				} else if (entry_engine->change) {
-					OSyncMapping *mapping = entry_engine->mapping_engine->mapping;
-					OSyncMember *member = osync_client_proxy_get_member(sinkengine->proxy);
-					OSyncMappingEntry *entry = entry_engine->entry;
-					const char *objtype = osync_change_get_objtype(entry_engine->change);
-						
-					if (engine->archive) {
-						if (osync_change_get_changetype(entry_engine->change) == OSYNC_CHANGE_TYPE_DELETED) {
-							if (!osync_archive_delete_change(engine->archive, osync_mapping_entry_get_id(entry), objtype, error))
-								goto error;
-						} else {
-							if (!osync_archive_save_change(engine->archive, osync_mapping_entry_get_id(entry), osync_change_get_uid(entry_engine->change), objtype, osync_mapping_get_id(mapping), osync_member_get_id(member), error))
-								goto error;
-						}
-					}
-				}
-			}
-		
-			if (!osync_client_proxy_committed_all(sinkengine->proxy, _osync_obj_engine_written_callback, sinkengine, engine->objtype, error))
-				goto error;
-		}
 		break;
 	case OSYNC_ENGINE_COMMAND_SYNC_DONE:
 		for (p = engine->sink_engines; p; p = p->next) {
@@ -1310,6 +1249,52 @@ osync_bool osync_obj_engine_prepare_write(OSyncObjEngine *engine, OSyncError **e
 			&& !osync_sink_engine_convert_to_dest(sinkengine, engine->formatenv, error))
 			goto error;
 
+	}
+
+	return TRUE;
+
+error:
+	return FALSE;
+}
+
+osync_bool osync_obj_engine_write(OSyncObjEngine *engine, OSyncError **error)
+{
+	GList *p;
+	OSyncMember *member;
+	OSyncObjTypeSink *objtype_sink;
+
+	osync_assert(engine);
+
+	for (p = engine->sink_engines; p; p = p->next) {
+		OSyncSinkEngine *sinkengine = p->data;
+
+		/* FIXME: for "clean" mixed-objtype syncing - all peers should report
+		 * via their native OSyncObjEngine. This temp. solution uses not the
+		 * ObjTypeSink to write/commit changes. Later the "native" ObjEngine
+		 * should be used.
+		
+		 if (osync_sink_engine_is_dummy(sinkengine))
+			continue;
+		*/
+
+		member = osync_client_proxy_get_member(sinkengine->proxy);
+		objtype_sink = osync_member_find_objtype_sink(member, engine->objtype);
+			
+
+
+		/* If sink could not be found use "data" sink if available */
+		/* TODO: Get rid of hardcoded-"data". Make this indepdendent of "data" */
+		if (!objtype_sink)
+			objtype_sink = osync_member_find_objtype_sink(member, "data");
+		/* TODO: Review if objtype_sink = NULL is valid at all. */
+		osync_assert(objtype_sink);
+
+		/* Only commit change if the objtype sink is able/allowed to write. */
+		if (!osync_objtype_sink_get_write(objtype_sink)) 
+			continue;
+
+		if (!osync_sink_engine_write(sinkengine, engine->archive, error))
+			goto error;
 	}
 
 	return TRUE;
