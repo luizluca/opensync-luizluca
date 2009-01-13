@@ -1129,7 +1129,9 @@ osync_bool osync_client_proxy_initialize(OSyncClientProxy *proxy, initialize_cb 
 	callContext *ctx = NULL;
 	int haspluginconfig = config ? TRUE : FALSE;
 	OSyncMessage *message = NULL;
-	long long int memberid = 0; 
+#ifdef OPENSYNC_UNITTESTS
+	long long int memberid = 0;
+#endif
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %s, %s, %s, %p, %p)", __func__, proxy, callback, userdata, formatdir, plugindir, plugin, groupname, configdir, config, error);
 	osync_assert(proxy);
