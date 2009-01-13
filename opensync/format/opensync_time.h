@@ -349,6 +349,14 @@ OSYNC_EXPORT int osync_time_str2wday(const char *swday);
  */ 
 OSYNC_EXPORT struct tm *osync_time_relative2tm(const char *byday, const int bymonth, const int year);
 
+#ifdef _WIN32
+/* Windows does not provide gmtime_r and localtime_r */
+/* This module uses these two functions internally   */
+/* They are also exported for testing purposes       */
+OSYNC_TEST_EXPORT inline struct tm* gmtime_r (const time_t *clock, struct tm *result);
+OSYNC_TEST_EXPORT inline struct tm* localtime_r (const time_t *clock, struct tm *result);
+#endif /* _WIN32 */
+
 /*@}*/
 
 #endif /*_OPENSYNC_TIME_H_*/
