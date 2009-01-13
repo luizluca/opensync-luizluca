@@ -222,6 +222,28 @@ START_TEST (xmlformat_schema_validate)
 }
 END_TEST
 
+/* Regression test for missing  child link  when unsing
+ * OSyncXMLField key getter/setter interface (#1021)
+ */
+START_TEST (xmlfield_childlink_for_getter_setter)
+{
+        char *testbed = setup_testbed(NULL);
+        OSyncError *error = NULL;
+
+	OSyncXMLFormat *xmlformat = osync_xmlformat_new("top", &error);
+
+        OSyncXMLField *foo = osync_xmlfield_new(xmlformat, "foo", &error);
+        osync_xmlfield_set_key_value(foo, "fookeyname1", "foorandomvalue");
+
+	fail_unless(osync_xmlfield_get_child(foo) != NULL);
+
+        osync_xmlformat_unref(xmlformat);
+
+        destroy_testbed(testbed);
+}
+END_TEST
+
+
 OSYNC_TESTCASE_START("xmlformat")
 // xmlformat
 OSYNC_TESTCASE_ADD(xmlformat_new)
@@ -234,5 +256,6 @@ OSYNC_TESTCASE_ADD(xmlformat_schema_validate)
 // xmlfield
 OSYNC_TESTCASE_ADD(xmlfield_new)
 OSYNC_TESTCASE_ADD(xmlfield_sort)
+OSYNC_TESTCASE_ADD(xmlfield_childlink_for_getter_setter)
 OSYNC_TESTCASE_END
 

@@ -370,6 +370,7 @@ OSYNC_TESTCASE(xmlformat xmlformat_search_field)
 OSYNC_TESTCASE(xmlformat xmlformat_schema_validate)
 OSYNC_TESTCASE(xmlformat xmlfield_new)
 OSYNC_TESTCASE(xmlformat xmlfield_sort)
+OSYNC_TESTCASE(xmlformat xmlfield_childlink_for_getter_setter)
 
 
 CONFIGURE_FILE( "${CMAKE_CURRENT_SOURCE_DIR}/CTestCustom.cmake"
