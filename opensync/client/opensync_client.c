@@ -567,7 +567,7 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 	OSyncQueue *outgoing = NULL;
 	OSyncList *r = NULL;
 	OSyncPluginResource *res = NULL;
-	OSyncObjTypeSink *sink = NULL;
+	OSyncObjTypeSink *sink = NULL, *main_sink = NULL;
 	const char *objtype = NULL;
 	const char *preferred_format = NULL;
 	OSyncList *o = NULL;
@@ -700,6 +700,14 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 		if (!osync_objtype_sink_load_anchor(sink, client->plugin_info, error)) {
 			goto error_finalize;
 		}
+	}
+
+	main_sink = osync_plugin_info_get_main_sink(client->plugin_info);
+	if (main_sink) {
+		if (!osync_objtype_sink_load_anchor(main_sink,
+					client->plugin_info, error))
+			goto error_finalize;
+
 	}
 
 	reply = osync_message_new_reply(message, error);
