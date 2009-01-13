@@ -25,7 +25,7 @@
 #include "opensync_plugin_advancedoptions_private.h"
 
 
-static int _list_string_compare(void *a, void *b)
+static int _list_string_compare(const void *a, const void *b)
 {
 	return strcmp((const char *) a, (const char *) b);
 }
@@ -134,10 +134,10 @@ void osync_plugin_advancedoption_unref(OSyncPluginAdvancedOption *option)
 	if (g_atomic_int_dec_and_test(&(option->ref_count))) {
 
 		if (option->displayname)
-			g_free(option->displayname);
+			osync_free(option->displayname);
 			
 		if (option->name)
-			g_free(option->name);
+			osync_free(option->name);
 
 		while (option->parameters) {
 			osync_plugin_advancedoption_param_unref(option->parameters->data);
@@ -145,14 +145,14 @@ void osync_plugin_advancedoption_unref(OSyncPluginAdvancedOption *option)
 		}
 
 		while (option->valenum) {
-			g_free(option->valenum->data);
+			osync_free(option->valenum->data);
 			option->valenum = osync_list_remove(option->valenum, option->valenum->data);
 		}
 
 		if (option->value)
-			g_free(option->value);
+			osync_free(option->value);
 
-		g_free(option);
+		osync_free(option);
 	}
 }
 
@@ -193,9 +193,9 @@ void osync_plugin_advancedoption_set_displayname(OSyncPluginAdvancedOption *opti
 {
 	osync_assert(option);
 	if (option->displayname)
-		g_free(option->displayname);
+		osync_free(option->displayname);
 
-	option->displayname = g_strdup(displayname);
+	option->displayname = osync_strdup(displayname);
 }
 
 unsigned int osync_plugin_advancedoption_get_maxoccurs(OSyncPluginAdvancedOption *option)
@@ -244,9 +244,9 @@ void osync_plugin_advancedoption_set_name(OSyncPluginAdvancedOption *option, con
 {
 	osync_assert(option);
 	if (option->name)
-		g_free(option->name);
+		osync_free(option->name);
 
-	option->name = g_strdup(name);
+	option->name = osync_strdup(name);
 
 }
 
@@ -285,7 +285,7 @@ void osync_plugin_advancedoption_add_valenum(OSyncPluginAdvancedOption *option, 
 	if (data)
 		return;
 
-	option->valenum = osync_list_prepend(option->valenum, g_strdup(value));
+	option->valenum = osync_list_prepend(option->valenum, osync_strdup(value));
 }
 
 void osync_plugin_advancedoption_remove_valenum(OSyncPluginAdvancedOption *option, const char *value)
@@ -298,7 +298,7 @@ void osync_plugin_advancedoption_remove_valenum(OSyncPluginAdvancedOption *optio
 	if (!data)
 		return;
 
-	g_free(data->data);
+	osync_free(data->data);
 	option->valenum = osync_list_remove(option->valenum, data->data);
 }
 
@@ -312,9 +312,9 @@ void osync_plugin_advancedoption_set_value(OSyncPluginAdvancedOption *option, co
 {
 	osync_assert(option);
 	if (option->value)
-		g_free(option->value);
+		osync_free(option->value);
 
-	option->value = g_strdup(value);
+	option->value = osync_strdup(value);
 }
 
 /* OSyncPluginAdvancedOptionParameter */
@@ -346,20 +346,20 @@ void osync_plugin_advancedoption_param_unref(OSyncPluginAdvancedOptionParameter 
 	if (g_atomic_int_dec_and_test(&(param->ref_count))) {
 
 		if (param->displayname)
-			g_free(param->displayname);
+			osync_free(param->displayname);
 			
 		if (param->name)
-			g_free(param->name);
+			osync_free(param->name);
 
 		if (param->value)
-			g_free(param->value);
+			osync_free(param->value);
 
 		while (param->valenum) {
-			g_free(param->valenum->data);
+			osync_free(param->valenum->data);
 			param->valenum = osync_list_remove(param->valenum, param->valenum->data);
 		}
 
-		g_free(param);
+		osync_free(param);
 	}
 }
 
@@ -375,9 +375,9 @@ void osync_plugin_advancedoption_param_set_displayname(OSyncPluginAdvancedOption
 	osync_return_if_fail(displayname);
 
 	if (param->displayname)
-		g_free(param->displayname);
+		osync_free(param->displayname);
 
-	param->displayname = g_strdup(displayname);
+	param->displayname = osync_strdup(displayname);
 }
 
 const char *osync_plugin_advancedoption_param_get_name(OSyncPluginAdvancedOptionParameter *param)
@@ -392,9 +392,9 @@ void osync_plugin_advancedoption_param_set_name(OSyncPluginAdvancedOptionParamet
 	osync_return_if_fail(name);
 
 	if (param->name)
-		g_free(param->name);
+		osync_free(param->name);
 
-	param->name = g_strdup(name);
+	param->name = osync_strdup(name);
 
 }
 
@@ -434,7 +434,7 @@ void osync_plugin_advancedoption_param_add_valenum(OSyncPluginAdvancedOptionPara
 	if (data)
 		return;
 
-	param->valenum = osync_list_prepend(param->valenum, g_strdup(value));
+	param->valenum = osync_list_prepend(param->valenum, osync_strdup(value));
 }
 
 void osync_plugin_advancedoption_param_remove_valenum(OSyncPluginAdvancedOptionParameter *param, const char *value)
@@ -448,7 +448,7 @@ void osync_plugin_advancedoption_param_remove_valenum(OSyncPluginAdvancedOptionP
 	if (!data)
 		return;
 
-	g_free(data->data);
+	osync_free(data->data);
 	param->valenum = osync_list_remove(param->valenum, data->data);
 }
 
@@ -462,9 +462,9 @@ void osync_plugin_advancedoption_param_set_value(OSyncPluginAdvancedOptionParame
 {
 	osync_return_if_fail(param);
 	if (param->value)
-		g_free(param->value);
+		osync_free(param->value);
 
-	param->value = g_strdup(value);
+	param->value = osync_strdup(value);
 
 }
 

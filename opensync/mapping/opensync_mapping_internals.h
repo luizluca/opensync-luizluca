@@ -40,7 +40,7 @@ struct OSyncMapping {
 	/** ID of the mapping */
 	long long int id;
 	/** list of entries */
-	GList *entries;
+	OSyncList *entries;
 };
 
 /*@}*/

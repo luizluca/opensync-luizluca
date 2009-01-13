@@ -116,7 +116,10 @@ OSYNC_EXPORT const char *osync_plugin_get_name(OSyncPlugin *plugin);
 
 /** @brief Sets the name of a plugin
  * 
- * Sets the name of a plugin. This is a short name (maybe < 15 chars).
+
+ * This name is mostly used for internal configuration and isn't visible to the
+ * user (at least not in rich OpenSync frontends). The name should be less then
+ * 15 characters and should be one word (no spaces).
  *
  * @param plugin Pointer to the plugin
  * @param name the name to set
@@ -135,7 +138,10 @@ OSYNC_EXPORT const char *osync_plugin_get_longname(OSyncPlugin *plugin);
 
 /** @brief Sets the long name of a plugin
  * 
- * Sets the long name of a plugin (maybe < 50 chars).
+ * The longname of the plugin is the name visible to a regular user to choose the
+ * correct plugin from a list of available plugins. Use the description field to
+ * describe the plugin in more detail. Don't include the term "Plugin" in the
+ * longname. Example: "Palm Device"
  *
  * @param plugin Pointer to the plugin
  * @param longname the long name to set
@@ -184,7 +190,10 @@ OSYNC_EXPORT const char *osync_plugin_get_description(OSyncPlugin *plugin);
 
 /** @brief Sets the description of a plugin
  * 
- * Sets a longer description for the plugin (maybe < 200 chars).
+ * The description should help the user to choose the correct plugin if there
+ * are several plugins with similar names. The description should probably be no
+ * more than 200 characters.  The term "Plugin" might confuse regular user,
+ * avoid it.
  *
  * @param plugin Pointer to the plugin
  * @param description the description to set

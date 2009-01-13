@@ -41,7 +41,7 @@ static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char 
 	char *filename = NULL;
 	OSyncModule *module = NULL;
 	const gchar *de = NULL;
-	GList *m = NULL;
+	OSyncList *m = NULL;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %s, %i, %p)", __func__, env, path, must_exist, error);
 	osync_assert(env);
@@ -66,10 +66,10 @@ static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char 
 	}
 	
 	while ((de = g_dir_read_name(dir))) {
-		filename = g_strdup_printf ("%s%c%s", path, G_DIR_SEPARATOR, de);
+		filename = osync_strdup_printf ("%s%c%s", path, G_DIR_SEPARATOR, de);
 		
 		if (!g_file_test(filename, G_FILE_TEST_IS_REGULAR) || !g_pattern_match_simple("*."G_MODULE_SUFFIX, filename)) {
-			g_free(filename);
+			osync_free(filename);
 			continue;
 		}
 		
@@ -80,7 +80,7 @@ static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char 
 		if (!osync_module_load(module, filename, error)) {
 			osync_trace(TRACE_INTERNAL, "Unable to load module %s: %s", filename, osync_error_print(error));
 			osync_module_unref(module);
-			g_free(filename);
+			osync_free(filename);
 			continue;
 		}
 		
@@ -89,7 +89,7 @@ static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char 
 				osync_trace(TRACE_INTERNAL, "Module check error for %s: %s", filename, osync_error_print(error));
 			}
 			osync_module_unref(module);
-			g_free(filename);
+			osync_free(filename);
 			continue;
 		}
 	
@@ -100,13 +100,13 @@ static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char 
 			osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to load format plugin %s. Neither a converter nor a format could be initialized.", __NULLSTR(filename));
 			osync_trace(TRACE_ERROR, "%s", osync_error_print(error));
 			osync_module_unref(module);
-			g_free(filename);
+			osync_free(filename);
 			continue;
 		}
 		
-		env->modules = g_list_append(env->modules, module);
+		env->modules = osync_list_append(env->modules, module);
 		
-		g_free(filename);
+		osync_free(filename);
 	}
 	
 	g_dir_close(dir);
@@ -124,7 +124,7 @@ static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char 
 	return TRUE;
 
  error_free_filename:
-	g_free(filename);
+	osync_free(filename);
 	g_dir_close(dir);
  error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
@@ -265,7 +265,7 @@ static osync_bool osync_format_converter_path_vertice_target_fn_simple(const voi
 static osync_bool osync_format_converter_tree_target_fn_format_sinks_reached_lastconverter(const void *data, OSyncFormatConverterTree *tree)
 {
 	OSyncList *f, *formats = (OSyncList *) data;
-	GList *c;
+	OSyncList *c;
 	OSyncFormatConverter *converter = NULL;
 	for (c = tree->unused; c; c = c->next) {
 		converter = c->data;
@@ -281,7 +281,7 @@ static osync_bool osync_format_converter_tree_target_fn_format_sinks_reached_las
 static osync_bool osync_format_converter_tree_target_fn_simple_reached_lastconverter(const void *data, OSyncFormatConverterTree *tree)
 {
 	OSyncObjFormat *target = (OSyncObjFormat *)data;
-	GList *c;
+	OSyncList *c;
 	OSyncFormatConverter *converter = NULL;
 	for (c = tree->unused; c; c = c->next) {
 		converter = c->data;
@@ -316,12 +316,12 @@ static void osync_format_converter_path_vertice_unref(OSyncFormatConverterPathVe
 		
 	if (g_atomic_int_dec_and_test(&(vertice->ref_count))) {
 
-		g_list_free(vertice->path);
+		osync_list_free(vertice->path);
 
 		if(vertice->data)
 			osync_data_unref(vertice->data);
 
-		g_free(vertice);
+		osync_free(vertice);
 	}
 }
 
@@ -389,7 +389,7 @@ static osync_bool osync_format_converter_path_vertice_validate_path_with_detecto
 
 static OSyncFormatConverterPathVertice *osync_format_converter_path_vertice_get_next_vertice_neighbour(OSyncFormatEnv *env, OSyncFormatConverterTree *tree, OSyncFormatConverterPathVertice *ve, OSyncError **error)
 {
-	GList *c = NULL;
+	OSyncList *c = NULL;
 	OSyncFormatConverter *converter = NULL;
 	OSyncObjFormat *fmt_target = NULL;
 	OSyncFormatConverterPathVertice *neigh = NULL;
@@ -418,7 +418,7 @@ static OSyncFormatConverterPathVertice *osync_format_converter_path_vertice_get_
 			continue;
 
 		/* Remove the converter from the unused list */
-		tree->unused = g_list_remove(tree->unused, converter);
+		tree->unused = osync_list_remove(tree->unused, converter);
 
 		/* Allocate the new neighbour */
 		neigh = osync_format_converter_path_vertice_new(error);
@@ -426,8 +426,8 @@ static OSyncFormatConverterPathVertice *osync_format_converter_path_vertice_get_
 			goto error;
 		
 		neigh->format = fmt_target;
-		neigh->path = g_list_copy(ve->path);
-		neigh->path = g_list_append(neigh->path, converter);
+		neigh->path = osync_list_copy(ve->path);
+		neigh->path = osync_list_append(neigh->path, converter);
 	
 		/* Distance calculation */
 		neigh->conversions = ve->conversions + 1;
@@ -461,11 +461,11 @@ static OSyncFormatConverterPathVertice *osync_format_converter_path_vertice_get_
 static void osync_converter_tree_free(OSyncFormatConverterTree *tree)
 {
 	/* Remove the remaining references on the search queue */
-	g_list_foreach(tree->search, (GFunc)osync_format_converter_path_vertice_unref, NULL);
+	osync_list_foreach(tree->search, (GFunc)osync_format_converter_path_vertice_unref, NULL);
 	
-	g_list_free(tree->unused);
-	g_list_free(tree->search);
-	g_free(tree);
+	osync_list_free(tree->unused);
+	osync_list_free(tree->search);
+	osync_free(tree);
 }
 
 static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *env, OSyncData *sourcedata, OSyncPathTargetFn target_fn, OSyncTargetLastConverterFn last_converter_fn, const void *fndata, const char * preferred_format, OSyncError **error)
@@ -475,7 +475,7 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 	OSyncFormatConverterPathVertice *begin = NULL;
 	OSyncFormatConverterPathVertice *result = NULL;
 	OSyncFormatConverterPathVertice *neighbour = NULL;
-	GList *e, *v;
+	OSyncList *e, *v;
 	guint vertice_id = 0;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %p)", __func__, env, sourcedata, target_fn, fndata, error);
@@ -500,7 +500,7 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 	tree = osync_try_malloc0(sizeof(OSyncFormatConverterTree), error);
 	if (!tree)
 		goto error;
-	tree->unused = g_list_copy(env->converters);
+	tree->unused = osync_list_copy(env->converters);
 	
 	/* We make our starting point (which is the current format of the 
 	 * change of course */
@@ -513,14 +513,14 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 	begin->id = vertice_id;
 	begin->neighbour_id = 0;
 	
-	tree->search = g_list_append(NULL, begin);
+	tree->search = osync_list_append(NULL, begin);
 	
 	/* While there are still vertices in our
 	 * search queue */
-	while (g_list_length(tree->search)) {
+	while (osync_list_length(tree->search)) {
 		/* log current tree search list */
 		GString *string = g_string_new("");
-		guint size = g_list_length(tree->search);
+		guint size = osync_list_length(tree->search);
 		guint count = 0;
 		guint neighbour_id = 0;
 		OSyncFormatConverterPathVertice *current = NULL;
@@ -528,7 +528,7 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 		for (v = tree->search; v; v = v->next) {
 			OSyncFormatConverterPathVertice *vertice = v->data;
 			GString *string2 = g_string_new("");
-			guint size2 = g_list_length(vertice->path);
+			guint size2 = osync_list_length(vertice->path);
 			guint count2 = 0;
 			count ++;
 			for (e = vertice->path; e; e = e->next) {
@@ -558,11 +558,11 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 		/* Get the first OSyncFormatConverterPathVertice from the search queue
 		 * and remove it from the queue */
 		current = tree->search->data;
-		tree->search = g_list_remove(tree->search, current);
+		tree->search = osync_list_remove(tree->search, current);
 		
 		/* log current OSyncFormatConverterPathVertice */
 		string = g_string_new("");
-		size = g_list_length(current->path);
+		size = osync_list_length(current->path);
 		count = 0;
 		for (e = current->path; e; e = e->next) {
 			OSyncFormatConverter *edge = e->data;
@@ -602,7 +602,7 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 		if (result) {
 			if (result->losses <= current->losses && result->objtype_changes <= current->objtype_changes && result->conversions <= current->conversions) {
 				osync_trace(TRACE_INTERNAL, "Target %s found in queue", osync_objformat_get_name(result->format));
-				tree->search = g_list_remove(tree->search, result);
+				tree->search = osync_list_remove(tree->search, result);
 				break;
 			} else {
 				result = NULL;
@@ -632,9 +632,9 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 
 		/* Find all the neighboors or "current" at its current conversion point */
 		while ((neighbour = osync_format_converter_path_vertice_get_next_vertice_neighbour(env, tree, current, error))) {
-			GString *string = g_string_new("");
-			guint size = g_list_length(neighbour->path);
-			guint count = 0;
+			GString *string2 = g_string_new("");
+			guint size2 = osync_list_length(neighbour->path);
+			guint count2 = 0;
 
 			neighbour->id = vertice_id;
 			neighbour_id++;
@@ -649,22 +649,22 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 			/* log neighbour to be added to the tree search list */
 			for (e = neighbour->path; e; e = e->next) {
 				OSyncFormatConverter *edge = e->data;
-				count ++;
-				if (count == 1) {
-					g_string_append(string, osync_objformat_get_name(osync_converter_get_sourceformat(edge)));
-					g_string_append(string, " -> ");
+				count2 ++;
+				if (count2 == 1) {
+					g_string_append(string2, osync_objformat_get_name(osync_converter_get_sourceformat(edge)));
+					g_string_append(string2, " -> ");
 				}
-				g_string_append(string, osync_objformat_get_name(osync_converter_get_targetformat(edge)));
-				if (size > 1 && count < size)
-					g_string_append(string, " -> ");
+				g_string_append(string2, osync_objformat_get_name(osync_converter_get_targetformat(edge)));
+				if (size2 > 1 && count2 < size2)
+					g_string_append(string2, " -> ");
 			}
-			osync_trace(TRACE_INTERNAL, "%s's neighbour : %s (%s)", osync_objformat_get_name(current->format), osync_objformat_get_name(neighbour->format), string->str);
-			g_string_free(string, TRUE);
+			osync_trace(TRACE_INTERNAL, "%s's neighbour : %s (%s)", osync_objformat_get_name(current->format), osync_objformat_get_name(neighbour->format), string2->str);
+			g_string_free(string2, TRUE);
 
 			/* We found a neighbour and insert it sorted in our search queue 
 				 If vertices are equals in losses, objtypes and conversions, first registered is inserted before the others 
 				 in the same OSyncFormatConverterPathVertice group (vertice_id) */
-			tree->search = g_list_insert_sorted(tree->search, neighbour, osync_format_converter_path_vertice_compare_distance); 
+			tree->search = osync_list_insert_sorted(tree->search, neighbour, osync_format_converter_path_vertice_compare_distance); 
 
 			/* Optimization:
 			 * We found a possible target. Save it. */
@@ -754,7 +754,7 @@ void osync_format_env_unref(OSyncFormatEnv *env)
 		while (env->objformats) {
 			osync_trace(TRACE_INTERNAL, "FORMAT: %s", osync_objformat_get_name(env->objformats->data));
 			osync_objformat_unref(env->objformats->data);
-			env->objformats = g_list_remove(env->objformats, env->objformats->data);
+			env->objformats = osync_list_remove(env->objformats, env->objformats->data);
 		}
 	
 		osync_format_env_converter_finalize(env);
@@ -762,19 +762,19 @@ void osync_format_env_unref(OSyncFormatEnv *env)
 		/* Free the converters */
 		while (env->converters) {
 			osync_converter_unref(env->converters->data);
-			env->converters = g_list_remove(env->converters, env->converters->data);
+			env->converters = osync_list_remove(env->converters, env->converters->data);
 		}
 	
 		/* Free the filters */
 		while (env->custom_filters) {
 			osync_custom_filter_unref(env->custom_filters->data);
-			env->custom_filters = g_list_remove(env->custom_filters, env->custom_filters->data);
+			env->custom_filters = osync_list_remove(env->custom_filters, env->custom_filters->data);
 		}
 	
 		/* Free the modules */
 		while (env->modules) {
 			osync_module_unref(env->modules->data);
-			env->modules = g_list_remove(env->modules, env->modules->data);
+			env->modules = osync_list_remove(env->modules, env->modules->data);
 		}
 	
 		osync_free(env);
@@ -814,13 +814,13 @@ void osync_format_env_register_objformat(OSyncFormatEnv *env, OSyncObjFormat *fo
 	osync_assert(env);
 	osync_assert(format);
 	
-	env->objformats = g_list_append(env->objformats, format);
+	env->objformats = osync_list_append(env->objformats, format);
 	osync_objformat_ref(format);
 }
 
 OSyncObjFormat *osync_format_env_find_objformat(OSyncFormatEnv *env, const char *name)
 {
-	GList *element = NULL;
+	OSyncList *element = NULL;
 	
 	osync_assert(env);
 
@@ -838,13 +838,13 @@ OSyncObjFormat *osync_format_env_find_objformat(OSyncFormatEnv *env, const char 
 int osync_format_env_num_objformats(OSyncFormatEnv *env)
 {
 	osync_assert(env);
-	return g_list_length(env->objformats);
+	return osync_list_length(env->objformats);
 }
 
 OSyncObjFormat *osync_format_env_nth_objformat(OSyncFormatEnv *env, int nth)
 {
 	osync_assert(env);
-	return g_list_nth_data(env->objformats, nth);
+	return osync_list_nth_data(env->objformats, nth);
 }
 
 void osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConverter *converter)
@@ -860,16 +860,16 @@ void osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConvert
 		if (!conv)
 			return;
 	
-		env->converters = g_list_append(env->converters, conv);
+		env->converters = osync_list_append(env->converters, conv);
 	}
 	
-	env->converters = g_list_append(env->converters, converter);
+	env->converters = osync_list_append(env->converters, converter);
 	osync_converter_ref(converter);
 }
 
 OSyncFormatConverter *osync_format_env_find_converter(OSyncFormatEnv *env, OSyncObjFormat *sourceformat, OSyncObjFormat *targetformat)
 {
-	GList *c = NULL;
+	OSyncList *c = NULL;
 	
 	osync_assert(env);
 	osync_assert(sourceformat);
@@ -892,7 +892,7 @@ OSyncFormatConverter *osync_format_env_find_converter(OSyncFormatEnv *env, OSync
 OSyncList *osync_format_env_find_converters(OSyncFormatEnv *env, OSyncObjFormat *sourceformat, OSyncObjFormat *targetformat)
 {
 	OSyncList *r = NULL;
-	GList *c = NULL;
+	OSyncList *c = NULL;
 
 	osync_assert(env);
 	osync_assert(sourceformat);
@@ -915,13 +915,13 @@ OSyncList *osync_format_env_find_converters(OSyncFormatEnv *env, OSyncObjFormat 
 int osync_format_env_num_converters(OSyncFormatEnv *env)
 {
 	osync_assert(env);
-	return g_list_length(env->converters);
+	return osync_list_length(env->converters);
 }
 
 OSyncFormatConverter *osync_format_env_nth_converter(OSyncFormatEnv *env, int nth)
 {
 	osync_assert(env);
-	return g_list_nth_data(env->converters, nth);
+	return osync_list_nth_data(env->converters, nth);
 }
 
 void osync_format_env_register_filter(OSyncFormatEnv *env, OSyncCustomFilter *filter)
@@ -929,25 +929,25 @@ void osync_format_env_register_filter(OSyncFormatEnv *env, OSyncCustomFilter *fi
 	osync_assert(env);
 	osync_assert(filter);
 	
-	env->custom_filters = g_list_append(env->custom_filters, filter);
+	env->custom_filters = osync_list_append(env->custom_filters, filter);
 	osync_custom_filter_ref(filter);
 }
 
 int osync_format_env_num_filters(OSyncFormatEnv *env)
 {
 	osync_assert(env);
-	return g_list_length(env->custom_filters);
+	return osync_list_length(env->custom_filters);
 }
 
 OSyncCustomFilter *osync_format_env_nth_filter(OSyncFormatEnv *env, int nth)
 {
 	osync_assert(env);
-	return g_list_nth_data(env->custom_filters, nth);
+	return osync_list_nth_data(env->custom_filters, nth);
 }
 
 OSyncObjFormat *osync_format_env_detect_objformat(OSyncFormatEnv *env, OSyncData *data)
 {
-	GList *d = NULL;
+	OSyncList *d = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, env, data);
 	
 	/* Run all datadetectors for our source type */
@@ -972,7 +972,7 @@ OSyncObjFormat *osync_format_env_detect_objformat_full(OSyncFormatEnv *env, OSyn
 {
 	OSyncObjFormat *detected_format = NULL;
 	OSyncData *new_data = NULL;
-	GList *d = NULL;
+	OSyncList *d = NULL;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, env, input, error);
 	

@@ -260,17 +260,17 @@ OSyncCapabilities *osync_capabilities_load(const char *file, OSyncError **error)
 	osync_trace(TRACE_ENTRY, "%s(%s, %p)", __func__, file, error);
 	osync_assert(file);
 	
-	filename = g_strdup_printf("%s%c%s", OPENSYNC_CAPABILITIESDIR, G_DIR_SEPARATOR, file);
+	filename = osync_strdup_printf("%s%c%s", OPENSYNC_CAPABILITIESDIR, G_DIR_SEPARATOR, file);
 	
 	b = osync_file_read(filename, &buffer, &size, error);
-	g_free(filename);
+	osync_free(filename);
 	if(!b) {
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
 		return NULL;
 	}
 	
 	capabilities = osync_capabilities_parse(buffer, size, error);
-	g_free(buffer);
+	osync_free(buffer);
 	if(!capabilities) {
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
 		return NULL;
@@ -288,9 +288,9 @@ osync_bool osync_capabilities_member_has_capabilities(OSyncMember *member)
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, member);
 	osync_assert(member);
 	
-	filename = g_strdup_printf("%s%ccapabilities.xml", osync_member_get_configdir(member), G_DIR_SEPARATOR);
+	filename = osync_strdup_printf("%s%ccapabilities.xml", osync_member_get_configdir(member), G_DIR_SEPARATOR);
 	res = g_file_test(filename, G_FILE_TEST_IS_REGULAR);
-	g_free(filename);
+	osync_free(filename);
 	
 	osync_trace(TRACE_EXIT, "%s: %i", __func__, res);
 	return res;
@@ -306,9 +306,9 @@ OSyncCapabilities* osync_capabilities_member_get_capabilities(OSyncMember *membe
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, member, error);
 	osync_assert(member);
 	
-	filename = g_strdup_printf("%s%ccapabilities.xml", osync_member_get_configdir(member), G_DIR_SEPARATOR);
+	filename = osync_strdup_printf("%s%ccapabilities.xml", osync_member_get_configdir(member), G_DIR_SEPARATOR);
 	res = osync_file_read(filename, &buffer, &size, error);
-	g_free(filename);
+	osync_free(filename);
 	
 	if(!res) {
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
@@ -316,7 +316,7 @@ OSyncCapabilities* osync_capabilities_member_get_capabilities(OSyncMember *membe
 	}
 	
 	capabilities = osync_capabilities_parse(buffer, size, error);
-	g_free(buffer);
+	osync_free(buffer);
 	if(!capabilities) {
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
 		return NULL;
@@ -340,10 +340,10 @@ osync_bool osync_capabilities_member_set_capabilities(OSyncMember *member, OSync
 	osync_assert(capabilities);
 	
 	osync_capabilities_assemble(capabilities, &buffer, &size);
-	filename = g_strdup_printf("%s%ccapabilities.xml", osync_member_get_configdir(member), G_DIR_SEPARATOR);
+	filename = osync_strdup_printf("%s%ccapabilities.xml", osync_member_get_configdir(member), G_DIR_SEPARATOR);
 	res = osync_file_write(filename, buffer, size, 0600, error);
-	g_free(filename);
-	g_free(buffer);
+	osync_free(filename);
+	osync_free(buffer);
 	if(!res) {
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
 		return FALSE;

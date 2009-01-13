@@ -116,7 +116,7 @@ static int _osync_engine_get_proxy_position(OSyncEngine *engine, OSyncClientProx
 	osync_assert(engine);
 	osync_assert(proxy);
 
-	ret = g_list_index(engine->proxies, proxy);
+	ret = osync_list_index(engine->proxies, proxy);
 
 	osync_assert(ret >= 0);
 
@@ -137,7 +137,7 @@ static int _osync_engine_get_objengine_position(OSyncEngine *engine, OSyncObjEng
 	osync_assert(engine);
 	osync_assert(objengine);
 
-	ret = g_list_index(engine->object_engines, objengine);
+	ret = osync_list_index(engine->object_engines, objengine);
 
 	osync_assert(ret >= 0);
 
@@ -150,7 +150,7 @@ static void _osync_engine_set_internal_format(OSyncEngine *engine, const char *o
 		return;
 
 	osync_trace(TRACE_INTERNAL, "Setting internal format of %s to %p:%s", objtype, format, osync_objformat_get_name(format));
-	g_hash_table_insert(engine->internalFormats, g_strdup(objtype), g_strdup(osync_objformat_get_name(format)));
+	g_hash_table_insert(engine->internalFormats, osync_strdup(objtype), osync_strdup(osync_objformat_get_name(format)));
 }
 
 static OSyncFormatConverterPath *_osync_engine_get_converter_path(OSyncEngine *engine, const char *member_objtype)
@@ -164,7 +164,7 @@ static void _osync_engine_set_converter_path(OSyncEngine *engine, const char *me
 	osync_trace(TRACE_INTERNAL, "Setting converter_path of %s to %p", member_objtype, converter_path);
 	if (!converter_path)
 		return;
-	g_hash_table_insert(engine->converterPathes, g_strdup(member_objtype), converter_path);
+	g_hash_table_insert(engine->converterPathes, osync_strdup(member_objtype), converter_path);
 }
 
 static void _osync_engine_converter_path_unref(gpointer data) {
@@ -213,7 +213,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 		objtype = osync_objformat_get_objtype(detected_format);
 	}
 	
-	member_objtype = g_strdup_printf("%lli_%s", memberid, objtype); 
+	member_objtype = osync_strdup_printf("%lli_%s", memberid, objtype); 
 
 	/* Convert the format to the internal format */
 	internalFormat = _osync_engine_get_internal_format(engine, objtype);
@@ -311,7 +311,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 		}
 	
 	/* Search for the correct objengine */
-	{GList * o = NULL;
+	{OSyncList * o = NULL;
 		for (o = engine->object_engines; o; o = o->next) {
 			OSyncObjEngine *objengine = o->data;
 			if (!strcmp(osync_change_get_objtype(change), osync_obj_engine_get_objtype(objengine))) {
@@ -327,13 +327,13 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 		goto error;
 	}
 
-	g_free(member_objtype);
+	osync_free(member_objtype);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return;
 
  error:
-	g_free(member_objtype);
+	osync_free(member_objtype);
 	
 	osync_engine_set_error(engine, error);
 	osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_ERROR, NULL, error);
@@ -354,7 +354,7 @@ static gboolean _command_dispatch(GSource *source, GSourceFunc callback, gpointe
 		osync_trace(TRACE_INTERNAL, "Dispatching %p: %i", command, command->cmd);
 		
 		osync_engine_command(engine, command);
-		g_free(command);
+		osync_free(command);
 	}
 	
 	osync_trace(TRACE_EXIT, "%s: Done dispatching", __func__);
@@ -463,9 +463,9 @@ OSyncEngine *osync_engine_new(OSyncGroup *group, OSyncError **error)
 	if (!g_thread_supported ())
 		g_thread_init (NULL);
 	
-	engine->internalFormats = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, g_free);
-	engine->internalSchemas = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, NULL);
-	engine->converterPathes = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, _osync_engine_converter_path_unref);
+	engine->internalFormats = g_hash_table_new_full(g_str_hash, g_str_equal, osync_free, osync_free);
+	engine->internalSchemas = g_hash_table_new_full(g_str_hash, g_str_equal, osync_free, NULL);
+	engine->converterPathes = g_hash_table_new_full(g_str_hash, g_str_equal, osync_free, _osync_engine_converter_path_unref);
 	
 	engine->context = g_main_context_new();
 	engine->thread = osync_thread_new(engine->context, error);
@@ -480,15 +480,17 @@ OSyncEngine *osync_engine_new(OSyncGroup *group, OSyncError **error)
 	if (!osync_group_get_configdir(group)) {
 		osync_trace(TRACE_INTERNAL, "No config dir found. Making stateless sync");
 	} else {
-		char *filename = g_strdup_printf("%s%carchive.db", osync_group_get_configdir(group), G_DIR_SEPARATOR);
+		char *filename = osync_strdup_printf("%s%carchive.db", osync_group_get_configdir(group), G_DIR_SEPARATOR);
 		engine->archive = osync_archive_new(filename, error);
-		g_free(filename);
+		osync_free(filename);
 		if (!engine->archive)
 			goto error_free_engine;
 	}
 	
 	/* Now we attach a queue to the engine which handles our commands */
-	engine->command_functions = g_malloc0(sizeof(GSourceFuncs));
+	engine->command_functions = osync_try_malloc0(sizeof(GSourceFuncs), error);
+	if (!engine->command_functions)
+		goto error_free_engine;
 	engine->command_functions->prepare = _command_prepare;
 	engine->command_functions->check = _command_check;
 	engine->command_functions->dispatch = _command_dispatch;
@@ -505,15 +507,15 @@ OSyncEngine *osync_engine_new(OSyncGroup *group, OSyncError **error)
 	g_source_attach(engine->command_source, engine->context);
 	g_main_context_ref(engine->context);
 
-	enginesdir = g_strdup_printf("%s%cengines", osync_group_get_configdir(group), G_DIR_SEPARATOR);
-	engine->engine_path = g_strdup_printf("%s%cenginepipe", enginesdir, G_DIR_SEPARATOR);
+	enginesdir = osync_strdup_printf("%s%cengines", osync_group_get_configdir(group), G_DIR_SEPARATOR);
+	engine->engine_path = osync_strdup_printf("%s%cenginepipe", enginesdir, G_DIR_SEPARATOR);
 	
 	if (g_mkdir_with_parents(enginesdir, 0755) < 0) {
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "Couldn't create engines directory: %s", g_strerror(errno));
-		g_free(enginesdir);
+		osync_free(enginesdir);
 		goto error_free_engine;
 	}
-	g_free(enginesdir);
+	osync_free(enginesdir);
 	
 	engine->syncing_mutex = g_mutex_new();
 	engine->syncing = g_cond_new();
@@ -550,7 +552,7 @@ void osync_engine_unref(OSyncEngine *engine)
 		while (engine->object_engines) {
 			OSyncObjEngine *objengine = engine->object_engines->data;
 			osync_obj_engine_unref(objengine);
-			engine->object_engines = g_list_remove(engine->object_engines, engine->object_engines->data);
+			engine->object_engines = osync_list_remove(engine->object_engines, engine->object_engines->data);
 		}
 
 		if (engine->internalFormats)
@@ -563,13 +565,13 @@ void osync_engine_unref(OSyncEngine *engine)
 			osync_group_unref(engine->group);
 		
 		if (engine->engine_path)
-			g_free(engine->engine_path);
+			osync_free(engine->engine_path);
 			
 		if (engine->plugin_dir)
-			g_free(engine->plugin_dir);
+			osync_free(engine->plugin_dir);
 			
 		if (engine->format_dir)
-			g_free(engine->format_dir);
+			osync_free(engine->format_dir);
 		
 		if (engine->thread)
 			osync_thread_unref(engine->thread);
@@ -596,7 +598,7 @@ void osync_engine_unref(OSyncEngine *engine)
 			g_source_unref(engine->command_source);
 	
 		if (engine->command_functions)
-			g_free(engine->command_functions);
+			osync_free(engine->command_functions);
 	
 		if (engine->archive)
 			osync_archive_unref(engine->archive);
@@ -609,10 +611,10 @@ void osync_engine_unref(OSyncEngine *engine)
 
 #ifdef OPENSYNC_UNITTESTS
 		if (engine->schema_dir)
-			g_free(engine->schema_dir);
+			osync_free(engine->schema_dir);
 #endif /* OPENSYNC_UNITTESTS */
 		
-		g_free(engine);
+		osync_free(engine);
 		osync_trace(TRACE_EXIT, "%s", __func__);
 	}
 }
@@ -621,8 +623,8 @@ void osync_engine_set_plugindir(OSyncEngine *engine, const char *dir)
 {
 	osync_assert(engine);
 	if (engine->plugin_dir)
-		g_free(engine->plugin_dir);
-	engine->plugin_dir = g_strdup(dir);
+		osync_free(engine->plugin_dir);
+	engine->plugin_dir = osync_strdup(dir);
 }
 
 OSyncGroup *osync_engine_get_group(OSyncEngine *engine)
@@ -641,8 +643,8 @@ void osync_engine_set_formatdir(OSyncEngine *engine, const char *dir)
 {
 	osync_assert(engine);
 	if (engine->format_dir)
-		g_free(engine->format_dir);
-	engine->format_dir = g_strdup(dir);
+		osync_free(engine->format_dir);
+	engine->format_dir = osync_strdup(dir);
 }
 
 static osync_bool _osync_engine_start(OSyncEngine *engine, OSyncError **error)
@@ -700,7 +702,7 @@ static osync_bool _osync_engine_finalize_member(OSyncEngine *engine, OSyncClient
 	if (!osync_client_proxy_shutdown(proxy, error))
 		goto error;
 	
-	engine->proxies = g_list_remove(engine->proxies, proxy);
+	engine->proxies = osync_list_remove(engine->proxies, proxy);
 	
 	osync_client_proxy_unref(proxy);
 	
@@ -767,7 +769,7 @@ static OSyncClientProxy *_osync_engine_initialize_member(OSyncEngine *engine, OS
 	//FIXME
 	while (engine->busy) { g_usleep(100); }
 	
-	engine->proxies = g_list_append(engine->proxies, proxy);
+	engine->proxies = osync_list_append(engine->proxies, proxy);
 	
 	if (engine->error) {
 		_osync_engine_finalize_member(engine, proxy, NULL);
@@ -794,11 +796,11 @@ static osync_bool _osync_engine_generate_connected_event(OSyncEngine *engine)
 {
 	OSyncError *locerror = NULL;
 
-	if (osync_bitcount(engine->proxy_errors | engine->proxy_connects) != g_list_length(engine->proxies))
+	if (osync_bitcount(engine->proxy_errors | engine->proxy_connects) != osync_list_length(engine->proxies))
 		return FALSE;
 	
-	if (osync_bitcount(engine->obj_errors | engine->obj_connects) == g_list_length(engine->object_engines)) {
-		if (osync_bitcount(engine->obj_errors) == g_list_length(engine->object_engines)) {
+	if (osync_bitcount(engine->obj_errors | engine->obj_connects) == osync_list_length(engine->object_engines)) {
+		if (osync_bitcount(engine->obj_errors) == osync_list_length(engine->object_engines)) {
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "No objtypes left without error. Aborting");
 			osync_trace(TRACE_ERROR, "%s", osync_error_print(&locerror));
 			osync_engine_set_error(engine, locerror);
@@ -825,10 +827,10 @@ static osync_bool _osync_engine_generate_connected_event(OSyncEngine *engine)
 
 static void _osync_engine_generate_connect_done_event(OSyncEngine *engine)
 {
-	if (osync_bitcount(engine->proxy_errors | engine->proxy_connect_done) != g_list_length(engine->proxies))
+	if (osync_bitcount(engine->proxy_errors | engine->proxy_connect_done) != osync_list_length(engine->proxies))
 		return;
 	
-	if (osync_bitcount(engine->obj_errors | engine->obj_connect_done) == g_list_length(engine->object_engines)) {
+	if (osync_bitcount(engine->obj_errors | engine->obj_connect_done) == osync_list_length(engine->object_engines)) {
 		if (osync_bitcount(engine->obj_errors)) {
 			OSyncError *locerror = NULL;
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed within connect_done. Aborting");
@@ -845,12 +847,12 @@ static void _osync_engine_generate_connect_done_event(OSyncEngine *engine)
 
 osync_bool osync_engine_check_get_changes(OSyncEngine *engine)
 {
-	if (osync_bitcount(engine->proxy_errors | engine->proxy_get_changes) != g_list_length(engine->proxies)) {
-		osync_trace(TRACE_INTERNAL, "Not yet. main sinks still need to read: %i", osync_bitcount(engine->proxy_errors | engine->proxy_get_changes), g_list_length(engine->proxies));
+	if (osync_bitcount(engine->proxy_errors | engine->proxy_get_changes) != osync_list_length(engine->proxies)) {
+		osync_trace(TRACE_INTERNAL, "Not yet. main sinks still need to read: %i", osync_bitcount(engine->proxy_errors | engine->proxy_get_changes), osync_list_length(engine->proxies));
 		return FALSE;
 	}
 	
-	if (osync_bitcount(engine->obj_errors | engine->obj_get_changes) == g_list_length(engine->object_engines))
+	if (osync_bitcount(engine->obj_errors | engine->obj_get_changes) == osync_list_length(engine->object_engines))
 		return TRUE;
 		
 	osync_trace(TRACE_INTERNAL, "Not yet. Obj Engines still need to read: %i", osync_bitcount(engine->obj_errors | engine->obj_get_changes));
@@ -879,7 +881,7 @@ static void _osync_engine_generate_get_changes_event(OSyncEngine *engine)
 static void _osync_engine_generate_prepared_map(OSyncEngine *engine)
 {
 
-	if (osync_bitcount(engine->obj_errors | engine->obj_prepared_map) == g_list_length(engine->object_engines)) {
+	if (osync_bitcount(engine->obj_errors | engine->obj_prepared_map) == osync_list_length(engine->object_engines)) {
 		if (osync_bitcount(engine->obj_errors)) {
 			OSyncError *locerror = NULL;
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed while preparing for mapping the changes. Aborting");
@@ -901,7 +903,7 @@ static void _osync_engine_generate_prepared_map(OSyncEngine *engine)
 static void _osync_engine_generate_mapped_event(OSyncEngine *engine)
 {
 
-	if (osync_bitcount(engine->obj_errors | engine->obj_mapped) == g_list_length(engine->object_engines)) {
+	if (osync_bitcount(engine->obj_errors | engine->obj_mapped) == osync_list_length(engine->object_engines)) {
 		if (osync_bitcount(engine->obj_errors)) {
 			OSyncError *locerror = NULL;
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed while mapping changes. Aborting");
@@ -925,7 +927,7 @@ static void _osync_engine_generate_mapped_event(OSyncEngine *engine)
 static void _osync_engine_generate_end_conflicts_event(OSyncEngine *engine)
 {
 
-	if (osync_bitcount(engine->obj_errors | engine->obj_solved) == g_list_length(engine->object_engines)) {
+	if (osync_bitcount(engine->obj_errors | engine->obj_solved) == osync_list_length(engine->object_engines)) {
 		if (osync_bitcount(engine->obj_errors)) {
 			OSyncError *locerror = NULL;
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed while solving conflicts. Aborting");
@@ -948,7 +950,7 @@ static void _osync_engine_generate_end_conflicts_event(OSyncEngine *engine)
 
 void osync_engine_trace_multiply_summary(OSyncEngine *engine)
 {
-	GList *o, *s;
+	OSyncList *o, *s;
 	OSyncList *e;
 	unsigned int added, modified, deleted, unmodified, unknown;
 	long long int memberid;
@@ -1010,7 +1012,7 @@ void osync_engine_trace_multiply_summary(OSyncEngine *engine)
 static void _osync_engine_generate_multiplied_event(OSyncEngine *engine)
 {
 
-	if (osync_bitcount(engine->obj_errors | engine->obj_multiplied) == g_list_length(engine->object_engines)) {
+	if (osync_bitcount(engine->obj_errors | engine->obj_multiplied) == osync_list_length(engine->object_engines)) {
 		if (osync_bitcount(engine->obj_errors)) {
 			OSyncError *locerror = NULL;
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed while multiplying changes. Aborting");
@@ -1036,7 +1038,7 @@ static void _osync_engine_generate_multiplied_event(OSyncEngine *engine)
 
 static void _osync_engine_generate_prepared_write_event(OSyncEngine *engine)
 {
-	if (osync_bitcount(engine->obj_errors | engine->obj_prepared_write) == g_list_length(engine->object_engines)) {
+	if (osync_bitcount(engine->obj_errors | engine->obj_prepared_write) == osync_list_length(engine->object_engines)) {
 		if (osync_bitcount(engine->obj_errors)) {
 			OSyncError *locerror = NULL;
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed while preparing the write event. Aborting");
@@ -1057,10 +1059,10 @@ static void _osync_engine_generate_prepared_write_event(OSyncEngine *engine)
 
 static void _osync_engine_generate_written_event(OSyncEngine *engine)
 {
-	if (osync_bitcount(engine->proxy_errors | engine->proxy_written) != g_list_length(engine->proxies))
+	if (osync_bitcount(engine->proxy_errors | engine->proxy_written) != osync_list_length(engine->proxies))
 		return;
 	
-	if (osync_bitcount(engine->obj_errors | engine->obj_written) == g_list_length(engine->object_engines)) {
+	if (osync_bitcount(engine->obj_errors | engine->obj_written) == osync_list_length(engine->object_engines)) {
 		if (osync_bitcount(engine->obj_errors)) {
 			OSyncError *locerror = NULL;
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed while writting changes. Aborting");
@@ -1080,10 +1082,10 @@ static void _osync_engine_generate_written_event(OSyncEngine *engine)
 
 static void _osync_engine_generate_sync_done_event(OSyncEngine *engine)
 {
-	if (osync_bitcount(engine->proxy_errors | engine->proxy_sync_done) != g_list_length(engine->proxies))
+	if (osync_bitcount(engine->proxy_errors | engine->proxy_sync_done) != osync_list_length(engine->proxies))
 		return;
 	
-	if (osync_bitcount(engine->obj_errors | engine->obj_sync_done) == g_list_length(engine->object_engines)) {
+	if (osync_bitcount(engine->obj_errors | engine->obj_sync_done) == osync_list_length(engine->object_engines)) {
 		if (osync_bitcount(engine->obj_errors)) {
 			OSyncError *locerror = NULL;
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed within sync_done. Aborting");
@@ -1101,10 +1103,10 @@ static void _osync_engine_generate_sync_done_event(OSyncEngine *engine)
 
 static osync_bool _osync_engine_generate_disconnected_event(OSyncEngine *engine)
 {
-	if (osync_bitcount(engine->proxy_errors | engine->proxy_disconnects) != g_list_length(engine->proxies))
+	if (osync_bitcount(engine->proxy_errors | engine->proxy_disconnects) != osync_list_length(engine->proxies))
 		return FALSE;
 	
-	if (osync_bitcount(engine->obj_errors | engine->obj_disconnects) == g_list_length(engine->object_engines)) {
+	if (osync_bitcount(engine->obj_errors | engine->obj_disconnects) == osync_list_length(engine->object_engines)) {
 
 		/* Error handling in this case is quite special. We have to call OSYNC_ENGINE_EVENT_DISCONNECTED,
 			 even on errors. Since OSYNC_ENGINE_EVENT_ERROR would emit this DISCONNECTED event again - deadlock! */
@@ -1119,7 +1121,7 @@ static osync_bool _osync_engine_generate_disconnected_event(OSyncEngine *engine)
 
 static void _osync_engine_connect_callback(OSyncClientProxy *proxy, void *userdata, osync_bool slowsync, OSyncError *error)
 {
-	GList *o = NULL;
+	OSyncList *o = NULL;
 	OSyncEngine *engine = NULL;
 	int position = 0;
 
@@ -1502,7 +1504,7 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 			goto error;
 
 		osync_obj_engine_set_callback(objengine, _osync_engine_event_callback, engine);
-		engine->object_engines = g_list_append(engine->object_engines, objengine);
+		engine->object_engines = osync_list_append(engine->object_engines, objengine);
 
 		/* If previous sync was unclean, then trigger SlowSync for all ObjEngines.
 		 * Also trigger SlowSync if this is the first synchronization. */
@@ -1538,7 +1540,7 @@ osync_bool osync_engine_finalize(OSyncEngine *engine, OSyncError **error)
 	while (engine->object_engines) {
 		OSyncObjEngine *objengine = engine->object_engines->data;
 		osync_obj_engine_unref(objengine);
-		engine->object_engines = g_list_remove(engine->object_engines, engine->object_engines->data);
+		engine->object_engines = osync_list_remove(engine->object_engines, engine->object_engines->data);
 	}
 	
 	while (engine->proxies) {
@@ -1578,8 +1580,8 @@ osync_bool osync_engine_finalize(OSyncEngine *engine, OSyncError **error)
 
 void osync_engine_command(OSyncEngine *engine, OSyncEngineCommand *command)
 {
-	GList *o = NULL;
-	GList *p = NULL;
+	OSyncList *o = NULL;
+	OSyncList *p = NULL;
 	OSyncError *locerror = NULL;
 	OSyncClientProxy *proxy = NULL;
 
@@ -1712,7 +1714,7 @@ void osync_engine_command(OSyncEngine *engine, OSyncEngineCommand *command)
 
 void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 {
-	GList *o = NULL;
+	OSyncList *o = NULL;
 	OSyncError *locerror = NULL;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %s)", __func__, engine, osync_engine_get_eventstr(event));
@@ -1962,7 +1964,7 @@ osync_bool osync_engine_synchronize_and_block(OSyncEngine *engine, OSyncError **
 	if (engine->error) {
 		char *msg = osync_error_print_stack(&(engine->error));
 		osync_trace(TRACE_ERROR, "error while synchronizing: %s", msg);
-		g_free(msg);
+		osync_free(msg);
 		osync_error_set_from_error(error, &(engine->error));
 		goto error;
 	}
@@ -2074,18 +2076,18 @@ osync_bool osync_engine_discover_and_block(OSyncEngine *engine, OSyncMember *mem
 unsigned int osync_engine_num_proxies(OSyncEngine *engine)
 {
 	osync_return_val_if_fail(engine, 0);
-	return g_list_length(engine->proxies);
+	return osync_list_length(engine->proxies);
 }
 
 OSyncClientProxy *osync_engine_nth_proxy(OSyncEngine *engine, unsigned int nth)
 {
 	osync_return_val_if_fail(engine, NULL);
-	return g_list_nth_data(engine->proxies, nth);
+	return osync_list_nth_data(engine->proxies, nth);
 }
 
 OSyncClientProxy *osync_engine_find_proxy(OSyncEngine *engine, OSyncMember *member)
 {
-	GList *p = NULL;
+	OSyncList *p = NULL;
 	OSyncClientProxy *proxy = NULL;
 	
 	osync_return_val_if_fail(engine, NULL);
@@ -2102,18 +2104,18 @@ OSyncClientProxy *osync_engine_find_proxy(OSyncEngine *engine, OSyncMember *memb
 unsigned int osync_engine_num_objengines(OSyncEngine *engine)
 {
 	osync_return_val_if_fail(engine, 0);
-	return g_list_length(engine->object_engines);
+	return osync_list_length(engine->object_engines);
 }
 
 OSyncObjEngine *osync_engine_nth_objengine(OSyncEngine *engine, unsigned int nth)
 {
 	osync_return_val_if_fail(engine, NULL);
-	return g_list_nth_data(engine->object_engines, nth);
+	return osync_list_nth_data(engine->object_engines, nth);
 }
 
 OSyncObjEngine *osync_engine_find_objengine(OSyncEngine *engine, const char *objtype)
 {
-	GList *p = NULL;
+	OSyncList *p = NULL;
 	OSyncObjEngine *objengine = NULL;
 	
 	osync_return_val_if_fail(engine, NULL);
@@ -2190,7 +2192,7 @@ osync_bool osync_engine_abort(OSyncEngine *engine, OSyncError **error)
 	/* ...and flush all pending commands.
 		 To make sure the abort command will be the next and last command. */
 	while ((pending_command = g_async_queue_try_pop_unlocked(engine->command_queue)))
-		g_free(pending_command);
+		osync_free(pending_command);
 
 	/* Push the abort command on the empty queue. */
 	g_async_queue_push_unlocked(engine->command_queue, cmd);
@@ -2366,9 +2368,9 @@ void osync_engine_set_schemadir(OSyncEngine *engine, const char *schema_dir)
 	osync_assert(schema_dir);
 
 	if (engine->schema_dir)
-		g_free(engine->schema_dir);
+		osync_free(engine->schema_dir);
 
-	engine->schema_dir = g_strdup(schema_dir); 
+	engine->schema_dir = osync_strdup(schema_dir); 
 }
 #endif /* OPENSYNC_UNITTESTS */
 

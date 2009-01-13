@@ -34,7 +34,7 @@ OSyncObjFormatSink *osync_objformat_sink_new(const char *objformat, OSyncError *
 		return NULL;
 	
 	/*formatsink->objformat = osync_objformat_ref(objformat);*/
-	formatsink->objformat = g_strdup(objformat);
+	formatsink->objformat = osync_strdup(objformat);
 	formatsink->config = NULL;
 	formatsink->ref_count = 1;
 	
@@ -58,12 +58,12 @@ void osync_objformat_sink_unref(OSyncObjFormatSink *sink)
 	if (g_atomic_int_dec_and_test(&(sink->ref_count))) {
 
 		if (sink->objformat)
-			g_free(sink->objformat);
+			osync_free(sink->objformat);
 			
 		if (sink->config)
-			g_free(sink->config);
+			osync_free(sink->config);
 		
-		g_free(sink);
+		osync_free(sink);
 	}
 }
 
@@ -84,8 +84,8 @@ void osync_objformat_sink_set_config(OSyncObjFormatSink *sink, const char *confi
 	osync_assert(sink);
 
 	if (sink->config)
-		g_free(sink->config);
+		osync_free(sink->config);
 
-	sink->config = g_strdup(config);
+	sink->config = osync_strdup(config);
 }
 

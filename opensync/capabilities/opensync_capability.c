@@ -140,7 +140,7 @@ void osync_capability_free(OSyncCapability *capability)
 		capability->child = tmp;
 	}
 	
-	g_free(capability);
+	osync_free(capability);
 }
 
 int osync_capability_compare_stdlib(const void *capability1, const void *capability2)

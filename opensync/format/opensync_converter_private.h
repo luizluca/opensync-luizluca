@@ -46,7 +46,7 @@ struct OSyncFormatConverter {
 
 /** @brief Shortest conversion path between formats */
 struct OSyncFormatConverterPath {
-	GList *converters;
+	OSyncList *converters;
 	char *config;
 	int ref_count;
 };

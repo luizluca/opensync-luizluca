@@ -58,15 +58,15 @@ void osync_plugin_unref(OSyncPlugin *plugin)
 	
 	if (g_atomic_int_dec_and_test(&(plugin->ref_count))) {
 		if (plugin->name)
-			g_free(plugin->name);
+			osync_free(plugin->name);
 			
 		if (plugin->longname)
-			g_free(plugin->longname);
+			osync_free(plugin->longname);
 			
 		if (plugin->description)
-			g_free(plugin->description);
+			osync_free(plugin->description);
 			
-		g_free(plugin);
+		osync_free(plugin);
 	}
 }
 
@@ -80,8 +80,8 @@ void osync_plugin_set_name(OSyncPlugin *plugin, const char *name)
 {
 	osync_assert(plugin);
 	if (plugin->name)
-		g_free(plugin->name);
-	plugin->name = g_strdup(name);
+		osync_free(plugin->name);
+	plugin->name = osync_strdup(name);
 }
 
 const char *osync_plugin_get_longname(OSyncPlugin *plugin)
@@ -94,8 +94,8 @@ void osync_plugin_set_longname(OSyncPlugin *plugin, const char *longname)
 {
 	osync_assert(plugin);
 	if (plugin->longname)
-		g_free(plugin->longname);
-	plugin->longname = g_strdup(longname);
+		osync_free(plugin->longname);
+	plugin->longname = osync_strdup(longname);
 }
 
 const char *osync_plugin_get_description(OSyncPlugin *plugin)
@@ -108,8 +108,8 @@ void osync_plugin_set_description(OSyncPlugin *plugin, const char *description)
 {
 	osync_assert(plugin);
 	if (plugin->description)
-		g_free(plugin->description);
-	plugin->description = g_strdup(description);
+		osync_free(plugin->description);
+	plugin->description = osync_strdup(description);
 }
 
 void *osync_plugin_get_data(OSyncPlugin *plugin)

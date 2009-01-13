@@ -41,10 +41,10 @@ struct OSyncObjEngine {
 	OSyncMappingTable *mapping_table;
 
 	/** List of OSyncMappingEngine-elemenets */
-	GList *mapping_engines;
+	OSyncList *mapping_engines;
 	
 	/** List of OSyncSinkEngine-elements */
-	GList *sink_engines;
+	OSyncList *sink_engines;
 
 	/** Pointer to OSyncObjEngine assinged error struct */
 	OSyncError *error;
@@ -72,7 +72,7 @@ struct OSyncObjEngine {
 	void *callback_userdata;
 	
 	/** List of OSyncMappingEngine-elements with pending conflicts */
-	GList *conflicts;
+	OSyncList *conflicts;
 
 	/** Written status of Object Engine. - TODO: Is this still needed?! **/
 	osync_bool written;

@@ -62,33 +62,33 @@ void osync_plugin_connection_unref(OSyncPluginConnection *connection)
 	
 	if (g_atomic_int_dec_and_test(&(connection->ref_count))) {
 		if (connection->bt_address)
-			g_free(connection->bt_address);
+			osync_free(connection->bt_address);
 
 		if (connection->bt_sdpuuid)
-			g_free(connection->bt_sdpuuid);
+			osync_free(connection->bt_sdpuuid);
 
 		if (connection->usb_vendorid)
-			g_free(connection->usb_vendorid);
+			osync_free(connection->usb_vendorid);
 
 		if (connection->usb_productid)
-			g_free(connection->usb_productid);
+			osync_free(connection->usb_productid);
 
 		if (connection->net_address)
-			g_free(connection->net_address);
+			osync_free(connection->net_address);
 
 		if (connection->net_protocol)
-			g_free(connection->net_protocol);
+			osync_free(connection->net_protocol);
 
 		if (connection->net_dnssd)
-			g_free(connection->net_dnssd);
+			osync_free(connection->net_dnssd);
 
 		if (connection->serial_devicenode)
-			g_free(connection->serial_devicenode);
+			osync_free(connection->serial_devicenode);
 
 		if (connection->irda_service)
-			g_free(connection->irda_service);
+			osync_free(connection->irda_service);
 
-		g_free(connection);
+		osync_free(connection);
 	}
 }
 
@@ -164,9 +164,9 @@ void osync_plugin_connection_bt_set_addr(OSyncPluginConnection *connection, cons
 	osync_assert(connection);
 	
 	if (connection->bt_address)
-		g_free(connection->bt_address);
+		osync_free(connection->bt_address);
 
-	connection->bt_address = g_strdup(address);
+	connection->bt_address = osync_strdup(address);
 }
 
 
@@ -196,9 +196,9 @@ void osync_plugin_connection_bt_set_sdpuuid(OSyncPluginConnection *connection, c
 	osync_assert(connection);
 
 	if (connection->bt_sdpuuid)
-		g_free(connection->bt_sdpuuid);
+		osync_free(connection->bt_sdpuuid);
 
-	connection->bt_sdpuuid = g_strdup(sdpuuid);
+	connection->bt_sdpuuid = osync_strdup(sdpuuid);
 }
 
 
@@ -214,9 +214,9 @@ void osync_plugin_connection_usb_set_vendorid(OSyncPluginConnection *connection,
 	osync_assert(connection);
 
 	if (connection->usb_vendorid)
-		g_free(connection->usb_vendorid);
+		osync_free(connection->usb_vendorid);
 
-	connection->usb_vendorid = g_strdup(vendorid);
+	connection->usb_vendorid = osync_strdup(vendorid);
 }
 
 const char *osync_plugin_connection_usb_get_productid(OSyncPluginConnection *connection)
@@ -231,9 +231,9 @@ void osync_plugin_connection_usb_set_productid(OSyncPluginConnection *connection
 	osync_assert(connection);
 
 	if (connection->usb_productid)
-		g_free(connection->usb_productid);
+		osync_free(connection->usb_productid);
 
-	connection->usb_productid = g_strdup(productid);
+	connection->usb_productid = osync_strdup(productid);
 }
 
 unsigned int osync_plugin_connection_usb_get_interface(OSyncPluginConnection *connection)
@@ -262,9 +262,9 @@ void osync_plugin_connection_net_set_address(OSyncPluginConnection *connection, 
 	osync_assert(connection);
 
 	if (connection->net_address)
-		g_free(connection->net_address);
+		osync_free(connection->net_address);
 
-	connection->net_address = g_strdup(address);
+	connection->net_address = osync_strdup(address);
 }
 
 
@@ -295,9 +295,9 @@ void osync_plugin_connection_net_set_protocol(OSyncPluginConnection *connection,
 	osync_assert(connection);
 
 	if (connection->net_protocol)
-		g_free(connection->net_protocol);
+		osync_free(connection->net_protocol);
 
-	connection->net_protocol = g_strdup(protocol);
+	connection->net_protocol = osync_strdup(protocol);
 }
 
 
@@ -313,9 +313,9 @@ void osync_plugin_connection_net_set_dnssd(OSyncPluginConnection *connection, co
 	osync_assert(connection);
 
 	if (connection->net_dnssd)
-		g_free(connection->net_dnssd);
+		osync_free(connection->net_dnssd);
 
-	connection->net_dnssd = g_strdup(dnssd);
+	connection->net_dnssd = osync_strdup(dnssd);
 }
 
 
@@ -346,9 +346,9 @@ void osync_plugin_connection_serial_set_devicenode(OSyncPluginConnection *connec
 	osync_assert(connection);
 
 	if (connection->serial_devicenode)
-		g_free(connection->serial_devicenode);
+		osync_free(connection->serial_devicenode);
 
-	connection->serial_devicenode = g_strdup(devicenode);
+	connection->serial_devicenode = osync_strdup(devicenode);
 }
 
 
@@ -364,8 +364,8 @@ void osync_plugin_connection_irda_set_service(OSyncPluginConnection *connection,
 	osync_assert(connection);
 
 	if (connection->irda_service)
-		g_free(connection->irda_service);
+		osync_free(connection->irda_service);
 
-	connection->irda_service = g_strdup(irdaservice);
+	connection->irda_service = osync_strdup(irdaservice);
 }
 

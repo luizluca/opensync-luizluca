@@ -50,15 +50,15 @@ void osync_plugin_localization_unref(OSyncPluginLocalization *local)
 
 	if (g_atomic_int_dec_and_test(&(local->ref_count))) {
 		if (local->encoding)
-			g_free(local->encoding);
+			osync_free(local->encoding);
 
 		if (local->language)
-			g_free(local->language);
+			osync_free(local->language);
 			
 		if (local->timezone)
-			g_free(local->timezone);
+			osync_free(local->timezone);
 			
-		g_free(local);
+		osync_free(local);
 	}
 }
 
@@ -87,9 +87,9 @@ void osync_plugin_localization_set_encoding(OSyncPluginLocalization *local, cons
 {
 	osync_assert(local);
 	if (local->encoding)
-		g_free(local->encoding);
+		osync_free(local->encoding);
 
-	local->encoding = g_strdup(encoding);
+	local->encoding = osync_strdup(encoding);
 }
 
 const char *osync_plugin_localization_get_timezone(OSyncPluginLocalization *local)
@@ -102,9 +102,9 @@ void osync_plugin_localization_set_timezone(OSyncPluginLocalization *local, cons
 {
 	osync_assert(local);
 	if (local->timezone)
-		g_free(local->timezone);
+		osync_free(local->timezone);
 
-	local->timezone = g_strdup(timezone);
+	local->timezone = osync_strdup(timezone);
 }
 
 const char *osync_plugin_localization_get_language(OSyncPluginLocalization *local)
@@ -117,8 +117,8 @@ void osync_plugin_localization_set_language(OSyncPluginLocalization *local, cons
 {
 	osync_assert(local);
 	if (local->language)
-		g_free(local->language);
+		osync_free(local->language);
 
-	local->language = g_strdup(language);
+	local->language = osync_strdup(language);
 }
 

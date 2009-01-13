@@ -92,7 +92,7 @@ void osync_sink_engine_unref(OSyncSinkEngine *engine)
 			engine->entries = osync_list_remove(engine->entries, engine->entries->data);
 		}
 		
-		g_free(engine);
+		osync_free(engine);
 	}
 }
 

@@ -42,7 +42,7 @@ OSyncObjTypeSink *osync_objtype_sink_new(const char *objtype, OSyncError **error
 	if (!sink)
 		return FALSE;
 	
-	sink->objtype = g_strdup(objtype);
+	sink->objtype = osync_strdup(objtype);
 	sink->ref_count = 1;
 
 	sink->preferred_format = NULL;
@@ -81,12 +81,12 @@ void osync_objtype_sink_unref(OSyncObjTypeSink *sink)
 			osync_anchor_unref(sink->anchor);
 		
 		if (sink->preferred_format)
-			g_free(sink->preferred_format);
+			osync_free(sink->preferred_format);
 
 		if (sink->objtype)
-			g_free(sink->objtype);
+			osync_free(sink->objtype);
 		
-		g_free(sink);
+		osync_free(sink);
 	}
 }
 
@@ -127,8 +127,8 @@ void osync_objtype_sink_set_name(OSyncObjTypeSink *sink, const char *name)
 {
 	osync_assert(sink);
 	if (sink->objtype)
-		g_free(sink->objtype);
-	sink->objtype = g_strdup(name);
+		osync_free(sink->objtype);
+	sink->objtype = osync_strdup(name);
 }
 
 const char *osync_objtype_sink_get_preferred_format(OSyncObjTypeSink *sink)
@@ -141,8 +141,8 @@ void osync_objtype_sink_set_preferred_format(OSyncObjTypeSink *sink, const char 
 {
 	osync_assert(sink);
 	if (sink->preferred_format)
-		g_free(sink->preferred_format);
-	sink->preferred_format = g_strdup(preferred_format);
+		osync_free(sink->preferred_format);
+	sink->preferred_format = osync_strdup(preferred_format);
 }
 
 unsigned int osync_objtype_sink_num_objformat_sinks(OSyncObjTypeSink *sink)
@@ -380,13 +380,13 @@ void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, void *plugindata, 
 
 	if (functions.batch_commit) {
 		//Append to the stored changes
-		sink->commit_changes = g_list_append(sink->commit_changes, change);
+		sink->commit_changes = osync_list_append(sink->commit_changes, change);
 
 		/* Increment refcounting for batch_commit to avoid too early freeing of the context.
 			 Otherwise the context would get freed after this function call. But the batch_commit
 			 is collecting every contexts and changes and finally commits everything at once. */
 		osync_context_ref(ctx);
-		sink->commit_contexts = g_list_append(sink->commit_contexts, ctx);
+		sink->commit_contexts = osync_list_append(sink->commit_contexts, ctx);
 		osync_trace(TRACE_EXIT, "%s: Waiting for batch processing", __func__);
 		return;
 	} else {
@@ -409,8 +409,9 @@ void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, void *plugindata, 
 {
 	OSyncObjTypeSinkFunctions functions;
 	int i = 0;
-	GList *o = NULL;
-	GList *c = NULL;
+	OSyncList *o = NULL;
+	OSyncList *c = NULL;
+	OSyncError *error = NULL;
 	OSyncChange *change = NULL;
 	OSyncContext *context = NULL;
 	
@@ -420,8 +421,12 @@ void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, void *plugindata, 
 	
 	functions = sink->functions;
 	if (functions.batch_commit) {
-		OSyncChange **changes = g_malloc0(sizeof(OSyncChange *) * (g_list_length(sink->commit_changes) + 1));
-		OSyncContext **contexts = g_malloc0(sizeof(OSyncContext *) * (g_list_length(sink->commit_contexts) + 1));
+		OSyncChange **changes = osync_try_malloc0(sizeof(OSyncChange *) * (osync_list_length(sink->commit_changes) + 1), &error);
+		if (!changes)
+			goto error;
+		OSyncContext **contexts = osync_try_malloc0(sizeof(OSyncContext *) * (osync_list_length(sink->commit_contexts) + 1), &error);
+		if (!contexts)
+			goto error;
 		
 		o = sink->commit_contexts;
 		c = NULL;
@@ -436,13 +441,13 @@ void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, void *plugindata, 
 			o = o->next;
 		}
 		
-		g_list_free(sink->commit_changes);
-		g_list_free(sink->commit_contexts);
+		osync_list_free(sink->commit_changes);
+		osync_list_free(sink->commit_contexts);
 		
 		functions.batch_commit(plugindata, info, ctx, contexts, changes);
 		
-		g_free(changes);
-		g_free(contexts);
+		osync_free(changes);
+		osync_free(contexts);
 	} else if (functions.committed_all) {
 		functions.committed_all(plugindata, info, ctx);
 	} else {
@@ -450,6 +455,11 @@ void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, void *plugindata, 
 	}
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
+	return;
+ error:
+	osync_context_report_osyncerror(ctx, error);
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&error));
+	osync_error_unref(&error);
 }
 
 osync_bool osync_objtype_sink_is_enabled(OSyncObjTypeSink *sink)

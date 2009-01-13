@@ -50,15 +50,15 @@ void osync_plugin_authentication_unref(OSyncPluginAuthentication *auth)
 	
 	if (g_atomic_int_dec_and_test(&(auth->ref_count))) {
 		if (auth->username)
-			g_free(auth->username);
+			osync_free(auth->username);
 			
 		if (auth->password)
-			g_free(auth->password);
+			osync_free(auth->password);
 
 		if (auth->reference)
-			g_free(auth->reference);
+			osync_free(auth->reference);
 			
-		g_free(auth);
+		osync_free(auth);
 	}
 }
 
@@ -88,9 +88,9 @@ void osync_plugin_authentication_set_username(OSyncPluginAuthentication *auth, c
 	osync_assert(auth);
 
 	if (auth->username)
-		g_free(auth->username);
+		osync_free(auth->username);
 
-	auth->username = g_strdup(username);
+	auth->username = osync_strdup(username);
 }
 
 const char *osync_plugin_authentication_get_password(OSyncPluginAuthentication *auth)
@@ -104,9 +104,9 @@ void osync_plugin_authentication_set_password(OSyncPluginAuthentication *auth, c
 	osync_assert(auth);
 
 	if (auth->password)
-		g_free(auth->password);
+		osync_free(auth->password);
 
-	auth->password = g_strdup(password);
+	auth->password = osync_strdup(password);
 }
 
 const char *osync_plugin_authentication_get_reference(OSyncPluginAuthentication *auth)
@@ -120,8 +120,8 @@ void osync_plugin_authentication_set_reference(OSyncPluginAuthentication *auth, 
 	osync_assert(auth);
 
 	if (auth->reference)
-		g_free(auth->reference);
+		osync_free(auth->reference);
 
-	auth->reference = g_strdup(reference);
+	auth->reference = osync_strdup(reference);
 }
 

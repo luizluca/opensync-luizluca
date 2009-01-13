@@ -222,7 +222,7 @@ START_TEST (lock_dual_sync_engine_unclean)
 	fail_unless(osync_engine_initialize(engine, &error), NULL);
 	fail_unless(num_engine_prev_unclean == 1, NULL);
 	
-	GList *o;
+	OSyncList *o;
 	for (o = engine->object_engines; o; o = o->next) {
 		OSyncObjEngine *objengine = o->data;
 		fail_unless(osync_obj_engine_get_slowsync(objengine), "Slow Sync got NOT set for ObjEngine! But previous sync was unclean!");

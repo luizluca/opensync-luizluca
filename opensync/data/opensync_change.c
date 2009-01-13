@@ -60,12 +60,12 @@ void osync_change_unref(OSyncChange *change)
 			osync_data_unref(change->data);
 			
 		if (change->uid)
-			g_free(change->uid);
+			osync_free(change->uid);
 		
 		if (change->hash)
-			g_free(change->hash);
+			osync_free(change->hash);
 		
-		g_free(change);
+		osync_free(change);
 	}
 }
 
@@ -111,8 +111,8 @@ void osync_change_set_hash(OSyncChange *change, const char *hash)
 {
 	osync_assert(change);
 	if (change->hash)
-		g_free(change->hash);
-	change->hash = g_strdup(hash);
+		osync_free(change->hash);
+	change->hash = osync_strdup(hash);
 }
 
 const char *osync_change_get_hash(OSyncChange *change)
@@ -127,8 +127,8 @@ void osync_change_set_uid(OSyncChange *change, const char *uid)
 	osync_assert(uid);
 
 	if (change->uid)
-		g_free(change->uid);
-	change->uid = g_strdup(uid);
+		osync_free(change->uid);
+	change->uid = osync_strdup(uid);
 }
 
 const char *osync_change_get_uid(OSyncChange *change)
@@ -166,10 +166,10 @@ OSyncChange *osync_change_clone(OSyncChange *source, OSyncError **error)
 		osync_change_set_data(change, source->data);
 
 	if (source->uid)
-		change->uid = g_strdup(source->uid);
+		change->uid = osync_strdup(source->uid);
 	
 	if (source->hash)
-		change->hash = g_strdup(source->hash);
+		change->hash = osync_strdup(source->hash);
 
 	if (source->changetype)
 		change->changetype = osync_change_get_changetype(source);
@@ -238,7 +238,7 @@ osync_bool osync_change_duplicate(OSyncChange *change, osync_bool *dirty, OSyncE
 	
 	if (newuid) {
 		osync_change_set_uid(change, newuid);
-		g_free(newuid);
+		osync_free(newuid);
 	}
 	
 	if (output) {

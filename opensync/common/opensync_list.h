@@ -40,8 +40,8 @@ struct _OSyncList
   OSyncList *prev;
 };
 
-typedef int (*OSyncCompareFunc)(void *a, void *b);
-typedef int (*OSyncCompareDataFunc)(void *a, void *b, void *user_data);
+typedef int (*OSyncCompareFunc)(const void *a, const void *b);
+typedef int (*OSyncCompareDataFunc)(const void *a, const void *b, void *user_data);
 typedef void (*OSyncFunc)(void *data, void *user_data);
 
 /* Doubly linked lists
@@ -84,9 +84,9 @@ OSYNC_EXPORT OSyncList*   osync_list_nth                     (OSyncList         
 OSYNC_EXPORT OSyncList*   osync_list_nth_prev                (OSyncList            *list,
 					 unsigned int             n);
 OSYNC_EXPORT OSyncList*   osync_list_find                    (OSyncList            *list,
-					 void *     data);
+					 const void *     data);
 OSYNC_EXPORT OSyncList*   osync_list_find_custom             (OSyncList            *list,
-					 void *     data,
+					 const void *     data,
 					 OSyncCompareFunc      func);
 OSYNC_EXPORT int     osync_list_position                (OSyncList            *list,
 					 OSyncList            *llink);

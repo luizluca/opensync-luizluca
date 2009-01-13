@@ -24,7 +24,7 @@
 struct OSyncPluginInfo {
 	void *loop;
 	OSyncPluginConfig *config;
-	GList *objtypes;
+	OSyncList *objtypes;
 	char *configdir;
 
 	/* The main sink */

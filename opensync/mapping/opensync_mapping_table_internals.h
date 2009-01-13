@@ -37,7 +37,7 @@ struct OSyncMappingTable {
 	int ref_count;
 	
 	/** Contains all mappings */
-	GList *mappings;
+	OSyncList *mappings;
 };
 
 /*@}*/

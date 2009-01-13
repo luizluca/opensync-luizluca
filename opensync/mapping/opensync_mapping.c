@@ -61,10 +61,10 @@ void osync_mapping_unref(OSyncMapping *mapping)
 		while (mapping->entries) {
 			OSyncMappingEntry *entry = mapping->entries->data;
 			osync_mapping_entry_unref(entry);
-			mapping->entries = g_list_remove(mapping->entries, entry);
+			mapping->entries = osync_list_remove(mapping->entries, entry);
 		}
 		
-		g_free(mapping);
+		osync_free(mapping);
 	}
 }
 
@@ -85,7 +85,7 @@ void osync_mapping_add_entry(OSyncMapping *mapping, OSyncMappingEntry *entry)
 	osync_assert(mapping);
 	osync_assert(entry);
 	
-	mapping->entries = g_list_append(mapping->entries, entry);
+	mapping->entries = osync_list_append(mapping->entries, entry);
 	osync_mapping_entry_ref(entry);
 }
 
@@ -94,13 +94,13 @@ void osync_mapping_remove_entry(OSyncMapping *mapping, OSyncMappingEntry *entry)
 	osync_assert(mapping);
 	osync_assert(entry);
 	
-	mapping->entries = g_list_remove(mapping->entries, entry);
+	mapping->entries = osync_list_remove(mapping->entries, entry);
 	osync_mapping_entry_unref(entry);
 }
 
 /*OSyncMappingEntry *osync_mapping_find_entry(OSyncMapping *mapping, OSyncChange *change)
 	{
-	GList *e;
+	OSyncList *e;
 	for (e = mapping->entries; e; e = e->next) {
 	OSyncMappingEntry *entry = e->data;
 	if (change && osync_mapping_entry_get_change(entry) == change)
@@ -111,7 +111,7 @@ void osync_mapping_remove_entry(OSyncMapping *mapping, OSyncMappingEntry *entry)
 
 OSyncMappingEntry *osync_mapping_find_entry_by_member_id(OSyncMapping *mapping, long long int memberid)
 {
-	GList *e;
+	OSyncList *e;
 	for (e = mapping->entries; e; e = e->next) {
 		OSyncMappingEntry *entry = e->data;
 		if (osync_mapping_entry_get_member_id(entry) == memberid)
@@ -123,11 +123,11 @@ OSyncMappingEntry *osync_mapping_find_entry_by_member_id(OSyncMapping *mapping, 
 int osync_mapping_num_entries(OSyncMapping *mapping)
 {
 	osync_assert(mapping);
-	return g_list_length(mapping->entries);
+	return osync_list_length(mapping->entries);
 }
 
 OSyncMappingEntry *osync_mapping_nth_entry(OSyncMapping *mapping, int nth)
 {
 	osync_assert(mapping);
-	return g_list_nth_data(mapping->entries, nth);
+	return osync_list_nth_data(mapping->entries, nth);
 }

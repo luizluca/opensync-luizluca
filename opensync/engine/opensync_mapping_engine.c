@@ -49,7 +49,7 @@
 OSyncMappingEngine *osync_mapping_engine_new(OSyncObjEngine *parent, OSyncMapping *mapping, OSyncError **error)
 {
 	OSyncMappingEngine *engine = NULL;
-	GList *s = NULL;
+	OSyncList *s = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, parent, mapping, error);
 
 	osync_assert(parent);
@@ -83,7 +83,7 @@ OSyncMappingEngine *osync_mapping_engine_new(OSyncObjEngine *parent, OSyncMappin
 		if (!entry_engine)
 			goto error_free_engine;
 
-		engine->entries = g_list_append(engine->entries, entry_engine);
+		engine->entries = osync_list_append(engine->entries, entry_engine);
 	}
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, engine);
@@ -120,16 +120,16 @@ void osync_mapping_engine_unref(OSyncMappingEngine *engine)
 			OSyncMappingEntryEngine *entry = engine->entries->data;
 			osync_entry_engine_unref(entry);
 			
-			engine->entries = g_list_remove(engine->entries, engine->entries->data);
+			engine->entries = osync_list_remove(engine->entries, engine->entries->data);
 		}
 		
-		g_free(engine);
+		osync_free(engine);
 	}
 }
 
 static OSyncMappingEntryEngine *_osync_mapping_engine_find_entry(OSyncMappingEngine *engine, OSyncChange *change)
 {
-	GList *e;
+	OSyncList *e;
 	for (e = engine->entries; e; e = e->next) {
 		OSyncMappingEntryEngine *entry = e->data;
 		if (change && entry->change == change)
@@ -223,7 +223,7 @@ osync_bool osync_mapping_engine_supports_ignore(OSyncMappingEngine *engine)
 {
 	OSyncObjEngine *parent = NULL;
 	osync_bool ignore_supported = TRUE;
-	GList *s = NULL;
+	OSyncList *s = NULL;
 
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, engine);
 	osync_assert(engine);
@@ -267,7 +267,7 @@ osync_bool osync_mapping_engine_supports_use_latest(OSyncMappingEngine *engine)
 
 osync_bool osync_mapping_engine_multiply(OSyncMappingEngine *engine, OSyncError **error)
 {
-	GList *e = NULL;
+	OSyncList *e = NULL;
 	osync_assert(engine);
 	osync_assert(engine->mapping);
 	
@@ -426,7 +426,7 @@ static unsigned int prod(unsigned int n)
 osync_bool osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 {
 	int is_same = 0;
-	GList *e = NULL;
+	OSyncList *e = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, engine);
 	osync_assert(engine != NULL);
 	
@@ -446,7 +446,7 @@ osync_bool osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 		
 		OSyncChange *leftchange = osync_entry_engine_get_change(leftentry);
 		OSyncChange *rightchange = NULL;
-		GList *n = NULL;
+		OSyncList *n = NULL;
 		osync_trace(TRACE_INTERNAL, "change: %p: %i", leftchange, leftchange ? osync_change_get_changetype(leftchange) : OSYNC_CHANGE_TYPE_UNKNOWN);
 		if (leftchange == NULL)
 			continue;
@@ -485,7 +485,7 @@ osync_bool osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 	if (engine->conflict) {
 		//conflict, solve conflict
 		osync_trace(TRACE_INTERNAL, "Got conflict for mapping_engine %p", engine);
-		engine->parent->conflicts = g_list_append(engine->parent->conflicts, engine);
+		engine->parent->conflicts = osync_list_append(engine->parent->conflicts, engine);
 
 		if (!osync_status_conflict(engine->parent->parent, engine))
 			goto error;
@@ -496,8 +496,8 @@ osync_bool osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 	osync_assert(engine->master);
 	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_MAPPING_EVENT_SOLVED, NULL);
 	
-	if (is_same == prod(g_list_length(engine->entries) - 1)) {
-		GList *e = NULL;
+	if (is_same == prod(osync_list_length(engine->entries) - 1)) {
+		OSyncList *e = NULL;
 		osync_trace(TRACE_INTERNAL, "No need to sync. All entries are the same");
 		for (e = engine->entries; e; e = e->next) {
 			OSyncMappingEntryEngine *entry = e->data;
@@ -518,7 +518,7 @@ error:
 
 OSyncMappingEntryEngine *osync_mapping_engine_get_entry(OSyncMappingEngine *engine, OSyncSinkEngine *sinkengine)
 {
-	GList *e = NULL;
+	OSyncList *e = NULL;
 	for (e = engine->entries; e; e = e->next) {
 		OSyncMappingEntryEngine *entry_engine = e->data;
 		if (sinkengine == entry_engine->sink_engine)
@@ -533,7 +533,7 @@ OSyncMappingEntryEngine *osync_mapping_engine_get_entry(OSyncMappingEngine *engi
 int osync_mapping_engine_num_changes(OSyncMappingEngine *engine)
 {
 	int num = 0;
-	GList *e = NULL;
+	OSyncList *e = NULL;
 	osync_assert(engine);
 	for (e = engine->entries; e; e = e->next) {
 		OSyncMappingEntryEngine *entry = e->data;
@@ -547,7 +547,7 @@ int osync_mapping_engine_num_changes(OSyncMappingEngine *engine)
 OSyncChange *osync_mapping_engine_nth_change(OSyncMappingEngine *engine, int nth)
 {
 	int num = 0;
-	GList *e = NULL;
+	OSyncList *e = NULL;
 	osync_assert(engine);
 	for (e = engine->entries; e; e = e->next) {
 		OSyncMappingEntryEngine *entry = e->data;
@@ -563,7 +563,7 @@ OSyncChange *osync_mapping_engine_nth_change(OSyncMappingEngine *engine, int nth
 
 OSyncChange *osync_mapping_engine_member_change(OSyncMappingEngine *engine, int memberid)
 {
-	GList *e = NULL;
+	OSyncList *e = NULL;
 	osync_assert(engine);
 	for (e = engine->entries; e; e = e->next) {
 		OSyncMappingEntryEngine *entry = e->data;
@@ -585,7 +585,7 @@ osync_bool osync_mapping_engine_solve(OSyncMappingEngine *engine, OSyncChange *c
 	engine->conflict = FALSE;
 	osync_mapping_engine_set_master(engine, entry);
 	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_MAPPING_EVENT_SOLVED, NULL);
-	engine->parent->conflicts = g_list_remove(engine->parent->conflicts, engine);
+	engine->parent->conflicts = osync_list_remove(engine->parent->conflicts, engine);
 
 	if (!osync_obj_engine_command(engine->parent, OSYNC_ENGINE_COMMAND_END_CONFLICTS, error))
 		goto error;
@@ -604,7 +604,7 @@ osync_bool osync_mapping_engine_ignore(OSyncMappingEngine *engine, OSyncError **
 	OSyncArchive *archive = NULL;
 	char *objtype = NULL;
 	long long int id = 0;
-	GList *c = NULL;
+	OSyncList *c = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
 	
 	engine->conflict = FALSE;
@@ -621,7 +621,7 @@ osync_bool osync_mapping_engine_ignore(OSyncMappingEngine *engine, OSyncError **
 	}
 
 	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_MAPPING_EVENT_SOLVED, NULL);
-	engine->parent->conflicts = g_list_remove(engine->parent->conflicts, engine);
+	engine->parent->conflicts = osync_list_remove(engine->parent->conflicts, engine);
 
 	if (!osync_obj_engine_command(engine->parent, OSYNC_ENGINE_COMMAND_END_CONFLICTS, error))
 		goto error;
@@ -648,7 +648,7 @@ osync_bool osync_mapping_engine_use_latest(OSyncMappingEngine *engine, OSyncErro
 
 	engine->conflict = FALSE;
 	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_MAPPING_EVENT_SOLVED, NULL);
-	engine->parent->conflicts = g_list_remove(engine->parent->conflicts, engine);
+	engine->parent->conflicts = osync_list_remove(engine->parent->conflicts, engine);
 
 	if (!osync_obj_engine_command(engine->parent, OSYNC_ENGINE_COMMAND_END_CONFLICTS, error))
 		goto error;
@@ -675,7 +675,7 @@ osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, O
 {
 	int elevation = 0;
 	OSyncObjEngine *objengine = NULL;
-	GList *entries = NULL, *e = NULL, *mappings = NULL;
+	OSyncList *entries = NULL, *e = NULL, *mappings = NULL;
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, existingMapping, error);
 	g_assert(existingMapping);
@@ -690,7 +690,7 @@ osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, O
 			if (osync_change_get_changetype(entry->change) == OSYNC_CHANGE_TYPE_MODIFIED || osync_change_get_changetype(entry->change) == OSYNC_CHANGE_TYPE_ADDED) {
 				osync_trace(TRACE_INTERNAL, "Appending entry %s, changetype %i from member %lli", osync_change_get_uid(entry->change), osync_change_get_changetype(entry->change), osync_member_get_id(osync_client_proxy_get_member(entry->sink_engine->proxy)));
 		
-				entries = g_list_append(entries, entry);
+				entries = osync_list_append(entries, entry);
 			} else {
 				osync_trace(TRACE_INTERNAL, "Removing entry %s, changetype %i from member %lli", osync_change_get_uid(entry->change), osync_change_get_changetype(entry->change), osync_member_get_id(osync_client_proxy_get_member(entry->sink_engine->proxy)));
 				osync_entry_engine_update(entry, NULL);
@@ -701,14 +701,14 @@ osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, O
 	}
 	
 	/* Create a list with mappings. In the beginning, only the exisiting mapping is in the list */
-	mappings = g_list_append(NULL, existingMapping);
+	mappings = osync_list_append(NULL, existingMapping);
 	osync_mapping_engine_ref(existingMapping);
 	
 	while (entries) {
 		OSyncMappingEntryEngine *existingEntry = entries->data;
 		
 		/* Now lets see which mapping is the correct one for the entry */
-		GList *m = NULL;
+		OSyncList *m = NULL;
 		OSyncMappingEngine *mapping = NULL;
 		OSyncChange *existingChange = NULL;
 		osync_bool dirty = FALSE;
@@ -716,7 +716,7 @@ osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, O
 
 		elevation = 0;
 		for (m = mappings; m; m = m->next) {
-			GList *e = NULL;
+			OSyncList *e = NULL;
 			OSyncChange *change = NULL;
 			OSyncMappingEntryEngine *entry = NULL;
 			mapping = m->data;
@@ -751,8 +751,8 @@ osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, O
 			mapping = _osync_obj_engine_create_mapping_engine(objengine, error);
 			if (!mapping)
 				goto error;
-			mappings = g_list_append(mappings, mapping);
-			objengine->mapping_engines = g_list_append(objengine->mapping_engines, mapping);
+			mappings = osync_list_append(mappings, mapping);
+			objengine->mapping_engines = osync_list_append(objengine->mapping_engines, mapping);
 			osync_mapping_engine_ref(mapping);
 		}
 		
@@ -775,17 +775,17 @@ osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, O
 		 * this information here */
 		newEntry->dirty = dirty;
 		
-		entries = g_list_remove(entries, existingEntry);
+		entries = osync_list_remove(entries, existingEntry);
 	}
 	
 	
 	while (mappings) {
 		OSyncMappingEngine *mapping = mappings->data;
 		osync_mapping_engine_unref(mapping);
-		mappings = g_list_remove(mappings, mapping);
+		mappings = osync_list_remove(mappings, mapping);
 	}
 	
-	objengine->conflicts = g_list_remove(objengine->conflicts, existingMapping);
+	objengine->conflicts = osync_list_remove(objengine->conflicts, existingMapping);
 	osync_status_update_mapping(objengine->parent, existingMapping, OSYNC_MAPPING_EVENT_SOLVED, NULL);
 
 	if (!osync_obj_engine_command(objengine, OSYNC_ENGINE_COMMAND_END_CONFLICTS, error))
@@ -798,7 +798,7 @@ error:
 	while (mappings) {
 		OSyncMappingEngine *mapping = mappings->data;
 		osync_mapping_engine_unref(mapping);
-		mappings = g_list_remove(mappings, mapping);
+		mappings = osync_list_remove(mappings, mapping);
 	}
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;

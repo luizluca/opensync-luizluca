@@ -22,9 +22,9 @@
 #define _OPENSYNC_PLUGIN_ENV_PRIVATE_H_
 
 struct OSyncPluginEnv {
-	GList *plugins;
+	OSyncList *plugins;
 	
-	GList *modules;
+	OSyncList *modules;
 	
 	GModule *current_module;
 

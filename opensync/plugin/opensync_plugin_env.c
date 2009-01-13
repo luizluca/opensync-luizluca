@@ -66,14 +66,14 @@ void osync_plugin_env_unref(OSyncPluginEnv *env)
 		/* Free the plugins */
 		while (env->plugins) {
 			osync_plugin_unref(env->plugins->data);
-			env->plugins = g_list_remove(env->plugins, env->plugins->data);
+			env->plugins = osync_list_remove(env->plugins, env->plugins->data);
 		}
 	
 		/* Unload all modules */
 		while (env->modules) {
 			osync_module_unload(env->modules->data);
 			osync_module_unref(env->modules->data);
-			env->modules = g_list_remove(env->modules, env->modules->data);
+			env->modules = osync_list_remove(env->modules, env->modules->data);
 		}
 		osync_free(env);
 	}
@@ -115,10 +115,10 @@ osync_bool osync_plugin_env_load(OSyncPluginEnv *env, const char *path, OSyncErr
 	}
 	
 	while ((de = g_dir_read_name(dir))) {
-		filename = g_strdup_printf ("%s%c%s", path, G_DIR_SEPARATOR, de);
+		filename = osync_strdup_printf ("%s%c%s", path, G_DIR_SEPARATOR, de);
 		
 		if (!g_file_test(filename, G_FILE_TEST_IS_REGULAR) || !g_pattern_match_simple("*."G_MODULE_SUFFIX, filename)) {
-			g_free(filename);
+			osync_free(filename);
 			continue;
 		}
 		
@@ -126,7 +126,7 @@ osync_bool osync_plugin_env_load(OSyncPluginEnv *env, const char *path, OSyncErr
 			osync_trace(TRACE_ERROR, "Unable to load module: %s", osync_error_print(error));
 		}
 		
-		g_free(filename);
+		osync_free(filename);
 	}
 	
 	g_dir_close(dir);
@@ -144,7 +144,7 @@ void osync_plugin_env_register_plugin(OSyncPluginEnv *env, OSyncPlugin *plugin)
 	osync_assert(env);
 	osync_assert(plugin);
 	
-	env->plugins = g_list_append(env->plugins, plugin);
+	env->plugins = osync_list_append(env->plugins, plugin);
 	osync_plugin_ref(plugin);
 }
 
@@ -183,7 +183,7 @@ osync_bool osync_plugin_env_load_module(OSyncPluginEnv *env, const char *filenam
 			osync_trace(TRACE_EXIT, "%s: No get_sync_info function", __func__);
 			return FALSE;
 		}
-		env->modules = g_list_append(env->modules, module);
+		env->modules = osync_list_append(env->modules, module);
 	}
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
@@ -199,7 +199,7 @@ error:
 
 OSyncPlugin *osync_plugin_env_find_plugin(OSyncPluginEnv *env, const char *name)
 {
-	GList *p;
+	OSyncList *p;
 	osync_assert(env);
 	for (p = env->plugins; p; p = p->next) {
 		OSyncPlugin *plugin = p->data;
@@ -211,12 +211,12 @@ OSyncPlugin *osync_plugin_env_find_plugin(OSyncPluginEnv *env, const char *name)
 
 int osync_plugin_env_num_plugins(OSyncPluginEnv *env)
 {
-	return g_list_length(env->plugins);
+	return osync_list_length(env->plugins);
 }
 
 OSyncPlugin *osync_plugin_env_nth_plugin(OSyncPluginEnv *env, int nth)
 {
-	return (OSyncPlugin *)g_list_nth_data(env->plugins, nth);
+	return (OSyncPlugin *)osync_list_nth_data(env->plugins, nth);
 }
 
 osync_bool osync_plugin_env_plugin_is_usable(OSyncPluginEnv *env, const char *pluginname, OSyncError **error)

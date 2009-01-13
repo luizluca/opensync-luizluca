@@ -95,10 +95,10 @@ struct OSyncEngine {
 	GMutex* started_mutex;
 	
 	/** proxies contains a list of all OSyncClientProxy objects **/
-	GList *proxies;
+	OSyncList *proxies;
 
 	/** object_engines contains a list of all OSyncObjEngine objects **/
-	GList *object_engines;
+	OSyncList *object_engines;
 
 	osync_bool man_dispatch;
 	osync_bool allow_sync_alert;

@@ -61,9 +61,9 @@ void osync_mapping_entry_unref(OSyncMappingEntry *entry)
 	if (g_atomic_int_dec_and_test(&(entry->ref_count))) {
 		
 		if (entry->uid)
-			g_free(entry->uid);
+			osync_free(entry->uid);
 		
-		g_free(entry);
+		osync_free(entry);
 	}
 }
 
@@ -114,8 +114,8 @@ void osync_mapping_entry_set_uid(OSyncMappingEntry *entry, const char *uid)
 	osync_assert(uid);
 
 	if (entry->uid)
-		g_free(entry->uid);
-	entry->uid = g_strdup(uid);
+		osync_free(entry->uid);
+	entry->uid = osync_strdup(uid);
 }
 
 const char *osync_mapping_entry_get_uid(OSyncMappingEntry *entry)

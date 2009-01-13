@@ -52,13 +52,13 @@ static int _osync_version_match(char *pattern, char* string, OSyncError **error)
 			goto error_and_free;
 		regerror(ret, preg, errbuf, errbuf_size);
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "%s", errbuf);
-		g_free(errbuf);
+		osync_free(errbuf);
 		goto error_and_free;
 	}
 	
 	ret = regexec(preg, string, 0, NULL, 0);
 	regfree(preg);
-	g_free(preg);
+	osync_free(preg);
 
 	if(ret != 0) { 
 		if(ret == REG_NOMATCH)
@@ -69,14 +69,14 @@ static int _osync_version_match(char *pattern, char* string, OSyncError **error)
 			goto error;
 		regerror(ret, preg, errbuf, errbuf_size);
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "%s", errbuf);
-		g_free(errbuf);
+		osync_free(errbuf);
 		goto error;
 	}
 	return 1;
 
  error_and_free:	
 	regfree(preg);
-	g_free(preg);
+	osync_free(preg);
  error:
 	return -1;
 
@@ -114,20 +114,20 @@ OSyncList *osync_version_load_from_descriptions(OSyncError **error, const char *
 		char *schemafilepath = NULL;
 		osync_bool res;
 
-		filename = g_strdup_printf ("%s%c%s", descpath, G_DIR_SEPARATOR, de);
+		filename = osync_strdup_printf ("%s%c%s", descpath, G_DIR_SEPARATOR, de);
 		
 		if (!g_file_test(filename, G_FILE_TEST_IS_REGULAR) || !g_pattern_match_simple("*.xml", filename)) {
-			g_free(filename);
+			osync_free(filename);
 			continue;
 		}
 		
 		doc = xmlReadFile(filename, NULL, XML_PARSE_NOBLANKS);
 		if(!doc) {
-			g_free(filename);
+			osync_free(filename);
 			continue;
 		}
 		
-		g_free(filename);
+		osync_free(filename);
 		
 		root = xmlDocGetRootElement(doc);
 		if(!root || !xmlStrEqual(root->name, BAD_CAST "versions")) {
@@ -135,9 +135,9 @@ OSyncList *osync_version_load_from_descriptions(OSyncError **error, const char *
 			continue;
 		}
 
-		schemafilepath = g_strdup_printf("%s%c%s", schemapath, G_DIR_SEPARATOR, "descriptions.xsd");
+		schemafilepath = osync_strdup_printf("%s%c%s", schemapath, G_DIR_SEPARATOR, "descriptions.xsd");
 		res = osync_xml_validate_document(doc, schemafilepath);
-		g_free(schemafilepath);
+		osync_free(schemafilepath);
 
 		if(res == FALSE) {
 			osync_xml_free_doc(doc);
@@ -204,14 +204,14 @@ OSyncVersion *osync_version_new(OSyncError **error)
 	}
 	
 	version->ref_count = 1;
-	version->plugin = g_strdup("");
-	version->priority = g_strdup("");
-	version->vendor = g_strdup("");
-	version->modelversion = g_strdup("");
-	version->firmwareversion = g_strdup("");
-	version->softwareversion = g_strdup("");
-	version->hardwareversion = g_strdup("");
-	version->identifier = g_strdup("");
+	version->plugin = osync_strdup("");
+	version->priority = osync_strdup("");
+	version->vendor = osync_strdup("");
+	version->modelversion = osync_strdup("");
+	version->firmwareversion = osync_strdup("");
+	version->softwareversion = osync_strdup("");
+	version->hardwareversion = osync_strdup("");
+	version->identifier = osync_strdup("");
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, version);
 	return version;
@@ -233,23 +233,23 @@ void osync_version_unref(OSyncVersion *version)
 	if (g_atomic_int_dec_and_test(&(version->ref_count))) {
 
 		if(version->plugin)
-			g_free(version->plugin);
+			osync_free(version->plugin);
 		if(version->priority)
-			g_free(version->priority);
+			osync_free(version->priority);
 		if(version->vendor)
-			g_free(version->vendor);
+			osync_free(version->vendor);
 		if(version->modelversion)
-			g_free(version->modelversion);
+			osync_free(version->modelversion);
 		if(version->firmwareversion)
-			g_free(version->firmwareversion);
+			osync_free(version->firmwareversion);
 		if(version->softwareversion)
-			g_free(version->softwareversion);
+			osync_free(version->softwareversion);
 		if(version->hardwareversion)
-			g_free(version->hardwareversion);
+			osync_free(version->hardwareversion);
 		if(version->identifier)
-			g_free(version->identifier);
+			osync_free(version->identifier);
 
-		g_free(version);
+		osync_free(version);
 	}
 }
 
@@ -296,82 +296,82 @@ char *osync_version_get_identifier(OSyncVersion *version)
 void osync_version_set_plugin(OSyncVersion *version, const char *plugin)
 {
 	if(version->plugin)
-		g_free(version->plugin);
+		osync_free(version->plugin);
 	if(!plugin)
-		version->plugin = g_strdup("");
+		version->plugin = osync_strdup("");
 	else
-		version->plugin = g_strdup(plugin);
+		version->plugin = osync_strdup(plugin);
 }
 
 void osync_version_set_priority(OSyncVersion *version, const char *priority)
 {
 	if(version->priority)
-		g_free(version->priority);
+		osync_free(version->priority);
 	if(!priority)
-		version->priority = g_strdup("");
+		version->priority = osync_strdup("");
 	else
-		version->priority = g_strdup(priority);
+		version->priority = osync_strdup(priority);
 }
 
 void osync_version_set_vendor(OSyncVersion *version, const char *vendor)
 {
 	if(version->vendor)
-		g_free(version->vendor);
+		osync_free(version->vendor);
 	if(!vendor)
-		version->vendor = g_strdup("");
+		version->vendor = osync_strdup("");
 	else
-		version->vendor = g_strdup(vendor);
+		version->vendor = osync_strdup(vendor);
 }
 
 void osync_version_set_modelversion(OSyncVersion *version, const char *modelversion)
 {
 	if(version->modelversion)
-		g_free(version->modelversion);
+		osync_free(version->modelversion);
 	if(!modelversion)
-		version->modelversion = g_strdup("");
+		version->modelversion = osync_strdup("");
 	else
-		version->modelversion = g_strdup(modelversion);
+		version->modelversion = osync_strdup(modelversion);
 }
 
 void osync_version_set_firmwareversion(OSyncVersion *version, const char *firmwareversion)
 {
 	if(version->firmwareversion)
-		g_free(version->firmwareversion);
+		osync_free(version->firmwareversion);
 	if(!firmwareversion)
-		version->firmwareversion = g_strdup("");
+		version->firmwareversion = osync_strdup("");
 	else
-		version->firmwareversion = g_strdup(firmwareversion);
+		version->firmwareversion = osync_strdup(firmwareversion);
 }
 
 void osync_version_set_softwareversion(OSyncVersion *version, const char *softwareversion)
 {
 	if(version->softwareversion)
-		g_free(version->softwareversion);
+		osync_free(version->softwareversion);
 	if(!softwareversion)
-		version->softwareversion = g_strdup("");
+		version->softwareversion = osync_strdup("");
 	else
-		version->softwareversion = g_strdup(softwareversion);
+		version->softwareversion = osync_strdup(softwareversion);
 	
 }
 
 void osync_version_set_hardwareversion(OSyncVersion *version, const char *hardwareversion)
 {
 	if(version->hardwareversion)
-		g_free(version->hardwareversion);
+		osync_free(version->hardwareversion);
 	if(!hardwareversion)
-		version->hardwareversion = g_strdup("");
+		version->hardwareversion = osync_strdup("");
 	else
-		version->hardwareversion = g_strdup(hardwareversion);
+		version->hardwareversion = osync_strdup(hardwareversion);
 }
 
 void osync_version_set_identifier(OSyncVersion *version, const char *identifier)
 {
 	if(version->identifier)
-		g_free(version->identifier);
+		osync_free(version->identifier);
 	if(!identifier)
-		version->identifier = g_strdup("");
+		version->identifier = osync_strdup("");
 	else
-		version->identifier = g_strdup(identifier);
+		version->identifier = osync_strdup(identifier);
 }
 
 int osync_version_matches(OSyncVersion *pattern, OSyncVersion *version, OSyncError **error)

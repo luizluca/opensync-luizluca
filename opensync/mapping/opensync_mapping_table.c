@@ -65,7 +65,7 @@ void osync_mapping_table_unref(OSyncMappingTable *table)
 
 		osync_mapping_table_close(table);
 		
-		g_free(table);
+		osync_free(table);
 		osync_trace(TRACE_EXIT, "%s", __func__);
 	}
 }
@@ -100,7 +100,7 @@ osync_bool osync_mapping_table_load(OSyncMappingTable *table, OSyncArchive *arch
 			goto error_free;
 		
 		osync_mapping_entry_set_uid(entry, uid);
-		g_free(uid);
+		osync_free(uid);
 		osync_mapping_entry_set_id(entry, id);
 		osync_mapping_entry_set_member_id(entry, memberid);
 		
@@ -167,7 +167,7 @@ void osync_mapping_table_close(OSyncMappingTable *table)
 	while (table->mappings) {
 		OSyncMapping *mapping = table->mappings->data;
 		osync_mapping_unref(mapping);
-		table->mappings = g_list_remove(table->mappings, mapping);
+		table->mappings = osync_list_remove(table->mappings, mapping);
 	}
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
@@ -175,7 +175,7 @@ void osync_mapping_table_close(OSyncMappingTable *table)
 
 OSyncMapping *osync_mapping_table_find_mapping(OSyncMappingTable *table, long long int id)
 {
-	GList *m;
+	OSyncList *m;
 	osync_assert(table);
 	
 	for (m = table->mappings; m; m = m->next) {
@@ -191,7 +191,7 @@ void osync_mapping_table_add_mapping(OSyncMappingTable *table, OSyncMapping *map
 	osync_assert(table);
 	osync_assert(mapping);
 	
-	table->mappings = g_list_append(table->mappings, mapping);
+	table->mappings = osync_list_append(table->mappings, mapping);
 	osync_mapping_ref(mapping);
 }
 
@@ -200,26 +200,26 @@ void osync_mapping_table_remove_mapping(OSyncMappingTable *table, OSyncMapping *
 	osync_assert(table);
 	osync_assert(mapping);
 	
-	table->mappings = g_list_remove(table->mappings, mapping);
+	table->mappings = osync_list_remove(table->mappings, mapping);
 	osync_mapping_unref(mapping);
 }
 
 int osync_mapping_table_num_mappings(OSyncMappingTable *table)
 {
 	osync_assert(table);
-	return g_list_length(table->mappings);
+	return osync_list_length(table->mappings);
 }
 
 OSyncMapping *osync_mapping_table_nth_mapping(OSyncMappingTable *table, int nth)
 {
 	osync_assert(table);
-	return g_list_nth_data(table->mappings, nth);
+	return osync_list_nth_data(table->mappings, nth);
 }
 
 long long int osync_mapping_table_get_next_id(OSyncMappingTable *table)
 {
 	long long int new_id = 1;
-	GList *m;
+	OSyncList *m;
 	for (m = table->mappings; m; m = m->next) {
 		OSyncMapping *mapping = m->data;
 		if (new_id <= osync_mapping_get_id(mapping))

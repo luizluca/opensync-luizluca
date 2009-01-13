@@ -41,13 +41,13 @@ osync_bool osync_conv_convert_fmtlist(OSyncFormatEnv *env, OSyncChange *change, 
  */
 struct OSyncFormatEnv {
 	/** A List of formats */
-	GList *objformats;
+	OSyncList *objformats;
 	/** A list of available converters */
-	GList *converters;
+	OSyncList *converters;
 	/** A list of filter functions */
-	GList *custom_filters;
+	OSyncList *custom_filters;
 	
-	GList *modules;
+	OSyncList *modules;
 	GModule *current_module;
 
 	int ref_count;
@@ -57,9 +57,9 @@ struct OSyncFormatEnv {
  */
 typedef struct OSyncFormatConverterTree {
 	/* The converters that weren't reached yet */
-	GList *unused;
+	OSyncList *unused;
 	/* The search queue for the Breadth-first search */
-	GList *search;
+	OSyncList *search;
 } OSyncFormatConverterTree;
 
 typedef struct OSyncFormatConverterPathVertice {
@@ -69,7 +69,7 @@ typedef struct OSyncFormatConverterPathVertice {
 
 	/** The path of converters taken to this OSyncFormatConverterPathVertice. If this OSyncFormatConverterPathVertice is a target, we will
 	 * return this list as the result */
-	GList *path;
+	OSyncList *path;
 
 	unsigned losses;
 	unsigned objtype_changes;

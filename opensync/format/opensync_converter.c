@@ -105,7 +105,7 @@ void osync_converter_unref(OSyncFormatConverter *converter)
 		if (converter->target_format)
 			osync_objformat_unref(converter->target_format);
 		
-		g_free(converter);
+		osync_free(converter);
 	}
 }
 
@@ -257,13 +257,13 @@ void osync_converter_path_unref(OSyncFormatConverterPath *path)
 		while (path->converters) {
 			OSyncFormatConverter *converter = path->converters->data;
 			osync_converter_unref(converter);
-			path->converters = g_list_remove(path->converters, converter);
+			path->converters = osync_list_remove(path->converters, converter);
 		}
 		
 		if (path->config)
-			g_free(path->config);
+			osync_free(path->config);
 		
-		g_free(path);
+		osync_free(path);
 	}
 }
 
@@ -272,20 +272,20 @@ void osync_converter_path_add_edge(OSyncFormatConverterPath *path, OSyncFormatCo
 	osync_assert(path);
 	osync_assert(edge);
 
-	path->converters = g_list_append(path->converters, edge);
+	path->converters = osync_list_append(path->converters, edge);
 	osync_converter_ref(edge);
 }
 
 unsigned int osync_converter_path_num_edges(OSyncFormatConverterPath *path)
 {
 	osync_assert(path);
-	return g_list_length(path->converters);
+	return osync_list_length(path->converters);
 }
 
 OSyncFormatConverter *osync_converter_path_nth_edge(OSyncFormatConverterPath *path, unsigned int nth)
 {
 	osync_assert(path);
-	return g_list_nth_data(path->converters, nth);
+	return osync_list_nth_data(path->converters, nth);
 }
 
 const char *osync_converter_path_get_config(OSyncFormatConverterPath *path)
@@ -300,12 +300,12 @@ void osync_converter_path_set_config(OSyncFormatConverterPath *path, const char 
 	osync_return_if_fail(config);
 
 	if (path->config) {
-		g_free(path->config);
+		osync_free(path->config);
 		path->config = NULL;
 	}
 
 	if (config)
-		path->config = g_strdup(config);
+		path->config = osync_strdup(config);
 }
 
 void osync_converter_set_initialize_func(OSyncFormatConverter *converter, OSyncFormatConverterInitializeFunc initialize_func)

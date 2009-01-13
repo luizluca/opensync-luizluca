@@ -149,7 +149,7 @@ OSyncList *osync_db_query_table(OSyncDB *db, const char *query, OSyncError **err
 		OSyncList *row = NULL;
 		for (i=0; i < numcolumns; i++)
 			/* speed up - prepend instead of append */
-			row = osync_list_prepend(row, g_strdup(result[column_count++]));
+			row = osync_list_prepend(row, osync_strdup(result[column_count++]));
 
 		/* items got prepended, reverse the list again */
 		row = osync_list_reverse(row);
@@ -172,7 +172,7 @@ void osync_db_free_list(OSyncList *list) {
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, list);
 
 	for (row = list; row; row = row->next) {
-		osync_list_foreach((OSyncList *) row->data, (GFunc) g_free, NULL);
+		osync_list_foreach((OSyncList *) row->data, (GFunc) osync_free, NULL);
 		osync_list_free((OSyncList *) row->data);
 	}
 
@@ -202,7 +202,7 @@ char *osync_db_query_single_string(OSyncDB *db, const char *query, OSyncError **
 		return NULL;
 	}
 	
-	result = g_strdup((const char *)sqlite3_column_text(ppStmt, 0));
+	result = osync_strdup((const char *)sqlite3_column_text(ppStmt, 0));
 
 	if (sqlite3_step(ppStmt) == SQLITE_ROW) {
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "Returned more than one result! This function only handle a single string!");
@@ -215,7 +215,7 @@ char *osync_db_query_single_string(OSyncDB *db, const char *query, OSyncError **
 	return result; 
 	
  error:
-	g_free(result);
+	osync_free(result);
 	sqlite3_finalize(ppStmt);
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return NULL;
@@ -268,17 +268,17 @@ osync_bool osync_db_reset_table(OSyncDB *db, const char *tablename, OSyncError *
 	osync_assert(db);
 	osync_assert(tablename);
 	
-	query = g_strdup_printf("DELETE FROM %s", tablename);
+	query = osync_strdup_printf("DELETE FROM %s", tablename);
 
 	if (!osync_db_query(db, query, error))
 		goto error;
 
-	g_free(query);
+	osync_free(query);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
  error:
-	g_free(query);
+	osync_free(query);
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));	
 	return FALSE;
 }
@@ -291,7 +291,7 @@ osync_bool osync_db_reset_full(OSyncDB *db, OSyncError **error)
 
 	osync_assert(db);
 
-	query = g_strdup("SELECT name FROM (SELECT * FROM sqlite_master) WHERE type='table'");
+	query = osync_strdup("SELECT name FROM (SELECT * FROM sqlite_master) WHERE type='table'");
 
 	if (sqlite3_prepare(db->sqlite3db, query, -1, &ppStmt, NULL) != SQLITE_OK) {
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "Query Error: %s", sqlite3_errmsg(db->sqlite3db));
@@ -346,12 +346,12 @@ int osync_db_table_exists(OSyncDB *db, const char *tablename, OSyncError **error
 	osync_assert(db);
 	osync_assert(tablename);
 
-	query = g_strdup_printf("SELECT name FROM (SELECT * FROM sqlite_master UNION ALL SELECT * FROM sqlite_temp_master) WHERE type='table' AND name='%s'",
+	query = osync_strdup_printf("SELECT name FROM (SELECT * FROM sqlite_master UNION ALL SELECT * FROM sqlite_temp_master) WHERE type='table' AND name='%s'",
 	                        tablename);
 
 	if (sqlite3_prepare(db->sqlite3db, query, -1, &ppStmt, NULL) != SQLITE_OK) {
 		sqlite3_finalize(ppStmt);
-		g_free(query);
+		osync_free(query);
 
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "Query Error: %s", sqlite3_errmsg(db->sqlite3db));
 		osync_trace(TRACE_EXIT_ERROR, "Database query error: %s", sqlite3_errmsg(db->sqlite3db));
@@ -361,14 +361,14 @@ int osync_db_table_exists(OSyncDB *db, const char *tablename, OSyncError **error
 
 	if (sqlite3_step(ppStmt) != SQLITE_ROW) {
 		sqlite3_finalize(ppStmt);
-		g_free(query);
+		osync_free(query);
 
 		osync_trace(TRACE_EXIT, "%s: table \"%s\" doesn't exist.", __func__, tablename);
 		return 0;
 	}
 
 	sqlite3_finalize(ppStmt);
-	g_free(query);
+	osync_free(query);
 	
 	osync_trace(TRACE_EXIT, "%s: table \"%s\" exists.", __func__, tablename);
 	return 1;

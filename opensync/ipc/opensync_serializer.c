@@ -141,14 +141,14 @@ osync_bool osync_demarshal_data(OSyncMessage *message, OSyncData **data, OSyncFo
 		goto error;
 	
 	osync_data_set_objtype(*data, objtype);
-	g_free(objtype);
-	g_free(objformat);
+	osync_free(objtype);
+	osync_free(objformat);
 	
 	return TRUE;
 
  error:
-	g_free(objformat);
-	g_free(objtype);
+	osync_free(objformat);
+	osync_free(objtype);
 	return FALSE;
 }
 
@@ -208,10 +208,10 @@ osync_bool osync_demarshal_change(OSyncMessage *message, OSyncChange **change, O
 		goto error_free_change;
 	
 	osync_change_set_uid(*change, uid);
-	g_free(uid);
+	osync_free(uid);
 	
 	osync_change_set_hash(*change, hash);
-	g_free(hash);
+	osync_free(hash);
 	
 	osync_change_set_changetype(*change, change_type);
 	osync_change_set_data(*change, data);
@@ -220,8 +220,8 @@ osync_bool osync_demarshal_change(OSyncMessage *message, OSyncChange **change, O
 	return TRUE;
 
  error_free_change:
-	g_free(uid);
-	g_free(hash);
+	osync_free(uid);
+	osync_free(hash);
 	osync_change_unref(*change);
  error:
 	return FALSE;
@@ -266,7 +266,7 @@ osync_bool osync_demarshal_objformat_sink(OSyncMessage *message, OSyncObjFormatS
 
 	osync_message_read_string(message, &objformat_sink_config);
 	osync_objformat_sink_set_config(*sink, objformat_sink_config);
-	g_free(objformat_sink_config);
+	osync_free(objformat_sink_config);
 
 	return TRUE;
 
@@ -383,7 +383,7 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	
 	osync_message_read_string(message, &name);
 	osync_objtype_sink_set_name(*sink, name);
-	g_free(name);
+	osync_free(name);
  	
 	osync_message_read_int(message, &read);
 	osync_objtype_sink_set_function_read(*sink, read);
@@ -396,7 +396,7 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 
 	osync_message_read_string(message, &preferred_format);
 	osync_objtype_sink_set_preferred_format(*sink, preferred_format);
-	g_free(preferred_format);
+	osync_free(preferred_format);
 
 	osync_message_read_int(message, &num_formats);
 	for (i = 0; i < num_formats; i++) {
@@ -476,7 +476,7 @@ void osync_demarshal_error(OSyncMessage *message, OSyncError **error)
 		osync_message_read_string(message, &msg);
 		
 		osync_error_set(error, (OSyncErrorType)error_type, msg);
-		g_free(msg);
+		osync_free(msg);
 	}
 }
 
@@ -607,8 +607,8 @@ osync_bool osync_demarshal_pluginconnection(OSyncMessage *message, OSyncPluginCo
 		osync_message_read_uint(message, &bt_channel);
 		osync_plugin_connection_bt_set_channel(*conn, bt_channel);
 
-		g_free(bt_address);
-		g_free(bt_sdpuuid);
+		osync_free(bt_address);
+		osync_free(bt_sdpuuid);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_USB:
 		osync_message_read_string(message, &usb_vendorid);
@@ -633,9 +633,9 @@ osync_bool osync_demarshal_pluginconnection(OSyncMessage *message, OSyncPluginCo
 		osync_message_read_string(message, &net_dnssd);
 		osync_plugin_connection_net_set_dnssd(*conn, net_dnssd);
 			
-		g_free(net_address);
-		g_free(net_protocol);
-		g_free(net_dnssd);
+		osync_free(net_address);
+		osync_free(net_protocol);
+		osync_free(net_dnssd);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_SERIAL:
 		osync_message_read_uint(message, &serial_speed);
@@ -644,13 +644,13 @@ osync_bool osync_demarshal_pluginconnection(OSyncMessage *message, OSyncPluginCo
 		osync_message_read_string(message, &serial_devicenode);
 		osync_plugin_connection_serial_set_devicenode(*conn, serial_devicenode);
 
-		g_free(serial_devicenode);
+		osync_free(serial_devicenode);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_IRDA:
 		osync_message_read_string(message, &irda_service);
 		osync_plugin_connection_serial_set_devicenode(*conn, irda_service);
 
-		g_free(irda_service);
+		osync_free(irda_service);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_UNKNOWN:
 		break;
@@ -725,21 +725,21 @@ osync_bool osync_demarshal_objformatsink(OSyncMessage *message, OSyncObjFormatSi
 	if (!*sink)
 		goto error;
 
-	g_free(name);
+	osync_free(name);
 
 	osync_message_read_uint(message, &available_settings);
 
 	if (available_settings & MARSHAL_OBJFORMATSINK_CONFIG) {
 		osync_message_read_string(message, &config);
 		osync_objformat_sink_set_config(*sink, config);
-		g_free(config);
+		osync_free(config);
 	}
 
 	return TRUE;
 
  error:
 	if (name)
-		g_free(name);
+		osync_free(name);
 	return FALSE;
 }
 
@@ -918,25 +918,25 @@ osync_bool osync_demarshal_pluginadvancedoption_param(OSyncMessage *message, OSy
 
 	osync_message_read_string(message, &displayname);
 	osync_plugin_advancedoption_param_set_name(*param, displayname);
-	g_free(displayname);
+	osync_free(displayname);
 
 	osync_message_read_string(message, &name);
 	osync_plugin_advancedoption_param_set_name(*param, name);
-	g_free(name);
+	osync_free(name);
 
 	osync_message_read_uint(message, &type);
 	osync_plugin_advancedoption_param_set_type(*param, type);
 
 	osync_message_read_string(message, &value);
 	osync_plugin_advancedoption_param_set_value(*param, value);
-	g_free(value);
+	osync_free(value);
 
 	osync_message_read_uint(message, &num_valenum);
 
 	for (i=0; i < num_valenum; i++) {
 		osync_message_read_string(message, &value);
 		osync_plugin_advancedoption_param_add_valenum(*param, value);
-		g_free(value);
+		osync_free(value);
 	}
 
 	return TRUE;
@@ -981,7 +981,7 @@ osync_bool osync_demarshal_pluginadvancedoption(OSyncMessage *message, OSyncPlug
 	if (available_subconfigs & MARSHAL_PLUGINADVANCEDOPTION_DISPLAYNAME) {
 		osync_message_read_string(message, &displayname);
 		osync_plugin_advancedoption_set_name(*opt, displayname);
-		g_free(displayname);
+		osync_free(displayname);
 	}
 
 	if (available_subconfigs & MARSHAL_PLUGINADVANCEDOPTION_MAXOCCURS) {
@@ -997,14 +997,14 @@ osync_bool osync_demarshal_pluginadvancedoption(OSyncMessage *message, OSyncPlug
 
 	osync_message_read_string(message, &name);
 	osync_plugin_advancedoption_set_name(*opt, name);
-	g_free(name);
+	osync_free(name);
 
 	osync_message_read_uint(message, &type);
 	osync_plugin_advancedoption_set_type(*opt, type);
 
 	osync_message_read_string(message, &value);
 	osync_plugin_advancedoption_set_value(*opt, value);
-	g_free(value);
+	osync_free(value);
 
 	osync_message_read_uint(message, &num_parameters);
 
@@ -1022,7 +1022,7 @@ osync_bool osync_demarshal_pluginadvancedoption(OSyncMessage *message, OSyncPlug
 	for (i=0; i < num_valenum; i++) {
 		osync_message_read_string(message, &value);
 		osync_plugin_advancedoption_add_valenum(*opt, value);
-		g_free(value);
+		osync_free(value);
 	}
 
 	return TRUE;
@@ -1101,20 +1101,20 @@ osync_bool osync_demarshal_pluginlocalization(OSyncMessage *message, OSyncPlugin
 	if (available_fields & MARSHAL_PLUGINLOCALIZATION_ENCODING) {
 		osync_message_read_string(message, &encoding);
 		osync_plugin_localization_set_encoding(*local, encoding);
-		g_free(encoding);
+		osync_free(encoding);
 	}
 
 	if (available_fields & MARSHAL_PLUGINLOCALIZATION_TIMEZONE) {
 		osync_message_read_string(message, &timezone);
 		osync_plugin_localization_set_encoding(*local, timezone);
-		g_free(timezone);
+		osync_free(timezone);
 	}
 	
 	
 	if (available_fields & MARSHAL_PLUGINLOCALIZATION_LANGUAGE) {
 		osync_message_read_string(message, &language);
 		osync_plugin_localization_set_encoding(*local, language);
-		g_free(language);
+		osync_free(language);
 	}
 
 	return TRUE;
@@ -1200,18 +1200,18 @@ osync_bool osync_demarshal_pluginauthentication(OSyncMessage *message, OSyncPlug
 
 	osync_message_read_string(message, &username);
 	osync_plugin_authentication_set_username(*auth, username);
-	g_free(username);
+	osync_free(username);
 
 	if (available_fields & MARSHAL_PLUGINAUTEHNTICATION_PASSWORD) {
 		osync_message_read_string(message, &password);
 		osync_plugin_authentication_set_password(*auth, password);
-		g_free(password);
+		osync_free(password);
 	}
 
 	if (available_fields & MARSHAL_PLUGINAUTEHNTICATION_REFERENCE) {
 		osync_message_read_string(message, &reference);
 		osync_plugin_authentication_set_reference(*auth, reference);
-		g_free(reference);
+		osync_free(reference);
 	}
 
 	return TRUE;
@@ -1362,7 +1362,7 @@ osync_bool osync_demarshal_pluginresource(OSyncMessage *message, OSyncPluginReso
 
 	osync_message_read_string(message, &objtype);
 	osync_plugin_resource_set_objtype(*res, objtype);
-	g_free(objtype);
+	osync_free(objtype);
 
 	osync_message_read_uint(message, &num_sinks);
 	for (i=0; i < num_sinks; i++) {
@@ -1379,31 +1379,31 @@ osync_bool osync_demarshal_pluginresource(OSyncMessage *message, OSyncPluginReso
 	if (available_settings & MARSHAL_PLUGINRESOURCE_PREFERRED_FORMAT) {
 		osync_message_read_string(message, &preferred_format);
 		osync_plugin_resource_set_preferred_format(*res, preferred_format);
-		g_free(preferred_format);
+		osync_free(preferred_format);
 	}
 
 	if (available_settings & MARSHAL_PLUGINRESOURCE_NAME) {
 		osync_message_read_string(message, &name);
 		osync_plugin_resource_set_name(*res, name);
-		g_free(name);
+		osync_free(name);
 	}
 
 	if (available_settings & MARSHAL_PLUGINRESOURCE_MIME) {
 		osync_message_read_string(message, &mime);
 		osync_plugin_resource_set_mime(*res, mime);
-		g_free(mime);
+		osync_free(mime);
 	}
 
 	if (available_settings & MARSHAL_PLUGINRESOURCE_PATH) {
 		osync_message_read_string(message, &path);
 		osync_plugin_resource_set_path(*res, path);
-		g_free(path);
+		osync_free(path);
 	}
 
 	if (available_settings & MARSHAL_PLUGINRESOURCE_URL) {
 		osync_message_read_string(message, &url);
 		osync_plugin_resource_set_url(*res, url);
-		g_free(url);
+		osync_free(url);
 	}
 
 	return TRUE;

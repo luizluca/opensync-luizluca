@@ -35,7 +35,7 @@ OSyncFilter *osync_filter_new(const char *objtype, OSyncFilterAction action, OSy
 	if (!filter)
 		goto error;
 	
-	filter->objtype = g_strdup(objtype);
+	filter->objtype = osync_strdup(objtype);
 	filter->action = action;
 	filter->ref_count = 1;
 	
@@ -59,7 +59,7 @@ OSyncFilter *osync_filter_new_custom(OSyncCustomFilter *custom_filter, const cha
 	filter->custom_filter = custom_filter;
 	osync_custom_filter_ref(custom_filter);
 	
-	filter->config = g_strdup(config);
+	filter->config = osync_strdup(config);
 	filter->action = action;
 	filter->ref_count = 1;
 	
@@ -86,12 +86,12 @@ void osync_filter_unref(OSyncFilter *filter)
 	
 	if (g_atomic_int_dec_and_test(&(filter->ref_count))) {
 		if (filter->objtype)
-			g_free(filter->objtype);
+			osync_free(filter->objtype);
 		
 		if (filter->config)
-			g_free(filter->config);
+			osync_free(filter->config);
 		
-		g_free(filter);
+		osync_free(filter);
 	}
 }
 
@@ -101,8 +101,8 @@ void osync_filter_set_config(OSyncFilter *filter, const char *config)
 	
 	osync_assert(filter);
 	if (filter->config)
-		g_free(filter->config);
-	filter->config = g_strdup(config);
+		osync_free(filter->config);
+	filter->config = osync_strdup(config);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
@@ -153,9 +153,9 @@ OSyncCustomFilter *osync_custom_filter_new(const char *objtype, const char *objf
 	if (!filter)
 		goto error;
 	
-	filter->objtype = g_strdup(objtype);
-	filter->objformat = g_strdup(objformat);
-	filter->name = g_strdup(name);
+	filter->objtype = osync_strdup(objtype);
+	filter->objformat = osync_strdup(objformat);
+	filter->name = osync_strdup(name);
 	filter->hook = hook;
 	filter->ref_count = 1;
 	
@@ -182,15 +182,15 @@ void osync_custom_filter_unref(OSyncCustomFilter *filter)
 	
 	if (g_atomic_int_dec_and_test(&(filter->ref_count))) {
 		if (filter->objtype)
-			g_free(filter->objtype);
+			osync_free(filter->objtype);
 		
 		if (filter->objformat)
-			g_free(filter->objformat);
+			osync_free(filter->objformat);
 		
 		if (filter->name)
-			g_free(filter->name);
+			osync_free(filter->name);
 		
-		g_free(filter);
+		osync_free(filter);
 	}
 }
 

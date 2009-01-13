@@ -35,8 +35,8 @@ OSyncObjFormat *osync_objformat_new(const char *name, const char *objtype_name, 
 	if (!format)
 		return FALSE;
 	
-	format->name = g_strdup(name);
-	format->objtype_name = g_strdup(objtype_name);
+	format->name = osync_strdup(name);
+	format->objtype_name = osync_strdup(objtype_name);
 	format->ref_count = 1;
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, format);
@@ -58,12 +58,12 @@ void osync_objformat_unref(OSyncObjFormat *format)
 	
 	if (g_atomic_int_dec_and_test(&(format->ref_count))) {
 		if (format->name)
-			g_free(format->name);
+			osync_free(format->name);
 			
 		if (format->objtype_name)
-			g_free(format->objtype_name);
+			osync_free(format->objtype_name);
 
-		g_free(format);
+		osync_free(format);
 	}
 }
 

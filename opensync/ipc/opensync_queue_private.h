@@ -69,7 +69,7 @@ struct OSyncQueue {
 	GAsyncQueue *outgoing;
 	
 	/** List of pending replies */
-	GList *pendingReplies;
+	OSyncList *pendingReplies;
 	GMutex *pendingLock;
 	
 	GSourceFuncs *write_functions;

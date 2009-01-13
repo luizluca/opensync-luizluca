@@ -54,18 +54,18 @@ void osync_plugin_info_unref(OSyncPluginInfo *info)
 	
 	if (g_atomic_int_dec_and_test(&(info->ref_count))) {
 		if (info->config)
-			g_free(info->config);
+			osync_free(info->config);
 		
 		if (info->configdir)
-			g_free(info->configdir);
+			osync_free(info->configdir);
 		
 		if (info->groupname)
-			g_free(info->groupname);
+			osync_free(info->groupname);
 		
 		while (info->objtypes) {
 			OSyncObjTypeSink *sink = info->objtypes->data;
 			osync_objtype_sink_unref(sink);
-			info->objtypes = g_list_remove(info->objtypes, sink);
+			info->objtypes = osync_list_remove(info->objtypes, sink);
 		}
 		
 		if (info->main_sink)
@@ -80,7 +80,7 @@ void osync_plugin_info_unref(OSyncPluginInfo *info)
 		if (info->formatenv)
 			osync_format_env_unref(info->formatenv);
 		
-		g_free(info);
+		osync_free(info);
 	}
 }
 
@@ -118,8 +118,8 @@ void osync_plugin_info_set_configdir(OSyncPluginInfo *info, const char *configdi
 {
 	osync_assert(info);
 	if (info->configdir)
-		g_free(info->configdir);
-	info->configdir = g_strdup(configdir);
+		osync_free(info->configdir);
+	info->configdir = osync_strdup(configdir);
 }
 
 const char *osync_plugin_info_get_configdir(OSyncPluginInfo *info)
@@ -132,8 +132,8 @@ void osync_plugin_info_set_groupname(OSyncPluginInfo *info, const char *groupnam
 {
 	osync_assert(info);
 	if (info->groupname)
-		g_free(info->groupname);
-	info->groupname = g_strdup(groupname);
+		osync_free(info->groupname);
+	info->groupname = osync_strdup(groupname);
 }
 
 const char *osync_plugin_info_get_groupname(OSyncPluginInfo *info)
@@ -144,7 +144,7 @@ const char *osync_plugin_info_get_groupname(OSyncPluginInfo *info)
 
 OSyncObjTypeSink *osync_plugin_info_find_objtype(OSyncPluginInfo *info, const char *name)
 {
-	GList *p;
+	OSyncList *p;
 	OSyncObjTypeSink *sink = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %s)", __func__, info, name);
 	osync_assert(info);
@@ -175,20 +175,20 @@ OSyncObjTypeSink *osync_plugin_info_find_objtype(OSyncPluginInfo *info, const ch
 void osync_plugin_info_add_objtype(OSyncPluginInfo *info, OSyncObjTypeSink *sink)
 {
 	osync_assert(info);
-	info->objtypes = g_list_append(info->objtypes, sink);
+	info->objtypes = osync_list_append(info->objtypes, sink);
 	osync_objtype_sink_ref(sink);
 }
 
 unsigned int osync_plugin_info_num_objtypes(OSyncPluginInfo *info)
 {
 	osync_assert(info);
-	return g_list_length(info->objtypes);
+	return osync_list_length(info->objtypes);
 }
 
 OSyncObjTypeSink *osync_plugin_info_nth_objtype(OSyncPluginInfo *info, unsigned int nth)
 {
 	osync_assert(info);
-	return g_list_nth_data(info->objtypes, nth);
+	return osync_list_nth_data(info->objtypes, nth);
 }
 
 OSyncObjTypeSink *osync_plugin_info_get_main_sink(OSyncPluginInfo *info)

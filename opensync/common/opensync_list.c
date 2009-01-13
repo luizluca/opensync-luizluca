@@ -376,7 +376,7 @@ osync_list_nth_data (OSyncList     *list,
 
 OSyncList*
 osync_list_find (OSyncList  *list,
-                 void *     data)
+                 const void *data)
 {
 	while (list)
 		{
@@ -390,7 +390,7 @@ osync_list_find (OSyncList  *list,
 
 OSyncList*
 osync_list_find_custom (OSyncList          *list,
-                        void *             data,
+                        const void         *data,
                         OSyncCompareFunc   func)
 {
 	g_return_val_if_fail (func != NULL, list);

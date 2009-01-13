@@ -95,7 +95,7 @@ void osync_entry_engine_unref(OSyncMappingEntryEngine *engine)
 		if (engine->entry)
 			osync_mapping_entry_unref(engine->entry);
 		
-		g_free(engine);
+		osync_free(engine);
 	}
 }
 
@@ -218,7 +218,7 @@ osync_bool osync_entry_engine_convert(OSyncMappingEntryEngine *entry_engine, OSy
 	osync_trace(TRACE_INTERNAL, "Starting to convert from objtype %s and format %s", osync_change_get_objtype(entry_engine->change), osync_objformat_get_name(osync_change_get_objformat(entry_engine->change)));
 	/* We have to save the objtype of the change so that it does not get
 	 * overwritten by the conversion */
-	objtype = g_strdup(osync_change_get_objtype(change));
+	objtype = osync_strdup(osync_change_get_objtype(change));
 		
 	/* Now we have to convert to one of the formats
 	 * that the client can understand */
@@ -256,14 +256,14 @@ osync_bool osync_entry_engine_convert(OSyncMappingEntryEngine *entry_engine, OSy
 	*cachedpath = path;
 		
 	osync_change_set_objtype(change, objtype);
-	g_free(objtype);
+	osync_free(objtype);
 
 	return TRUE;
 
 error_free_path:
 	osync_converter_path_unref(path);
 error_free_objtype:
-	g_free(objtype);
+	osync_free(objtype);
 /*error:*/
 	return FALSE;
 }

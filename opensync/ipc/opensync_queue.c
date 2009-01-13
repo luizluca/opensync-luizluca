@@ -41,7 +41,7 @@ static gboolean _timeout_prepare(GSource *source, gint *timeout_)
 
 static gboolean _timeout_check(GSource *source)
 {
-	GList *p;
+	OSyncList *p;
 	GTimeVal current_time;
 	OSyncTimeoutInfo *toinfo;
 	OSyncPendingMessage *pending;
@@ -79,7 +79,7 @@ static gboolean _timeout_check(GSource *source)
 
 static gboolean _timeout_dispatch(GSource *source, GSourceFunc callback, gpointer user_data)
 {
-	GList *p;
+	OSyncList *p;
 	OSyncPendingMessage *pending;
 	OSyncTimeoutInfo *toinfo;
 	OSyncQueue *queue = NULL;
@@ -122,7 +122,7 @@ static gboolean _timeout_dispatch(GSource *source, GSourceFunc callback, gpointe
 				 would catch this message, the pending callback
 				 gets called twice! */
 
-			queue->pendingReplies = g_list_remove(queue->pendingReplies, pending);
+			queue->pendingReplies = osync_list_remove(queue->pendingReplies, pending);
 			/* Unlock the pending lock since the messages might be sent during the callback */
 			g_mutex_unlock(queue->pendingLock);
 
@@ -132,7 +132,7 @@ static gboolean _timeout_dispatch(GSource *source, GSourceFunc callback, gpointe
 
 			// TODO: Refcounting for OSyncPendingMessage
 			g_free(pending->timeout_info);
-			g_free(pending);
+			osync_free(pending);
 
 			/* Lock again, to keep the iteration of the pendingReplies list atomic. */
 			g_mutex_lock(queue->pendingLock);
@@ -167,7 +167,7 @@ static gboolean _incoming_dispatch(GSource *source, GSourceFunc callback, gpoint
 {
 	OSyncPendingMessage *pending = NULL;
 	OSyncQueue *queue = user_data;
-	GList *p = NULL;
+	OSyncList *p = NULL;
 	OSyncMessage *message = NULL;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, user_data);
@@ -193,7 +193,7 @@ static gboolean _incoming_dispatch(GSource *source, GSourceFunc callback, gpoint
 						 would catch this message, the pending callback
 						 gets called twice! */
 
-					queue->pendingReplies = g_list_remove(queue->pendingReplies, pending);
+					queue->pendingReplies = osync_list_remove(queue->pendingReplies, pending);
 
 					/* Unlock the pending lock since the messages might be sent during the callback */
 					g_mutex_unlock(queue->pendingLock);
@@ -205,7 +205,7 @@ static gboolean _incoming_dispatch(GSource *source, GSourceFunc callback, gpoint
 					// TODO: Refcounting for OSyncPendingMessage
 					if (pending->timeout_info)
 						g_free(pending->timeout_info);
-					g_free(pending);
+					osync_free(pending);
 
 					/* Lock again, to keep the iteration of the pendingReplies list atomic. */
 					g_mutex_lock(queue->pendingLock);
@@ -434,7 +434,7 @@ static gboolean _source_check(GSource *source)
 		 * receive any data on the pipe, therefore, any pending replies will never
 		 * be answered. So we return error messages for all of them. */
 		if (queue->pendingReplies) {
-			GList *p = NULL;
+			OSyncList *p = NULL;
 			g_mutex_lock(queue->pendingLock);
 			osync_error_set(&error, OSYNC_ERROR_IO_ERROR, "Broken Pipe");
 			for (p = queue->pendingReplies; p; p = p->next) {
@@ -710,13 +710,13 @@ void osync_queue_unref(OSyncQueue *queue)
 		while (queue->pendingReplies) {
 			pending = queue->pendingReplies->data;
 
-			queue->pendingReplies = g_list_remove(queue->pendingReplies, pending);
+			queue->pendingReplies = osync_list_remove(queue->pendingReplies, pending);
 
 			/** @todo Refcounting for OSyncPendingMessage */
 			if (pending->timeout_info)
 				g_free(pending->timeout_info);
 
-			g_free(pending);
+			osync_free(pending);
 		}
 
 		if (queue->name)
@@ -816,9 +816,11 @@ osync_bool osync_queue_connect(OSyncQueue *queue, OSyncQueueType type, OSyncErro
 	queue->thread = osync_thread_new(queue->context, error);
 
 	if (!queue->thread)
-		goto error;
+		goto error_close;
 	
-	queue->write_functions = g_malloc0(sizeof(GSourceFuncs));
+	queue->write_functions = osync_try_malloc0(sizeof(GSourceFuncs), error);
+	if (!queue->write_functions)
+		goto error_close;
 	queue->write_functions->prepare = _queue_prepare;
 	queue->write_functions->check = _queue_check;
 	queue->write_functions->dispatch = _queue_dispatch;
@@ -832,7 +834,9 @@ osync_bool osync_queue_connect(OSyncQueue *queue, OSyncQueueType type, OSyncErro
 	if (queue->context)
 		g_main_context_ref(queue->context);
 
-	queue->read_functions = g_malloc0(sizeof(GSourceFuncs));
+	queue->read_functions = osync_try_malloc0(sizeof(GSourceFuncs), error);
+	if (!queue->read_functions)
+		goto error_close;
 	queue->read_functions->prepare = _source_prepare;
 	queue->read_functions->check = _source_check;
 	queue->read_functions->dispatch = _source_dispatch;
@@ -846,7 +850,9 @@ osync_bool osync_queue_connect(OSyncQueue *queue, OSyncQueueType type, OSyncErro
 	if (queue->context)
 		g_main_context_ref(queue->context);
 
-	queue->timeout_functions = g_malloc0(sizeof(GSourceFuncs));
+	queue->timeout_functions = osync_try_malloc0(sizeof(GSourceFuncs), error);
+	if (!queue->timeout_functions)
+		goto error_close;
 	queue->timeout_functions->prepare = _timeout_prepare;
 	queue->timeout_functions->check = _timeout_check;
 	queue->timeout_functions->dispatch = _timeout_dispatch;
@@ -888,14 +894,14 @@ osync_bool osync_queue_disconnect(OSyncQueue *queue, OSyncError **error)
 	//g_source_unref(queue->write_source);
 	
 	if (queue->write_functions) {
-		g_free(queue->write_functions);
+		osync_free(queue->write_functions);
 		queue->write_functions = NULL;
 	}
 		
 	//g_source_unref(queue->read_source);
 	
 	if (queue->timeout_functions) {
-		g_free(queue->timeout_functions);
+		osync_free(queue->timeout_functions);
 		queue->timeout_functions = NULL;
 	}
 		
@@ -1063,7 +1069,7 @@ osync_bool osync_queue_send_message_with_timeout(OSyncQueue *queue, OSyncQueue *
 		pending->user_data = osync_message_get_handler_data(message);
 		
 		g_mutex_lock(replyqueue->pendingLock);
-		replyqueue->pendingReplies = g_list_append(replyqueue->pendingReplies, pending);
+		replyqueue->pendingReplies = osync_list_append(replyqueue->pendingReplies, pending);
 		g_mutex_unlock(replyqueue->pendingLock);
 	}
 	

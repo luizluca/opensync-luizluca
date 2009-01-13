@@ -758,13 +758,13 @@ osync_bool osync_plugin_config_file_load(OSyncPluginConfig *config, const char *
 		goto error;
 
 	/* Validate plugin configuration file */
-	schemafile = g_strdup_printf("%s%c%s", schemapath, G_DIR_SEPARATOR, OSYNC_PLUGIN_CONFING_SCHEMA);
+	schemafile = osync_strdup_printf("%s%c%s", schemapath, G_DIR_SEPARATOR, OSYNC_PLUGIN_CONFING_SCHEMA);
 	if (!osync_xml_validate_document(doc, schemafile)) {
 		osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "Plugin configuration file is not valid! %s", schemafile);
-		g_free(schemafile);
+		osync_free(schemafile);
 		goto error;
 	}
-	g_free(schemafile);
+	osync_free(schemafile);
 
 	if (cur && !_osync_plugin_config_parse(config, cur, error))
 		goto error;
@@ -842,9 +842,9 @@ static osync_bool _osync_plugin_config_assemble_connection(xmlNode *cur, OSyncPl
 
 		rfcomm_channel = osync_plugin_connection_bt_get_channel(conn);
 		if (rfcomm_channel) {
-			str = g_strdup_printf("%u", rfcomm_channel);
+			str = osync_strdup_printf("%u", rfcomm_channel);
 			xmlNewChild(typenode, NULL, (xmlChar*)"RFCommChannel", (xmlChar*)str);
-			g_free(str);
+			osync_free(str);
 		}
 
 		sdpuuid = osync_plugin_connection_bt_get_sdpuuid(conn);
@@ -860,23 +860,23 @@ static osync_bool _osync_plugin_config_assemble_connection(xmlNode *cur, OSyncPl
 
 		vendorid = osync_plugin_connection_usb_get_vendorid(conn);
 		if (vendorid) {
-			str = g_strdup(vendorid);
+			str = osync_strdup(vendorid);
 			xmlNewChild(typenode, NULL, (xmlChar*)"VendorID", (xmlChar*)str);
-			g_free(str);
+			osync_free(str);
 		}
 
 		productid = osync_plugin_connection_usb_get_productid(conn);
 		if (productid) {
-			str = g_strdup(productid);
+			str = osync_strdup(productid);
 			xmlNewChild(typenode, NULL, (xmlChar*)"ProductID", (xmlChar*)str);
-			g_free(str);
+			osync_free(str);
 		}
 
 		interf = osync_plugin_connection_usb_get_interface(conn);
 		if (interf) {
-			str = g_strdup_printf("%u", interf);
+			str = osync_strdup_printf("%u", interf);
 			xmlNewChild(typenode, NULL, (xmlChar*)"Interface", (xmlChar*)str);
-			g_free(str);
+			osync_free(str);
 		}
 	}
 
@@ -892,9 +892,9 @@ static osync_bool _osync_plugin_config_assemble_connection(xmlNode *cur, OSyncPl
 
 		port = osync_plugin_connection_net_get_port(conn);
 		if (port) {
-			str = g_strdup_printf("%u", port);
+			str = osync_strdup_printf("%u", port);
 			xmlNewChild(typenode, NULL, (xmlChar*)"Port", (xmlChar*)str);
-			g_free(str);
+			osync_free(str);
 		}
 
 		protocol = osync_plugin_connection_net_get_protocol(conn);
@@ -914,9 +914,9 @@ static osync_bool _osync_plugin_config_assemble_connection(xmlNode *cur, OSyncPl
 
 		speed = osync_plugin_connection_serial_get_speed(conn);
 		if (speed) {
-			str = g_strdup_printf("%u", speed);
+			str = osync_strdup_printf("%u", speed);
 			xmlNewChild(typenode, NULL, (xmlChar*)"Speed", (xmlChar*)str);
-			g_free(str);
+			osync_free(str);
 		}
 
 		devicenode = osync_plugin_connection_serial_get_devicenode(conn);
@@ -1155,23 +1155,23 @@ static osync_bool _osync_plugin_config_assemble_advancedoption(xmlNode *cur, OSy
 
 	/* MaxOccurs */
 	if (osync_plugin_advancedoption_get_maxoccurs(option)) {
-		char *str = g_strdup_printf("%u", osync_plugin_advancedoption_get_maxoccurs(option));
+		char *str = osync_strdup_printf("%u", osync_plugin_advancedoption_get_maxoccurs(option));
 		xmlNewChild(node, NULL, BAD_CAST "MaxOccurs", BAD_CAST str);
-		g_free(str);
+		osync_free(str);
 	}
 
 	/* Max */
 	if (osync_plugin_advancedoption_get_max(option)) {
-		char *str = g_strdup_printf("%u", osync_plugin_advancedoption_get_max(option));
+		char *str = osync_strdup_printf("%u", osync_plugin_advancedoption_get_max(option));
 		xmlNewChild(node, NULL, BAD_CAST "Max", BAD_CAST str);
-		g_free(str);
+		osync_free(str);
 	}
 
 	/* Min */
 	if (osync_plugin_advancedoption_get_min(option)) {
-		char *str = g_strdup_printf("%u", osync_plugin_advancedoption_get_min(option));
+		char *str = osync_strdup_printf("%u", osync_plugin_advancedoption_get_min(option));
 		xmlNewChild(node, NULL, BAD_CAST "Min", BAD_CAST str);
-		g_free(str);
+		osync_free(str);
 	}
 
 	/* Name */
@@ -1281,7 +1281,7 @@ void osync_plugin_config_unref(OSyncPluginConfig *config)
 			config->resources = osync_list_remove(config->resources, res);
 		}
 			
-		g_free(config);
+		osync_free(config);
 	}
 }
 
@@ -1321,9 +1321,9 @@ osync_bool osync_plugin_config_file_save(OSyncPluginConfig *config, const char *
 	}
 
 	/* Set version for plugin configuration */
-	version_str = g_strdup_printf("%u.%u", OSYNC_PLUGIN_MAJOR_VERSION, OSYNC_PLUGIN_MINOR_VERSION);
+	version_str = osync_strdup_printf("%u.%u", OSYNC_PLUGIN_MAJOR_VERSION, OSYNC_PLUGIN_MINOR_VERSION);
 	xmlSetProp(doc->children, (const xmlChar*)"version", (const xmlChar *)version_str);
-	g_free(version_str);
+	osync_free(version_str);
 
 	/** Assemble... */
 	/* Advanced Options */

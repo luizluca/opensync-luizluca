@@ -114,8 +114,8 @@ struct OSyncObjTypeSink {
 	int ref_count;
 
 	/** List to pile up changes for batch commit */
-	GList *commit_changes;
-	GList *commit_contexts;
+	OSyncList *commit_changes;
+	OSyncList *commit_contexts;
 	osync_bool available;
 };
 

@@ -65,7 +65,7 @@ void osync_module_unref(OSyncModule *module)
 			osync_module_unload(module);
 		
 		if (module->path)
-			g_free(module->path);
+			osync_free(module->path);
 	
 		osync_free(module);
 	}
@@ -233,7 +233,7 @@ osync_bool osync_module_load(OSyncModule *module, const char *path, OSyncError *
 		goto error;
 	}
 	
-	module->path = g_strdup(path);
+	module->path = osync_strdup(path);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;

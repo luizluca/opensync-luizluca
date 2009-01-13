@@ -66,9 +66,9 @@ void osync_data_unref(OSyncData *data)
 			osync_objformat_unref(data->objformat);
 			
 		if (data->objtype)
-			g_free(data->objtype);
+			osync_free(data->objtype);
 		
-		g_free(data);
+		osync_free(data);
 	}
 }
 
@@ -107,8 +107,8 @@ void osync_data_set_objtype(OSyncData *data, const char *objtype)
 {
 	osync_assert(data);
 	if (data->objtype)
-		g_free(data->objtype);
-	data->objtype = g_strdup(objtype);
+		osync_free(data->objtype);
+	data->objtype = osync_strdup(objtype);
 }
 
 void osync_data_get_data(OSyncData *data, char **buffer, unsigned int *size)
@@ -162,7 +162,7 @@ OSyncData *osync_data_clone(OSyncData *source, OSyncError **error)
 	if (!data)
 		return NULL;
 	
-	data->objtype = g_strdup(source->objtype);
+	data->objtype = osync_strdup(source->objtype);
 	
 	if (source->data) {
 		if (!osync_objformat_copy(source->objformat, source->data, source->size, &buffer, &size, error)) {

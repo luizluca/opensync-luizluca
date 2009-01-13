@@ -51,7 +51,7 @@ void osync_context_unref(OSyncContext *context)
 	osync_assert(context);
 	
 	if (g_atomic_int_dec_and_test(&(context->ref_count))) {
-		g_free(context);
+		osync_free(context);
 	}
 }
 

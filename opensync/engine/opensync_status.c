@@ -37,14 +37,14 @@ void osync_status_free_member_update(OSyncMemberUpdate *update)
 	osync_assert(update);
 	
 	if (update->objtype)
-		g_free(update->objtype);
+		osync_free(update->objtype);
 	
 	osync_member_unref(update->member);
 	
 	if (update->error)
 		osync_error_unref(&update->error);
 	
-	g_free(update);
+	osync_free(update);
 }
 
 void osync_status_free_engine_update(OSyncEngineUpdate *update)
@@ -54,7 +54,7 @@ void osync_status_free_engine_update(OSyncEngineUpdate *update)
 	if (update->error)
 		osync_error_unref(&update->error);
 	
-	g_free(update);
+	osync_free(update);
 }
 
 void osync_status_free_change_update(OSyncChangeUpdate *update)
@@ -69,7 +69,7 @@ void osync_status_free_change_update(OSyncChangeUpdate *update)
 	if (update->error)
 		osync_error_unref(&update->error);
 	
-	g_free(update);
+	osync_free(update);
 }
 
 void osync_status_free_mapping_update(OSyncMappingUpdate *update)
@@ -81,7 +81,7 @@ void osync_status_free_mapping_update(OSyncMappingUpdate *update)
 	if (update->error)
 		osync_error_unref(&update->error);
 	
-	g_free(update);
+	osync_free(update);
 }
 
 osync_bool osync_status_conflict(OSyncEngine *engine, OSyncMappingEngine *mapping_engine)
@@ -121,9 +121,13 @@ void osync_status_update_member(OSyncEngine *engine, OSyncMember *member, OSyncM
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %i, %s, %p)", __func__, engine, member, type, objtype, error);
 	
 	if (engine->mebstat_callback) {
-		OSyncMemberUpdate *update = g_malloc0(sizeof(OSyncMemberUpdate));
-		if (!update)
+		OSyncError *internal_error = NULL;
+		OSyncMemberUpdate *update = osync_try_malloc0(sizeof(OSyncMemberUpdate), &internal_error);
+		if (!update) {
+			osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&internal_error));
+			osync_error_unref(&internal_error);
 			return;
+		}
 		
 		update->type = type;
 		
@@ -133,7 +137,7 @@ void osync_status_update_member(OSyncEngine *engine, OSyncMember *member, OSyncM
 		update->error = error;
 		osync_error_ref(&error);
 		
-		update->objtype = g_strdup(objtype);
+		update->objtype = osync_strdup(objtype);
 		
 		engine->mebstat_callback(update, engine->mebstat_userdata);
 		
@@ -149,9 +153,13 @@ void osync_status_update_change(OSyncEngine *engine, OSyncChange *change, OSyncM
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %i, %p)", __func__, engine, change, member, mapping, type, error);
 	
 	if (engine->changestat_callback) {
-		OSyncChangeUpdate *update = g_malloc0(sizeof(OSyncChangeUpdate));
-		if (!update)
+		OSyncError *internal_error = NULL;
+		OSyncChangeUpdate *update = osync_try_malloc0(sizeof(OSyncChangeUpdate), &internal_error);
+		if (!update) {
+			osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&internal_error));
+			osync_error_unref(&internal_error);
 			return;
+		}
 		
 		update->type = type;
 		
@@ -178,9 +186,13 @@ void osync_status_update_mapping(OSyncEngine *engine, OSyncMappingEngine *mappin
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %i, %p)", __func__, engine, mapping, type, error);
 	
 	if (engine->mapstat_callback) {
-		OSyncMappingUpdate *update = g_malloc0(sizeof(OSyncMappingUpdate));
-		if (!update)
+		OSyncError *internal_error = NULL;
+		OSyncMappingUpdate *update = osync_try_malloc0(sizeof(OSyncMappingUpdate), &internal_error);
+		if (!update) {
+			osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&internal_error));
+			osync_error_unref(&internal_error);
 			return;
+		}
 		
 		update->type = type;
 		
@@ -203,9 +215,13 @@ void osync_status_update_engine(OSyncEngine *engine, OSyncEngineEvent type, OSyn
 	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p)", __func__, engine, type, error);
 	
 	if (engine->engstat_callback) {
-		OSyncEngineUpdate *update = g_malloc0(sizeof(OSyncEngineUpdate));
-		if (!update)
+		OSyncError *internal_error = NULL;
+		OSyncEngineUpdate *update = osync_try_malloc0(sizeof(OSyncEngineUpdate), &internal_error);
+		if (!update) {
+			osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&internal_error));
+			osync_error_unref(&internal_error);
 			return;
+		}
 		
 		update->type = type;
 		

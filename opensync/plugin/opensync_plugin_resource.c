@@ -51,13 +51,13 @@ void osync_plugin_resource_unref(OSyncPluginResource *resource)
 
 	if (g_atomic_int_dec_and_test(&(resource->ref_count))) {
 		if (resource->name)
-			g_free(resource->name);
+			osync_free(resource->name);
 
 		if (resource->objtype)
-			g_free(resource->objtype);
+			osync_free(resource->objtype);
 
 		if (resource->mime)
-			g_free(resource->mime);
+			osync_free(resource->mime);
 
 		while (resource->objformatsinks) {
 			osync_objformat_sink_unref(resource->objformatsinks->data);
@@ -65,12 +65,12 @@ void osync_plugin_resource_unref(OSyncPluginResource *resource)
 		}
 			
 		if (resource->path)
-			g_free(resource->path);
+			osync_free(resource->path);
 
 		if (resource->url)
-			g_free(resource->url);
+			osync_free(resource->url);
 			
-		g_free(resource);
+		osync_free(resource);
 	}
 }
 
@@ -111,9 +111,9 @@ void osync_plugin_resource_set_name(OSyncPluginResource *resource, const char *n
 {
 	osync_assert(resource);
 	if (resource->name)
-		g_free(resource->name);
+		osync_free(resource->name);
 
-	resource->name = g_strdup(name);
+	resource->name = osync_strdup(name);
 }
 
 const char *osync_plugin_resource_get_mime(OSyncPluginResource *resource)
@@ -126,9 +126,9 @@ void osync_plugin_resource_set_mime(OSyncPluginResource *resource, const char *m
 {
 	osync_assert(resource);
 	if (resource->mime)
-		g_free(resource->mime);
+		osync_free(resource->mime);
 
-	resource->mime = g_strdup(mime);
+	resource->mime = osync_strdup(mime);
 }
 
 const char *osync_plugin_resource_get_preferred_format(OSyncPluginResource *resource)
@@ -141,9 +141,9 @@ void osync_plugin_resource_set_preferred_format(OSyncPluginResource *resource, c
 {
 	osync_assert(resource);
 	if (resource->preferred_format)
-		g_free(resource->preferred_format);
+		osync_free(resource->preferred_format);
 
-	resource->preferred_format = g_strdup(preferred_format);
+	resource->preferred_format = osync_strdup(preferred_format);
 }
 
 OSyncList *osync_plugin_resource_get_objformat_sinks(OSyncPluginResource *resource)
@@ -183,9 +183,9 @@ void osync_plugin_resource_set_objtype(OSyncPluginResource *resource, const char
 {
 	osync_assert(resource);
 	if (resource->objtype)
-		g_free(resource->objtype);
+		osync_free(resource->objtype);
 
-	resource->objtype = g_strdup(objtype);
+	resource->objtype = osync_strdup(objtype);
 }
 
 const char *osync_plugin_resource_get_path(OSyncPluginResource *resource)
@@ -198,9 +198,9 @@ void osync_plugin_resource_set_path(OSyncPluginResource *resource, const char *p
 {
 	osync_assert(resource);
 	if (resource->path)
-		g_free(resource->path);
+		osync_free(resource->path);
 
-	resource->path = g_strdup(path);
+	resource->path = osync_strdup(path);
 }
 
 const char *osync_plugin_resource_get_url(OSyncPluginResource *resource)
@@ -213,8 +213,8 @@ void osync_plugin_resource_set_url(OSyncPluginResource *resource, const char *ur
 {
 	osync_assert(resource);
 	if (resource->url)
-		g_free(resource->url);
+		osync_free(resource->url);
 
-	resource->url = g_strdup(url);
+	resource->url = osync_strdup(url);
 }
 
