@@ -337,7 +337,7 @@ static void mock_report_dir(MockDir *directory, const char *subdir, OSyncContext
 				osync_assert(osync_file_read(filename, &(file->data), &(file->size), &error));
 
 				if (mock_get_error(info->memberid, "SLOW_REPORT"))
-					sleep(1);
+					g_usleep(1*G_USEC_PER_SEC);
 				
 				odata = osync_data_new((char *)file, sizeof(OSyncFileFormat), directory->objformat, &error);
 				osync_assert(odata);
@@ -391,7 +391,7 @@ static void mock_get_changes(void *data, OSyncPluginInfo *info, OSyncContext *ct
 	}
 
 	if (mock_get_error(info->memberid, "GET_CHANGES_TIMEOUT2"))
-		sleep(8);
+          g_usleep(8*G_USEC_PER_SEC);
 		
 	if (osync_objtype_sink_get_slowsync(sink)) {
 		osync_trace(TRACE_INTERNAL, "Slow sync requested");
