@@ -110,6 +110,7 @@ osync_bool osync_xmlfield_parse(OSyncXMLField *parent, xmlNodePtr node, OSyncXML
 
 	while (node != NULL) {
 
+		/* TODO: error handing -  could be NULL */
 		xmlfield = osync_xmlfield_new_xmlfield(parent, node, error);
 		if (!xmlfield)
 			goto error;
@@ -236,6 +237,7 @@ OSyncXMLField *osync_xmlfield_new(OSyncXMLFormat *xmlformat, const char *name, O
 	osync_assert(xmlformat);
 	osync_assert(name);
 	
+	/* TODO: error handing -  could be NULL */
 	node = xmlNewTextChild(xmlDocGetRootElement(xmlformat->doc), NULL, BAD_CAST name, NULL);
 	
 	xmlfield = osync_xmlfield_new_xmlformat(xmlformat, node, error);
@@ -408,19 +410,28 @@ void osync_xmlfield_set_key_value(OSyncXMLField *xmlfield, const char *key, cons
 			break;
 		}
 	}
+
+	/* TODO: error handling - API breaking? */
 	if(cur == NULL)
-		xmlNewTextChild(xmlfield->node, NULL, BAD_CAST key, BAD_CAST value);
+		cur = xmlNewTextChild(xmlfield->node, NULL, BAD_CAST key, BAD_CAST value);
+
+	/* TODO: error handing -  could be NULL */
+	osync_xmlfield_new_xmlfield(xmlfield, cur, NULL);
 
 	xmlfield->sorted = FALSE;
 }
 
 void osync_xmlfield_add_key_value(OSyncXMLField *xmlfield, const char *key, const char *value)
 {
+	xmlNodePtr cur;
+
 	osync_assert(xmlfield);
 	osync_assert(key);
 	osync_assert(value);
 
-	xmlNewTextChild(xmlfield->node, NULL, BAD_CAST key, BAD_CAST value);
+	cur = xmlNewTextChild(xmlfield->node, NULL, BAD_CAST key, BAD_CAST value);
+	/* TODO: error handing -  could be NULL */
+	osync_xmlfield_new_xmlfield(xmlfield, cur, NULL);
 
 	xmlfield->sorted = FALSE;
 }
