@@ -968,13 +968,17 @@ OSyncObjFormat *osync_format_env_detect_objformat(OSyncFormatEnv *env, OSyncData
 	return NULL;
 }
 
-OSyncObjFormat *osync_format_env_detect_objformat_full(OSyncFormatEnv *env, OSyncData *input, OSyncError **error)
+osync_bool osync_format_env_detect_objformat_full(OSyncFormatEnv *env, OSyncData *input, OSyncObjFormat **detected_format,  OSyncError **error)
 {
-	OSyncObjFormat *detected_format = NULL;
 	OSyncData *new_data = NULL;
 	OSyncList *d = NULL;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, env, input, error);
+
+	if (!input || !osync_data_has_data(input)) {
+		osync_trace(TRACE_EXIT, "%s: No data provided to detect.", __func__);
+		return TRUE;
+	}
 	
 	/* Make a copy of the data */
 	new_data = osync_data_clone(input, error);
@@ -1006,23 +1010,23 @@ OSyncObjFormat *osync_format_env_detect_objformat_full(OSyncFormatEnv *env, OSyn
 		if (!converter)
 			break;
 
-		if ((detected_format = osync_format_env_detect_objformat(env, new_data))) {
+		if ((*detected_format = osync_format_env_detect_objformat(env, new_data))) {
 			/* We detected the format. So we replace the original format. */
-			osync_data_set_objformat(new_data, detected_format);
+			osync_data_set_objformat(new_data, *detected_format);
 		} else
-			detected_format = osync_data_get_objformat(new_data);
+			*detected_format = osync_data_get_objformat(new_data);
 		
 	}
 	osync_data_unref(new_data);
 	
-	osync_trace(TRACE_EXIT, "%s: %p", __func__, detected_format);
-	return detected_format;
+	osync_trace(TRACE_EXIT, "%s: %p", __func__, *detected_format);
+	return TRUE;
 
  error_free_data:
 	osync_data_unref(new_data);
  error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-	return NULL;
+	return FALSE;
 }
 
 osync_bool osync_format_env_convert(OSyncFormatEnv *env, OSyncFormatConverterPath *path, OSyncData *data, OSyncError **error)
