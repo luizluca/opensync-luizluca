@@ -191,7 +191,7 @@ OSYNC_EXPORT OSyncObjFormat *osync_format_env_detect_objformat(OSyncFormatEnv *e
  * @returns TRUE when format detection successfully completed, FALSE on any error. 
  * 
  */
-OSYNC_EXPORT osync_bool osync_format_env_detect_objformat_full(OSyncFormatEnv *env, OSyncData *input, OSyncObjFormat **deteted_format, OSyncError **error);
+OSYNC_EXPORT osync_bool osync_format_env_detect_objformat_full(OSyncFormatEnv *env, OSyncData *input, OSyncObjFormat **detected_format, OSyncError **error);
 
 /** @brief Convert a data object using a specific conversion path
  * 
