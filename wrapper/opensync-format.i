@@ -247,7 +247,8 @@ typedef struct {} FormatEnv;
 
 	ObjFormat *detect_objformat_full(Data *input) {
 		Error *err = NULL;
-		ObjFormat *ret = osync_format_env_detect_objformat_full(self, input, &err);
+                ObjFormat *ret;
+		osync_format_env_detect_objformat_full(self, input, &ret, &err);
 		if (!raise_exception_on_error(err) && !ret)
 			wrapper_exception("osync_format_env_detect_objformat_full failed but did not set error code");
 		if (ret)
