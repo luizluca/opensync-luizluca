@@ -170,7 +170,7 @@ OSYNC_TESTCASE_DISABLED( engine-error engine_error_get_changes_timeout_sleep "10
 OSYNC_TESTCASE( engine-error engine_error_single_commit_error)
 OSYNC_TESTCASE( engine-error engine_error_dual_commit_error)
 OSYNC_TESTCASE( engine-error engine_error_single_commit_timeout)
-OSYNC_TESTCASE( engine-error engine_error_dual_commit_timeout)
+OSYNC_TESTCASE_DISABLED( engine-error engine_error_dual_commit_timeout, "1041")
 OSYNC_TESTCASE( engine-error engine_error_commit_timeout_and_error)
 OSYNC_TESTCASE( engine-error engine_error_commit_timeout_and_error2)
 OSYNC_TESTCASE( engine-error engine_error_commit_error_modify)
