@@ -391,7 +391,7 @@ static void mock_get_changes(void *data, OSyncPluginInfo *info, OSyncContext *ct
 	}
 
 	if (mock_get_error(info->memberid, "GET_CHANGES_TIMEOUT2"))
-          g_usleep(8*G_USEC_PER_SEC);
+		g_usleep(8*G_USEC_PER_SEC);
 		
 	if (osync_objtype_sink_get_slowsync(sink)) {
 		osync_trace(TRACE_INTERNAL, "Slow sync requested");
