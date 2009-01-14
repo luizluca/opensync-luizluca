@@ -70,6 +70,31 @@ Some highlights:
   return point. Do not abuse goto usage though... never goto up,
   never create more than one label and do not "gotoo far".
 
+EMACS
+---------------------------------------------------------------------
+For the above indentation rules, you can add the following 
+to your .emacs file:
+
+;; Additional setting to have linux kernel style
+;; indentation. Argument lists in next line will only
+;; be indented by tabs
+(defun c-lineup-arglist-tabs-only (ignored)
+  "Line up argument lists by tabs, not spaces"
+  (let* ((anchor (c-langelem-pos c-syntactic-element))
+     (column (c-langelem-2nd-pos c-syntactic-element))
+     (offset (- (1+ column) anchor))
+     (steps (floor offset c-basic-offset)))
+    (* (max steps 1)
+       c-basic-offset)))
+
+(defun my-c-mode-hook ()
+  (setq indent-tabs-mode t)
+  (c-set-style "linux")
+  (c-set-offset 'arglist-cont-nonempty 
+                '(c-lineup-gcc-asm-reg c-lineup-arglist-tabs-only))
+)
+
+(add-hook 'c-mode-hook 'my-c-mode-hook )
 
 CODE DOCUMENTATION
 ---------------------------------------------------------------------
