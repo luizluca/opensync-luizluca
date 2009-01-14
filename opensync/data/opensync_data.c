@@ -146,7 +146,7 @@ void osync_data_set_data(OSyncData *data, char *buffer, unsigned int size)
 
 osync_bool osync_data_has_data(OSyncData *data)
 {
-	osync_assert(data);
+	osync_return_val_if_fail(data, FALSE);
 	return data->data ? TRUE : FALSE;
 }
 
