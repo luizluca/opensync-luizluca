@@ -56,6 +56,18 @@ OSYNC_EXPORT osync_bool osync_file_write(const char *filename, const char *data,
  */
 OSYNC_EXPORT osync_bool osync_file_read(const char *filename, char **data, unsigned int *size, OSyncError **error);
 
+/*! @brief Removes a directory recursively
+ * 
+ * Removes a directory recursively. This is an 
+ * internal function for portability. 
+ * 
+ * @param dirname Directory which will be deleted
+ * @returns 0 if successful, -1 otherwise
+ * 
+ */
+
+int osync_remove_directory_recursively(const char *dirname);
+
 /*@} */
 
 #endif /* _OPENSYNC_FILE_H */

@@ -90,3 +90,47 @@ osync_bool osync_file_read(const char *filename, char **data, unsigned int *size
 	return ret;
 }
 
+int osync_remove_directory_recursively(const char *dirname)
+{
+	GDir *gdir = NULL;
+	GError *gerror = NULL;
+	const char *gdir_entry = NULL; 
+	char *gdir_entry_path = NULL;
+
+	gdir = g_dir_open(dirname, 0, &gerror);
+        if (!gdir)
+		goto error;
+	while ((gdir_entry = g_dir_read_name(gdir))) {
+		gdir_entry_path = g_strdup_printf("%s%c%s", dirname, G_DIR_SEPARATOR, gdir_entry);
+		if (g_file_test(gdir_entry_path, G_FILE_TEST_IS_DIR)) {
+			if (osync_remove_directory_recursively(gdir_entry_path) < 0){
+				g_set_error(&gerror, G_FILE_ERROR, g_file_error_from_errno(errno), "%s", gdir_entry_path);
+				g_free(gdir_entry_path);
+				goto error;
+			}
+		}else{
+			if (g_unlink(gdir_entry_path) < 0){
+				g_set_error(&gerror, G_FILE_ERROR, g_file_error_from_errno(errno), "%s", gdir_entry_path);
+				g_free(gdir_entry_path);
+				goto error;
+			}
+		}
+		g_free(gdir_entry_path);
+	} /* While */
+	g_dir_close(gdir);
+	gdir = NULL;
+        if (g_rmdir(dirname) < 0){
+          g_set_error(&gerror, G_FILE_ERROR, g_file_error_from_errno(errno), "%s", dirname);
+          goto error;
+        }
+
+	return 0; 
+		
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, gerror->message);
+	g_error_free(gerror);
+	if (gdir)
+		g_dir_close(gdir);
+	return -1;	
+}
+

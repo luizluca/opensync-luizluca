@@ -37,6 +37,7 @@
 #include "opensync-group.h"
 
 #include "common/opensync_xml_internals.h"
+#include "common/opensync_file.h"
 
 #include "opensync_updater.h"
 #include "opensync_updater_private.h"
@@ -555,7 +556,7 @@ static osync_bool osync_updater_restore_backup(OSyncUpdater *updater, const char
 		backup_groupdir = osync_strdup_printf("%s.bak", tmp);
 		osync_free(tmp);
 	}
-	if (g_unlink(groupdir) < 0) {
+	if (osync_remove_directory_recursively(groupdir) < 0) {
 		g_set_error(&gerror, G_FILE_ERROR, g_file_error_from_errno(errno), "%s", groupdir);
 		osync_error_set(&error, OSYNC_ERROR_GENERIC, "Could not remove current group directory: %s", gerror->message);
 		g_error_free(gerror);
