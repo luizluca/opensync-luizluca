@@ -85,6 +85,8 @@ typedef enum {
 typedef enum {
 	/** Uninitialized */
 	OSYNC_ENGINE_STATE_UNINITIALIZED,
+	/** Start Initialization **/
+	OSYNC_ENGINE_STATE_START_INIT,
 	/** Initialized */
 	OSYNC_ENGINE_STATE_INITIALIZED,
 	/** Waiting for synchronization request by a peer */

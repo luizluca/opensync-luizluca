@@ -1436,9 +1436,10 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 
 	if (engine->state != OSYNC_ENGINE_STATE_UNINITIALIZED) {
 		osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "This engine was not uninitialized: %i", engine->state);
-		goto error;
+		goto error_no_state_reset;
 	}
-	
+
+	engine->state = OSYNC_ENGINE_STATE_START_INIT;
 	group = engine->group;
 
 	if (osync_group_num_members(group) < 2) {
@@ -1524,6 +1525,8 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 	osync_engine_finalize(engine, NULL);
 	osync_group_unlock(engine->group);
  error:
+	engine->state = OSYNC_ENGINE_STATE_UNINITIALIZED;
+ error_no_state_reset:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
 }
@@ -1532,8 +1535,8 @@ osync_bool osync_engine_finalize(OSyncEngine *engine, OSyncError **error)
 {
 	OSyncClientProxy *proxy = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
-	
-	if (engine->state != OSYNC_ENGINE_STATE_INITIALIZED) {
+
+	if (engine->state != OSYNC_ENGINE_STATE_START_INIT && engine->state != OSYNC_ENGINE_STATE_INITIALIZED) {
 		osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "This engine was not in state initialized: %i", engine->state);
 		goto error;
 	}
