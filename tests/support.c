@@ -125,20 +125,23 @@ char *setup_testbed(const char *fkt_name)
 		g_free(dirname);
 	}
 	
-	/*command = g_strdup_printf("cp -R ../osplugin/osplugin %s", testbed);
-	if (system(command))
-		abort();
-	g_free(command);*/
-	
-	command = g_strdup_printf("mkdir %s/formats",  testbed);
-	if (system(command))
-		abort();
-	g_free(command);
-	
-	command = g_strdup_printf("mkdir %s/plugins",  testbed);
-	if (system(command))
-		abort();
-	g_free(command);
+	dirname = g_strdup_printf("%s/formats",  testbed);
+	if (!g_file_test(dirname, G_FILE_TEST_IS_DIR)) {
+		if (g_mkdir(dirname,0777) < 0) {
+			osync_trace(TRACE_ERROR, "Could not create format direcotry %s", dirname);
+			abort();
+		}
+	}
+	g_free(dirname);
+
+	dirname = g_strdup_printf("%s/plugins",  testbed);
+	if (!g_file_test(dirname, G_FILE_TEST_IS_DIR)) {
+		if (g_mkdir(dirname,0777) < 0) {
+			osync_trace(TRACE_ERROR, "Could not create plugin direcotry %s", dirname);
+			abort();
+		}
+	}
+	g_free(dirname);
 	
 	command = g_strdup_printf("cp ./mock-plugin/mock-sync.%s %s/plugins", G_MODULE_SUFFIX, testbed);
 	if (system(command))
@@ -163,8 +166,10 @@ char *setup_testbed(const char *fkt_name)
 #endif
 		
 	olddir = g_get_current_dir();
-	if (g_chdir(testbed) < 0)
+	if (g_chdir(testbed) < 0){
+		osync_trace(TRACE_ERROR, "Could not chdir to testbed");
 		abort();
+	}
 	
 	reset_counters();
 
