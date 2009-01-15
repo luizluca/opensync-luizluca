@@ -32,11 +32,13 @@
 
 static int _osync_version_match(char *pattern, char* string, OSyncError **error)
 {
-#ifndef _WIN32
 	osync_assert(pattern);
 	osync_assert(string);
 	if(!strlen(pattern)) 
 		return 1;
+	/* Only newer versions of glib support regular expressions */
+	/* On Windows the glib regular expressions are required    */
+#ifndef HAVE_GLIB_GREGEX_H
 	regex_t *preg = osync_try_malloc0(sizeof(regex_t), error);
 	if(!preg)
 		goto error;
@@ -80,8 +82,8 @@ static int _osync_version_match(char *pattern, char* string, OSyncError **error)
  error:
 	return -1;
 
-#else //_WIN32
-	return 1;
+#else /* HAVE_GLIB_GREGEX_H */
+	return g_regex_match_simple(pattern, string, 0, 0);
 #endif
 }
 
