@@ -14,7 +14,7 @@ typedef struct format_data {
 } format_data;
 
 
-static OSyncConvCmpResult compare_format1(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize)
+static OSyncConvCmpResult compare_format1(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *data)
 {
 	/*
 	 * This function can be used to compare two types of your formats.
@@ -97,7 +97,7 @@ static osync_bool conv_format2_to_format1(char *input, unsigned int inpsize, cha
 	return TRUE;
 }
 
-static void destroy_format1(char *input, unsigned int size)
+static void destroy_format1(char *input, unsigned int size, void *data)
 {
 	/*
 	 * Here you have to free the data allocated by your format
@@ -105,7 +105,7 @@ static void destroy_format1(char *input, unsigned int size)
 	 */
 }
 
-static osync_bool duplicate_format1(const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, OSyncError **error)
+static osync_bool duplicate_format1(const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, void *data, OSyncError **error)
 {
 	/*
 	 * This function can be used to duplicate your format.
@@ -120,7 +120,7 @@ static osync_bool duplicate_format1(const char *uid, const char *input, unsigned
 	return TRUE;
 }
 
-static char *print_format1(const char *data, unsigned int size)
+static char *print_format1(const char *data, unsigned int size, void *user_data)
 {
 	/*
 	 * If your format is not in a human printable format already
@@ -130,6 +130,24 @@ static char *print_format1(const char *data, unsigned int size)
 	 *
 	 */
 	 return NULL;
+}
+
+void *init_format1(OSyncError **error) {
+	/*
+	 * If your format needs specific data e.g. a XML Schema file
+	 * for validation it is possible to load the data in this 
+	 * function. If the data should be passes to all format 
+	 * functions it has to be returned as a pointer.
+	 */
+	char *format_specific_data = osync_try_malloc0(0, error);
+	return (void *)format_specific_data;
+}
+
+void finialize_format1(void *data) {
+	/*
+	 * Release all format data
+	 */
+	osync_free(data);
 }
 
 osync_bool get_format_info(OSyncFormatEnv *env, OSyncError **error)
@@ -146,6 +164,8 @@ osync_bool get_format_info(OSyncFormatEnv *env, OSyncError **error)
 	osync_objformat_set_duplicate_func(format, duplicate_format1);
 	osync_objformat_set_print_func(format, print_format1);
 
+	osync_objformat_set_initialize_func(format, init_format1);
+	osync_objformat_set_finalize_func(format, finialize_format1);
 
 	osync_format_env_register_objformat(env, format);
 	osync_objformat_unref(format);
@@ -153,7 +173,7 @@ osync_bool get_format_info(OSyncFormatEnv *env, OSyncError **error)
 	return TRUE;
 }
 
-void *initialize(const char* config, OSyncError **error)
+void *initialize_converter(const char* config, OSyncError **error)
 {
 	/*
 	 * Here you can create converter specific data.
@@ -164,7 +184,7 @@ void *initialize(const char* config, OSyncError **error)
 	return (void*)userdata;
 }
 
-void finalize(void *userdata)
+void finalize_converter(void *userdata)
 {
 	/*
 	 * Here you can free all your converter specific data.
@@ -198,8 +218,8 @@ osync_bool get_conversion_info(OSyncFormatEnv *env, OSyncError **error)
 	if (!conv)
 		return FALSE;
 	/* set init and finalize functions */
-	osync_converter_set_initialize_func(conv, initialize);
-	osync_converter_set_finalize_func(conv, finalize);
+	osync_converter_set_initialize_func(conv, initialize_converter);
+	osync_converter_set_finalize_func(conv, finalize_converter);
 	/* register converter */
 	osync_format_env_register_converter(env, conv);
 	osync_converter_unref(conv);
