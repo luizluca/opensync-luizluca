@@ -48,7 +48,7 @@ SET( CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_SOURCE_DIR}/cmake/modul
 CMAKE_MINIMUM_REQUIRED( VERSION 2.4.4 )
 
 IF(COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
+	cmake_policy(SET CMP0003 NEW)
 ENDIF(COMMAND cmake_policy)
 
 INCLUDE( Documentation )
@@ -124,12 +124,6 @@ SET( CMAKE_REQUIRED_LIBRARIES "" )
 SET( CMAKE_REQUIRED_FLAGS "" )
 SET( CMAKE_REQUIRED_DEFINITIONS "" )
 CHECK_FUNCTION_EXISTS( flock HAVE_FLOCK )
-
-# Check if system has a newer version of glib
-# which supports g_regex_match_simple
-INCLUDE( CheckIncludeFiles )
-SET( CMAKE_REQUIRED_INCLUDES ${GLIB2_INCLUDE_DIRS} )
-CHECK_INCLUDE_FILES ( glib/gregex.h HAVE_GLIB_GREGEX_H )
 
 # add uninstall target
 CONFIGURE_FILE(	"${CMAKE_SOURCE_DIR}/cmake/modules/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
