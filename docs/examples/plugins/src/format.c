@@ -9,9 +9,9 @@
 #include <opensync/opensync.h>
 #include <opensync/opensync-format.h>
 
-typedef struct format_data {
+typedef struct converter_data {
 	char *data;
-} format_data;
+} converter_data;
 
 
 static OSyncConvCmpResult compare_format1(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *data)
@@ -178,9 +178,10 @@ void *initialize_converter(const char* config, OSyncError **error)
 	/*
 	 * Here you can create converter specific data.
 	 * If you return the converter specific data, it is passed
-	 * to the conversion and detector function as void *userdata
+	 * to the conversion and detector function as void *userdata.
+	 * Converter specific data could be e.g. a XSLT file
 	 */
-	format_data *userdata = osync_try_malloc0(sizeof(format_data), error);
+	converter_data *userdata = osync_try_malloc0(sizeof(converter_data), error);
 	return (void*)userdata;
 }
 
@@ -189,7 +190,7 @@ void finalize_converter(void *userdata)
 	/*
 	 * Here you can free all your converter specific data.
 	 */
-	format_data *formatdata = (format_data*)userdata;
+	converter_data *converterdata = (converter_data*)userdata;
 	osync_free(formatdata->data);
 	osync_free(formatdata);
 }
