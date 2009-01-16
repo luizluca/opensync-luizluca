@@ -191,8 +191,8 @@ void finalize_converter(void *userdata)
 	 * Here you can free all your converter specific data.
 	 */
 	converter_data *converterdata = (converter_data*)userdata;
-	osync_free(formatdata->data);
-	osync_free(formatdata);
+	osync_free(converterdata->data);
+	osync_free(converterdata);
 }
 
 osync_bool get_conversion_info(OSyncFormatEnv *env, OSyncError **error)
