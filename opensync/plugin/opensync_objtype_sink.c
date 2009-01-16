@@ -272,7 +272,7 @@ void osync_objtype_sink_get_changes(OSyncObjTypeSink *sink, void *plugindata, OS
 	} else if (!functions.get_changes) {
 		osync_context_report_success(ctx);
 	} else {
-		functions.get_changes(plugindata, info, ctx);
+		functions.get_changes(sink, info, ctx, osync_objtype_sink_get_slowsync(sink), plugindata);
 	}
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
@@ -296,7 +296,7 @@ void osync_objtype_sink_read_change(OSyncObjTypeSink *sink, void *plugindata, OS
 	} else if (!functions.read) {
 		osync_context_report_success(ctx);
 	} else {
-		functions.read(plugindata, info, ctx, change);
+		functions.read(sink, info, ctx, change, plugindata);
 	}
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
@@ -313,7 +313,7 @@ void osync_objtype_sink_connect(OSyncObjTypeSink *sink, void *plugindata, OSyncP
 	if (!functions.connect) {
 		osync_context_report_success(ctx);
 	} else {
-		functions.connect(plugindata, info, ctx);
+		functions.connect(sink, info, ctx, plugindata);
 	}
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
@@ -330,7 +330,7 @@ void osync_objtype_sink_disconnect(OSyncObjTypeSink *sink, void *plugindata, OSy
 	if (!functions.disconnect) {
 		osync_context_report_success(ctx);
 	} else {
-		functions.disconnect(plugindata, info, ctx);
+		functions.disconnect(sink, info, ctx, plugindata);
 	}
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
@@ -347,7 +347,7 @@ void osync_objtype_sink_sync_done(OSyncObjTypeSink *sink, void *plugindata, OSyn
 	if (!functions.sync_done)
 		osync_context_report_success(ctx);
 	else
-		functions.sync_done(plugindata, info, ctx);
+		functions.sync_done(sink, info, ctx, plugindata);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
@@ -363,7 +363,7 @@ void osync_objtype_sink_connect_done(OSyncObjTypeSink *sink, void *plugindata, O
 	if (!functions.connect_done)
 		osync_context_report_success(ctx);
 	else
-		functions.connect_done(plugindata, info, ctx);
+		functions.connect_done(sink, info, ctx, plugindata);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
@@ -398,7 +398,7 @@ void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, void *plugindata, 
 		} else if (!functions.commit) {
 			osync_context_report_success(ctx);
 		} else {
-			functions.commit(plugindata, info, ctx, change);
+			functions.commit(sink, info, ctx, change, plugindata);
 		}
 	}
 
@@ -444,12 +444,12 @@ void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, void *plugindata, 
 		osync_list_free(sink->commit_changes);
 		osync_list_free(sink->commit_contexts);
 		
-		functions.batch_commit(plugindata, info, ctx, contexts, changes);
+		functions.batch_commit(sink, info, ctx, contexts, changes, plugindata);
 		
 		osync_free(changes);
 		osync_free(contexts);
 	} else if (functions.committed_all) {
-		functions.committed_all(plugindata, info, ctx);
+		functions.committed_all(sink, info, ctx, plugindata);
 	} else {
 		osync_context_report_success(ctx);
 	}

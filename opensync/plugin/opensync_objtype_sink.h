@@ -29,16 +29,16 @@
  */
 /*@{*/
 
-typedef void (* OSyncSinkConnectFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx);
-typedef void (* OSyncSinkDisconnectFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx);
-typedef void (* OSyncSinkGetChangesFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx);
-typedef void (* OSyncSinkCommitFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change);
-typedef osync_bool (* OSyncSinkWriteFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change);
-typedef void (* OSyncSinkCommittedAllFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx);
-typedef osync_bool (* OSyncSinkReadFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change);
-typedef void (* OSyncSinkBatchCommitFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx, OSyncContext **, OSyncChange **changes);
-typedef void (* OSyncSinkSyncDoneFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx);
-typedef void (* OSyncSinkConnectDoneFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx);
+typedef void (* OSyncSinkConnectFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data);
+typedef void (* OSyncSinkDisconnectFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data);
+typedef void (* OSyncSinkGetChangesFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data);
+typedef void (* OSyncSinkCommitFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data);
+typedef osync_bool (* OSyncSinkWriteFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data);
+typedef void (* OSyncSinkCommittedAllFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data);
+typedef osync_bool (* OSyncSinkReadFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data);
+typedef void (* OSyncSinkBatchCommitFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncContext **, OSyncChange **changes, void *data);
+typedef void (* OSyncSinkSyncDoneFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data);
+typedef void (* OSyncSinkConnectDoneFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data);
 
 typedef struct OSyncObjTypeSinkFunctions {
 	OSyncSinkConnectFn connect;

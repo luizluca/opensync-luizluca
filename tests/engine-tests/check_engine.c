@@ -134,7 +134,7 @@ START_TEST (engine_init)
 }
 END_TEST
 
-static void connect1(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void connect1(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -153,7 +153,7 @@ static void connect1(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void disconnect(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -172,7 +172,7 @@ static void disconnect(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void get_changes(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -364,7 +364,7 @@ START_TEST (engine_sync)
 }
 END_TEST
 
-static void connect2(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void connect2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -383,7 +383,7 @@ static void connect2(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void disconnect2(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void disconnect2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -402,7 +402,7 @@ static void disconnect2(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void get_changes2(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void get_changes2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -421,7 +421,7 @@ static void get_changes2(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void main_connect2(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void main_connect2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -440,7 +440,7 @@ static void main_connect2(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void main_disconnect2(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void main_disconnect2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -459,7 +459,7 @@ static void main_disconnect2(void *data, OSyncPluginInfo *info, OSyncContext *ct
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void main_get_changes2(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void main_get_changes2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -679,7 +679,7 @@ START_TEST (engine_sync_multi_obj)
 }
 END_TEST
 
-static void connect3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void connect3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -699,7 +699,7 @@ static void connect3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void disconnect3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void disconnect3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -721,7 +721,7 @@ static void disconnect3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void get_changes3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void get_changes3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -741,7 +741,7 @@ static void get_changes3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void sync_done3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void sync_done3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -763,7 +763,7 @@ static void sync_done3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void main_connect3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void main_connect3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -789,7 +789,7 @@ static void main_connect3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void main_disconnect3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void main_disconnect3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -817,7 +817,7 @@ static void main_disconnect3(void *data, OSyncPluginInfo *info, OSyncContext *ct
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void main_get_changes3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void main_get_changes3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -844,7 +844,7 @@ static void main_get_changes3(void *data, OSyncPluginInfo *info, OSyncContext *c
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void main_sync_done3(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void main_sync_done3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -1080,7 +1080,7 @@ START_TEST (engine_sync_out_of_order)
 }
 END_TEST
 
-static void main_disconnect4(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void main_disconnect4(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -1359,7 +1359,7 @@ START_TEST (engine_sync_stress)
 }
 END_TEST
 
-static void connect5(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void connect5(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -1371,7 +1371,7 @@ static void connect5(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void disconnect5(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void disconnect5(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -1383,7 +1383,7 @@ static void disconnect5(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void get_changes5(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void get_changes5(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -1430,7 +1430,7 @@ static void get_changes5(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void commit_change5(void *data, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change)
+static void commit_change5(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data)
 {
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, data, info, ctx, change);
@@ -1594,7 +1594,7 @@ START_TEST (engine_sync_read_write)
 }
 END_TEST
 
-static void get_changes6(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void get_changes6(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data)
 {
 	mock_env *env = data;
 	int i;
@@ -1798,7 +1798,7 @@ OSYNC_UNUSED START_TEST (engine_sync_read_write_stress)
 }
 END_TEST
 
-static void get_changes7(void *data, OSyncPluginInfo *info, OSyncContext *ctx)
+static void get_changes7(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data)
 {
 	mock_env *env = data;
 	int i;
