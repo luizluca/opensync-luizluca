@@ -976,9 +976,10 @@ osync_bool osync_format_env_detect_objformat_full(OSyncFormatEnv *env, OSyncData
 	/* If detected_format is NULL, there is no reason to run the detection
 	 * without any chance to report the result
 	 */
+	osync_assert_msg(detected_format, "detected_format is NULL. Therefore it isn't possible to report a result of the detection.");
 	osync_return_val_if_fail(detected_format, TRUE);
 	
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, env, input, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, env, input, detected_format, error);
 
 	if (!input || !osync_data_has_data(input)) {
 		osync_trace(TRACE_EXIT, "%s: No data provided to detect.", __func__);
