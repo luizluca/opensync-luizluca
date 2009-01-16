@@ -62,14 +62,18 @@ static void connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext 
 
 	//you can also use the anchor system to detect a device reset
 	//or some parameter change here. Check the docs to see how it works
-	char *lanchor = NULL;
 	//Now you get the last stored anchor from the device
-	char *anchorpath = osync_strdup_printf("%s/anchor.db", osync_plugin_info_get_configdir(info));
-
-	if (!osync_anchor_compare(anchorpath, "lanchor", lanchor))
+	OSyncAnchor *anchor = osync_objtype_sink_get_anchor(sink);
+	osync_bool anchormatch;
+	
+	if (!osync_anchor_compare(anchor, "lanchor", &anchormatch, &error)) {
+		/* anchor couldn't be compared */
+		goto error;
+	}
+	if (!anchormatch) {
+		/* request slow sync */
 		osync_objtype_sink_set_slowsync(sink, TRUE);
-
-	osync_free(anchorpath);
+	}
 
 	osync_context_report_success(ctx);
 	osync_trace(TRACE_EXIT, "%s", __func__);
@@ -81,7 +85,7 @@ error:
 	osync_error_unref(&error);
 }
 
-static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *userdata)
+static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *userdata)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, ctx, userdata);
 
@@ -94,9 +98,8 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 	//If you use opensync hashtables you can detect if you need
 	//to do a slow-sync and set this on the hastable directly
 	//otherwise you have to make 2 function like "get_changes" and
-	//"get_all" and decide which to use using
-	//osync_objtype_sink_get_slow_sync
-	if (osync_objtype_sink_get_slowsync(sinkenv->sink)) {
+	//"get_all" and decide which to use
+	if (slow_sync) {
 		osync_trace(TRACE_INTERNAL, "Slow sync requested");
 
 		if (osync_hashtable_slowsync(sinkenv->hashtable, &error)) {
@@ -261,10 +264,11 @@ static void sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContex
 	
 	//If we use anchors we have to update it now.
 	//Now you get/calculate the current anchor of the device
-	char *lanchor = NULL;
-	char *anchorpath = osync_strdup_printf("%s/anchor.db", osync_plugin_info_get_configdir(info));
-	osync_anchor_update(anchorpath, "lanchor", lanchor);
-	osync_free(anchorpath);
+	OSyncAnchor *anchor = osync_objtype_sink_get_anchor(sink);
+	if (!osync_anchor_update(anchor, "lanchor", &error)) {
+		goto error;
+	}
+
 	//Save hashtable to database
 	if (!osync_hashtable_save(sinkenv->hashtable, &error))
 		goto error;

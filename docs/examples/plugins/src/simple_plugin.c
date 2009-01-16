@@ -33,7 +33,7 @@ static void free_env(plugin_environment *env)
 
 static void connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *userdata)
 {
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, userdata, info, ctx);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, ctx, userdata);
 	//Each time you get passed a context (which is used to track
 	//calls to your plugin) you can get the data your returned in
 	//initialize via this call:
@@ -60,14 +60,19 @@ static void connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext 
 
 	//you can also use the anchor system to detect a device reset
 	//or some parameter change here. Check the docs to see how it works
-	char *lanchor = NULL;
 	//Now you get the last stored anchor from the device
-	char *anchorpath = osync_strdup_printf("%s/anchor.db", osync_plugin_info_get_configdir(info));
+	OSyncAnchor *anchor = osync_objtype_sink_get_anchor(sink);
+	osync_bool anchormatch;
 
-	if (!osync_anchor_compare(anchorpath, "lanchor", lanchor))
+	if (!osync_anchor_compare(anchor, "lanchor", &anchormatch, &error)) {
+		/* anchor couldn't be compared */
+		goto error;
+	}
+	
+	if (!anchormatch) {
+		/* request slow sync */
 		osync_objtype_sink_set_slowsync(sink, TRUE);
-
-	osync_free(anchorpath);
+	}
 
 	osync_context_report_success(ctx);
 	osync_trace(TRACE_EXIT, "%s", __func__);
@@ -195,11 +200,10 @@ static void sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContex
 	
 	//If we use anchors we have to update it now.
 	//Now you get/calculate the current anchor of the device
-	char *lanchor = NULL;
-	char *anchorpath = osync_strdup_printf("%s/anchor.db", osync_plugin_info_get_configdir(info));
-	osync_anchor_update(anchorpath, "lanchor", lanchor);
-	osync_free(anchorpath);
-	
+	OSyncAnchor *anchor = osync_objtype_sink_get_anchor(sink); 
+	if (!osync_anchor_update(anchor, "lanchor", &error))
+			goto error;
+
 	//Answer the call
 	osync_context_report_success(ctx);
 	return;
@@ -209,7 +213,7 @@ error:
 	return;
 }
 
-static void disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncObjTypeSink *sink)
+static void disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	sink_environment *sinkenv = osync_objtype_sink_get_userdata(sink);
 	
