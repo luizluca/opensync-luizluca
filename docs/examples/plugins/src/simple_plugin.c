@@ -10,11 +10,11 @@
 #include <string.h>
 
 typedef struct {
-        OSyncList *sink_envs;
+	OSyncList *sink_envs;
 } plugin_environment;
 
 typedef struct {
-        OSyncObjTypeSink *sink;
+	OSyncObjTypeSink *sink;
 } sink_environment;
 
 static void free_env(plugin_environment *env)
@@ -31,7 +31,7 @@ static void free_env(plugin_environment *env)
 	osync_free(env);
 }
 
-static void connect(void *userdata, OSyncPluginInfo *info, OSyncContext *ctx)
+static void connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *userdata)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, userdata, info, ctx);
 	//Each time you get passed a context (which is used to track
@@ -39,8 +39,7 @@ static void connect(void *userdata, OSyncPluginInfo *info, OSyncContext *ctx)
 	//initialize via this call:
 	// plugin_environment *env = (plugin_environment *)userdata;
 
-	//The sink specific userdata you can get with this calls:
-	OSyncObjTypeSink *sink = osync_plugin_info_get_sink(info);
+	//The sink specific userdata you can get with this call:
 	sink_environment *sinkenv = osync_objtype_sink_get_userdata(sink);
 
 
@@ -80,20 +79,15 @@ error:
 	osync_error_unref(&error);
 }
 
-static void get_changes(void *userdata, OSyncPluginInfo *info, OSyncContext *ctx)
+static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *userdata)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, userdata, info, ctx);
 
 	//plugin_environment *env = (plugin_environment *)userdata;
 	OSyncFormatEnv *formatenv = osync_plugin_info_get_format_env(info);
-	OSyncObjTypeSink *sink = osync_plugin_info_get_sink(info);
 	sink_environment *sinkenv = osync_objtype_sink_get_userdata(sink);
 
 	OSyncError *error = NULL;
-
-	/* Check for Slow-Sync */
-	if (osync_objtype_sink_get_slowsync(sinkenv->sink)) {
-	}
 
 	/*
 	 * Now you can get the changes.
@@ -160,11 +154,10 @@ static void get_changes(void *userdata, OSyncPluginInfo *info, OSyncContext *ctx
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void commit_change(void *userdata, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change)
+static void commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *userdata)
 {
 	//plugin_environment *env = (plugin_environment *)userdata;
 
-	OSyncObjTypeSink *sink = osync_plugin_info_get_sink(info);
 	sink_environment *sinkenv = osync_objtype_sink_get_userdata(sink);
 	
 	/*
@@ -192,13 +185,12 @@ static void commit_change(void *userdata, OSyncPluginInfo *info, OSyncContext *c
 	osync_context_report_success(ctx);
 }
 
-static void sync_done(void *userdata, OSyncPluginInfo *info, OSyncContext *ctx)
+static void sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *userdata)
 {
 	/*
 	 * This function will only be called if the sync was successful
 	 */
 	OSyncError *error = NULL;
-	OSyncObjTypeSink *sink = osync_plugin_info_get_sink(info);
 	sink_environment *sinkenv = osync_objtype_sink_get_userdata(sink);
 	
 	//If we use anchors we have to update it now.
@@ -217,9 +209,8 @@ error:
 	return;
 }
 
-static void disconnect(void *userdata, OSyncPluginInfo *info, OSyncContext *ctx)
+static void disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncObjTypeSink *sink)
 {
-	OSyncObjTypeSink *sink = osync_plugin_info_get_sink(info);
 	sink_environment *sinkenv = osync_objtype_sink_get_userdata(sink);
 	
 	//Close all stuff you need to close
@@ -331,7 +322,7 @@ error:
 }
 
 /* Here we actually tell opensync which sinks are available. */
-static osync_bool discover(void *userdata, OSyncPluginInfo *info, OSyncError **error)
+static osync_bool discover(OSyncPluginInfo *info, void *userdata, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, userdata, info, error);
 
