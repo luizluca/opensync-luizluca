@@ -37,35 +37,12 @@ struct OSyncSinkEngine {
 	OSyncList *entries;
 	/** List of assinged OSyncMappingEntryEngine elemebts, but unmapped (no counter-entry) */
 	OSyncList *unmapped;
-	/** "dummy" attribute, when set no proxy functions of OSyncSinkEngine get called */
-	osync_bool dummy_sink;
 };
 
 OSyncSinkEngine *osync_sink_engine_new(int position, OSyncClientProxy *proxy, OSyncObjEngine *objengine, OSyncError **error);
 OSyncSinkEngine *osync_sink_engine_ref(OSyncSinkEngine *engine);
 void osync_sink_engine_unref(OSyncSinkEngine *engine);
 osync_bool osync_sink_engine_is_connected(OSyncSinkEngine *engine);
-
-
-/*! @brief Set "dummy" attribute for OSyncSinkEngine
- *
- * If the "dummy" attribute set, then OSyncSinkEngine will not call any proxy
- * function inside the OSyncObjEngine. The original purpose of this is to have
- * a OSyncSinkEngine for "peers" which make use of mixed-ObjTypes. For this
- * reason primarly the lists of OSyncSinkEngine (i.e. entries and unmapped
- * entries) get used for mixed-ObjType mappings.
- *
- * @param engine Pointer to an OSyncSinkEngine which should act as "dummy"
- * @param isdummy TRUE or FALSE to set the "dummy" attribute 
- */
-void osync_sink_engine_set_dummy(OSyncSinkEngine *engine, osync_bool isdummy);
-
-/*! @brief Get state of "dummy" attribute of OSyncSinkEngine 
- *
- * @param engine Pointer to an OSyncSinkEngine which should act as "dummy"
- * @returns TRUE if engine got set as "dummy", FALSE otherwise
- */
-osync_bool osync_sink_engine_is_dummy(OSyncSinkEngine *engine);
 
 /*! @brief Demerge all entries of OSyncSinkEngine
  *

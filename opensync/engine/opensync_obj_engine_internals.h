@@ -46,6 +46,12 @@ struct OSyncObjEngine {
 	/** List of OSyncSinkEngine-elements */
 	OSyncList *sink_engines;
 
+	/** List of Active OSyncSinkEngine-elements */
+	OSyncList *active_sink_engines;
+
+	/** List of Dummy OSyncSinkEngine-elements */
+	OSyncList *dummy_sink_engines;
+
 	/** Pointer to OSyncObjEngine assinged error struct */
 	OSyncError *error;
 	/** Pointer to format enviornment */
@@ -79,30 +85,14 @@ struct OSyncObjEngine {
 
 	/** Conflicts already solved */
 	osync_bool conflicts_solved;
-
-	/** Total number of "dummy" OSyncSinkEngine-elements */
-	unsigned int dummies;
 };
 
 OSyncMappingEngine *_osync_obj_engine_create_mapping_engine(OSyncObjEngine *engine, OSyncError **error);
 
-/*! @brief Get number of "active" Sink Engines (excluded "dummy" Sink Engines)
- *         in ObjEngine
- *
- * This function should be used to determine the number of "active" Sink
- * Engines. Original purpose of this function is to determine the number of
- * Sink Engine to wait for. Excluded are all Sink Engines which have the
- * attribute "dummy" set.
- *
- * @param engine Pointer to OSyncObjEngine
- * @returns Number of "active" Sink Engines
- */
-unsigned int osync_obj_engine_num_active_sinkengines(OSyncObjEngine *engine);
-
 /*! @brief Get total number of OSyncMappingEngines of this OSyncObjEngine
  *
  * @param engine Pointer to OSyncObjEngine
- * @returns Total number of "active" and "dummy" Sink Engines
+ * @returns Total number of Mapping Engines
  */
 unsigned int osync_obj_engine_num_mapping_engines(OSyncObjEngine *engine);
 
