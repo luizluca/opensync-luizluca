@@ -66,6 +66,8 @@ osync_bool osync_trace_is_enabled(void)
 	return FALSE;
 }
 
+
+#ifdef OPENSYNC_TRACE
 /*! @brief Initailize tracing 
  *
  */
@@ -99,8 +101,8 @@ static void _osync_trace_init()
 		printf("OSYNC_TRACE argument is no directory\n");
 		return;
 	}
-
 }
+#endif /* OPENSYNC_TRACE */
 	
 void osync_trace(OSyncTraceType type, const char *message, ...)
 {
