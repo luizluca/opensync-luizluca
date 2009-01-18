@@ -1055,8 +1055,9 @@ osync_bool osync_client_proxy_shutdown(OSyncClientProxy *proxy, OSyncError **err
 		goto error;
 			
 	if (proxy->type == OSYNC_START_TYPE_THREAD) {
+#ifndef OPENSYNC_PREVENT_CLIENT_SHUTDOWN
 		osync_client_shutdown(proxy->client);
-		
+#endif
 		osync_client_unref(proxy->client);
 	} else if (proxy->type == OSYNC_START_TYPE_PROCESS) {
 		if (proxy->child_pid) {
