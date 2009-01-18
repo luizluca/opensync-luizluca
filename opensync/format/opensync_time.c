@@ -24,6 +24,7 @@
 
 #include "opensync.h"
 #include "opensync_time.h"
+#include "opensync_time_private.h"
 #include "opensync_internals.h"
 
 #ifdef _WIN32
@@ -66,11 +67,6 @@ inline struct tm* gmtime_r (const time_t *clock, struct tm *result)
 
 /*****************************************************************************/
 
-/*! @brief Function remove dashes from datestamp and colon
- * 
- * @param timestamp The timestamp which gets cleaned
- * @returns valid vtime stamp in YYYYMMDD[THHMMDD[Z]] (the caller is responsible for freeing)
- */
 static char *osync_time_timestamp_remove_dash(const char *timestamp)
 {
 	int i, len;

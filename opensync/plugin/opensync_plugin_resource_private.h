@@ -21,9 +21,15 @@
 #ifndef _OPENSYNC_PLUGIN_RESOURCE_PRIVATE_H_
 #define _OPENSYNC_PLUGIN_RESOURCE_PRIVATE_H_
 
-/*! @brief Gives information about resource
- * 
- * @ingroup OSyncPluginResourcePrivateAPI 
+/**
+ * @defgroup OSyncPluginResourcePrivateAPI OpenSync Plugin Resource Private
+ * @ingroup OSyncPluginPrivate
+ */
+
+/*@{*/
+
+/** 
+ * @brief Gives information about resource
  **/
 struct OSyncPluginResource {
 	/** If resource is enabled */
@@ -49,6 +55,8 @@ struct OSyncPluginResource {
 	/** Object reference counting */
 	int ref_count;
 };
+
+/*@}*/
 
 #endif /* _OPENSYNC_PLUGIN_RESOURCE_PRIVATE_H_ */
 

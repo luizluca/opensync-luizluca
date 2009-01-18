@@ -22,14 +22,15 @@
 #define _OPENSYNC_PLUGIN_ENV_INTERNALS_H_
 
 /**
- * @defgroup OSyncPluginEnvPrivateAPI OpenSync Environment Internals
- * @ingroup OSyncPrivate
- * @brief The private API of the opensync environment
+ * @defgroup OSyncPluginEnvInternalAPI OpenSync Plugin Environment Internals
+ * @ingroup OSyncPluginPrivate
+ * @brief The internal API of the opensync plugin environment
  * 
  */
+
 /*@{*/
 
-/*! @brief Loads a module into the plugin environment 
+/** @brief Loads a module into the plugin environment 
  * 
  * @param env Pointer to a plugin environment
  * @param filename Module filename, as full path, to load
@@ -39,7 +40,7 @@
  */
 osync_bool osync_plugin_env_load_module(OSyncPluginEnv *env, const char *filename, OSyncError **error);
 
-/*! @brief Checks if plugin is usable 
+/** @brief Checks if plugin is usable 
  * 
  * @param env Pointer to a OSyncPluginEnv environment
  * @param pluginname The name of the plugin

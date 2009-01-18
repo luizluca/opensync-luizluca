@@ -21,11 +21,16 @@
 #ifndef _OPENSYNC_PLUGIN_ADVANCEDOPTIONS_PRIVATE_H_
 #define _OPENSYNC_PLUGIN_ADVANCEDOPTIONS_PRIVATE_H_
 
-/*! @brief Gives information about advanced plugin options 
- * 
- * @ingroup OSyncPluginAdvancedOptionPrivateAPI 
- **/
+/**
+ * @defgroup OSyncPluginAdvancedOptionsPrivateAPI OpenSync Plugin Advanced Options Private
+ * @ingroup OSyncPluginPrivate
+ */
 
+/*@{*/
+
+/**
+ * @brief Gives information about advanced plugin options
+ **/
 struct OSyncPluginAdvancedOption {
 
 	/** Display Name - this appears in the UI */
@@ -80,6 +85,7 @@ struct OSyncPluginAdvancedOptionParameter {
 	int ref_count;
 };
 
-#endif /* _OPENSYNC_PLUGIN_ADVANCEDOPTIONS_PRIVATE_H_ */
+/*@}*/
 
+#endif /* _OPENSYNC_PLUGIN_ADVANCEDOPTIONS_PRIVATE_H_ */
 

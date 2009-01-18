@@ -42,27 +42,27 @@
  * Time formatting helper
  */
 
-/*! @brief Function returns a date-timestamp in OSyncTime Spec format
+/** @brief Function returns a date-timestamp in OSyncTime Spec format
  * 
  * @param vtime The timestamp which gets converted to a valid osync date-timestamp
  * @returns vtime date-timestring (the caller is responsible for freeing)
  */
 OSYNC_EXPORT char *osync_time_timestamp(const char *vtime);
 
-/*! @brief Function returns a date without timestamp in OSyncTime Spec format
+/** @brief Function returns a date without timestamp in OSyncTime Spec format
  * 
  * @param vtime The timestamp which gets converted to a single datestamp
  * @returns valid single datestamp YYYYMMDD (the caller is responsible for freeing) 
  */
 OSYNC_EXPORT char *osync_time_datestamp(const char *vtime); 
 
-/*! @brief Function returns TRUE if vtime is a valid datestamp (YYYYMMDD)
+/** @brief Function returns TRUE if vtime is a valid datestamp (YYYYMMDD)
  * 
  * @returns FALSE if vtime includes a timestamp, TRUE on a single datestamp
  */
 OSYNC_EXPORT osync_bool osync_time_isdate(const char *vformat);
 
-/*! @brief Function returns TRUE if vtime is in UTC (YYYYMMDDTHH:MM:SSZ)
+/** @brief Function returns TRUE if vtime is in UTC (YYYYMMDDTHH:MM:SSZ)
  * 
  * @returns FALSE if vtime includes no Zulu, TRUE if the timestamp is UTC
  */
@@ -83,14 +83,14 @@ OSYNC_EXPORT osync_bool osync_time_isutc(const char *vformat);
  */
 /*@{*/
 
-/*! @brief Function converts vtime to tm struct
+/** @brief Function converts vtime to tm struct
  * 
  * @param vtime The formatted timestamp (YYYYMMDDTHHMMSS)
  * @returns struct tm (caller is responsible for freeing)
  */
 OSYNC_EXPORT struct tm *osync_time_vtime2tm(const char *vtime);
 
-/*! @brief Function converts struct tm in vtime string
+/** @brief Function converts struct tm in vtime string
  * 
  * YYYYMMDDTHHMMSS[Z]
  * Returned timezone is equal to the timezone of struct tm.  
@@ -115,7 +115,7 @@ OSYNC_EXPORT char *osync_time_tm2vtime(const struct tm *time, osync_bool is_utc)
  */
 /*@{*/
 
-/*! @brief Function converts vtime to unix time
+/** @brief Function converts vtime to unix time
  * 
  * @param offset Seconds of UTC offset
  * @param vtime The osync formmatted timestamp
@@ -123,7 +123,7 @@ OSYNC_EXPORT char *osync_time_tm2vtime(const struct tm *time, osync_bool is_utc)
  */
 OSYNC_EXPORT time_t osync_time_vtime2unix(const char *vtime, int offset);
 
-/*! @brief Function converts unix timestamp to vtime in UTC
+/** @brief Function converts unix timestamp to vtime in UTC
  *
  * @param timestamp The unix timestamp which gets converted 
  * @returns vtime formatted as YYYYMMDDTHHMMSSZ (caller is responsible for freeing)
@@ -132,7 +132,7 @@ OSYNC_EXPORT char *osync_time_unix2vtime(const time_t *timestamp);
 
 /* Unix time_t converters */
 
-/*! @brief Function converts struct tm, in localtime, to unix timestamp.
+/** @brief Function converts struct tm, in localtime, to unix timestamp.
  *		This is the same as calling mktime(), except that
  *		localtime is not modified, and tm_isdst is always
  *		forced to -1. Aka, mktime().
@@ -142,7 +142,7 @@ OSYNC_EXPORT char *osync_time_unix2vtime(const time_t *timestamp);
  */ 
 OSYNC_EXPORT time_t osync_time_localtm2unix(const struct tm *localtime);
 
-/*! @brief Function converts struct tm, in utc, to unix timestamp.
+/** @brief Function converts struct tm, in utc, to unix timestamp.
  *
  * @param utctime The struct tm, in utc, which gets converted
  * @returns time_t (in UTC of course)
@@ -158,7 +158,7 @@ OSYNC_EXPORT time_t osync_time_localtm2unix(const struct tm *localtime);
  */
 OSYNC_EXPORT time_t osync_time_utctm2unix(const struct tm *utctime);
 
-/*! @brief Function converts unix timestamp to struct tm in localtime.
+/** @brief Function converts unix timestamp to struct tm in localtime.
  *		This is the same as calling localtime_r(), except you
  *		have to free the returned value. Aka, localtime().
  * 
@@ -167,7 +167,7 @@ OSYNC_EXPORT time_t osync_time_utctm2unix(const struct tm *utctime);
  */ 
 OSYNC_EXPORT struct tm *osync_time_unix2localtm(const time_t *timestamp);
 
-/*! @brief Function converts unix timestamp to struct tm in utc.
+/** @brief Function converts unix timestamp to struct tm in utc.
  *		This is the same as calling gmtime_r(), except you
  *		have to free the returned value. Aka, gmtime().
  * 
@@ -193,7 +193,7 @@ OSYNC_EXPORT struct tm *osync_time_unix2utctm(const time_t *timestamp);
  */
 /*@{*/
 
-/*! @brief Function gets offset of parameter time between UTC and
+/** @brief Function gets offset of parameter time between UTC and
  *	localtime in seconds east of UTC.  (i.e. east is positive,
  *	west is negative)
  * 
@@ -203,7 +203,7 @@ OSYNC_EXPORT struct tm *osync_time_unix2utctm(const time_t *timestamp);
  */
 OSYNC_EXPORT int osync_time_timezone_diff(const struct tm *local);
 
-/*! @brief Function converts (struct tm) ltime from localtime to UTC.
+/** @brief Function converts (struct tm) ltime from localtime to UTC.
  *         Paramter offset is used as UTC offset.  Note that _only_ the
  *         following fields can be relied upon in the result:
  *         tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year.
@@ -214,7 +214,7 @@ OSYNC_EXPORT int osync_time_timezone_diff(const struct tm *local);
  */
 OSYNC_EXPORT struct tm *osync_time_tm2utc(const struct tm *ltime, int offset);
 
-/*! @brief Function converts (struct tm) utime from UTC to localtime 
+/** @brief Function converts (struct tm) utime from UTC to localtime 
  *         Paramter offset is used as UTC offset.  Note that _only_ the
  *         following fields can be relied upon in the result:
  *         tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year.
@@ -225,7 +225,7 @@ OSYNC_EXPORT struct tm *osync_time_tm2utc(const struct tm *ltime, int offset);
  */
 OSYNC_EXPORT struct tm *osync_time_tm2localtime(const struct tm *utime, int offset);
 
-/*! @brief Functions converts a localtime vtime stamp to a UTC vtime stamp
+/** @brief Functions converts a localtime vtime stamp to a UTC vtime stamp
  *
  * @param localtime The local timestamp in vtime format
  * @param offset Seconds of UTC offset, in seconds east of UTC.
@@ -233,7 +233,7 @@ OSYNC_EXPORT struct tm *osync_time_tm2localtime(const struct tm *utime, int offs
  */
 OSYNC_EXPORT char *osync_time_vtime2utc(const char* localtime, int offset);
 
-/*! @brief Functions converts a UTC vtime stamp to a localtime vtime stamp
+/** @brief Functions converts a UTC vtime stamp to a localtime vtime stamp
  * 
  * @param utc The timestap in UTC timezone which gets converted to localtime 
  * @param offset The offset in seconds between UTC and localtime
@@ -241,7 +241,7 @@ OSYNC_EXPORT char *osync_time_vtime2utc(const char* localtime, int offset);
  */
 OSYNC_EXPORT char *osync_time_vtime2localtime(const char* utc, int offset);
 
-/*! @brief Function converts UTC offset string in offset in seconds
+/** @brief Function converts UTC offset string in offset in seconds
  *
  * @param offset The offset string of the form a timezone field (Example +0200) 
  * @returns seconds of UTC offset 
@@ -264,14 +264,14 @@ OSYNC_EXPORT int osync_time_utcoffset2sec(const char *offset);
 /*@{*/
 
 
-/*! @brief Functions converts timestamps of vcal to localtime
+/** @brief Functions converts timestamps of vcal to localtime
  * 
  * @param vcal The vcalendar which has to be converted.
  * @return modified vcalendar with local timestamps (related to system time) 
  */ 
 OSYNC_EXPORT char *osync_time_vcal2localtime(const char *vcal);
 
-/*! @brief Functions converts timestamps of vcal to UTC
+/** @brief Functions converts timestamps of vcal to UTC
  * 
  * @param vcal The vcalendar which has to be converted.
  * @return modified vcalendar with UTC timestamps (related to system time) 
@@ -291,14 +291,14 @@ OSYNC_EXPORT char *osync_time_vcal2utc(const char *vcal);
  */
 /*@{*/
 
-/*! @brief Functions converts seconds in duration before or after alarm event 
+/** @brief Functions converts seconds in duration before or after alarm event 
  * 
  * @param seconds 
  * @returns ical alarm duration string (caller is preponsible for freeing) 
  */ 
 OSYNC_EXPORT char *osync_time_sec2alarmdu(int seconds);
 
-/*! @brief Functions converts alarm duration event to seconds needed for reminder of vcal/ical
+/** @brief Functions converts alarm duration event to seconds needed for reminder of vcal/ical
  * 
  * TODO: Test support for ALARM after/before end and after start
  *
@@ -320,7 +320,7 @@ OSYNC_EXPORT int osync_time_alarmdu2sec(const char *alarm);
  */
 /*@{*/
 
-/*! @brief Function converts a week day string to the struct tm wday integer. 
+/** @brief Function converts a week day string to the struct tm wday integer. 
  *
  * FIXME: how do we handle iCal weekday strings with multiple days?
  * something like the following?
@@ -331,7 +331,7 @@ OSYNC_EXPORT int osync_time_alarmdu2sec(const char *alarm);
  */ 
 OSYNC_EXPORT int osync_time_str2wday(const char *swday);
 
-/*! @brief Function determines the exact date of relative information.
+/** @brief Function determines the exact date of relative information.
  *         It is used for example to determine the last sunday of a month (-1SU) 
  *         in a specific year. 
  *         Note that the RFC2445 spec states that a weekday without

@@ -21,6 +21,13 @@
 #ifndef _OPENSYNC_CONTEXT_PRIVATE_H_
 #define _OPENSYNC_CONTEXT_PRIVATE_H_
 
+/**
+ * @defgroup OSyncContextPrivate OpenSync Context Private
+ * @ingroup OSyncPluginPrivate
+ */
+
+/*@{*/
+
 struct OSyncContext {
 	OSyncContextCallbackFn callback_function;
 	OSyncContextCallbackFn warning_function;
@@ -29,5 +36,7 @@ struct OSyncContext {
 	void *plugindata;
 	int ref_count;
 };
+
+/*@}*/
 
 #endif /*_OPENSYNC_CONTEXT_PRIVATE_H_*/

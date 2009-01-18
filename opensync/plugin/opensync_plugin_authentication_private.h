@@ -21,9 +21,15 @@
 #ifndef _OPENSYNC_PLUGIN_AUTHENTICATON_PRIVATE_H_
 #define _OPENSYNC_PLUGIN_AUTHENTICATON_PRIVATE_H_
 
-/*! @brief Gives information about required authentication settings 
- * 
- * @ingroup OSyncPluginAuthenticationPrivateAPI 
+/**
+ * @defgroup OSyncPluginAuthenticationPrivateAPI OpenSync Plugin Authentication Private
+ * @ingroup OSyncPluginPrivate
+ */
+
+/*@{*/
+
+/**
+ * @brief Gives information about required authentication settings 
  **/
 struct OSyncPluginAuthentication {
 	/** Username (or Login) to identifiy or authentifiy */
@@ -39,6 +45,8 @@ struct OSyncPluginAuthentication {
 	/** Object reference counting */
 	int ref_count;
 };
+
+/*@}*/
 
 #endif /* _OPENSYNC_PLUGIN_AUTHENTICATON_PRIVATE_H_ */
 

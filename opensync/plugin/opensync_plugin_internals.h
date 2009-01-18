@@ -26,13 +26,14 @@ typedef osync_bool (* usable_fn) (OSyncError **);
 
 /**
  * @defgroup OSyncPluginPrivateAPI OpenSync Plugin Internals
- * @ingroup OSyncPrivate
+ * @ingroup OSyncPluginPrivate
  * @brief Private functions to manage plugins
  * 
  */
+
 /*@{*/
 
-/*! @brief Checks if a plugin is available and usable
+/** @brief Checks if a plugin is available and usable
  * 
  * @param plugin The plugin to check
  * @param error If the return was FALSE, will contain information on why the plugin is not available
@@ -41,7 +42,7 @@ typedef osync_bool (* usable_fn) (OSyncError **);
  */
 OSYNC_TEST_EXPORT osync_bool osync_plugin_is_usable(OSyncPlugin *plugin, OSyncError **error);
 
-/*! @brief Set timeout interval for plugin "usable" function
+/** @brief Set timeout interval for plugin "usable" function
  * 
  * @param plugin The plugin to check
  * @param timeout Timeout value 
@@ -49,7 +50,7 @@ OSYNC_TEST_EXPORT osync_bool osync_plugin_is_usable(OSyncPlugin *plugin, OSyncEr
  */
 OSYNC_TEST_EXPORT void osync_plugin_set_useable_timeout(OSyncPlugin *plugin, unsigned int timeout);
 
-/*! @brief Get timeout interval for plugin "usable" function
+/** @brief Get timeout interval for plugin "usable" function
  * 
  * @param plugin The plugin to check
  * @return Timeout value
@@ -57,7 +58,7 @@ OSYNC_TEST_EXPORT void osync_plugin_set_useable_timeout(OSyncPlugin *plugin, uns
  */
 OSYNC_TEST_EXPORT unsigned int osync_plugin_get_useable_timeout(OSyncPlugin *plugin);
 
-/*! @brief Get timeout interval for plugin initialization 
+/** @brief Get timeout interval for plugin initialization 
  * 
  * @param plugin The plugin to check
  * @return Timeout value
@@ -65,7 +66,7 @@ OSYNC_TEST_EXPORT unsigned int osync_plugin_get_useable_timeout(OSyncPlugin *plu
  */
 OSYNC_TEST_EXPORT unsigned int osync_plugin_get_initialize_timeout(OSyncPlugin *plugin);
 
-/*! @brief Get timeout interval for plugin finalization
+/** @brief Get timeout interval for plugin finalization
  * 
  * @param plugin The plugin to check
  * @return Timeout value
@@ -73,7 +74,7 @@ OSYNC_TEST_EXPORT unsigned int osync_plugin_get_initialize_timeout(OSyncPlugin *
  */
 OSYNC_TEST_EXPORT unsigned int osync_plugin_get_finalize_timeout(OSyncPlugin *plugin);
 
-/*! @brief Get timeout interval for plugin discovery
+/** @brief Get timeout interval for plugin discovery
  * 
  * @param plugin The plugin to get discvoery timeout 
  * @return Timeout value 

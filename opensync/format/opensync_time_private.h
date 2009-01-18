@@ -1,6 +1,8 @@
 /*
  * libopensync - A synchronization framework
- * Copyright (C) 2008  Daniel Gollub <dgollub@suse.de>
+ * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
+ * Copyright (C) 2006-2008 Daniel Gollub <dgollub@suse.de>
+ * Copyright (C) 2007 Chris Frey <cdfrey@netdirect.ca>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,27 +20,14 @@
  * 
  */
 
-#ifndef _OPENSYNC_PLUGIN_CONNECTION_INTERNALS_H_
-#define _OPENSYNC_PLUGIN_CONNECTION_INTERNALS_H_
+#ifndef _OPENSYNC_TIME_PRIVATE_H_
+#define _OPENSYNC_TIME_PRIVATE_H_
 
-/**
- * @defgroup OSyncPluginConnectionInternalsAPI OpenSync Plugin Connection Internals
- * @ingroup OSyncPluginPrivate
+/** @brief Function remove dashes from datestamp and colon
+ * 
+ * @param timestamp The timestamp which gets cleaned
+ * @returns valid vtime stamp in YYYYMMDD[THHMMDD[Z]] (the caller is responsible for freeing)
  */
+static char *osync_time_timestamp_remove_dash(const char *timestamp);
 
-/*@{*/
-
-/**
- * @brief OSyncPluginConnectionType String Map 
- **/
-typedef struct {
-	OSyncPluginConnectionType type;
-	const char *string;
-} OSyncPluginConnectionTypeString;
-
-const char *osync_plugin_connection_get_type_string(OSyncPluginConnectionType conn_type);
-
-/*@}*/
-
-#endif /*_OPENSYNC_PLUGIN_CONNECTION_INTERNALS_H_*/
-
+#endif /* _OPENSYNC_TIME_PRIVATE_H_ */

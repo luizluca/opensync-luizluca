@@ -22,10 +22,8 @@
 #define OPENSYNC_STATUS_INTERNALS_H_
 
 /**
- * @defgroup OSyncStatusPrivate OpenSync Status Private
- * @ingroup OSyncPrivate
  * @defgroup OSyncStatusInternalAPI OpenSync Status Internals
- * @ingroup OSyncStatusPrivate
+ * @ingroup OSyncEnginePrivate
  * @brief Internals of OpenSync Status 
  */
 

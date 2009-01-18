@@ -21,6 +21,13 @@
 #ifndef OPENSYNC_OBJTYPE_SINK_PRIVATE_H_
 #define OPENSYNC_OBJTYPE_SINK_PRIVATE_H_
 
+/**
+ * @defgroup OSyncObjTypeSinkPrivateAPI OpenSync Object Type Sink Private
+ * @ingroup OSyncPluginPrivate
+ */
+
+/*@{*/
+
 #define OSYNC_SINK_TIMEOUT_TRANSPORT 	30
 #define OSYNC_SINK_TIMEOUT_SINGLEIO	30
 #define OSYNC_SINK_TIMEOUT_BATCHIO	1800
@@ -118,6 +125,8 @@ struct OSyncObjTypeSink {
 	OSyncList *commit_contexts;
 	osync_bool available;
 };
+
+/*@}*/
 
 #endif /* OPENSYNC_OBJTYPE_SINK_PRIVATE_H_ */
 

@@ -21,9 +21,16 @@
 #ifndef _OPENSYNC_PLUGIN_LOCALIZATION_PRIVATE_H_
 #define _OPENSYNC_PLUGIN_LOCALIZATION_PRIVATE_H_
 
-/*! @brief Gives information about current localization settings 
+/**
+ * @defgroup OSyncPluginLocalizationPrivateAPI OpenSync Plugin Localization Private
+ * @ingroup OSyncPluginPrivate
+ */
+
+/*@{*/
+
+/**
+ * @brief Gives information about current localization settings 
  * 
- * @ingroup OSyncPluginLocalizationPrivateAPI 
  **/
 struct OSyncPluginLocalization {
 	/** Encoding of device/service/application (e.g. cp1925, ...) */
@@ -39,6 +46,8 @@ struct OSyncPluginLocalization {
 	/** Object reference counting */
 	int ref_count;
 };
+
+/*@}*/
 
 #endif /* _OPENSYNC_PLUGIN_LOCALIZATION_PRIVATE_H_ */
 

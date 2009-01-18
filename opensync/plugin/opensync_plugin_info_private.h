@@ -21,6 +21,16 @@
 #ifndef OPENSYNC_PLUGIN_INFO_PRIVATE_H_
 #define OPENSYNC_PLUGIN_INFO_PRIVATE_H_
 
+/**
+ * @defgroup OSyncPluginInfoPrivateAPI OpenSync Plugin Info Private
+ * @ingroup OSyncPluginPrivate
+ */
+
+/*@{*/
+
+/**
+ * @brief 
+ */
 struct OSyncPluginInfo {
 	void *loop;
 	OSyncPluginConfig *config;
@@ -42,5 +52,7 @@ struct OSyncPluginInfo {
 	long long int memberid; // introduced only for testing purpose (mock-sync)
 #endif	
 };
+
+/*@}*/
 
 #endif /* OPENSYNC_PLUGIN_INFO_PRIVATE_H_ */

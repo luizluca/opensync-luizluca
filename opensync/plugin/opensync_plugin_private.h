@@ -21,6 +21,15 @@
 #ifndef _OPENSYNC_PLUGIN_PRIVATE_H_
 #define _OPENSYNC_PLUGIN_PRIVATE_H_
 
+/**
+ * @defgroup OSyncPluginPrivate OpenSync Plugin Module Private
+ * @ingroup OSyncPrivate
+ * @defgroup OSyncPluginPrivateAPI OpenSync Plugin Private
+ * @ingroup OSyncPluginPrivate
+ */
+
+/*@{*/
+
 #define OSYNC_PLUGIN_TIMEOUT_DEFAULT	60
 
 #define OSYNC_PLUGIN_TIMEOUT_INITIALIZE	OSYNC_PLUGIN_TIMEOUT_DEFAULT 
@@ -68,5 +77,7 @@ struct OSyncPlugin {
 	void *plugin_data;
 	int ref_count;
 };
+
+/*@}*/
 
 #endif /* _OPENSYNC_PLUGIN_PRIVATE_H_ */

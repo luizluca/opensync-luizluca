@@ -23,9 +23,15 @@
 
 #define OSYNC_PLUGIN_CONFING_SCHEMA "plugin_config.xsd"
 
-/*! @brief Gives information about the plugin configuration 
- * 
- * @ingroup OSyncPluginConfigPrivateAPI 
+/**
+ * @defgroup OSyncPluginConfigPrivateAPI OpenSync Plugin Config Private
+ * @ingroup OSyncPluginPrivate
+ */
+
+/*@{*/
+
+/**
+ * @brief Gives information about the plugin configuration
  **/
 struct OSyncPluginConfig {
 	/** Advanced Options */
@@ -45,6 +51,8 @@ struct OSyncPluginConfig {
 	/** Object reference counting */
 	int ref_count;
 };
+
+/*@}*/
 
 #endif /* _OPENSYNC_PLUGIN_CONFIG_PRIVATE_H_ */
 

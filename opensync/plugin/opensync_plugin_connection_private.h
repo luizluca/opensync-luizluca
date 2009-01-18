@@ -21,9 +21,15 @@
 #ifndef _OPENSYNC_PLUGIN_CONNECTION_PRIVATE_H_
 #define _OPENSYNC_PLUGIN_CONNECTION_PRIVATE_H_
 
-/*! @brief Gives information about the current connection type 
- * 
- * @ingroup OSyncPluginConnectionPrivateAPI 
+/**
+ * @defgroup OSyncPluginConnectionPrivateAPI OpenSync Plugin Connection Private
+ * @ingroup OSyncPluginPrivate
+ */ 
+
+/*@{*/
+
+/**
+ * @brief Gives information about the current connection type
  **/
 struct OSyncPluginConnection {
 	/** Connection type */
@@ -69,6 +75,8 @@ struct OSyncPluginConnection {
 	/** Object reference counting */
 	int ref_count;
 };
+
+/*@}*/
 
 #endif /* _OPENSYNC_PLUGIN_CONNECTION_PRIVATE_H_ */
 
