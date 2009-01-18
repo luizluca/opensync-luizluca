@@ -25,7 +25,7 @@
 
 /**
  * @defgroup OSyncCapabilityAPI OpenSync Capability
- * @ingroup OSyncMerger
+ * @ingroup OSyncCapabilities
  * @brief The public part of the OSyncCapability
  * 
  */

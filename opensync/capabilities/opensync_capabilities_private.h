@@ -24,8 +24,10 @@
 #define OPENSYNC_CAPABILITIES_PRIVATE_H_
 
 /**
+ * @defgroup OSyncCapabilitiesPrivate OpenSync Capabilities Module Private
+ * @ingroup OSyncPrivate
  * @defgroup OSyncCapabilitiesPrivateAPI OpenSync Capabilities Private
- * @ingroup OSyncMergerPrivate
+ * @ingroup OSyncCapabilitiesPrivate
  * @brief Private part of OpenSync Capabilities
  */
 
