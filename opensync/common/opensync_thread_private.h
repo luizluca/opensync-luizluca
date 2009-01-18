@@ -21,14 +21,41 @@
 #ifndef _OPENSYNC_THREAD_PRIVATE_H
 #define _OPENSYNC_THREAD_PRIVATE_H
 
+/**
+ * @defgroup OSyncThreadPrivateAPI OpenSync Thread Private
+ * @ingroup OSyncCommonPrivate
+ */
+
+/*@{*/
+
+/**
+ * @brief Represents a Thread
+ */
 struct OSyncThread {
 	GThread *thread;
 	GCond *started;
 	GMutex *started_mutex;
 	GMainContext *context;
 	GMainLoop *loop;
+	/** reference counter */
 	int ref_count;
 };
+
+/** @brief Start callback function to emit signal when thread's mainloop got started
+ *
+ * @param data Pointer to passed callback data
+ * @returns Always FALSE
+ */
+static gboolean osyncThreadStartCallback(gpointer data);
+
+/** @brief Stop callback function to stop thread mainloop
+ *
+ * @param data Pointer to passed callback data
+ * @returns Always FALSE
+ */
+static gboolean osyncThreadStopCallback(gpointer data);
+
+/*@}*/
 
 #endif /* _OPENSYNC_THREAD_PRIVATE_H */
 

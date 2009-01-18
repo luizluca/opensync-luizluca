@@ -25,14 +25,15 @@
  * @defgroup OSyncCommonPrivate OpenSync Common Module Private
  * @ingroup OSyncPrivate
  * @defgroup OSyncMarshalPrivateAPI OpenSync Marshal Private 
- * @ingroup OSyncMarshalPrivate
+ * @ingroup OSyncCommonPrivate
  * @brief Serialized buffer 
  * 
  */
 
 /*@{*/
-/*! @brief A OSyncMarshal object 
- * 
+
+/**
+ * @brief A OSyncMarshal object 
  */
 struct OSyncMarshal {
 	/** Reference counting */

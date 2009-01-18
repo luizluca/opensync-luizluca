@@ -23,22 +23,6 @@
 
 #include "opensync_error_private.h"
 
-/**
- * @defgroup OSyncErrorPrivateAPI OpenSync Error Internals
- * @ingroup OSyncPrivate
- * @brief The public API of opensync
- * 
- * This gives you an insight in the public API of opensync.
- * 
- */
-/*@{*/
-
-/*! @brief Translate a error type into something human readable
- * 
- * @param type The error type to look up
- * @returns The name of the error type
- * 
- */
 static const char *osync_error_name_from_type(OSyncErrorType type)
 {
 	switch (type) {
@@ -61,14 +45,6 @@ static const char *osync_error_name_from_type(OSyncErrorType type)
 	}
 }
 
-/*! @brief Sets a error from a va_list
- * 
- * @param error A pointer to a error struct
- * @param type The type to set
- * @param format The message
- * @param args The arguments to the message
- * 
- */
 void osync_error_set_vargs(OSyncError **error, OSyncErrorType type, const char *format, va_list args)
 {
 	osync_return_if_fail(error);
@@ -85,23 +61,6 @@ void osync_error_set_vargs(OSyncError **error, OSyncErrorType type, const char *
 	return;
 }
 
-/*@}*/
-
-/**
- * @defgroup OSyncErrorAPI OpenSync Errors
- * @ingroup OSyncPublic
- * @brief OpenSync's error reporting facilities
- * 
- */
-/*@{*/
-
-
-/*! @brief This will return a string describing the type of the error
- * 
- * @param error A pointer to a error struct
- * @returns The description, NULL on error
- * 
- */
 const char *osync_error_get_name(OSyncError **error)
 {
 	osync_return_val_if_fail(error != NULL, NULL);
@@ -110,12 +69,6 @@ const char *osync_error_get_name(OSyncError **error)
 	return osync_error_name_from_type((*error)->type);
 }
 
-/** @brief Increase the reference count of the error object 
- * 
- * @param error The error object 
- * @returns The referenced error pointer
- * 
- */
 OSyncError **osync_error_ref(OSyncError **error)
 {
 	if (!osync_error_is_set(error))
@@ -126,11 +79,6 @@ OSyncError **osync_error_ref(OSyncError **error)
 	return error;
 }
 
-/** @brief Decrease the reference count of the error object
- * 
- * @param error The error object 
- * 
- */
 void osync_error_unref(OSyncError **error)
 {
 	if (!osync_error_is_set(error))
@@ -149,12 +97,6 @@ void osync_error_unref(OSyncError **error)
 	*error = NULL;
 }
 
-/*! @brief Checks if the error is set
- * 
- * @param error A pointer to a error struct to check
- * @returns TRUE if the error is set, FALSE otherwise
- * 
- */
 osync_bool osync_error_is_set (OSyncError **error)
 {
 	if (!error)
@@ -169,12 +111,6 @@ osync_bool osync_error_is_set (OSyncError **error)
 	return FALSE;
 }
 
-/*! @brief Returns the type of the error
- * 
- * @param error The error
- * @returns The type of the error or OSYNC_NO_ERROR if no error
- * 
- */
 OSyncErrorType osync_error_get_type(OSyncError **error)
 {
 	if (!osync_error_is_set(error))
@@ -182,12 +118,6 @@ OSyncErrorType osync_error_get_type(OSyncError **error)
 	return (*error)->type;
 }
 
-/*! @brief Returns the message of the error
- * 
- * @param error The error to print
- * @returns The message of the error or NULL if no error
- * 
- */
 const char *osync_error_print(OSyncError **error)
 {
 	if (!osync_error_is_set(error))
@@ -195,13 +125,6 @@ const char *osync_error_print(OSyncError **error)
 	return (*error)->message;
 }
 
-
-/*! @brief Returns the entired error stack as single string 
- * 
- * @param error The error stack to print
- * @returns The message of the error or NULL if no error
- * 
- */
 char *osync_error_print_stack(OSyncError **error)
 {
 	char *submessage = NULL;
@@ -221,13 +144,6 @@ char *osync_error_print_stack(OSyncError **error)
 	return message;
 }
 
-/*! @brief Duplicates the error into the target
- * 
- * 
- * @param target The target error to update
- * @param source The source error which to duplicate
- * 
- */
 void osync_error_set_from_error(OSyncError **target, OSyncError **source)
 {
 	if (!target || osync_error_is_set(target))
@@ -242,15 +158,6 @@ void osync_error_set_from_error(OSyncError **target, OSyncError **source)
 	osync_error_ref(target);
 }
 
-/*! @brief Sets the error
- * 
- * You can use this function to set the error to the given type and message
- * 
- * @param error A pointer to a error struct to set
- * @param type The Error type to set
- * @param format The message
- * 
- */
 void osync_error_set(OSyncError **error, OSyncErrorType type, const char *format, ...)
 {
 	va_list args;
@@ -259,14 +166,6 @@ void osync_error_set(OSyncError **error, OSyncErrorType type, const char *format
 	va_end (args);
 }
 
-/*! @brief Stack error on another error object 
- * 
- * Use this function to stack all errors to describe the root cause of an error 
- * 
- * @param parent A pointer to a error which gets the child stacked 
- * @param child A pointer to a error to which get stacked on parent error
- * 
- */
 void osync_error_stack(OSyncError **parent, OSyncError **child)
 {
 	if (!parent || !*parent)
@@ -286,13 +185,6 @@ void osync_error_stack(OSyncError **parent, OSyncError **child)
 	osync_error_ref(child);
 }
 
-/*! @brief Get stacked child of an error object 
- * 
- * Use this function to read an error stack 
- * 
- * @param parent A pointer to a error stack 
- * 
- */
 OSyncError *osync_error_get_child(OSyncError **parent)
 {
 	if (!parent || !*parent)
@@ -301,12 +193,6 @@ OSyncError *osync_error_get_child(OSyncError **parent)
 	return (*parent)->child;
 }
 
-/*! @brief Sets the type of an error
- * 
- * @param error A pointer to a error struct to set
- * @param type The Error type to set
- * 
- */
 void osync_error_set_type(OSyncError **error, OSyncErrorType type)
 {
 	if (!error)
@@ -316,4 +202,3 @@ void osync_error_set_type(OSyncError **error, OSyncErrorType type)
 	return;
 }
 
-/*@}*/

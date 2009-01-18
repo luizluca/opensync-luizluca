@@ -22,14 +22,14 @@
 #define _OPENSYNC_STRING_H
 
 /**
- * @defgroup OSyncStringAPI OpenSync String interface 
+ * @defgroup OSyncStringAPI OpenSync String
  * @ingroup OSyncCommon
  * @brief Functions for handling common string operations 
  */
 
 /*@{*/
 
-/*! @brief String replace
+/** @brief String replace
  * 
  * @param input Input string to work on
  * @param delimiter Delimiter
@@ -39,7 +39,7 @@
  */
 OSYNC_EXPORT char *osync_strreplace(const char *input, const char *delimiter, const char *replacement);
 
-/*! @brief Duplicates a string 
+/** @brief Duplicates a string 
  * 
  * Duplicates a string, ending with terminating-zero: \0
  * 
@@ -49,7 +49,7 @@ OSYNC_EXPORT char *osync_strreplace(const char *input, const char *delimiter, co
  */
 OSYNC_EXPORT char *osync_strdup(const char *str);
 
-/*! @brief Duplicates a formated string 
+/** @brief Duplicates a formated string 
  * 
  * Duplicates a formated string, ending with terminating-zero: \0
  * 
@@ -60,7 +60,7 @@ OSYNC_EXPORT char *osync_strdup(const char *str);
  */
 OSYNC_EXPORT char *osync_strdup_printf(const char *format, ...);
 
-/*! @brief Creates a random string
+/** @brief Creates a random string
  * 
  * Creates a random string of given length or less
  * 

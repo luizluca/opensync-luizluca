@@ -22,7 +22,9 @@
 #define _OPENSYNC_TRACE_H
 
 /**
- * @defgroup OSyncDebugAPI OpenSync Debugging 
+ * @defgroup OSyncDebug OpenSync Debug Module
+ * @ingroup OSyncPublic
+ * @defgroup OSyncDebugAPI OpenSync Debug 
  * @ingroup OSyncDebug
  * @brief Functions for debugging
  */

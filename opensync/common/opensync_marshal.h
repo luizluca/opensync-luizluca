@@ -24,8 +24,8 @@
 /**
  * @defgroup OSyncCommon OpenSync Common Module
  * @ingroup OSyncPublic
- * @defgroup OSyncMarshal OpenSync Marshal
- * @ingroup OSyncMarshal
+ * @defgroup OSyncMarshalAPI OpenSync Marshal
+ * @ingroup OSyncCommon
  * @brief Functions for serializing/marshaling data 
  * 
  */

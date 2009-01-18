@@ -21,7 +21,16 @@
 #ifndef OPENSYNC_ERROR_PRIVATE_H_
 #define OPENSYNC_ERROR_PRIVATE_H_
 
-/*! @brief Represent an error
+/**
+ * @defgroup OSyncCommonPrivate OpenSync Common Module Private
+ * @ingroup OSyncPrivate
+ * @defgroup OSyncErrorPrivateAPI OpenSync Error Private
+ * @ingroup OSyncCommonPrivate
+ */
+
+/*@{*/
+
+/** @brief Represent an error
  */
 struct OSyncError {
 	/** The type of the error that occured */
@@ -31,5 +40,15 @@ struct OSyncError {
 	int ref_count;
 	OSyncError *child;
 };
+
+/** @brief Translate a error type into something human readable
+ * 
+ * @param type The error type to look up
+ * @returns The name of the error type
+ * 
+ */
+static const char *osync_error_name_from_type(OSyncErrorType type);
+
+/*@}*/
 
 #endif //OPENSYNC_ERROR_PRIVATE_H_

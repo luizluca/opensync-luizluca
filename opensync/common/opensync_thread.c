@@ -24,19 +24,6 @@
 #include "opensync_thread_private.h"
 #include "opensync_thread_internals.h"
 
-/**
- * @defgroup OSyncThreadAPI OpenSync Thread Module 
- * @ingroup OSyncPrivate
- * @brief Some threading  functions
- * 
- */
-/*@{*/
-
-/*! @brief Stop callback function to stop thread mainloop
- *
- * @param data Pointer to passed callback data
- * @returns Always FALSE
- */
 static gboolean osyncThreadStopCallback(gpointer data)
 {
 	OSyncThread *thread = data;
@@ -46,11 +33,6 @@ static gboolean osyncThreadStopCallback(gpointer data)
 	return FALSE;
 }
 
-/*! @brief Start callback function to emit signal when thread's mainloop got started
- *
- * @param data Pointer to passed callback data
- * @returns Always FALSE
- */
 static gboolean osyncThreadStartCallback(gpointer data)
 {
 	OSyncThread *thread = data;
@@ -62,13 +44,6 @@ static gboolean osyncThreadStartCallback(gpointer data)
 	return FALSE;
 }
 
-/*! @brief Allocates a new thread with a g_mainloop 
- * 
- * @param context Pointer to GMainContext 
- * @param error The error which will hold the info in case of an error
- * @returns A pointer to the new allocated OSyncThread with inactive thread and mainloop 
- * 
- */
 OSyncThread *osync_thread_new(GMainContext *context, OSyncError **error)
 {
 	OSyncThread *thread = NULL;
@@ -96,11 +71,6 @@ OSyncThread *osync_thread_new(GMainContext *context, OSyncError **error)
 	return NULL;
 }
 
-/** @brief Increases the reference count on thread object 
- * 
- * @param thread Pointer to OSyncThread
- * 
- */
 OSyncThread *osync_thread_ref(OSyncThread *thread)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, thread);
@@ -112,11 +82,6 @@ OSyncThread *osync_thread_ref(OSyncThread *thread)
 	return thread;
 }
 
-/** @brief Decrements reference count on thread object 
- * 
- * @param thread Pointer to OSyncThread
- * 
- */
 void osync_thread_unref(OSyncThread *thread)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, thread);
@@ -153,29 +118,7 @@ void osync_thread_unref(OSyncThread *thread)
 	return NULL;
 	}*/
 
-/*void osync_thread_start(OSyncThread *thread)
-	{
-	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, thread);
-	osync_assert(thread);
-	
-	//Start the thread
-	g_mutex_lock(thread->started_mutex);
-	thread->thread = g_thread_create (osyncThreadStartCallback, thread, TRUE, NULL);
-	g_cond_wait(thread->started, thread->started_mutex);
-	g_mutex_unlock(thread->started_mutex);
-	
-	osync_trace(TRACE_EXIT, "%s", __func__);
-	}*/
 
-
-/*! @brief Start thread and it's mainloop 
- * 
- * @param func GThreadFunc Pointer
- * @param userdata Custom data poitner which get supplied to thread function
- * @param error Pointer to error struct
- * @return Newly allocate OSyncThread object with inactive mainloop
- * 
- */
 OSyncThread *osync_thread_create(GThreadFunc func, void *userdata, OSyncError **error)
 {
 	GError *gerror;
@@ -210,12 +153,6 @@ OSyncThread *osync_thread_create(GThreadFunc func, void *userdata, OSyncError **
 	return NULL;
 }
 
-
-/*! @brief Start thread and it's mainloop 
- * 
- * @param thread Thread object 
- * 
- */
 void osync_thread_start(OSyncThread *thread)
 {
 	GSource *idle = NULL;
@@ -232,11 +169,6 @@ void osync_thread_start(OSyncThread *thread)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }	
 
-/*! @brief Stops thread's mainloop and joins the thread
- * 
- * @param thread Thread object 
- * 
- */
 void osync_thread_stop(OSyncThread *thread)
 {
 	GSource *source = NULL;
@@ -255,12 +187,6 @@ void osync_thread_stop(OSyncThread *thread)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/*! @brief Exit thread 
- * 
- * @param thread Thread object 
- * @param retval Return value of thread while exiting
- * 
- */
 void osync_thread_exit(OSyncThread *thread, int retval)
 {
 	GSource *source = NULL;
@@ -277,8 +203,4 @@ void osync_thread_exit(OSyncThread *thread, int retval)
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
-
-
-
-/*@}*/
 

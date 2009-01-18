@@ -30,6 +30,13 @@
 #include <string.h>
 #include <stdio.h>
 
+/**
+ * @defgroup OSyncXMLInternalAPI OpenSync XML Internals
+ * @ingroup OSyncCommonPrivate
+ */
+
+/*@{*/
+
 typedef enum osxmlEncoding {
 	OSXML_8BIT = 0,
 	OSXML_QUOTED_PRINTABLE = 1,
@@ -84,5 +91,7 @@ xmlChar *osync_xml_node_get_content(xmlNodePtr node);
 xmlChar *osync_xml_attr_get_content(xmlAttrPtr node);
 
 osync_bool osync_xml_open_file(xmlDocPtr *doc, xmlNodePtr *cur, const char *path, const char *topentry, OSyncError **error);
+
+/*@}*/
 
 #endif /*_OPENSYNC_XML_H*/

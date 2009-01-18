@@ -22,14 +22,14 @@
 #define _OPENSYNC_FILE_H
 
 /**
- * @defgroup OSyncFileAPI OpenSync File interface 
+ * @defgroup OSyncFileAPI OpenSync File 
  * @ingroup OSyncCommon
  * @brief Functions for handling common file operations 
  */
 
 /*@{*/
 
-/*! @brief Writes data to a file
+/** @brief Writes data to a file
  * 
  * Writes data to a file
  * 
@@ -43,7 +43,7 @@
  */
 OSYNC_EXPORT osync_bool osync_file_write(const char *filename, const char *data, unsigned int size, int mode, OSyncError **error);
 
-/*! @brief Reads a file
+/** @brief Reads a file
  * 
  * Reads a file
  * 
@@ -56,7 +56,7 @@ OSYNC_EXPORT osync_bool osync_file_write(const char *filename, const char *data,
  */
 OSYNC_EXPORT osync_bool osync_file_read(const char *filename, char **data, unsigned int *size, OSyncError **error);
 
-/*! @brief Removes a directory recursively
+/** @brief Removes a directory recursively
  * 
  * Removes a directory recursively. This is an 
  * internal function for portability. 

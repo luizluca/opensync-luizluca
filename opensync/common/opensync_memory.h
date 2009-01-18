@@ -22,12 +22,12 @@
 #define _OPENSYNC_MEMORY_H
 
 /**
- * @defgroup OSyncMemoryAPI OpenSync Memory interface 
+ * @defgroup OSyncMemoryAPI OpenSync Memory 
  * @ingroup OSyncCommon
  * @brief Functions for handling memory operations 
  */
 
-/*! @brief Safely tries to malloc memory
+/** @brief Safely tries to malloc memory
  * 
  * Tries to malloc memory but returns an error in an OOM situation instead
  * of aborting
@@ -39,7 +39,7 @@
  */
 OSYNC_EXPORT void *osync_try_malloc0(unsigned int size, OSyncError **error);
 
-/*! @brief Frees memory
+/** @brief Frees memory
  * 
  * Frees memory allocated by osync_try_malloc0() and others osync_* functions.
  * 

@@ -22,9 +22,7 @@
 #define OPENSYNC_ANCHOR_INTERNALS_H_
 
 /**
- * @defgroup OSyncHelperInternals OpenSync Helper Module Internals
- * @ingroup OSyncPrivate
- * @defgroup OSyncAnchorInternalsAPI OpenSync Anchor Internals
+ * @defgroup OSyncAnchorInternalAPI OpenSync Anchor Internals
  * @ingroup OSyncHelperPrivate
  * @brief Internal functions to deal with anchors
  */

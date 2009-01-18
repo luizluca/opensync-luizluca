@@ -119,10 +119,10 @@ int osync_remove_directory_recursively(const char *dirname)
 	} /* While */
 	g_dir_close(gdir);
 	gdir = NULL;
-        if (g_rmdir(dirname) < 0){
-          g_set_error(&gerror, G_FILE_ERROR, g_file_error_from_errno(errno), "%s", dirname);
-          goto error;
-        }
+	if (g_rmdir(dirname) < 0){
+		g_set_error(&gerror, G_FILE_ERROR, g_file_error_from_errno(errno), "%s", dirname);
+		goto error;
+	}
 
 	return 0; 
 		
