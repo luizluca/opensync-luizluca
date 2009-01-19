@@ -244,7 +244,6 @@ osync_bool osync_sink_engine_write(OSyncSinkEngine *engine, OSyncArchive *archiv
 			
 			/* FIXME: Don't mix up in this function objtypes */
 			/* osync_assert_msg(!strcmp(objtype, osync_change_get_objtype(entry_engine->change), "Mixed-objtype in final write!")); */
-			const char *objtype = osync_change_get_objtype(entry_engine->change);
 				
 			if (osync_change_get_changetype(entry_engine->change) == OSYNC_CHANGE_TYPE_DELETED) {
 				if (!osync_archive_delete_change(archive, osync_mapping_entry_get_id(entry), objtype, error))
