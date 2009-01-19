@@ -29,6 +29,7 @@
  * @brief The internal part of the OSyncXMLFormatSchema
  *
  */
+
 /*@{*/
 
 /**
@@ -48,5 +49,7 @@ OSYNC_TEST_EXPORT OSyncXMLFormatSchema *osync_xmlformat_schema_new_xmlformat(OSy
  * @return new OSyncXMLFormatSchema or NULL in case of an error
  */
 OSYNC_TEST_EXPORT OSyncXMLFormatSchema *osync_xmlformat_schema_new_path(const char *objtype, const char *path, OSyncError **error);
+
+/*@}*/
 
 #endif /* OPENSYNC_XMLFORMAT_SCHEMA_INTERNALS_H_ */

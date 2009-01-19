@@ -81,8 +81,9 @@ OSYNC_EXPORT OSyncPluginConfig *osync_plugin_config_ref(OSyncPluginConfig *confi
  *
  * @param config Contents of config file as OsyncPluginConfig object
  * @param path Path to file to load
+ * @param schemadir Path to the schema location. If schmadir is NULL the default value is used
  * @param error Pointer to error struct
- * @returns True on success, False on failure - error will contain details
+ * @return True on success, False on failure - error will contain details
  */
 OSYNC_EXPORT osync_bool osync_plugin_config_file_load(OSyncPluginConfig *config, const char *path, const char *schemadir, OSyncError **error);
 

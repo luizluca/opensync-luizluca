@@ -25,9 +25,9 @@
 typedef osync_bool (* usable_fn) (OSyncError **);
 
 /**
- * @defgroup OSyncPluginPrivateAPI OpenSync Plugin Internals
+ * @defgroup OSyncPluginInternalsAPI OpenSync Plugin Internals
  * @ingroup OSyncPluginPrivate
- * @brief Private functions to manage plugins
+ * @brief Internal functions to manage plugins
  * 
  */
 

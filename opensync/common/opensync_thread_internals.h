@@ -23,7 +23,7 @@
 #define _OPENSYNC_THREAD_INTERNALS_H
 
 /**
- * @defroup OSyncThreadInternalAPI OpenSync Thread Internals
+ * @defgroup OSyncThreadInternalAPI OpenSync Thread Internals
  * @ingroup OSyncCommonPrivate
  * @brief Some threading functions
  */

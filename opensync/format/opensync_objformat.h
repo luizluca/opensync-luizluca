@@ -207,7 +207,7 @@ OSYNC_EXPORT void osync_objformat_set_marshal_func(OSyncObjFormat *format, OSync
  * @param format Pointer to the object format
  * @param demarshal_func The demarshal function to set
  */
-OSYNC_EXPORT void osync_objformat_set_demarshal_func(OSyncObjFormat *format, OSyncFormatDemarshalFunc marshal_func);
+OSYNC_EXPORT void osync_objformat_set_demarshal_func(OSyncObjFormat *format, OSyncFormatDemarshalFunc demarshal_func);
 
 /**
  * @brief Sets the optional validation function for an object format

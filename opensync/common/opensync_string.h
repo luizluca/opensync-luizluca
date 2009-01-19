@@ -39,9 +39,9 @@
  */
 OSYNC_EXPORT char *osync_strreplace(const char *input, const char *delimiter, const char *replacement);
 
-/** @brief Duplicates a string 
+/** @brief Duplicates a string
  * 
- * Duplicates a string, ending with terminating-zero: \0
+ * Duplicates a string, ending with terminating-zero:
  * 
  * @param str The pointer of the string to duplicate
  * @returns The duplicate string, caller is responsible for freeing.
@@ -49,12 +49,12 @@ OSYNC_EXPORT char *osync_strreplace(const char *input, const char *delimiter, co
  */
 OSYNC_EXPORT char *osync_strdup(const char *str);
 
-/** @brief Duplicates a formated string 
+/** @brief Duplicates a formated string
  * 
- * Duplicates a formated string, ending with terminating-zero: \0
+ * Duplicates a formated string, ending with terminating-zero:
  * 
- * @param str The pointer of the string to duplicate
- * @param args 
+ * @param format The format for the output
+ * @param ... vararg list
  * @returns The duplicate string, caller is responsible for freeing.
  * 
  */

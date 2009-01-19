@@ -183,7 +183,8 @@ osync_bool osync_objformat_must_validate(OSyncObjFormat *format);
  *
  * @param format Pointer to the object format
  * @param data Reference of buffer which stores data to merge
- * @param size Refernce of size in bytes of the buffer specified by the data paramter
+ * @param size Reference of size in bytes of the buffer specified by the data paramter
+ * @param entire
  * @param entsize Size in bytes of the base data buffer specified by the entire parameter
  * @param caps The capabilities list which describes what must get merged: entire -> input
  * @param error Pointer to an error struct
@@ -195,7 +196,7 @@ OSYNC_TEST_EXPORT osync_bool osync_objformat_merge(OSyncObjFormat *format,
 		OSyncCapabilities *caps, OSyncError **error);
 
 /**
- * @brief Demrge supplied data in format specific way
+ * @brief Demerge supplied data in format specific way
  *
  * @param format Pointer to the object format
  * @param data Pointer to the buffer which should get demerged 

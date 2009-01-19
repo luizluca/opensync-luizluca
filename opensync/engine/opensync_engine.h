@@ -252,8 +252,7 @@ OSYNC_EXPORT osync_bool osync_engine_synchronize(OSyncEngine *engine, OSyncError
  * osync_engine_wait_sync_end for this as this might introduce a race condition.
  *
  * @param engine A pointer to the engine, which to sync and wait for the sync end
- * @param member A pointer to the member, which to discover
- * @param error A pointer to a error struct
+ * @param error A pointer to an error struct
  * @returns TRUE on success, FALSE otherwise.
  *
  */
@@ -382,7 +381,7 @@ OSYNC_EXPORT void osync_engine_set_multiply_callback(OSyncEngine *engine, osync_
  * The change status handler will be called every time a new change is received, written etc
  *
  * @param engine A pointer to the engine, for which to set the callback
- * @param function A pointer to a function which will receive the change status
+ * @param callback A pointer to a function which will receive the change status
  * @param user_data Pointer to some data that will get passed to the status function as the last argument
  *
  */
@@ -393,7 +392,7 @@ OSYNC_EXPORT void osync_engine_set_changestatus_callback(OSyncEngine *engine, os
  * The mapping status handler will be called every time a mapping is updated
  *
  * @param engine A pointer to the engine, for which to set the callback
- * @param function A pointer to a function which will receive the mapping status
+ * @param callback A pointer to a function which will receive the mapping status
  * @param user_data Pointer to some data that will get passed to the status function as the last argument
  *
  */
@@ -404,7 +403,7 @@ OSYNC_EXPORT void osync_engine_set_mappingstatus_callback(OSyncEngine *engine, o
  * The engine status handler will be called every time the engine is updated (started, stopped etc)
  *
  * @param engine A pointer to the engine, for which to set the callback
- * @param function A pointer to a function which will receive the engine status
+ * @param callback A pointer to a function which will receive the engine status
  * @param user_data Pointer to some data that will get passed to the status function as the last argument
  *
  */
@@ -415,7 +414,7 @@ OSYNC_EXPORT void osync_engine_set_enginestatus_callback(OSyncEngine *engine, os
  * The member status handler will be called every time a member is updated (connects, disconnects etc)
  *
  * @param engine A pointer to the engine, for which to set the callback
- * @param function A pointer to a function which will receive the member status
+ * @param callback A pointer to a function which will receive the member status
  * @param user_data Pointer to some data that will get passed to the status function as the last argument
  *
  */

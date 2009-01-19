@@ -239,9 +239,10 @@ OSYNC_EXPORT OSyncFormatConverterPath *osync_format_env_find_path_formats(OSyncF
  *
  * @param env The format environment to use
  * @param sourcedata The OSyncData object which should be converted and the detectors will run on
- * @param targetformat The target format to be converted to 
+ * @param targetformat The target format to be converted to
+ * @param preferred_format Format that should be preferred to build the conversion path
  * @param error The error-return location
- * @returns The appropriate conversion path, or NULL if an error occurred.
+ * @return The appropriate conversion path, or NULL if an error occurred.
  * 
  */
 OSYNC_EXPORT OSyncFormatConverterPath *osync_format_env_find_path_with_detectors(OSyncFormatEnv *env, OSyncData *sourcedata, OSyncObjFormat *targetformat, const char *preferred_format, OSyncError **error);
@@ -251,6 +252,7 @@ OSYNC_EXPORT OSyncFormatConverterPath *osync_format_env_find_path_with_detectors
  * @param env The format environment to use
  * @param sourcedata The OSyncData object which should be converted and the detectors will run on
  * @param targets List of possible Object Format Sinks
+ * @param preferred_format Format that should be preferred to build the conversion path
  * @param error The error-return location
  * @returns The appropriate conversion path, or NULL if an error occurred.
  * 

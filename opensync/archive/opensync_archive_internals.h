@@ -102,7 +102,7 @@ osync_bool osync_archive_flush_changes(OSyncArchive *archive, const char *objtyp
  *
  * @param archive The group archive
  * @param objtype Requested object type 
- * @param ids List to store the archive (database) ids of each entry
+ * @param mappingsids List to store the archive (database) ids of each entry
  * @param changetypes List to store the changetypes for each entry
  * @param error Pointer to an error struct
  * @return TRUE on when all changes successfully loaded otherwise FALSE
@@ -114,7 +114,7 @@ osync_bool osync_archive_load_ignored_conflicts(OSyncArchive *archive, const cha
  *
  * @param archive The group archive
  * @param objtype Reported object type of entry
- * @param id Mapping Entry ID of entry 
+ * @param mappingid Mapping Entry ID of entry 
  * @param changetype Changetype of entry 
  * @param error Pointer to an error struct
  * @return Returns TRUE on success, FALSE otherwise 

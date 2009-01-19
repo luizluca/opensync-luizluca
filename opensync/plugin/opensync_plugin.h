@@ -275,16 +275,17 @@ OSYNC_EXPORT void osync_plugin_set_initialize_timeout(OSyncPlugin *plugin, unsig
  */
 OSYNC_EXPORT void osync_plugin_set_finalize_timeout(OSyncPlugin *plugin, unsigned int timeout);
 
-/** @brief Initialize Plugin 
+/** @brief Initialize a Plugin 
  *
  * @param plugin Pointer to the plugin
+ * @param plugin_data Pointer to store the data that is returned by the plugin
  * @param info Pointer to OSyncPluginInfo which describes the plugin 
  * @param error Pointer to error-struct
- * @return Userdata returned by the plugin on success, NULL on error
+ * @return TREU if successful, FALSE otherwise
  */
 OSYNC_EXPORT osync_bool osync_plugin_initialize(OSyncPlugin *plugin, void **plugin_data, OSyncPluginInfo *info, OSyncError **error);
 
-/** @brief Finalize Plugin 
+/** @brief Finalize a Plugin 
  *
  * @param plugin Pointer to the plugin
  * @param data Pointer to userdata which got returned by plugin initialize function

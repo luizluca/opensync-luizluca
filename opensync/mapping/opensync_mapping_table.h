@@ -87,7 +87,7 @@ OSYNC_EXPORT void osync_mapping_table_close(OSyncMappingTable *table);
  * @brief Search for the mapping object with the mapping id 
  *
  * @param table The mapping table object
- * @param long long int The mapping id to search for
+ * @param id The mapping id to search for
  * @return Returns Mapping object or NULL if no mapping matched the mapping id
  */ 
 OSYNC_EXPORT OSyncMapping *osync_mapping_table_find_mapping(OSyncMappingTable *table, long long int id);

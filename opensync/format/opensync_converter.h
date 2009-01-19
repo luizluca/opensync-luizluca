@@ -105,7 +105,7 @@ OSYNC_EXPORT OSyncConverterType osync_converter_get_type(OSyncFormatConverter *c
 
 /**
  * @brief Detects the Object Format of passed OSyncData
- * @param detector Pointer to the detector
+ * @param converter Pointer to the converter
  * @param data Pointer to OSyncData object which should be detected
  * @returns The detected Object Format or NULL
  */
@@ -193,17 +193,18 @@ OSYNC_EXPORT void osync_converter_set_initialize_func(OSyncFormatConverter *conv
 /**
  * @brief Sets the finalize function of a converter
  * @param converter Pointer to the converter
- * @param initialize_func Pointer to the finialize function
+ * @param finalize_func Pointer to the finalize function
  */
 OSYNC_EXPORT void osync_converter_set_finalize_func(OSyncFormatConverter *converter, OSyncFormatConverterFinalizeFunc finalize_func);
 
 /**
  * @brief Invokes initialize function of a converter
  *
- * @param converter Pointer to the converter which should be initalized
+ * @param converter Pointer to the converter which should be initialized
  * @param config configuration
+ * @param error Pointer to an error struct
  *
- * @todo config is not used currently. Should be usesd in the future to pass a directoy for xml format schema location
+ * @todo config is not used currently. Should be used in the future to pass a directory for xml format schema location
  */
 OSYNC_EXPORT void osync_converter_initialize(OSyncFormatConverter *converter, const char *config, OSyncError **error);
 

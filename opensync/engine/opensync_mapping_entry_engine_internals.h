@@ -42,31 +42,32 @@ struct OSyncMappingEntryEngine {
  */
 /*@{*/
 
-/*! @brief Register a new Mapping Entry Engine
+/** @brief Register a new Mapping Entry Engine
  *
  * @param entry Pointer to an OSyncMappingEntry
  * @param mapping_engine Pointer to an OSyncMappingEngine
  * @param sink_engine Pointer to an OSyncSinkEngine
+ * @param objengine Pointer to an OSyncObjEngine
  * @param error Pointer to an error struct
  * @returns the newly registered Mapping Entry Engine, NULL on error
  */
 OSyncMappingEntryEngine *osync_entry_engine_new(OSyncMappingEntry *entry, OSyncMappingEngine *mapping_engine, OSyncSinkEngine *sink_engine, OSyncObjEngine *objengine, OSyncError **error);
 
-/*! @brief Increase the reference count on a Mapping Entry Engine 
+/** @brief Increase the reference count on a Mapping Entry Engine 
  * 
- * @param plugin Pointer to the Mapping Entry Engine
+ * @param engine Pointer to the Mapping Entry Engine
  * 
  */
 OSyncMappingEntryEngine *osync_entry_engine_ref(OSyncMappingEntryEngine *engine);
 
-/*! @brief Decrease the reference count on a Mapping Entry Engine 
+/** @brief Decrease the reference count on a Mapping Entry Engine 
  * 
- * @param plugin Pointer to the Mapping Entry Engine
+ * @param engine Pointer to the Mapping Entry Engine
  * 
  */
 void osync_entry_engine_unref(OSyncMappingEntryEngine *engine);
 
-/*! @brief Tries to match OSyncMappingEntryEngine with a OSyncChange.
+/** @brief Tries to match OSyncMappingEntryEngine with a OSyncChange.
  *
  *  Based on the UID of the OSyncChange and the Mapping Entry of the
  *  OSyncMappingEntryEngine, this functions tries to match the two objects.
@@ -80,14 +81,14 @@ void osync_entry_engine_unref(OSyncMappingEntryEngine *engine);
  */
 osync_bool osync_entry_engine_matches(OSyncMappingEntryEngine *engine, OSyncChange *change);
 
-/*! @brief Get the pointer of the assinged OSyncChange object 
+/** @brief Get the pointer of the assinged OSyncChange object 
  *
  * @param engine Pointer to an OSyncMappingEntryEngine
  * @returns Pointer to assigned OSyncChange, or NULL if no change is set
  */
 OSyncChange *osync_entry_engine_get_change(OSyncMappingEntryEngine *engine);
 
-/*! @brief Update the OSyncChange object in Mapping Entry Engine 
+/** @brief Update the OSyncChange object in Mapping Entry Engine 
  *
  * Mapping Entry Engine get flagged as not sync in the Mapping Table, when
  * change get updated.
@@ -97,17 +98,17 @@ OSyncChange *osync_entry_engine_get_change(OSyncMappingEntryEngine *engine);
  */
 void osync_entry_engine_update(OSyncMappingEntryEngine *engine, OSyncChange *change);
 
-/*! @brief Set the dirty flag for OSyncMappingEntryEngine 
+/** @brief Set the dirty flag for OSyncMappingEntryEngine 
  *
  * If dirty flag for OSyncMappingEntryEngine get set, the entry gets handled
  * in the engine WRITE section.
  *
  * @param engine Pointer to an OSyncMappingEntryEngine
- * @param change Pointer to new change to assign or NULL to unset the current change
+ * @param dirty Boolean value to set
  */
 void osync_entry_engine_set_dirty(OSyncMappingEntryEngine *engine, osync_bool dirty);
 
-/*! @brief Demerge the entry in the OSyncMappingEntryEngine
+/** @brief Demerge the entry in the OSyncMappingEntryEngine
  *
  * The demerge includes storing the "entire" entry in the Archive. The demerging is done
  * based on the supplied OSyncCapabilities.
@@ -120,7 +121,7 @@ void osync_entry_engine_set_dirty(OSyncMappingEntryEngine *engine, osync_bool di
  */
 osync_bool osync_entry_engine_demerge(OSyncMappingEntryEngine *engine, OSyncArchive *archive, OSyncCapabilities *caps, OSyncError **error);
 
-/*! @brief convert the entry in the OSyncMappingEntryEngine 
+/** @brief convert the entry in the OSyncMappingEntryEngine 
  *
  * The conversion of the entry of OSyncMappingEntryEngine, uses the format
  * configurations of OSyncObjTypeSink (i.e. which supported formats, preferred

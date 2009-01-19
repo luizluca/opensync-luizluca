@@ -77,14 +77,12 @@ OSYNC_TEST_EXPORT OSyncModule *osync_module_ref(OSyncModule *module);
 OSYNC_TEST_EXPORT void osync_module_unref(OSyncModule *module);
 
 /**
- * @brief dlopen()s a format plugin
+ * @brief Loads a module
  * 
- * The get_info() function on the format plugin gets called
- * 
- * @param env The environment in which to open the plugin
- * @param path Where to find this plugin
- * @param error Pointer to a error struct
- * @return Pointer to the plugin on success, NULL otherwise
+ * @param module Module that should be loaded
+ * @param path Where to find this module
+ * @param error Pointer to an error struct
+ * @return TRUE on success, FALSE otherwise
  * 
  */
 OSYNC_TEST_EXPORT osync_bool osync_module_load(OSyncModule *module, const char *path, OSyncError **error);
@@ -145,9 +143,9 @@ OSYNC_TEST_EXPORT osync_bool osync_module_check(OSyncModule *module, OSyncError 
  * 
  * Looks up and returns a function
  * 
- * @param plugin Pointer to the plugin
+ * @param module Pointer to the module
  * @param name The name of the function to look up
- * @param error Pointer to a error struct
+ * @param error Pointer to an error struct
  * @return Pointer to the function
  * 
  */
