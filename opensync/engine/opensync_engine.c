@@ -1083,14 +1083,7 @@ static void _osync_engine_generate_multiplied_event(OSyncEngine *engine)
 			osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
 		} else {
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_MULTIPLIED, NULL);
-
-			/* This is only for debugging purposes */
-			osync_engine_trace_multiply_summary(engine);
-
-			if (engine->multiply_callback)
-				engine->multiply_callback(engine, engine->multiply_userdata);
-			else
-				osync_engine_event(engine, OSYNC_ENGINE_EVENT_MULTIPLIED);
+			osync_engine_event(engine, OSYNC_ENGINE_EVENT_MULTIPLIED);
 		}
 	} else
 		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->obj_errors | engine->obj_multiplied));
