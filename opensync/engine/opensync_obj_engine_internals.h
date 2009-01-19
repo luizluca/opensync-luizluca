@@ -113,7 +113,7 @@ osync_bool osync_obj_engine_prepare_write(OSyncObjEngine *engine, OSyncError **e
  * related to the OSyncObjEngine
  *
  * @param engine Pointer to an OSyncObjEngine which should start writing 
-  @param error Pointer to error struct, which get set on any error
+ * @param error Pointer to error struct, which get set on any error
  * @returns TRUE on success, FALSE otherwise
  */
 osync_bool osync_obj_engine_write(OSyncObjEngine *engine, OSyncError **error);
@@ -140,6 +140,14 @@ void osync_obj_engine_commit_change_callback(OSyncClientProxy *proxy, void *user
  * @param error Pointer to error struct, which has an error set
  */
 void osync_obj_engine_written_callback(OSyncClientProxy *proxy, void *userdata, OSyncError *error);
+
+/*! @brief Find OSyncSinkEngine for a specific OSyncClientProxy 
+ *
+ * @param engine Pointer to OSyncObjEngine to prepare
+ * @param proxy Pointer to an OSyncClientProxy object
+ * @returns Pointer of OSyncSinkEngine of the associated proxy, otherwise NULL
+ */
+OSyncSinkEngine *osync_obj_engine_find_proxy_sinkengine(OSyncObjEngine *engine, OSyncClientProxy *proxy);
 
 #endif /* OPENSYNC_OBJ_ENGINE_INTERNALS_H_ */
 

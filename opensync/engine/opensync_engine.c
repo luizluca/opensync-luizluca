@@ -927,6 +927,64 @@ static void _osync_engine_generate_mapped_event(OSyncEngine *engine)
 
 }
 
+osync_bool osync_engine_handle_mixed_objtypes(OSyncEngine *engine, OSyncError **error)
+{
+	OSyncList *o, *s, *e;
+
+	for (o = engine->object_engines; o; o = o->next) {
+		OSyncObjEngine *objengine = o->data;
+		const char *objtype = objengine->objtype; 
+
+		osync_trace(TRACE_INTERNAL, "ObjEngine: %s", objtype);
+
+		for (s = objengine->dummy_sink_engines; s; s = s->next) {
+			OSyncSinkEngine *sinkengine = s->data;
+
+			for (e = sinkengine->entries; e; e = e->next) {
+				OSyncMappingEntryEngine *mapping_entry_engine = e->data;
+				OSyncChange *change;
+				OSyncObjFormat *objformat;
+				const char *current_objtype;
+				OSyncObjEngine *new_objengine;
+				OSyncSinkEngine *new_sinkengine;
+
+				change = osync_entry_engine_get_change(mapping_entry_engine);
+				objformat = osync_change_get_objformat(change);
+				osync_assert(objformat);
+				current_objtype = osync_objformat_get_objtype(objformat);
+
+				/* ... otherwise we need to reassign the mappin entry engine
+				 * to different objengine
+				 */
+				new_objengine = osync_engine_find_objengine(engine, current_objtype);
+				if (!new_objengine) {
+					osync_error_set(error, OSYNC_ERROR_GENERIC,
+							"Couldn't find Object Type Engine for Object Type \"%s\" "
+							"while preparing for write phase.", __NULLSTR(current_objtype));
+					goto error;
+				}
+
+				new_sinkengine = osync_obj_engine_find_proxy_sinkengine(new_objengine, sinkengine->proxy);
+				if (!new_sinkengine) {
+					osync_error_set(error, OSYNC_ERROR_GENERIC,
+							"Couldn't find Sink Engine for Object Type \"%s\" "
+							"while preparing for write phase.", __NULLSTR(current_objtype));
+					goto error;
+				}
+
+				sinkengine->entries = osync_list_remove(sinkengine->entries, mapping_entry_engine);
+				new_sinkengine->entries = osync_list_append(new_sinkengine->entries, mapping_entry_engine);
+				
+			}
+		}
+	}
+
+	return TRUE;
+
+error:
+	return FALSE;
+}
+
 static void _osync_engine_generate_end_conflicts_event(OSyncEngine *engine)
 {
 
@@ -1041,23 +1099,36 @@ static void _osync_engine_generate_multiplied_event(OSyncEngine *engine)
 
 static void _osync_engine_generate_prepared_write_event(OSyncEngine *engine)
 {
+	OSyncError *locerror = NULL;
+
 	if (osync_bitcount(engine->obj_errors | engine->obj_prepared_write) == osync_list_length(engine->object_engines)) {
 		if (osync_bitcount(engine->obj_errors)) {
-			OSyncError *locerror = NULL;
 			osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "At least one object engine failed while preparing the write event. Aborting");
-			osync_trace(TRACE_ERROR, "%s", osync_error_print(&locerror));
-			osync_engine_set_error(engine, locerror);
-			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_ERROR, locerror);
-			osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
-			//osync_error_unref(&locerror);
+			goto error;
 		} else {
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_PREPARED_WRITE, NULL);
-			osync_engine_event(engine, OSYNC_ENGINE_EVENT_PREPARED_WRITE);
+			if (!osync_engine_handle_mixed_objtypes(engine, &locerror))
+				goto error;
 
+			/* This is only for debugging purposes */
+			osync_engine_trace_multiply_summary(engine);
+
+			if (engine->multiply_callback)
+				engine->multiply_callback(engine, engine->multiply_userdata);
+			else
+				osync_engine_event(engine, OSYNC_ENGINE_EVENT_PREPARED_WRITE);
 		}
 	} else
 		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->obj_errors | engine->obj_prepared_write));
 
+	return;
+
+error:
+	osync_trace(TRACE_ERROR, "%s", osync_error_print(&locerror));
+	osync_engine_set_error(engine, locerror);
+	osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_ERROR, locerror);
+	osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
+	//osync_error_unref(&locerror);
 }
 
 static void _osync_engine_generate_written_event(OSyncEngine *engine)

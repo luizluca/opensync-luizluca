@@ -362,7 +362,6 @@ static void _osync_obj_engine_read_callback(OSyncClientProxy *proxy, void *userd
 osync_bool osync_obj_engine_receive_change(OSyncObjEngine *objengine, OSyncClientProxy *proxy, OSyncChange *change, OSyncError **error)
 {
 	OSyncSinkEngine *sinkengine = NULL;
-	OSyncList *s = NULL;
 	OSyncList *e = NULL;
 	
 	osync_assert(objengine);
@@ -370,12 +369,7 @@ osync_bool osync_obj_engine_receive_change(OSyncObjEngine *objengine, OSyncClien
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, objengine, proxy, change, error);
 	
 	/* Find the sinkengine for the proxy */
-	for (s = objengine->sink_engines; s; s = s->next) {
-		sinkengine = s->data;
-		if (sinkengine->proxy == proxy)
-			break;
-		sinkengine = NULL;
-	}
+	sinkengine = osync_obj_engine_find_proxy_sinkengine(objengine, proxy);
 	
 	if (!sinkengine) {
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to find sinkengine");
@@ -1182,6 +1176,23 @@ void osync_obj_engine_set_error(OSyncObjEngine *engine, OSyncError *error)
 	}
 	engine->error = error;
 	osync_error_ref(&error);
+}
+
+OSyncSinkEngine *osync_obj_engine_find_proxy_sinkengine(OSyncObjEngine *engine, OSyncClientProxy *proxy)
+{
+	OSyncList *s;
+	OSyncSinkEngine *sinkengine;
+	osync_return_val_if_fail(engine, NULL);
+	osync_return_val_if_fail(proxy, NULL);
+
+	for (s = engine->sink_engines; s; s = s->next) {
+		sinkengine = s->data;
+		if (sinkengine->proxy == proxy)
+			break;
+		sinkengine = NULL;
+	}
+
+	return sinkengine; 
 }
 
 OSyncSinkEngine *osync_obj_engine_nth_sinkengine(OSyncObjEngine *engine, unsigned int nth)

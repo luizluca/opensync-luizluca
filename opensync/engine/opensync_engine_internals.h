@@ -117,6 +117,19 @@ OSYNC_TEST_EXPORT void osync_engine_set_schemadir(OSyncEngine *engine, const cha
  */
 OSYNC_TEST_EXPORT void osync_engine_trace_multiply_summary(OSyncEngine *engine);
 
+
+/** @brief Reassign entries with a different objtype then the ObjEngine, to the
+ *         native ObjEngine. 
+ *
+ * TODO: This needs serious profiling.
+ *  
+ * @param engine Pointer to engine
+ * @param error Pointer to error-struct which get set on any error
+ * @returns TRUE on success, or FALSE on any error
+ *
+ */
+osync_bool osync_engine_handle_mixed_objtypes(OSyncEngine *engine, OSyncError **error);
+
 /*@}*/
 
 #endif /*OPENSYNC_ENGINE_INTERNALS_H_*/
