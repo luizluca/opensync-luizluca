@@ -949,6 +949,10 @@ osync_bool osync_engine_handle_mixed_objtypes(OSyncEngine *engine, OSyncError **
 				OSyncSinkEngine *new_sinkengine;
 
 				change = osync_entry_engine_get_change(mapping_entry_engine);
+				
+				if (!change)
+					continue;
+
 				objformat = osync_change_get_objformat(change);
 				osync_assert(objformat);
 				current_objtype = osync_objformat_get_objtype(objformat);
