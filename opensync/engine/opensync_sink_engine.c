@@ -246,13 +246,15 @@ osync_bool osync_sink_engine_write(OSyncSinkEngine *engine, OSyncArchive *archiv
 			/* osync_assert_msg(!strcmp(objtype, osync_change_get_objtype(entry_engine->change), "Mixed-objtype in final write!")); */
 				
 			if (osync_change_get_changetype(entry_engine->change) == OSYNC_CHANGE_TYPE_DELETED) {
-				if (!osync_archive_delete_change(archive, osync_mapping_entry_get_id(entry), objtype, error))
+				if (!osync_archive_delete_change(archive, osync_mapping_entry_get_id(entry),
+							 osync_change_get_objtype(entry_engine->change), error))
 					goto error;
 			} else {
 				if (!osync_archive_save_change(archive, 
 							osync_mapping_entry_get_id(entry),
 							osync_change_get_uid(entry_engine->change),
-							objtype, osync_mapping_get_id(mapping),
+							osync_change_get_objtype(entry_engine->change),
+							osync_mapping_get_id(mapping),
 							osync_member_get_id(member), error))
 					goto error;
 			}
