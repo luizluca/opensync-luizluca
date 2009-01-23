@@ -58,5 +58,21 @@ OSYNC_EXPORT OSyncSinkEngine *osync_obj_engine_nth_sinkengine(OSyncObjEngine *en
  */
 OSYNC_EXPORT unsigned int osync_obj_engine_num_sinkengines(OSyncObjEngine *engine);
 
+/*! @brief Get total number of Members
+ *
+ * @param engine Pointer to OSyncObjEngine
+ * @returns Total number of OSyncMember elements 
+ */
+OSYNC_EXPORT unsigned int osync_obj_engine_num_members(OSyncObjEngine *engine);
+
+/** @brief Get the nth OSyncMember of the OSyncObjEngine
+ *
+ * @param engine A pointer to the engine
+ * @param nth The position of the OSyncMember to request
+ * @returns Pointer of the nth OSyncMember, or NULL if not available
+ *
+ */
+OSYNC_EXPORT OSyncMember *osync_obj_engine_nth_member(OSyncObjEngine *engine, unsigned int nth);
+
 #endif /* OPENSYNC_OBJ_ENGINE_H_ */
 

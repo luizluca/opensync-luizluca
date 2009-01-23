@@ -1215,6 +1215,21 @@ unsigned int osync_obj_engine_num_mapping_engines(OSyncObjEngine *engine)
 	return osync_list_length(engine->mapping_engines);
 }
 
+unsigned int osync_obj_engine_num_members(OSyncObjEngine *engine)
+{
+	osync_assert(engine);
+	return osync_obj_engine_num_sinkengines(engine);
+}
+
+OSyncMember *osync_obj_engine_nth_member(OSyncObjEngine *engine, unsigned int nth)
+{
+	OSyncSinkEngine *sinkengine;
+	osync_return_val_if_fail(engine, NULL);
+	sinkengine = osync_list_nth_data(engine->active_sink_engines, nth);
+	osync_assert(sinkengine);
+	return osync_sink_engine_get_member(sinkengine);
+}
+
 osync_bool osync_obj_engine_prepare_write(OSyncObjEngine *engine, OSyncError **error)
 {
 	OSyncList *p;
