@@ -1052,9 +1052,8 @@ static void _osync_engine_generate_end_conflicts_event(OSyncEngine *engine)
 
 void osync_engine_trace_multiply_summary(OSyncEngine *engine)
 {
-	OSyncList *o, *s;
-	OSyncList *e;
-	unsigned int added, modified, deleted, unmodified, unknown;
+	OSyncList *o;
+	unsigned int added, modified, deleted, unmodified, unknown, total, n;
 	long long int memberid;
 
 	if (!osync_trace_is_enabled())
@@ -1068,13 +1067,18 @@ void osync_engine_trace_multiply_summary(OSyncEngine *engine)
 
 		osync_trace(TRACE_INTERNAL, "ObjEngine: %s", objtype);
 
-		for (s = objengine->sink_engines; s; s = s->next) {
-			OSyncSinkEngine *sinkengine = s->data;
+
+		total = osync_obj_engine_num_members(objengine);
+		for (n = 0; n < total; n++) {
+			OSyncMember *member = osync_obj_engine_nth_member(objengine, n);
+			const OSyncList *entry_engines, *e;
+
+			entry_engines = osync_obj_engine_get_mapping_entry_engines_of_member(objengine, member);
 
 			added = modified = deleted = unmodified = unknown = 0;
-			memberid = osync_member_get_id(osync_client_proxy_get_member(sinkengine->proxy));
+			memberid = osync_member_get_id(member);
 
-			for (e = sinkengine->entries; e; e = e->next) {
+			for (e = entry_engines; e; e = e->next) {
 				OSyncMappingEntryEngine *mapping_entry_engine = e->data;
 
 				if (!mapping_entry_engine->dirty)

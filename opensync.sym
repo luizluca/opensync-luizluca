@@ -348,6 +348,7 @@ osync_member_unref
 osync_obj_engine_command
 osync_obj_engine_event
 osync_obj_engine_finalize
+osync_obj_engine_get_mapping_entry_engines_of_member
 osync_obj_engine_get_objtype
 osync_obj_engine_get_slowsync
 osync_obj_engine_initialize

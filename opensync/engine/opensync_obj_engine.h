@@ -74,5 +74,14 @@ OSYNC_EXPORT unsigned int osync_obj_engine_num_members(OSyncObjEngine *engine);
  */
 OSYNC_EXPORT OSyncMember *osync_obj_engine_nth_member(OSyncObjEngine *engine, unsigned int nth);
 
+/*! @brief Get list of OSyncMappingEntryEngines of the OSyncObjEngine 
+ * for a specific member
+ *
+ * @param engine Pointer to an OSyncObjEngine
+ * @param member Pointer to OSyncMember to get OSyncMappingEntryEngine list from
+ * @returns List of OSyncMappingEntryEngines-elements or NULL if there are no Mapping Entry Engines. 
+ */
+OSYNC_EXPORT const OSyncList *osync_obj_engine_get_mapping_entry_engines_of_member(OSyncObjEngine *engine, OSyncMember *member);
+
 #endif /* OPENSYNC_OBJ_ENGINE_H_ */
 

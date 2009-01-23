@@ -1230,6 +1230,24 @@ OSyncMember *osync_obj_engine_nth_member(OSyncObjEngine *engine, unsigned int nt
 	return osync_sink_engine_get_member(sinkengine);
 }
 
+const OSyncList *osync_obj_engine_get_mapping_entry_engines_of_member(OSyncObjEngine *engine, OSyncMember *member)
+{
+	OSyncList *s;
+	osync_return_val_if_fail(engine, NULL);
+	osync_return_val_if_fail(member, NULL);
+
+	for (s = engine->active_sink_engines; s; s = s->next) {
+		OSyncSinkEngine *sinkengine = s->data;
+
+		if (member != osync_sink_engine_get_member(sinkengine))
+			continue;
+
+		return osync_sink_engine_get_mapping_entry_engines(sinkengine);
+	}
+
+	return NULL;
+}
+
 osync_bool osync_obj_engine_prepare_write(OSyncObjEngine *engine, OSyncError **error)
 {
 	OSyncList *p;
