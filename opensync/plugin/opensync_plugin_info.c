@@ -155,14 +155,6 @@ OSyncObjTypeSink *osync_plugin_info_find_objtype(OSyncPluginInfo *info, const ch
 			goto done;
 	}
 	
-	/* If we couldnt find the requested objtype, look if we find a sink
-	 * which accepts any objtype ("data") */
-	for (p = info->objtypes; p; p = p->next) {
-		sink = p->data;
-		if (g_ascii_strcasecmp(osync_objtype_sink_get_name(sink), "data") == 0)
-			goto done;
-	}
-	
 	osync_trace(TRACE_EXIT, "%s: NULL", __func__);
 	return NULL;
 

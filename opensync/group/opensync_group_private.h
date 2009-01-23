@@ -52,8 +52,6 @@ static osync_bool osync_group_load_members(OSyncGroup *group, const char *path, 
 
 static void osync_group_build_list(gpointer key, gpointer value, gpointer user_data);
 
-static void osync_group_add_one(gpointer key, gpointer value, gpointer user_data);
-
 /** @brief Get list of supported object types of the group
  *
  * @param group The group

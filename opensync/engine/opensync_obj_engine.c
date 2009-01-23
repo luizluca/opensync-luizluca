@@ -771,7 +771,6 @@ static int _osync_obj_engine_num_write_sinks(OSyncObjEngine *objengine) {
 
 osync_bool osync_obj_engine_initialize(OSyncObjEngine *engine, OSyncError **error)
 {
-	osync_bool dummy_sink = FALSE;
 	const char *objtype = NULL;
 	int num = 0;
 	int i = 0;
@@ -788,22 +787,12 @@ osync_bool osync_obj_engine_initialize(OSyncObjEngine *engine, OSyncError **erro
 		OSyncObjTypeSink *sink = osync_client_proxy_find_objtype_sink(proxy, objtype);
 		OSyncSinkEngine *sinkengine = NULL; 
 
-		dummy_sink = FALSE;
-
-		if (!sink) {
-			/* "data" sink engine counts also as valid. */
-			sink = osync_client_proxy_find_objtype_sink(proxy, "data"); 
-			if (!sink)
-				continue;
-
-			dummy_sink = TRUE;
-		}
 		
 		sinkengine = osync_sink_engine_new(i, proxy, engine, error);
 		if (!sinkengine)
 			goto error;
 
-		if (dummy_sink)
+		if (!sink) 
 			engine->dummy_sink_engines = osync_list_append(engine->dummy_sink_engines, sinkengine);
 		else
 			engine->active_sink_engines = osync_list_append(engine->active_sink_engines, sinkengine);
@@ -1296,10 +1285,6 @@ osync_bool osync_obj_engine_write(OSyncObjEngine *engine, OSyncError **error)
 		member = osync_client_proxy_get_member(sinkengine->proxy);
 		objtype_sink = osync_member_find_objtype_sink(member, engine->objtype);
 
-		/* If sink could not be found use "data" sink if available */
-		/* TODO: Get rid of hardcoded-"data". Make this indepdendent of "data" */
-		if (!objtype_sink)
-			objtype_sink = osync_member_find_objtype_sink(member, "data");
 		/* TODO: Review if objtype_sink = NULL is valid at all. */
 		osync_assert(objtype_sink);
 

@@ -157,21 +157,12 @@ static void osync_group_build_list(gpointer key, gpointer value, gpointer user_d
 	}
 }
 
-static void osync_group_add_one(gpointer key, gpointer value, gpointer user_data)
-{
-	GHashTable *table = user_data;
-	
-	int num = GPOINTER_TO_INT(value);
-	g_hash_table_replace(table, key, GINT_TO_POINTER(num + 1));
-}
-
 static GList *osync_group_get_supported_objtypes(OSyncGroup *group)
 {
 	GList *m = NULL;
 	GList *ret = NULL;
 	GHashTable *table = g_hash_table_new(g_str_hash, g_str_equal);
 		
-	int num_data = 0;
 	int i;
 		
 	/* Loop over all members... */
@@ -183,22 +174,11 @@ static GList *osync_group_get_supported_objtypes(OSyncGroup *group)
 			const char *objtype = osync_member_nth_objtype(member, i);
 			if (objtype != NULL) {
 				int num = 0;
-				/* For each objtype, add 1 to the hashtable. If the objtype is
-				 * the special objtype "data", add 1 to all objtypes */
-				if(!strcmp(objtype, "data"))
-					num_data++;
+				/* For each objtype, add 1 to the hashtable. */
 				num = GPOINTER_TO_INT(g_hash_table_lookup(table, objtype));
 				g_hash_table_replace(table, (char *)objtype, GINT_TO_POINTER(num + 1));
 			}
 		}
-	}
-	
-	for (i = 0; i < num_data; i++)
-		g_hash_table_foreach(table, osync_group_add_one, table);
-	
-	if (g_hash_table_size(table) == 0 && num_data >= 2) {
-		osync_trace(TRACE_INTERNAL, "No objtype found yet, but data available");
-		g_hash_table_replace(table, "data", GINT_TO_POINTER(num_data));
 	}
 	
 	g_hash_table_foreach(table, osync_group_build_list, &ret);
