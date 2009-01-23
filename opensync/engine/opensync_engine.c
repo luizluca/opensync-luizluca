@@ -828,6 +828,41 @@ static osync_bool _osync_engine_generate_connected_event(OSyncEngine *engine)
 	return FALSE;
 }
 
+osync_bool osync_engine_slowsync_for_mixed_objengines(OSyncEngine *engine, OSyncError **error)
+{
+	OSyncList *mixedengines = NULL, *o, *m;
+	const char *objengine_objtype;
+
+	for (o = engine->object_engines; o; o = o->next) {
+		OSyncObjEngine *objengine = o->data;
+
+		if (!osync_obj_engine_get_slowsync(objengine))
+			continue;
+
+		objengine_objtype = osync_obj_engine_get_objtype(objengine);
+		if (!osync_archive_get_mixed_objengines(engine->archive, objengine_objtype, &mixedengines, error))
+			goto error;
+	}
+
+	for (o = engine->object_engines; o; o = o->next) {
+		OSyncObjEngine *objengine = o->data;
+
+		for (m = mixedengines; m; m = m->next) {
+
+			if (strcmp(osync_obj_engine_get_objtype(objengine), (char*)m->data)) 
+				continue;
+
+			osync_obj_engine_set_slowsync(objengine, TRUE);
+			break;
+		}
+		
+	}
+	
+	return TRUE;
+error:
+	return FALSE;
+}
+
 static void _osync_engine_generate_connect_done_event(OSyncEngine *engine)
 {
 	if (osync_bitcount(engine->proxy_errors | engine->proxy_connect_done) != osync_list_length(engine->proxies))
@@ -841,6 +876,8 @@ static void _osync_engine_generate_connect_done_event(OSyncEngine *engine)
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_ERROR, locerror);
 			osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
 		} else {
+			/* TODO error handling */
+			osync_engine_slowsync_for_mixed_objengines(engine, NULL);
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_CONNECT_DONE, NULL);
 			osync_engine_event(engine, OSYNC_ENGINE_EVENT_CONNECT_DONE);
 		}

@@ -130,6 +130,20 @@ OSYNC_TEST_EXPORT void osync_engine_trace_multiply_summary(OSyncEngine *engine);
  */
 osync_bool osync_engine_handle_mixed_objtypes(OSyncEngine *engine, OSyncError **error);
 
+/** @brief Trigger slow-sync for object engines which have mixed object types synced
+ *
+ * This function checks if an object engine has requested a slow-sync and if
+ * further function need to run a slow-sync. Due to mixed object type syncing.
+ * Mixed object type syncing get detected by checking the mapping table if different
+ * object engine have written non-native object types.
+ *  
+ * @param engine Pointer to engine
+ * @param error Pointer to error-struct which get set on any error
+ * @returns TRUE on success, or FALSE on any error
+ *
+ */
+osync_bool osync_engine_slowsync_for_mixed_objengines(OSyncEngine *engine, OSyncError **error);
+
 /*@}*/
 
 #endif /*OPENSYNC_ENGINE_INTERNALS_H_*/

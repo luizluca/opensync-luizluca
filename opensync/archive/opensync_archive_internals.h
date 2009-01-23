@@ -71,10 +71,11 @@ OSYNC_TEST_EXPORT int osync_archive_load_data(OSyncArchive *archive, const char 
  * @param objtype Reported object type of entry
  * @param mappingid Mapped ID of entry 
  * @param memberid ID of member which reported entry 
+ * @param objengine Object Engine which handles the change
  * @param error Pointer to an error struct
  * @return Returns number of entries in archive group database. 0 on error. 
  */
-OSYNC_TEST_EXPORT long long int osync_archive_save_change(OSyncArchive *archive, long long int id, const char *uid, const char *objtype, long long int mappingid, long long int memberid, OSyncError **error);
+OSYNC_TEST_EXPORT long long int osync_archive_save_change(OSyncArchive *archive, long long int id, const char *uid, const char *objtype, long long int mappingid, long long int memberid, const char *objengine, OSyncError **error);
 
 /**
  * @brief Deletes an entry from a group archive.
@@ -130,6 +131,8 @@ osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char
  * @return Returns TRUE on success, FALSE otherwise 
  */
 osync_bool osync_archive_flush_ignored_conflict(OSyncArchive *archive, const char *objtype, OSyncError **error);
+
+osync_bool osync_archive_get_mixed_objengines(OSyncArchive *archive, const char *objengine, OSyncList **objengines, OSyncError **error);
 /*@}*/
 
 #endif /*OPENSYNC_ARCHIVE_INTERNALS_H_*/

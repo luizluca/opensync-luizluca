@@ -59,7 +59,7 @@ static osync_bool osync_archive_create_changes(OSyncDB *db, const char *objtype,
 	 * enforce the entity-relationship model all queries for a single item should be:
 	 * WHERE objtype='%s' AND id=%lli
 	 */ 
-	query = "CREATE TABLE tbl_changes (objtype VARCHAR(64) NOT NULL, id INTEGER PRIMARY KEY AUTOINCREMENT, uid VARCHAR NOT NULL, memberid INTEGER NOT NULL, mappingid INTEGER NOT NULL )";
+	query = "CREATE TABLE tbl_changes (objtype VARCHAR(64) NOT NULL, id INTEGER PRIMARY KEY AUTOINCREMENT, uid VARCHAR NOT NULL, memberid INTEGER NOT NULL, mappingid INTEGER NOT NULL, objengine VARCHAR(64) NOT NULL )";
 	if (!osync_db_query(db, query, error)) {
 		goto error;
 	}
@@ -282,30 +282,35 @@ int osync_archive_load_data(OSyncArchive *archive, const char *uid, const char *
 	return -1;
 }
 
-long long int osync_archive_save_change(OSyncArchive *archive, long long int id, const char *uid, const char *objtype, long long int mappingid, long long int memberid, OSyncError **error)
+long long int osync_archive_save_change(OSyncArchive *archive, long long int id, const char *uid, const char *objtype, long long int mappingid, long long int memberid, const char *objengine, OSyncError **error)
 {
 	char *query = NULL;
 	char *escaped_uid = NULL;
 	char *escaped_objtype = NULL;
+	char *escaped_objengine = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %lli, %s, %s, %lli, %lli, %p)", __func__, archive, id, uid, objtype, mappingid, memberid, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %lli, %s, %s, %lli, %lli, %p, %s)", __func__, archive, id, uid, objtype, mappingid, memberid, __NULLSTR(objengine), error);
 	osync_assert(archive);
 	osync_assert(uid);
 	osync_assert(objtype);
+	osync_assert(objengine);
 
 	if (!osync_archive_create_changes(archive->db, objtype, error))
 		goto error;
 
 	escaped_uid = osync_db_sql_escape(uid);
 	escaped_objtype = osync_db_sql_escape(objtype);
+	escaped_objengine = osync_db_sql_escape(objengine);
 
 	if (!id) {
-		query = osync_strdup_printf("INSERT INTO tbl_changes (objtype, uid, mappingid, memberid) VALUES('%s', '%s', '%lli', '%lli')", escaped_objtype, escaped_uid, mappingid, memberid);
+		query = osync_strdup_printf("INSERT INTO tbl_changes (objtype, uid, mappingid, memberid, objengine) VALUES('%s', '%s', '%lli', '%lli', '%s')", escaped_objtype, escaped_uid, mappingid, memberid, objengine);
 	} else {
-		query = osync_strdup_printf("UPDATE tbl_changes SET uid='%s', mappingid='%lli', memberid='%lli' WHERE objtype='%s' AND id=%lli", escaped_uid, mappingid, memberid, escaped_objtype, id);
+		query = osync_strdup_printf("UPDATE tbl_changes SET uid='%s', mappingid='%lli', memberid='%lli', objengine='%s' WHERE objtype='%s' AND id=%lli", escaped_uid, mappingid, memberid, escaped_objengine, escaped_objtype, id);
 	}
+	osync_free(escaped_objengine);
 	osync_free(escaped_objtype);
 	osync_free(escaped_uid);
+	escaped_objengine = NULL;
 	escaped_objtype = NULL;
 	escaped_uid = NULL;
 	
@@ -580,6 +585,46 @@ osync_bool osync_archive_flush_ignored_conflict(OSyncArchive *archive, const cha
 	
  error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
+}
+
+osync_bool osync_archive_get_mixed_objengines(OSyncArchive *archive, const char *objengine, OSyncList **objengines, OSyncError **error)
+{
+	char *query = NULL, *escaped_objengine, *objengine_name;
+	OSyncList *result, *row, *column;
+
+	osync_assert(archive);
+	osync_assert(objengine);
+	osync_assert(objengines);
+
+	escaped_objengine = osync_db_sql_escape(objengine);
+
+	query = osync_strdup_printf("SELECT DISTINCT(b.objengine) FROM tbl_changes, tbl_changes as a, tbl_changes as b "
+			"WHERE a.mappingid == b.mappingid AND a.objengine == '%s';", escaped_objengine);
+	result = osync_db_query_table(archive->db, query, error);
+	osync_free(query);
+	
+	/* Check for error of osync_db_query_table() call. */
+	if (osync_error_is_set(error))
+		goto error;
+
+	for (row = result; row; row = row->next) { 
+		column = row->data;
+
+		objengine_name = osync_list_nth_data(column, 0);
+		if (!objengine_name) {
+			osync_error_set(error, OSYNC_ERROR_GENERIC, "Database table tbl_changes corrupt. Couldn't query for mixed object engines.");
+			goto error;
+		}
+		
+		*objengines = osync_list_append((*objengines), osync_strdup(objengine_name));
+	}
+
+	osync_db_free_list(result);	
+
+
+	return TRUE;
+error:
 	return FALSE;
 }
 

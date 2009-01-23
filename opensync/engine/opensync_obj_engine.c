@@ -481,8 +481,10 @@ void osync_obj_engine_commit_change_callback(OSyncClientProxy *proxy, void *user
 	OSyncMember *member = NULL;
 	OSyncMappingEntry *entry = NULL;
 	const char *objtype = NULL;
+	const char *objengine_objtype = NULL;
 	long long int id = 0;
 
+	objengine_objtype = osync_obj_engine_get_objtype(engine);
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %s, %p)", __func__, proxy, userdata, uid, error);
 	
@@ -516,7 +518,7 @@ void osync_obj_engine_commit_change_callback(OSyncClientProxy *proxy, void *user
 		} else {
 
 			/* TODO error handling */
-			osync_archive_save_change(engine->archive, id, osync_change_get_uid(entry_engine->change), objtype, osync_mapping_get_id(mapping), osync_member_get_id(member), &locerror);
+			osync_archive_save_change(engine->archive, id, osync_change_get_uid(entry_engine->change), objtype, osync_mapping_get_id(mapping), osync_member_get_id(member), objengine_objtype, &locerror);
 		}
 	}
 

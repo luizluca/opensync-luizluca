@@ -255,7 +255,7 @@ osync_bool osync_sink_engine_write(OSyncSinkEngine *engine, OSyncArchive *archiv
 							osync_change_get_uid(entry_engine->change),
 							osync_change_get_objtype(entry_engine->change),
 							osync_mapping_get_id(mapping),
-							osync_member_get_id(member), error))
+							osync_member_get_id(member), objtype, error))
 					goto error;
 			}
 		}

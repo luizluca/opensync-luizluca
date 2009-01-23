@@ -59,7 +59,7 @@ START_TEST (archive_save_change)
 	OSyncList *memberids;
 	osync_archive_load_changes(archive, "contact", &ids, &uids, &mappingids, &memberids, &error);
 	
-	long long int id = osync_archive_save_change(archive, 0, "uid", "contact", 1, 1, &error);
+	long long int id = osync_archive_save_change(archive, 0, "uid", "contact", 1, 1, "contact", &error);
 	fail_unless(id != 0, NULL);
 	fail_unless(error == NULL, NULL);
 		
@@ -84,7 +84,7 @@ START_TEST (archive_save_data)
 	OSyncList *memberids;
 	osync_archive_load_changes(archive, "contact", &ids, &uids, &mappingids, &memberids, &error);
 	
-	long long int id = osync_archive_save_change(archive, 0, "uid", "contact", 1, 1, &error);
+	long long int id = osync_archive_save_change(archive, 0, "uid", "contact", 1, 1, "contact", &error);
 	fail_unless(id != 0, NULL);
 	fail_unless(error == NULL, NULL);
 	
@@ -114,7 +114,7 @@ START_TEST (archive_load_data)
 	OSyncList *memberids;
 	osync_archive_load_changes(archive, "contact", &ids, &uids, &mappingids, &memberids, &error);
 	
-	long long int id = osync_archive_save_change(archive, 0, "uid", "contact", 1, 1, &error);
+	long long int id = osync_archive_save_change(archive, 0, "uid", "contact", 1, 1, "contact", &error);
 	fail_unless(id != 0, NULL);
 	fail_unless(error == NULL, NULL);
 	
@@ -153,7 +153,7 @@ START_TEST (archive_load_data_with_closing_db)
 	OSyncList *memberids;
 	osync_archive_load_changes(archive, "contact", &ids, &uids, &mappingids, &memberids, &error);
 	
-	long long int id = osync_archive_save_change(archive, 0, "uid", "contact", 1, 1, &error);
+	long long int id = osync_archive_save_change(archive, 0, "uid", "contact", 1, 1, "contact", &error);
 	fail_unless(id != 0, NULL);
 	fail_unless(error == NULL, NULL);
 	
