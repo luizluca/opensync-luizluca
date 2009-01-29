@@ -1540,7 +1540,8 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 {
 	osync_bool prev_sync_unclean = FALSE, first_sync = FALSE;
 	OSyncGroup *group = NULL;
-	int i = 0, num = 0;
+	OSyncList *o, *supported_objtypes;
+	int i;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
 
 	if (engine->state != OSYNC_ENGINE_STATE_UNINITIALIZED) {
@@ -1557,11 +1558,6 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 		goto error;
 	}
 	
-	if (osync_group_num_objtypes(engine->group) == 0) {
-		osync_error_set(error, OSYNC_ERROR_GENERIC, "No synchronizable objtype");
-		goto error;
-	}
-
 	/* Check if this is the first Synchronization.
 	 * On the first synchronization a Slow-Sync is required for all (ObjType)Sinks!
 	 */
@@ -1596,16 +1592,11 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 		if (!_osync_engine_initialize_member(engine, member, error))
 			goto error_finalize;
 	}
-	
-	/* Lets see which objtypes are synchronizable in this group */
-	num = osync_group_num_objtypes(engine->group);
-	if (num == 0) {
-		osync_error_set(error, OSYNC_ERROR_GENERIC, "No synchronizable objtype");
-		goto error;
-	}
 
-	for (i = 0; i < num; i++) {
-		const char *objtype = osync_group_nth_objtype(engine->group, i);
+	/* Lets see which objtypes are synchronizable in this group */
+	supported_objtypes = osync_group_get_supported_objtypes_mixed(engine->group, engine->formatenv);
+	for (o = supported_objtypes; o; o = o->next) {
+		const char *objtype = o->data;
 		OSyncObjEngine *objengine = NULL;
 
 		/* Respect if the object type is disabled */

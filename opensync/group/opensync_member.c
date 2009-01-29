@@ -492,6 +492,7 @@ static osync_bool _osync_member_save_sink(xmlDoc *doc, OSyncObjTypeSink *sink, O
 
 	for (i = 0; i < osync_objtype_sink_num_objformat_sinks(sink); i++) {
 		OSyncObjFormatSink *format_sink = osync_objtype_sink_nth_objformat_sink(sink, i);
+		osync_assert(format_sink);
 		const char *format = osync_objformat_sink_get_objformat(format_sink);
 		const char *format_config = osync_objformat_sink_get_config(format_sink);
 		xmlNode *objformat_node = xmlNewChild(node, NULL, (xmlChar*)"objformat", NULL);
@@ -663,6 +664,57 @@ const OSyncList *osync_member_get_objformats(OSyncMember *member, const char *ob
 	}
 	
 	return osync_objtype_sink_get_objformat_sinks(sink);
+}
+
+OSyncList *osync_member_get_objformat_sinks_all(OSyncMember *member)
+{
+	GList *o;
+	OSyncList *list = NULL;
+
+	for (o = member->objtypes; o; o = o->next) {
+		OSyncObjTypeSink *sink = o->data;
+		OSyncList *format_sinks = osync_objtype_sink_get_objformat_sinks(sink);
+		list = osync_list_concat(list, format_sinks);
+	}
+
+	return list;
+}
+
+osync_bool osync_member_support_targetformat(OSyncMember *member, OSyncFormatEnv *formatenv, OSyncObjFormat *targetformat)
+{
+	GList *o;
+
+	for (o = member->objtypes; o; o = o->next) {
+		OSyncObjTypeSink *sink = o->data;
+		OSyncList *format_sinks = osync_objtype_sink_get_objformat_sinks(sink);
+		for (; format_sinks; format_sinks = format_sinks->next) {
+			OSyncObjFormatSink *format_sink = format_sinks->data;
+			const char *objformat_name = osync_objformat_sink_get_objformat(format_sink);
+			OSyncObjFormat *sourceformat = osync_format_env_find_objformat(formatenv, objformat_name);
+
+			/** TODO error handling */
+			if (osync_format_env_find_path(formatenv, sourceformat, targetformat, NULL))
+				return TRUE;
+		}
+	}
+
+	return FALSE;
+}
+
+OSyncList *osync_member_get_all_objformats(OSyncMember *member)
+{
+	OSyncList *o, *format_sinks, *list = NULL;
+
+	format_sinks = osync_member_get_objformat_sinks_all(member);
+	for (o = format_sinks; o; o = o->next) {
+		OSyncObjFormatSink *format_sink = o->data;
+		const char *objformat;
+		objformat = osync_objformat_sink_get_objformat(format_sink);
+
+		list = osync_list_prepend(list, osync_strdup(objformat));
+	}
+
+	return list;
 }
 
 void osync_member_add_objtype_sink(OSyncMember *member, OSyncObjTypeSink *sink)

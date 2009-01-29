@@ -109,6 +109,36 @@ OSYNC_TEST_EXPORT int osync_group_num_filters(OSyncGroup *group);
  */
 OSYNC_TEST_EXPORT OSyncFilter *osync_group_nth_filter(OSyncGroup *group, int nth);
 
+/** @brief Gets list of all supported object types in this group, including
+ * mixed object types
+ *
+ * So called "mixed object types" are object types which actually are able
+ * to be represeented in each other object type.
+ *
+ * An example could be:
+ *
+ * Object Format: vcalendar Object Type: calendar
+ * Object Format: vevent10 Object Type: event
+ *
+ * To detect "mixed object type" all potential conversion path get build.
+ * For this is a loaded OSyncFormatEnv required.
+ * 
+ * @param group The group
+ * @param formatenv Pointer to loaded OSyncFormatEnv
+ * @returns List of supported object types, including mixed ones
+ * 
+ */
+OSYNC_TEST_EXPORT OSyncList *osync_group_get_supported_objtypes_mixed(OSyncGroup *group, OSyncFormatEnv *formatenv);
+
+/** @brief Get list  of all list of all used OSyncObjFormat elemets
+ * 
+ * Very complex/expensive!
+ *
+ * @param group The group
+ * @returns The list of ObjFormat elements, or NULL
+ */
+OSYNC_TEST_EXPORT OSyncList *osync_group_get_objformats(OSyncGroup *group);
+
 #ifdef OPENSYNC_UNITTESTS
 /** @brief Set the schemadir for configuration validation to a custom directory.
  *  This is actually only inteded for UNITTESTS to run tests without

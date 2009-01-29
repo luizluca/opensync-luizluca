@@ -55,6 +55,36 @@ struct OSyncMember {
 #endif /* OPENSYNC_UNITTESTS */
 };
 
+/** @brief Get list of all OSyncObjFormatSink elements
+ * 
+ * @param member Pointer to member 
+ * @returns Pointer to OSyncList with element of OSyncObjformatSink, or NULL
+ * 
+ */
+OSYNC_TEST_EXPORT OSyncList *osync_member_get_objformat_sinks_all(OSyncMember *member);
+
+/** @brief Get names of all object formats of this member
+ * 
+ * @param member Pointer to member 
+ * @returns Pointer to OSyncList with strings of object formats, or NULL
+ * 
+ */
+OSYNC_TEST_EXPORT OSyncList *osync_member_get_all_objformats(OSyncMember *member);
+
+/** @brief Check if a member supports, with the help of various conversions,
+ *  a specific format
+ *
+ *  To determine if a target format is supported by this member, a loaded
+ *  OSyncFormatEnv is required.
+ * 
+ * @param member Pointer to member 
+ * @param formatenv Pointer to a loaded OSyncFormatEnv for conversion path building
+ * @param targetformat The target format to test
+ * @returns TRUE if member supports with the given OSyncFormatEnv the targetformat, FALSE otherwise
+ * 
+ */
+OSYNC_TEST_EXPORT osync_bool osync_member_support_targetformat(OSyncMember *member, OSyncFormatEnv *formatenv, OSyncObjFormat *targetformat);
+
 #ifdef OPENSYNC_UNITTESTS
 /** @brief Set the schemadir for configuration validation to a custom directory.
  *  This is actually only inteded for UNITTESTS to run tests without 

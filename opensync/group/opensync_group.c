@@ -157,6 +157,12 @@ static void osync_group_build_list(gpointer key, gpointer value, gpointer user_d
 	}
 }
 
+static void osync_group_build_mixed_list(gpointer key, gpointer value, gpointer user_data)
+{
+	OSyncList **l = user_data;
+	*l = osync_list_append(*l, key);
+}
+
 static GList *osync_group_get_supported_objtypes(OSyncGroup *group)
 {
 	GList *m = NULL;
@@ -184,6 +190,66 @@ static GList *osync_group_get_supported_objtypes(OSyncGroup *group)
 	g_hash_table_foreach(table, osync_group_build_list, &ret);
 	g_hash_table_destroy(table);
 	return ret;
+}
+
+OSyncList *osync_group_get_supported_objtypes_mixed(OSyncGroup *group, OSyncFormatEnv *formatenv)
+{
+
+	GList *m;
+	OSyncList *ret = NULL;
+	OSyncList *t, *targetformats = osync_group_get_objformats(group);
+
+	GHashTable *table = g_hash_table_new(g_str_hash, g_str_equal);
+
+
+	for (m=group->members; m; m = m->next) {
+		OSyncMember *member = m->data;
+		int i, num_member = osync_member_num_objtypes(member);
+		/* ... and get the objtype from each of the members. */
+		for (i = 0; i < num_member; i++) {
+			const char *objtype = osync_member_nth_objtype(member, i);
+			osync_assert(objtype);
+			g_hash_table_replace(table, (char *)objtype, NULL);
+		}
+
+		for (t=targetformats; t; t = t->next) {
+			const char *targetformat_name = t->data;
+			OSyncObjFormat *targetformat = osync_format_env_find_objformat(formatenv, targetformat_name);
+			const char *target_objtype = osync_objformat_get_objtype(targetformat);
+
+			osync_assert(target_objtype);
+
+			/* If targetformat is not supported, skip it */
+			if (!osync_member_support_targetformat(member, formatenv, targetformat))
+				continue;
+
+			/* For each objtype, add 1 to the hashtable. */
+			g_hash_table_replace(table, (char *)target_objtype, NULL);
+
+		}
+	}
+
+	g_hash_table_foreach(table, osync_group_build_mixed_list, &ret);
+	g_hash_table_destroy(table);
+
+	return ret;
+}
+
+OSyncList *osync_group_get_objformats(OSyncGroup *group)
+{
+	GList *m = NULL;
+	OSyncList *list = NULL;
+
+	/* Loop over all members... */
+	for (m = group->members; m; m = m->next) {
+		OSyncMember *member = m->data;
+		OSyncList *objformats = osync_member_get_all_objformats(member);
+
+		list = osync_list_concat(list, objformats);
+
+	}
+
+	return list;
 }
 
 #ifdef OPENSYNC_UNITTESTS
