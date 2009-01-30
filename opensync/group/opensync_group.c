@@ -29,6 +29,7 @@
 #include "opensync_group_internals.h"
 #include "opensync_group_private.h"
 #include "opensync-db.h"
+#include "opensync_member_internals.h"
 
 #ifdef OPENSYNC_UNITTESTS
 #include "opensync_member_internals.h"
