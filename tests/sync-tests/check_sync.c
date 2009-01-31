@@ -2711,7 +2711,7 @@ START_TEST (sync_detect_obj2)
 	osync_engine_unref(engine);
 	
 	/* Client checks */
-	fail_unless(num_client_connected == 2, NULL);
+	fail_unless(num_client_connected == 2, "num_client_connected: %d expected: 2", num_client_connected);
 	fail_unless(num_client_main_connected == 2, NULL);
 	fail_unless(num_client_read == 2, NULL);
 	fail_unless(num_client_main_read == 2, NULL);
@@ -3347,6 +3347,118 @@ START_TEST (sync_initial_slow_sync)
 }
 END_TEST
 
+
+/* Testing mixed-objtype syncing (#992)
+ *
+ */
+START_TEST (sync_mixed_objtype)
+{
+	char *testbed = setup_testbed("sync_mixed_objtype");
+	char *formatdir = g_strdup_printf("%s/formats", testbed);
+	char *plugindir = g_strdup_printf("%s/plugins", testbed);
+	
+	osync_testing_system_abort("cp testdata data1/testdata");
+	
+	OSyncError *error = NULL;
+	OSyncGroup *group = osync_group_new(&error);
+	fail_unless(group != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+	
+	osync_group_set_schemadir(group, testbed);
+	fail_unless(osync_group_load(group, "configs/group", &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	OSyncEngine *engine = osync_engine_new(group, &error);
+	fail_unless(engine != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+	osync_group_unref(group);
+	
+	osync_engine_set_schemadir(engine, testbed);
+	osync_engine_set_plugindir(engine, plugindir);
+	osync_engine_set_formatdir(engine, formatdir);
+	
+	osync_engine_set_conflict_callback(engine, conflict_handler_choose_first, GINT_TO_POINTER(1));
+	osync_engine_set_changestatus_callback(engine, entry_status, GINT_TO_POINTER(1));
+	osync_engine_set_mappingstatus_callback(engine, mapping_status, GINT_TO_POINTER(1));
+	osync_engine_set_enginestatus_callback(engine, engine_status, GINT_TO_POINTER(1));
+	osync_engine_set_memberstatus_callback(engine, member_status, GINT_TO_POINTER(1));
+	
+	
+	fail_unless(osync_engine_initialize(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	fail_unless(osync_engine_synchronize_and_block(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	fail_unless(osync_engine_finalize(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	
+	osync_engine_unref(engine);
+	
+	/* Client checks */
+	fail_unless(num_client_connected == 2, NULL);
+	fail_unless(num_client_main_connected == 2, NULL);
+	fail_unless(num_client_read == 2, NULL);
+	fail_unless(num_client_main_read == 2, NULL);
+	fail_unless(num_client_written == 2, NULL);
+	fail_unless(num_client_main_written == 2, NULL);
+	fail_unless(num_client_disconnected == 2, NULL);
+	fail_unless(num_client_main_disconnected == 2, NULL);
+	fail_unless(num_client_errors == 0, NULL);
+	fail_unless(num_client_sync_done == 2, NULL);
+	fail_unless(num_client_main_sync_done == 2, NULL);
+	
+	/* Client checks */
+	fail_unless(num_engine_connected == 1, NULL);
+	fail_unless(num_engine_errors == 0, NULL);
+	fail_unless(num_engine_read == 1, NULL);
+	fail_unless(num_engine_written == 1, NULL);
+	fail_unless(num_engine_sync_done == 1, NULL);
+	fail_unless(num_engine_disconnected == 1, NULL);
+	fail_unless(num_engine_successful == 1, NULL);
+	fail_unless(num_engine_end_conflicts == 1, NULL);
+	fail_unless(num_engine_prev_unclean == 0, NULL);
+
+	/* Change checks */
+	fail_unless(num_change_read == 1, NULL);
+	fail_unless(num_change_written == 1, "num_change_written: %d epxected:1", num_change_written);
+	fail_unless(num_change_error == 0, NULL);
+
+	/* Mapping checks */
+	fail_unless(num_mapping_solved == 1, NULL);
+	//fail_unless(num_mapping_written == 1, NULL);
+	fail_unless(num_mapping_errors == 0, NULL);
+	fail_unless(num_mapping_conflicts == 0, NULL);
+
+	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	
+	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
+	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
+	g_free(path);
+	check_mapping(maptable, 1, 1, 2, "testdata");
+	check_mapping(maptable, 2, 1, 2, "testdata");
+    osync_mapping_table_close(maptable);
+    osync_mapping_table_unref(maptable);
+    
+	path = g_strdup_printf("%s/configs/group/1/hashtable.db", testbed);
+    OSyncHashTable *table = hashtable_load(path, "mockobjtype1", 1);
+	g_free(path);
+    check_hash(table, "testdata");
+	osync_hashtable_unref(table);
+
+	path = g_strdup_printf("%s/configs/group/2/hashtable.db", testbed);
+    table = hashtable_load(path, "mockobjtype1", 1);
+	g_free(path);
+    check_hash(table, "testdata");
+	osync_hashtable_unref(table);
+
+	g_free(formatdir);
+	g_free(plugindir);
+
+	destroy_testbed(testbed);
+}
+END_TEST
+
 OSYNC_TESTCASE_START("sync")
 OSYNC_TESTCASE_ADD(sync_setup_connect)
 OSYNC_TESTCASE_ADD(sync_easy_new)
@@ -3367,6 +3479,7 @@ OSYNC_TESTCASE_ADD(sync_detect_obj2)
 OSYNC_TESTCASE_ADD(sync_slowsync_connect)
 OSYNC_TESTCASE_ADD(sync_slowsync_mainsink_connect)
 OSYNC_TESTCASE_ADD(sync_initial_slow_sync)
+OSYNC_TESTCASE_ADD(sync_mixed_objtype)
 /* TODO: stateless sync */
 OSYNC_TESTCASE_END
 
