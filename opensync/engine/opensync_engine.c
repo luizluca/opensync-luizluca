@@ -967,6 +967,7 @@ static void _osync_engine_generate_mapped_event(OSyncEngine *engine)
 osync_bool osync_engine_handle_mixed_objtypes(OSyncEngine *engine, OSyncError **error)
 {
 	OSyncList *o, *s, *e;
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
 
 	for (o = engine->object_engines; o; o = o->next) {
 		OSyncObjEngine *objengine = o->data;
@@ -982,22 +983,25 @@ osync_bool osync_engine_handle_mixed_objtypes(OSyncEngine *engine, OSyncError **
 				OSyncChange *change;
 				OSyncObjFormat *objformat;
 				const char *current_objtype;
+				const char *alternative_objtype;
 				OSyncObjEngine *new_objengine;
 				OSyncSinkEngine *new_sinkengine;
+				OSyncMember *member;
 
 				change = osync_entry_engine_get_change(mapping_entry_engine);
 				
 				if (!change)
 					continue;
 
+				member = osync_client_proxy_get_member(sinkengine->proxy);
 				objformat = osync_change_get_objformat(change);
 				osync_assert(objformat);
 				current_objtype = osync_objformat_get_objtype(objformat);
 
-				/* ... otherwise we need to reassign the mappin entry engine
-				 * to different objengine
-				 */
-				new_objengine = osync_engine_find_objengine(engine, current_objtype);
+				/* Reassign the mapping to the alternative ObjEngine */
+				alternative_objtype = osync_member_get_alternative_objtype(member, current_objtype);
+
+				new_objengine = osync_engine_find_objengine(engine, alternative_objtype);
 				if (!new_objengine) {
 					osync_error_set(error, OSYNC_ERROR_GENERIC,
 							"Couldn't find Object Type Engine for Object Type \"%s\" "
@@ -1020,9 +1024,11 @@ osync_bool osync_engine_handle_mixed_objtypes(OSyncEngine *engine, OSyncError **
 		}
 	}
 
+	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
 
 error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
 }
 
@@ -1117,6 +1123,7 @@ void osync_engine_trace_multiply_summary(OSyncEngine *engine)
 
 static void _osync_engine_generate_multiplied_event(OSyncEngine *engine)
 {
+	OSyncError *locerror = NULL;
 
 	if (osync_bitcount(engine->obj_errors | engine->obj_multiplied) == osync_list_length(engine->object_engines)) {
 		if (osync_bitcount(engine->obj_errors)) {
@@ -1127,12 +1134,22 @@ static void _osync_engine_generate_multiplied_event(OSyncEngine *engine)
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_ERROR, locerror);
 			osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
 		} else {
+			if (!osync_engine_handle_mixed_objtypes(engine, &locerror))
+				goto error;
+
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_MULTIPLIED, NULL);
 			osync_engine_event(engine, OSYNC_ENGINE_EVENT_MULTIPLIED);
 		}
 	} else
 		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->obj_errors | engine->obj_multiplied));
 
+	return;
+error:
+	osync_trace(TRACE_ERROR, "%s", osync_error_print(&locerror));
+	osync_engine_set_error(engine, locerror);
+	osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_ERROR, locerror);
+	osync_engine_event(engine, OSYNC_ENGINE_EVENT_ERROR);
+	//osync_error_unref(&locerror);
 }
 
 static void _osync_engine_generate_prepared_write_event(OSyncEngine *engine)
@@ -1145,8 +1162,6 @@ static void _osync_engine_generate_prepared_write_event(OSyncEngine *engine)
 			goto error;
 		} else {
 			osync_status_update_engine(engine, OSYNC_ENGINE_EVENT_PREPARED_WRITE, NULL);
-			if (!osync_engine_handle_mixed_objtypes(engine, &locerror))
-				goto error;
 
 			/* This is only for debugging purposes */
 			osync_engine_trace_multiply_summary(engine);
@@ -1535,6 +1550,29 @@ osync_bool osync_engine_initialize_formats(OSyncEngine *engine, OSyncError **err
 	return FALSE;
 }
 
+unsigned int osync_engine_num_active_proxies_for_objtypes(OSyncEngine *engine, const char *objtype)
+{
+	unsigned int num, i, active_proxies = 0;
+
+	osync_trace(TRACE_ENTRY, "%s(%p, %s)", __func__, engine, objtype);
+
+	num = osync_engine_num_proxies(engine);
+	for (i = 0; i < num; i++) {
+		OSyncClientProxy *proxy = osync_engine_nth_proxy(engine, i);
+		OSyncObjTypeSink *sink = osync_client_proxy_find_objtype_sink(proxy, objtype);
+
+		if (!sink) {
+			OSyncMember *member = osync_client_proxy_get_member(proxy);
+			if (!osync_member_get_alternative_objtype(member, objtype))
+				continue;
+		}
+
+		active_proxies++;
+	}
+
+	osync_trace(TRACE_EXIT, "%s: %u", __func__, active_proxies);
+	return active_proxies;
+}
 
 osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 {
@@ -1599,13 +1637,21 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 		const char *objtype = o->data;
 		OSyncObjEngine *objengine = NULL;
 
+		osync_trace(TRACE_INTERNAL, "ObjType: %s", objtype);
+
 		/* Respect if the object type is disabled */
 		if (!osync_group_objtype_enabled(engine->group, objtype))
 			continue;
 
+		/* Check if there are at least two proxies with native objtype
+		 * and alternative-objtypes to sync this objtype
+		 */
+		if (osync_engine_num_active_proxies_for_objtypes(engine, objtype) < 2)
+			continue;
+
 		objengine = osync_obj_engine_new(engine, objtype, engine->formatenv, error);
 		if (!objengine)
-			goto error;
+			goto error_finalize;
 
 		osync_obj_engine_set_callback(objengine, _osync_engine_event_callback, engine);
 		engine->object_engines = osync_list_append(engine->object_engines, objengine);
@@ -1614,6 +1660,11 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 		 * Also trigger SlowSync if this is the first synchronization. */
 		if (prev_sync_unclean || first_sync)
 			osync_obj_engine_set_slowsync(objengine, TRUE);
+	}
+
+	if (osync_list_length(engine->object_engines) == 0) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "No synchronizable Object Engine available");
+		goto error_finalize;
 	}
 
 	engine->state = OSYNC_ENGINE_STATE_INITIALIZED;
