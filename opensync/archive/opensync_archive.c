@@ -380,6 +380,11 @@ osync_bool osync_archive_load_changes(OSyncArchive *archive, const char *objtype
 	osync_assert(mappingids);
 	osync_assert(memberids);
 
+	*ids = NULL;
+	*uids = NULL;
+	*mappingids = NULL;
+	*memberids = NULL;
+
 	if (!osync_archive_create_changes(archive->db, objtype, error))
 		goto error;
 
