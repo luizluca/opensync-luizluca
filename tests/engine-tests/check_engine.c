@@ -1525,8 +1525,6 @@ static OSyncDebugGroup *_create_group5(char *testbed)
 	g_free(path);
 
 	_member_add_format(debug->member2, "mockobjtype1", "mockformat1");
-	_member_add_format(debug->member2, "mockobjtype2", "mockformat2");
-	_member_add_format(debug->member2, "mockobjtype3", "mockformat3");
 	
 	debug->plugin = osync_plugin_new(&error);
 	fail_unless(debug->plugin != NULL, NULL);
