@@ -142,6 +142,12 @@ OSyncMember *osync_member_new(OSyncError **error)
 		goto error;
 
 	member->ref_count = 1;
+
+	member->alternative_objtype_table = g_hash_table_new_full(g_str_hash, g_str_equal, osync_free, osync_free);
+	if (!member->alternative_objtype_table) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "No memory left");
+		goto error;
+	}
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, member);
 	return member;
@@ -180,6 +186,9 @@ void osync_member_unref(OSyncMember *member)
 			
 		if (osync_member_get_capabilities(member))
 			osync_capabilities_unref(osync_member_get_capabilities(member));
+
+		if (member->alternative_objtype_table)
+			g_hash_table_destroy(member->alternative_objtype_table);
 			
 		osync_member_flush_objtypes(member);
 
@@ -680,7 +689,7 @@ OSyncList *osync_member_get_objformat_sinks_all(OSyncMember *member)
 	return list;
 }
 
-osync_bool osync_member_support_targetformat(OSyncMember *member, OSyncFormatEnv *formatenv, OSyncObjFormat *targetformat)
+OSyncObjFormat *osync_member_support_targetformat(OSyncMember *member, OSyncFormatEnv *formatenv, OSyncObjFormat *targetformat)
 {
 	GList *o;
 
@@ -694,11 +703,25 @@ osync_bool osync_member_support_targetformat(OSyncMember *member, OSyncFormatEnv
 
 			/** TODO error handling */
 			if (osync_format_env_find_path(formatenv, sourceformat, targetformat, NULL))
-				return TRUE;
+				return sourceformat;
 		}
 	}
 
-	return FALSE;
+	return NULL;
+}
+
+const char *osync_member_get_alternative_objtype(OSyncMember *member, const char *orig_objtype)
+{
+	const char *alternative_objtype = NULL;
+		
+	alternative_objtype = g_hash_table_lookup(member->alternative_objtype_table, orig_objtype);
+
+	return alternative_objtype;
+}
+
+void osync_member_add_alternative_objtype(OSyncMember *member, const char *native_objtype, const char *alternative_objtype)
+{
+	g_hash_table_insert(member->alternative_objtype_table, osync_strdup(alternative_objtype), osync_strdup(native_objtype));
 }
 
 OSyncList *osync_member_get_all_objformats(OSyncMember *member)

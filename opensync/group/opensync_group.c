@@ -216,13 +216,19 @@ OSyncList *osync_group_get_supported_objtypes_mixed(OSyncGroup *group, OSyncForm
 		for (t=targetformats; t; t = t->next) {
 			const char *targetformat_name = t->data;
 			OSyncObjFormat *targetformat = osync_format_env_find_objformat(formatenv, targetformat_name);
+			OSyncObjFormat *sourceformat;
+			const char *source_objtype;
 			const char *target_objtype = osync_objformat_get_objtype(targetformat);
 
 			osync_assert(target_objtype);
 
 			/* If targetformat is not supported, skip it */
-			if (!osync_member_support_targetformat(member, formatenv, targetformat))
+			sourceformat = osync_member_support_targetformat(member, formatenv, targetformat);
+			if (!sourceformat)
 				continue;
+
+			source_objtype = osync_objformat_get_objtype(sourceformat);
+			osync_member_add_alternative_objtype(member, source_objtype, target_objtype);
 
 			/* For each objtype, add 1 to the hashtable. */
 			g_hash_table_replace(table, (char *)target_objtype, NULL);

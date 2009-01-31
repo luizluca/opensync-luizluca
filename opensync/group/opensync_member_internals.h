@@ -40,6 +40,8 @@ struct OSyncMember {
 
 	char *name;
 	char *pluginname;
+
+	GHashTable *alternative_objtype_table;
 	
 	GList *objtypes; /* OSyncObjTypeSink */
 	OSyncObjTypeSink *main_sink;
@@ -80,10 +82,31 @@ OSYNC_TEST_EXPORT OSyncList *osync_member_get_all_objformats(OSyncMember *member
  * @param member Pointer to member 
  * @param formatenv Pointer to a loaded OSyncFormatEnv for conversion path building
  * @param targetformat The target format to test
- * @returns TRUE if member supports with the given OSyncFormatEnv the targetformat, FALSE otherwise
+ * @returns Source OSyncObjFormat which can convert to targetformat, NULL if not supported
  * 
  */
-OSYNC_TEST_EXPORT osync_bool osync_member_support_targetformat(OSyncMember *member, OSyncFormatEnv *formatenv, OSyncObjFormat *targetformat);
+OSYNC_TEST_EXPORT OSyncObjFormat *osync_member_support_targetformat(OSyncMember *member, OSyncFormatEnv *formatenv, OSyncObjFormat *targetformat);
+
+/** @brief Get the alternative Object Type to a provided Object Type
+ *
+ * The alternative Object Type is the Object Type which could be handled by
+ * this member due to format-conversion and mixed-objtype syncing.
+ * 
+ * @param member Pointer to member 
+ * @param orig_objtype The original object type to look for an alternative for
+ * @returns The name of the alternative object type or NULL if there is no alternative for this member
+ * 
+ */
+OSYNC_TEST_EXPORT const char *osync_member_get_alternative_objtype(OSyncMember *member, const char *orig_objtype);
+
+/** @brief Add an alternative object type for this member
+ *
+ * @param member Pointer to member 
+ * @param native_objtype The native object type of this member which can reprsent the alternative
+ * @param alternative_objtype The alternative object type t add
+ * 
+ */
+OSYNC_TEST_EXPORT void osync_member_add_alternative_objtype(OSyncMember *member, const char *native_objtype, const char *alternative_objtype);
 
 #ifdef OPENSYNC_UNITTESTS
 /** @brief Set the schemadir for configuration validation to a custom directory.
