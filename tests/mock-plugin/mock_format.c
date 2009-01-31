@@ -238,6 +238,7 @@ static void _format_set_functions(OSyncObjFormat *format)
 	osync_objformat_set_copy_func(format, copy_file);
 	osync_objformat_set_create_func(format, create_file);
 	
+	/* TODO ... marshal function is only valid for mockformat1 not mockformat2! */
 	osync_objformat_set_marshal_func(format, marshal_file);
 	osync_objformat_set_demarshal_func(format, demarshal_file);
 }
