@@ -29,6 +29,30 @@
 #include "opensync_queue_internals.h"
 #include "opensync_queue_private.h"
 
+static gboolean _osync_queue_generate_error(OSyncQueue *queue, OSyncMessageCommand errcode, OSyncError **error)
+{
+	OSyncMessage *message;
+
+	queue->connected = FALSE;
+	
+	/* Now we can send the hup message, and wake up the consumer thread so
+	 * it can pickup the messages in the incoming queue */
+	message = osync_message_new(errcode, 0, error);
+	if (!message) {
+		return FALSE;
+	}
+	osync_trace(TRACE_INTERNAL, "Generating incoming error message %p(%s), id= %lli", message, osync_message_get_commandstr(message), osync_message_get_id(message));
+	
+	osync_message_ref(message);
+
+	g_async_queue_push(queue->incoming, message);
+	
+	if (queue->incomingContext)
+		g_main_context_wakeup(queue->incomingContext);
+
+	return TRUE;
+}
+
 static gboolean _timeout_prepare(GSource *source, gint *timeout_)
 {
 	/* TODO adapt *timeout_ value to shortest message timeout value...
@@ -55,6 +79,16 @@ static gboolean _timeout_check(GSource *source)
 	 * list since another thread might be duing the updates */
 	g_mutex_lock(queue->pendingLock);
 
+	/* First check the overall queue timer */
+	if (queue->pendingCount> 0 && queue->pending_timeout.tv_sec > 0) {
+		if (current_time.tv_sec > queue->pending_timeout.tv_sec
+		    || (current_time.tv_sec == queue->pending_timeout.tv_sec
+			&& current_time.tv_usec >= queue->pending_timeout.tv_usec) ) {
+			g_mutex_unlock(queue->pendingLock);
+			return TRUE;
+		}
+	}
+
 	for (p = queue->pendingReplies; p; p = p->next) {
 		pending = p->data;
 
@@ -63,7 +97,7 @@ static gboolean _timeout_check(GSource *source)
 
 		toinfo = pending->timeout_info;
 
-		if (current_time.tv_sec >= toinfo->expiration.tv_sec 
+		if (current_time.tv_sec > toinfo->expiration.tv_sec 
 				|| (current_time.tv_sec == toinfo->expiration.tv_sec 
 						&& current_time.tv_usec >= toinfo->expiration.tv_usec)) {
 			/* Unlock the pending lock since the messages might be sent during the callback */
@@ -96,6 +130,18 @@ static gboolean _timeout_dispatch(GSource *source, GSourceFunc callback, gpointe
 	 * list since another thread might be duing the updates */
 	g_mutex_lock(queue->pendingLock);
 
+	/* First check the overall queue timer */
+	if (queue->pendingCount> 0 && queue->pending_timeout.tv_sec > 0) {
+		if (current_time.tv_sec > queue->pending_timeout.tv_sec
+		    || (current_time.tv_sec == queue->pending_timeout.tv_sec
+			&& current_time.tv_usec >= queue->pending_timeout.tv_usec) ) {
+			/* The queue has died.  Generate an error */
+			osync_trace(TRACE_INTERNAL, "%s: Pending queue timer expired: receiver must have died", __func__);
+			_osync_queue_generate_error(queue, OSYNC_MESSAGE_QUEUE_ERROR, NULL);
+			queue->pending_timeout.tv_sec = 0; // Stop timer
+		}
+	}
+
 	for (p = queue->pendingReplies; p; p = p->next) {
 		pending = p->data;
 
@@ -104,8 +150,8 @@ static gboolean _timeout_dispatch(GSource *source, GSourceFunc callback, gpointe
 
 		toinfo = pending->timeout_info;
 
-		if (current_time.tv_sec == toinfo->expiration.tv_sec ||
-				(current_time.tv_sec >= toinfo->expiration.tv_sec 
+		if (current_time.tv_sec > toinfo->expiration.tv_sec ||
+				(current_time.tv_sec == toinfo->expiration.tv_sec 
 				 && current_time.tv_usec >= toinfo->expiration.tv_usec)) {
 			OSyncError *error = NULL;
 			OSyncError *timeouterr = NULL;
@@ -175,7 +221,8 @@ static gboolean _incoming_check(GSource *source)
 
 	if (g_async_queue_length(queue->incoming) > 0
 	    && (queue->pendingLimit == 0 
-		|| queue->pendingCount < queue->pendingLimit) )
+		|| queue->pendingCount < queue->pendingLimit) 
+	    && !queue->disc_in_progress )
 		return TRUE;
 	
 	return FALSE;
@@ -191,13 +238,43 @@ static void _osync_send_timeout_response(OSyncMessage *errormsg, void *user_data
 		osync_queue_send_message_with_timeout(queue->reply_queue, NULL, errormsg, 0, NULL);
 	} else {
 		osync_message_unref(errormsg);
-		/* TODO: as we can't send the timeout response, disconnect the queue to signal to
-		   the sender that they aren't going to get a response.  Note: we can't just
-		   call osync_queue_disconnect as that tries to kill the thread and hits a deadlock! */
+		/* As we can't send the timeout response, create an error and drop it in the incoming queue
+		   so the higher layer will disconnect. Note: we can't just call osync_queue_disconnect 
+		   as that tries to kill the thread and hits a deadlock! */
+		if (!_osync_queue_generate_error(queue, OSYNC_MESSAGE_QUEUE_ERROR, NULL)) {
+			osync_trace(TRACE_EXIT_ERROR, "%s: cannot even generate error on incoming queue", __func__);
+			return;
+		}
 		osync_trace(TRACE_EXIT_ERROR, "%s: cannot find reply queue to send timeout error", __func__);
 		return;
 	}
 	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
+/* Restart the pending queue timeout */
+static void _osync_queue_restart_pending_timeout(OSyncQueue *queue)
+{
+	/* Note that the pending queue timeout is just to make sure that progress is being made.
+	   It does not time individual commands -- it just makes sure that responses are being
+	   received for outstanding commands at some rate. Individual message timeouts are
+	   handled at the receiver.  The main purpose of this timer is to detect if the
+	   receiver has stopped receiving for some reason.
+	   
+	   The timer is started when the first message is put on the pending queue and is reset
+	   and restarted whenever a response is received.  The timeout value is based on the
+	   largest message timeout seen to date. */
+
+	/* Note: queue->pending_timout is protected by the pending lock, which should be held 
+	   by the caller before calling this function */
+
+	if (queue->max_timeout) {
+		unsigned int timeout;
+		timeout = queue->max_timeout + OSYNC_QUEUE_PENDING_QUEUE_IPC_DELAY;
+		if (timeout < OSYNC_QUEUE_PENDING_QUEUE_MIN_TIMEOUT) 
+			timeout = OSYNC_QUEUE_PENDING_QUEUE_MIN_TIMEOUT;
+		g_source_get_current_time(queue->timeout_source, &queue->pending_timeout);
+		queue->pending_timeout.tv_sec += timeout;
+	}
 }
 
 /* Find and remove a pending message that this message is a reply to */
@@ -226,7 +303,8 @@ static void _osync_queue_remove_pending_reply(OSyncQueue *queue, OSyncMessage *r
 			   gets called twice! */
 			
 			queue->pendingReplies = osync_list_remove(queue->pendingReplies, pending);
-			queue->pendingCount--;
+			if (--queue->pendingCount != 0)
+				_osync_queue_restart_pending_timeout(queue);
 
 			/* Unlock the pending lock since the messages might be sent during the callback */
 			g_mutex_unlock(queue->pendingLock);
@@ -271,7 +349,7 @@ static gboolean _incoming_dispatch(GSource *source, GSourceFunc callback, gpoint
 			    osync_message_get_timeout(message), osync_message_get_id(message));
 		
 		if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY || osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-			/* Remove pending reply and call callback */
+			/* Remove pending reply and call callback*/
 			_osync_queue_remove_pending_reply(queue, message, TRUE);
 		} else {
 			unsigned int timeout = osync_message_get_timeout(message);
@@ -570,18 +648,8 @@ static gboolean _source_check(GSource *source)
 		return TRUE;
 	case OSYNC_QUEUE_EVENT_HUP:
 	case OSYNC_QUEUE_EVENT_ERROR:
-		queue->connected = FALSE;
-			
-		/* Now we can send the hup message, and wake up the consumer thread so
-		 * it can pickup the messages in the incoming queue */
-		message = osync_message_new(OSYNC_MESSAGE_QUEUE_HUP, 0, &error);
-		if (!message)
+		if (!_osync_queue_generate_error(queue, OSYNC_MESSAGE_QUEUE_HUP, &error))
 			goto error;
-			
-		g_async_queue_push(queue->incoming, message);
-			
-		if (queue->incomingContext)
-			g_main_context_wakeup(queue->incomingContext);
 		return FALSE;
 	}
 	
@@ -1000,6 +1068,52 @@ osync_bool osync_queue_disconnect(OSyncQueue *queue, OSyncError **error)
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, queue, error);
 	osync_assert(queue);
 
+	/* Before doing the real disconnect, we empty the pending queue by creating HUP
+	   errors for anything on it. In order to make sure it empties, the disconnect 
+	   is marked as in progress so that no more entries get put on it (e.g. if a 
+	   callback tries to send another message). */
+
+	g_mutex_lock(queue->pendingLock);
+
+	queue->disc_in_progress = TRUE;
+
+	while (queue->pendingCount > 0) {
+		OSyncPendingMessage *pending = queue->pendingReplies->data;
+		OSyncError *error = NULL;
+		OSyncError *huperr = NULL;
+		OSyncMessage *errormsg = NULL;
+		
+		queue->pendingReplies = osync_list_remove(queue->pendingReplies, pending);
+		queue->pendingCount--;
+
+		/* Call the callback of the pending message */
+		if (pending->callback) {
+			osync_error_set(&huperr, OSYNC_ERROR_IO_ERROR, "Disconnect.");
+			errormsg = osync_message_new_errorreply(NULL, huperr, &error);
+			osync_error_unref(&huperr);
+			osync_message_set_id(errormsg, pending->id);
+			
+			/* Unlock the pending lock during the callback */
+			g_mutex_unlock(queue->pendingLock);
+			
+			osync_trace(TRACE_INTERNAL, "%s: Reporting disconnect error for message %lli", __func__, pending->id);
+
+			pending->callback(errormsg, pending->user_data);
+			if (errormsg != NULL)
+				osync_message_unref(errormsg);
+		
+			/* Lock again */
+			g_mutex_lock(queue->pendingLock);
+		}
+		
+		// TODO: Refcounting for OSyncPendingMessage
+		if (pending->timeout_info)
+			g_free(pending->timeout_info);
+
+		osync_free(pending);
+	}
+	g_mutex_unlock(queue->pendingLock);
+
 	osync_queue_remove_cross_link(queue);
 
 	g_mutex_lock(queue->disconnectLock);
@@ -1038,6 +1152,10 @@ osync_bool osync_queue_disconnect(OSyncQueue *queue, OSyncError **error)
 	queue->fd = -1;
 	queue->connected = FALSE;
 	g_mutex_unlock(queue->disconnectLock);
+
+	g_mutex_lock(queue->pendingLock);
+	queue->disc_in_progress = FALSE;
+	g_mutex_unlock(queue->pendingLock);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
@@ -1221,6 +1339,13 @@ osync_bool osync_queue_send_message_with_timeout(OSyncQueue *queue, OSyncQueue *
 		GTimeVal current_time;
 		long long int id = 0;
 		osync_assert(replyqueue);
+
+		g_mutex_lock(replyqueue->pendingLock);
+		if (replyqueue->disc_in_progress) {
+			osync_error_set(error, OSYNC_ERROR_IO_ERROR, "Disconnect in progress.");
+			goto error;
+		}
+
 		pending = osync_try_malloc0(sizeof(OSyncPendingMessage), error);
 		if (!pending)
 			goto error;
@@ -1236,6 +1361,9 @@ osync_bool osync_queue_send_message_with_timeout(OSyncQueue *queue, OSyncQueue *
 		if (timeout) {
 			/* Send timeout info to other end to handle */
 			osync_message_set_timeout(message, timeout);
+			/* Note largest timeout seen */
+			if (timeout > replyqueue->max_timeout)
+				replyqueue->max_timeout = timeout;
 		} else {
 			osync_trace(TRACE_INTERNAL, "handler message got sent without timeout!: %s", osync_message_get_commandstr(message));
 		}
@@ -1243,9 +1371,11 @@ osync_bool osync_queue_send_message_with_timeout(OSyncQueue *queue, OSyncQueue *
 		pending->callback = osync_message_get_handler(message);
 		pending->user_data = osync_message_get_handler_data(message);
 		
-		g_mutex_lock(replyqueue->pendingLock);
 		replyqueue->pendingReplies = osync_list_append(replyqueue->pendingReplies, pending);
-		replyqueue->pendingCount++;
+		if (replyqueue->pendingCount++ == 0) {
+			/* Start queue timeout */
+			_osync_queue_restart_pending_timeout(replyqueue);
+		}
 		g_mutex_unlock(replyqueue->pendingLock);
 	}
 	

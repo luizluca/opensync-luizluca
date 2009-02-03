@@ -2089,10 +2089,13 @@ int num_callback = 0;
 
 static void _message_handler(OSyncMessage *message, void *user_data)
 {
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
+	osync_trace(TRACE_INTERNAL, "%s",osync_message_get_commandstr(message));
 	if (osync_message_is_error(message))
 		num_callback_timeout++;
 	else
 		num_callback++;
+	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
 char *data5 = "this is another test string";
@@ -2664,11 +2667,12 @@ START_TEST (ipc_loop_timeout_with_idle)
 	
 	/* Same as ipc_loop_with_timeout except that the client handler doesn't sleep,
 	   so the queue dispatchers can run while the operation is waiting.
-	   Even though each action takes 1 second, none of these messages should time out
-	   as they are being sent with a timeout of 3 seconds */
+	   Even though each action takes 1 second, and might be delayed by 3 seconds
+	   due to the messages already processed on the pending queue, none of these 
+	   messages should time out as they are being sent with a timeout of 5 seconds */
 	
 	num_msgs = 0;
-	req_msgs = 30;
+	req_msgs = 10;
 	
 	char *testbed = setup_testbed(NULL);
 	osync_testing_file_remove("/tmp/testpipe-server");
@@ -2693,7 +2697,8 @@ START_TEST (ipc_loop_timeout_with_idle)
 		OSyncThread *thread = osync_thread_new(context, &error);
 	
 		osync_queue_set_message_handler(client_queue, client_handler_first_part, GINT_TO_POINTER(1));
-		osync_queue_set_pending_limit(client_queue, OSYNC_QUEUE_PENDING_LIMIT);
+		// Set pending limit to 3 so response wil be delayed at most 3 seconds
+		osync_queue_set_pending_limit(client_queue, 3);
 		
 		osync_queue_setup_with_gmainloop(client_queue, context);
 		
@@ -2765,7 +2770,8 @@ START_TEST (ipc_loop_timeout_with_idle)
 			
 			osync_message_set_handler(message, callback_handler_check_reply, GINT_TO_POINTER(1));
 			
-			fail_unless(osync_queue_send_message_with_timeout(client_queue, server_queue, message, 10, &error), NULL);
+			// Timeout of 5 will do as pending limit is 3
+			fail_unless(osync_queue_send_message_with_timeout(client_queue, server_queue, message, 5, &error), NULL);
 			fail_unless(!osync_error_is_set(&error), NULL);
 			
 			osync_message_unref(message);
@@ -2782,6 +2788,321 @@ START_TEST (ipc_loop_timeout_with_idle)
 		
 		osync_thread_stop(thread);
 		osync_thread_unref(thread);
+		
+		int status = 0;
+		wait(&status);
+		fail_unless(WEXITSTATUS(status) == 0, NULL);
+	}
+	
+	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == TRUE, NULL);
+	
+	fail_unless(osync_queue_remove(client_queue, &error), NULL);
+	fail_unless(osync_queue_remove(server_queue, &error), NULL);
+	fail_unless(!osync_error_is_set(&error), NULL);
+	
+	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
+
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
+	
+	destroy_testbed(testbed);
+}
+END_TEST
+
+void client_handler6(OSyncMessage *message, void *user_data)
+{
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
+	OSyncError *error = NULL;
+	
+	osync_assert(GPOINTER_TO_INT(user_data) ==1);
+
+	if (osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_ERROR) {
+		osync_queue_disconnect(client_queue, NULL);
+		osync_trace(TRACE_EXIT, "%s: disconnect", __func__);
+		return;
+	}
+
+	osync_assert(osync_message_get_command(message) == OSYNC_MESSAGE_INITIALIZE);
+
+	int int1;
+	long long int longint1;
+	char *string;
+	char databuf[strlen(data5) + 1];
+	
+	osync_message_read_int(message, &int1);
+	osync_message_read_string(message, &string);
+	osync_message_read_long_long_int(message, &longint1);
+	osync_message_read_data(message, databuf, strlen(data5) + 1);
+	
+	osync_assert(int1 == 4000000);
+	osync_assert(!strcmp(string, "this is a test string"));
+	osync_assert(longint1 == 400000000);
+	osync_assert(!strcmp(databuf, data5));
+	
+	/* TIMEOUT TIMEOUT TIMEOUT (no reply...) */
+	
+	/* Proper code would reply to this message, but for testing
+	   purposes we don't reply and simulate a "timeout" situation */
+		
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+START_TEST (ipc_timeout_noreplyq)
+{	
+	/* This testcase is inteded to test timeout before the command and reply queues are cross-linked.
+	   Client got forked and listens for messages from Server and replies.
+
+	   To simulate a "timeout" situation the Client doesn't reply to one of the Server messages.
+
+	   As there is no reply queue, an error will be sent to the **client**, who then disconnects
+	   so an error (although not a timeout) ends up sent to the server.
+	   */
+
+	char *testbed = setup_testbed(NULL);
+	osync_testing_file_remove("/tmp/testpipe-server");
+	osync_testing_file_remove("/tmp/testpipe-client");
+
+	num_callback_timeout = 0;
+	num_callback = 0;
+	
+	OSyncError *error = NULL;
+	server_queue = osync_queue_new("/tmp/testpipe-server", &error);
+	client_queue = osync_queue_new("/tmp/testpipe-client", &error);
+	OSyncMessage *message = NULL;
+	
+	osync_queue_create(server_queue, &error);
+	fail_unless(error == NULL, NULL);
+	
+	osync_queue_create(client_queue, &error);
+	fail_unless(error == NULL, NULL);
+	
+	pid_t cpid = fork();
+	if (cpid == 0) { //Child
+		
+		GMainContext *context = g_main_context_new();
+		OSyncThread *thread = osync_thread_new(context, &error);
+	
+		osync_queue_set_message_handler(client_queue, client_handler6, GINT_TO_POINTER(1));
+		osync_queue_set_pending_limit(client_queue, OSYNC_QUEUE_PENDING_LIMIT);
+		
+		osync_queue_setup_with_gmainloop(client_queue, context);
+		
+		osync_thread_start(thread);
+
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
+
+		/* Do not cross-link */
+		/*osync_queue_cross_link(client_queue, server_queue);*/
+		
+		message = osync_queue_get_message(server_queue);
+		
+		osync_assert(osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_HUP);
+		
+		osync_message_unref(message);
+	
+		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
+			exit(1);
+		osync_queue_unref(server_queue);
+		
+		osync_assert(osync_queue_disconnect(client_queue, &error));
+		osync_assert(error == NULL);
+		
+		osync_thread_stop(thread);
+		osync_thread_unref(thread);
+		
+		osync_queue_unref(client_queue);
+		
+		g_free(testbed);
+		
+		exit(0);
+	} else {
+		GMainContext *context = g_main_context_new();
+		OSyncThread *thread = osync_thread_new(context, &error);
+		
+		osync_queue_set_message_handler(server_queue, server_handler4, GINT_TO_POINTER(1));
+		
+		osync_queue_setup_with_gmainloop(server_queue, context);
+		
+		osync_thread_start(thread);
+
+		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_SENDER, &error), NULL);
+		fail_unless(error == NULL, NULL);
+		
+		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
+		fail_unless(error == NULL, NULL);
+		
+		message = osync_message_new(OSYNC_MESSAGE_INITIALIZE, 0, &error);
+		fail_unless(message != NULL, NULL);
+		fail_unless(!osync_error_is_set(&error), NULL);
+
+		osync_message_set_handler(message, _message_handler, NULL);
+		
+		osync_message_write_int(message, 4000000);
+		osync_message_write_string(message, "this is a test string");
+		osync_message_write_long_long_int(message, 400000000);
+		osync_message_write_data(message, data5, strlen(data5) + 1);
+		
+		// Send with timeout of one second
+		fail_unless(osync_queue_send_message_with_timeout(client_queue, server_queue, message, 1, &error), NULL);
+		fail_unless(!osync_error_is_set(&error), NULL);
+
+		osync_message_unref(message);
+		
+		while (!(message = osync_queue_get_message(client_queue))) {
+			g_usleep(10000);
+		}
+		
+		fail_unless(osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_HUP);
+		osync_message_unref(message);
+		
+		osync_queue_disconnect(client_queue, &error);
+		fail_unless(error == NULL, NULL);
+		
+		osync_queue_disconnect(server_queue, &error);
+		fail_unless(error == NULL, NULL);
+		
+		int status = 0;
+		wait(&status);
+		fail_unless(WEXITSTATUS(status) == 0, NULL);
+	}
+	
+	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == TRUE, NULL);
+	
+	fail_unless(osync_queue_remove(client_queue, &error), NULL);
+	fail_unless(osync_queue_remove(server_queue, &error), NULL);
+	fail_unless(!osync_error_is_set(&error), NULL);
+
+	/* Check if the timeout handler replied with an error */
+	fail_unless(num_callback_timeout == 1, NULL);
+	fail_unless(num_callback == 0, NULL);
+	
+	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
+
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
+	
+	destroy_testbed(testbed);
+}
+END_TEST
+
+START_TEST (ipc_timeout_noreceiver)
+{	
+	/* This testcase is intended to test the case where the receiver is not even listening,
+	   and so does not run the timeout.
+	*/
+
+	char *testbed = setup_testbed(NULL);
+	osync_testing_file_remove("/tmp/testpipe-server");
+	osync_testing_file_remove("/tmp/testpipe-client");
+
+	num_callback_timeout = 0;
+	num_callback = 0;
+	
+	OSyncError *error = NULL;
+	server_queue = osync_queue_new("/tmp/testpipe-server", &error);
+	client_queue = osync_queue_new("/tmp/testpipe-client", &error);
+	OSyncMessage *message = NULL;
+	
+	osync_queue_create(server_queue, &error);
+	fail_unless(error == NULL, NULL);
+	
+	osync_queue_create(client_queue, &error);
+	fail_unless(error == NULL, NULL);
+	
+	pid_t cpid = fork();
+	if (cpid == 0) { //Child
+		
+		GMainContext *context = g_main_context_new();
+		OSyncThread *thread = osync_thread_new(context, &error);
+	
+		osync_queue_set_message_handler(client_queue, client_handler1, GINT_TO_POINTER(1));
+		osync_queue_set_pending_limit(client_queue, OSYNC_QUEUE_PENDING_LIMIT);
+		
+		/* Do not start receiver */
+		/* osync_queue_setup_with_gmainloop(client_queue, context); */
+		
+		osync_thread_start(thread);
+
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
+
+		/* Do not cross-link */
+		osync_queue_cross_link(client_queue, server_queue);
+		
+		message = osync_queue_get_message(server_queue);
+		
+		osync_assert(osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_HUP);
+		
+		osync_message_unref(message);
+	
+		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
+			exit(1);
+		osync_queue_unref(server_queue);
+		
+		osync_assert(osync_queue_disconnect(client_queue, &error));
+		osync_assert(error == NULL);
+		
+		osync_thread_stop(thread);
+		osync_thread_unref(thread);
+		
+		osync_queue_unref(client_queue);
+		
+		g_free(testbed);
+		
+		exit(0);
+	} else {
+		GMainContext *context = g_main_context_new();
+		OSyncThread *thread = osync_thread_new(context, &error);
+		
+		osync_queue_set_message_handler(server_queue, server_handler4, GINT_TO_POINTER(1));
+		
+		osync_queue_setup_with_gmainloop(server_queue, context);
+		
+		osync_thread_start(thread);
+
+		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_SENDER, &error), NULL);
+		fail_unless(error == NULL, NULL);
+		
+		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
+		fail_unless(error == NULL, NULL);
+		
+		message = osync_message_new(OSYNC_MESSAGE_INITIALIZE, 0, &error);
+		fail_unless(message != NULL, NULL);
+		fail_unless(!osync_error_is_set(&error), NULL);
+
+		osync_message_set_handler(message, _message_handler, NULL);
+		
+		osync_message_write_int(message, 4000000);
+		osync_message_write_string(message, "this is a test string");
+		osync_message_write_long_long_int(message, 400000000);
+		osync_message_write_data(message, data5, strlen(data5) + 1);
+		
+		// Send with timeout of one second
+		fail_unless(osync_queue_send_message_with_timeout(client_queue, server_queue, message, 1, &error), NULL);
+		fail_unless(!osync_error_is_set(&error), NULL);
+
+		osync_message_unref(message);
+		
+		/* Note: OSYNC_QUEUE_PENDING_QUEUE_MIN_TIMEOUT is 20 */
+		g_usleep(25*G_USEC_PER_SEC);
+
+		/* Check if the timeout handler replied with an error.
+		   Note: it is important we check **before** we start disconnecting
+		   otherwise we are not testing the right thing */
+		fail_unless(num_callback_timeout == 1, NULL);
+		fail_unless(num_callback == 0, NULL);
+		
+		osync_queue_disconnect(client_queue, &error);
+		fail_unless(error == NULL, NULL);
+		
+		osync_queue_disconnect(server_queue, &error);
+		fail_unless(error == NULL, NULL);
 		
 		int status = 0;
 		wait(&status);
@@ -2832,5 +3153,7 @@ OSYNC_TESTCASE_ADD(ipc_timeout)
 OSYNC_TESTCASE_ADD(ipc_late_reply)
 OSYNC_TESTCASE_ADD(ipc_loop_with_timeout)
 OSYNC_TESTCASE_ADD(ipc_loop_timeout_with_idle)
+OSYNC_TESTCASE_ADD(ipc_timeout_noreplyq)
+OSYNC_TESTCASE_ADD(ipc_timeout_noreceiver)
 OSYNC_TESTCASE_END
 

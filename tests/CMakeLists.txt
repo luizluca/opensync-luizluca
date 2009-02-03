@@ -249,6 +249,8 @@ OSYNC_TESTCASE(ipc ipc_timeout)
 OSYNC_TESTCASE(ipc ipc_loop_with_timeout)
 OSYNC_TESTCASE(ipc ipc_late_reply)
 OSYNC_TESTCASE(ipc ipc_loop_timeout_with_idle)
+OSYNC_TESTCASE(ipc ipc_timeout_noreplyq)
+OSYNC_TESTCASE(ipc ipc_timeout_noreceiver)
 ENDIF (NOT WIN32)
 
 BUILD_CHECK_TEST( mapping mapping-tests/check_mapping.c ${TEST_TARGET_LIBRARIES} )

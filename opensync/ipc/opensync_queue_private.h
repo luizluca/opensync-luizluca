@@ -96,8 +96,24 @@ struct OSyncQueue {
 
 	/* Queue for receiving commands we are replying to */
 	OSyncQueue *cmd_queue;
+
+	/* Disconnect in progress */
+	gboolean disc_in_progress;
+
+	/* Largest timeout value seen so far */
+	unsigned int max_timeout;
+
+	/* Expiration time of pending queue timeout */
+	GTimeVal pending_timeout;
 };
 
+/** @brief Pending queue timeout addition for ipc delay
+ */
+#define OSYNC_QUEUE_PENDING_QUEUE_IPC_DELAY 1
+
+/** @brief Pending queue minimum timeout
+ */
+#define OSYNC_QUEUE_PENDING_QUEUE_MIN_TIMEOUT 20
 
 /** @brief Timeout object 
  */

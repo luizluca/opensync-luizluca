@@ -1,4 +1,58 @@
+2009-02-03  Graham Cobb  <g+770@cobb.uk.net>
+
+	* tests/ipc-tests/check_ipc.c (ipc_loop_timeout_with_idle): Change test parameters
+	so test completes within 30 second limit.
+
+2009-02-02  Graham Cobb  <g+770@cobb.uk.net>
+
+	* opensync/ipc/opensync_queue_private.h (OSYNC_QUEUE_PENDING_QUEUE_MIN_TIMEOUT): Define
+	minimum pending queue timeout.
+
+	* opensync/ipc/opensync_queue.c (_osync_queue_restart_pending_timeout): Apply
+	minimum value to pending queue timeout.
+
+2009-02-01  Graham Cobb  <g+770@cobb.uk.net>
+
+	* tests/ipc-tests/check_ipc.c: Add ipc_timeout_noreceiver test.
+
+	* opensync/ipc/opensync_queue.c (osync_queue_send_message_with_timeout): Track maximum 
+	timeout seen.  Start pending queue timeout.
+	(_osync_queue_remove_pending_reply): restart pending queue timeout if necessary
+	(_osync_queue_restart_pending_timeout): Add function to start/restart pending queue timeout
+	(_timeout_check): Fix calculation of expiry of timeout.  Add pending queue timeout.
+	(_timeout_dispatch): Fix calculation of expiry of timeout.  Add pending queue timeout.
+
+	* opensync/ipc/opensync_queue_private.h: Add max_timeout and pending_timeout fields (to queue).
+	(OSYNC_QUEUE_PENDING_QUEUE_IPC_DELAY): Add value to assume for IPC delay in pending queue timout.
+
+2009-01-25  Graham Cobb  <g+770@cobb.uk.net>
+
+	* opensync/engine/opensync_sink_engine.c (osync_sink_engine_new): Ref objengine [Bug #1052]
+	(osync_sink_engine_unref): Unref objengine [Bug #1052]
+
+	* opensync/engine/opensync_obj_engine.c (_osync_obj_engine_*_callback): Unref sinkengine [Bug #1052]
+	(osync_obj_engine_command): Ref sinkengine every time it is used for a callback [Bug #1052]
+
+	* opensync/ipc/opensync_queue.c (osync_queue_disconnect): Empty pending
+	queue before performing disconnect.  Pending messages with callbacks
+	will get called with an error message.
+	(_incoming_check): Do not action incoming queue if a disconnect is in progress.
+	This avoids entries being added to pending queue while we are trying to empty it.
+	(osync_queue_send_message_with_timeout): Do not allow sending messages which require
+	adding entries to the reply queue pending list if the reply queue is being disconnected.
+
+	* opensync/ipc/opensync_queue_private.h: Add disc_in_progress flag to queue.
+
 2009-01-24  Graham Cobb  <g+770@cobb.uk.net>
+
+	* opensync/ipc/opensync_queue.c (_osync_queue_generate_error): Add 
+	_osync_queue_generate_error
+	(_osync_send_timeout_response): If there is no reply queue, 
+	call _osync_queue_generate_error
+
+	* tests/CMakeLists.txt: Add ipc_timeout_noreplyq
+
+	* tests/ipc-tests/check_ipc.c: Add ipc_timeout_noreplyq
 
 	* opensync/ipc/opensync_queue.c (osync_queue_remove_cross_link): Add
 	osync_queue_remove_cross_link
