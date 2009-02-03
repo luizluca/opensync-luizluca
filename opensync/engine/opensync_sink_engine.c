@@ -55,6 +55,7 @@ OSyncSinkEngine *osync_sink_engine_new(int position, OSyncClientProxy *proxy, OS
 	sinkengine->proxy = proxy;
 	
 	sinkengine->engine = objengine;
+	osync_obj_engine_ref(objengine);
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, sinkengine);
 	return sinkengine;
@@ -92,6 +93,8 @@ void osync_sink_engine_unref(OSyncSinkEngine *engine)
 			engine->entries = osync_list_remove(engine->entries, engine->entries->data);
 		}
 		
+		osync_obj_engine_unref(engine->engine);
+
 		osync_free(engine);
 	}
 }

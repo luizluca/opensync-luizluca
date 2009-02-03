@@ -118,6 +118,7 @@ static void _osync_obj_engine_connect_callback(OSyncClientProxy *proxy, void *us
 	} else
 		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->sink_errors | engine->sink_connects));
 	
+	osync_sink_engine_unref(sinkengine);
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
@@ -148,6 +149,7 @@ static void _osync_obj_engine_connect_done_callback(OSyncClientProxy *proxy, voi
 	} else
 		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->sink_errors | engine->sink_connect_done));
 	
+	osync_sink_engine_unref(sinkengine);
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
@@ -190,6 +192,8 @@ static void _osync_obj_engine_disconnect_callback(OSyncClientProxy *proxy, void 
 	}
 	
 	_osync_obj_engine_generate_event_disconnected(engine, error);
+
+	osync_sink_engine_unref(sinkengine);
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
@@ -322,9 +326,12 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 
 static void _osync_obj_engine_read_ignored_callback(OSyncClientProxy *proxy, void *userdata, OSyncError *error)
 {
+	OSyncSinkEngine *sinkengine = userdata;
+	OSyncObjEngine *engine = sinkengine->engine;
 	/* TODO: Share _generate_read_event fucntion with _osync_obj_engine_read_callback?
 	   To report errors .. and handle _timeout problems of _read_ignored call.
 	*/
+	osync_sink_engine_unref(sinkengine);
 }
 
 
@@ -356,6 +363,7 @@ static void _osync_obj_engine_read_callback(OSyncClientProxy *proxy, void *userd
 	} else
 		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->sink_errors | engine->sink_get_changes));
 	
+	osync_sink_engine_unref(sinkengine);
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
@@ -582,6 +590,7 @@ static void _osync_obj_engine_sync_done_callback(OSyncClientProxy *proxy, void *
 	} else
 		osync_trace(TRACE_INTERNAL, "Not yet: %i", osync_bitcount(engine->sink_errors | engine->sink_sync_done));
 	
+	osync_sink_engine_unref(sinkengine);
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
@@ -920,6 +929,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 			if (!osync_client_proxy_connect(sinkengine->proxy, _osync_obj_engine_connect_callback, sinkengine, engine->objtype, engine->slowsync, error))
 				goto error;
+			osync_sink_engine_ref(sinkengine); // Note that connect callback has a reference
 		}
 		break;
 	case OSYNC_ENGINE_COMMAND_CONNECT_DONE:
@@ -928,6 +938,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 			if (!osync_client_proxy_connect_done(sinkengine->proxy, _osync_obj_engine_connect_done_callback, sinkengine, engine->objtype, error))
 				goto error;
+			osync_sink_engine_ref(sinkengine); // Note that connect_done callback has a reference
 		}
 		break;
 	case OSYNC_ENGINE_COMMAND_READ:
@@ -943,6 +954,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 				if (!osync_client_proxy_read(sinkengine->proxy, _osync_obj_engine_read_ignored_callback, sinkengine, change, error))
 					goto error;
+				osync_sink_engine_ref(sinkengine); // Note that read_ignored callback has a reference
 			}
 		}
 
@@ -974,6 +986,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 			if (!osync_client_proxy_get_changes(sinkengine->proxy, _osync_obj_engine_read_callback, sinkengine, engine->objtype, engine->slowsync, error))
 				goto error;
+			osync_sink_engine_ref(sinkengine); // Note that read callback has a reference
 		}
 
 		break;
@@ -1080,6 +1093,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 			if (!osync_client_proxy_sync_done(sinkengine->proxy, _osync_obj_engine_sync_done_callback, sinkengine, engine->objtype, error))
 				goto error;
+			osync_sink_engine_ref(sinkengine); // Note that sync_done callback has a reference
 		}
 		break;
 	case OSYNC_ENGINE_COMMAND_DISCONNECT:;
@@ -1096,6 +1110,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 			if (!osync_client_proxy_disconnect(sinkengine->proxy, _osync_obj_engine_disconnect_callback, sinkengine, engine->objtype, error))
 				goto error;
+			osync_sink_engine_ref(sinkengine); // Note that disconnect callback has a reference
 		}
 			
 		/* If no client needs to be disconnected, we MUST NOT expected any 
