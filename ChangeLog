@@ -1,3 +1,57 @@
+2009-01-22  Graham Cobb  <g+770@cobb.uk.net>
+
+	* tests/CMakeLists.txt: Add ipc_loop_with_timeout
+	Add ipc_late_reply
+
+	* tests/ipc-tests/check_ipc.c: Call osync_queue_cross_link every time
+	client mainloop is setup.
+	(ipc_timeout): Rewrite client to use a mainloop and a callback so new 
+	timeout processing can run
+	Rewrite server to use a mainloop so message callback gets called
+	(ipc_loop_with_timeout): Add ipc_loop_with_timeout
+	(ipc_late_reply): Add ipc_late_reply
+
+	* opensync/ipc/opensync_queue.c (_timeout_dispatch): Restart timeout search at start of
+	pending list as list may have been modified while unlocked.
+	(_timeout_dispatch): Set message id in error message
+	(_timeout_dispatch): Undo change to restart timeout search (above)
+
+2009-01-21  Graham Cobb  <g+770@cobb.uk.net>
+
+	* opensync/ipc/opensync_queue.c (osync_queue_send_message_with_timeout): If this is
+	a reply, remove pending command
+
+	* opensync/client/opensync_client_proxy.c (_osync_client_proxy_hup_handler): treat
+	a queue error as a disconnect
+	(osync_client_proxy_spawn): cross-link command and reply queues
+
+	* opensync/client/opensync_client.c (_osync_client_handle_initialize): cross-link
+	command and reply queues
+	(_osync_client_hup_handler): treat a queue error as a disconnect
+
+2009-01-20  Graham Cobb  <g+770@cobb.uk.net>
+
+	* opensync/ipc/opensync_queue_internals.h: Add osync_queue_cross_link
+
+	* opensync/ipc/opensync_queue.c (osync_queue_cross_link): Cross-link command and reply queues
+
+	* opensync/ipc/opensync_queue.c (_osync_send_timeout_response): 
+	Callback function for timeouts: send the timeout error reponse
+	(_incoming_dispatch): For incoming messages which have timeouts, 
+	create a pending list entry
+
+	* opensync/ipc/opensync_queue_private.h: Add reply_queue for pointer to 
+	queue used for replies to incoming messages, if any.
+	Add cmd_queue for pointer to queue used to store pending commands.
+
+2009-01-19  Graham Cobb  <g+770@cobb.uk.net>
+
+	* opensync/ipc/opensync_message.c: Add opensync_message_set/get_timeout
+
+	* opensync/ipc/opensync_message_internals.h: Add opensync_message_set/get_timeout
+
+	* opensync/ipc/opensync_message_private.h: Add timeout to message
+
 2008-05-04  Graham Cobb  <g+770@cobb.uk.net>
 
 	* opensync/helper/opensync_hashtable.c (osync_hashtable_get_deleted): 

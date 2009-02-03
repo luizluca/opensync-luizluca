@@ -604,6 +604,7 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 		}
 		
 		osync_client_set_outgoing_queue(client, outgoing);
+		osync_queue_cross_link(client->incoming, client->outgoing);
 		osync_queue_unref(outgoing);
 		osync_trace(TRACE_INTERNAL, "done connecting to engine");
 	}
@@ -1519,9 +1520,8 @@ static void _osync_client_hup_handler(OSyncMessage *message, void *user_data)
 
 	osync_trace(TRACE_INTERNAL, "plugin received command %i on sending queue", osync_message_get_command(message));
 
-	if (osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_ERROR) {
-		/* Houston, we have a problem */
-	} else if (osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_HUP) {
+	if ( (osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_ERROR)
+	     || (osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_HUP) ) {
 		/* The remote side disconnected. So we can now disconnect as well and then
 		 * shutdown */
 		if (!osync_queue_disconnect(client->outgoing, &error))

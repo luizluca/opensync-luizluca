@@ -45,7 +45,7 @@ struct OSyncMessage {
 	/** The user data */
 	gpointer user_data;
 	/** The timeout associated with this message */
-	//timeout_info *to_info;
+	unsigned int timeout;
 	/** If this message has already been answered */
 	osync_bool is_answered;
 	/** The internal OSyncMarshal object **/

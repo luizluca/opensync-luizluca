@@ -89,6 +89,12 @@ struct OSyncQueue {
 
 	/** Reference count **/
 	int ref_count;
+
+	/* Queue for replies to incoming messages */
+	OSyncQueue *reply_queue;
+
+	/* Queue for receiving commands we are replying to */
+	OSyncQueue *cmd_queue;
 };
 
 

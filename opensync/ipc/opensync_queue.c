@@ -2,6 +2,7 @@
  * libosengine - A synchronization engine for the opensync framework
  * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
  * Copyright (C) 2007  Daniel Friedrich <daniel.friedrich@opensync.org>
+ * Copyright (C) 2009 Graham R. Cobb <g+opensync@cobb.uk.net>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -110,11 +111,15 @@ static gboolean _timeout_dispatch(GSource *source, GSourceFunc callback, gpointe
 			OSyncError *timeouterr = NULL;
 			OSyncMessage *errormsg = NULL;
 
+			osync_trace(TRACE_INTERNAL, "Timeout for message with id %lli", pending->id);
+
+
 			/* Call the callback of the pending message */
 			osync_assert(pending->callback);
 			osync_error_set(&timeouterr, OSYNC_ERROR_IO_ERROR, "Timeout.");
 			errormsg = osync_message_new_errorreply(NULL, timeouterr, &error);
 			osync_error_unref(&timeouterr);
+			osync_message_set_id(errormsg, pending->id);
 
 			/* Remove first the pending message!
 				 To avoid that _incoming_dispatch catchs this message
@@ -137,6 +142,9 @@ static gboolean _timeout_dispatch(GSource *source, GSourceFunc callback, gpointe
 			/* Lock again, to keep the iteration of the pendingReplies list atomic. */
 			g_mutex_lock(queue->pendingLock);
 
+			/* The queue may have been modified while it was unlocked so don't go
+			   looking for any more entries.  If there are more, they will be found
+			   on the next call */
 			break;
 		}
 	}
@@ -161,66 +169,145 @@ static gboolean _incoming_check(GSource *source)
 	return FALSE;
 }
 
+static void _osync_send_timeout_response(OSyncMessage *errormsg, void *user_data)
+{
+	OSyncQueue *queue = user_data;
+
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, errormsg, queue);
+
+	if (queue->reply_queue) {
+		osync_queue_send_message_with_timeout(queue->reply_queue, NULL, errormsg, 0, NULL);
+	} else {
+		osync_message_unref(errormsg);
+		/* TODO: as we can't send the timeout response, disconnect the queue to signal to
+		   the sender that they aren't going to get a response.  Note: we can't just
+		   call osync_queue_disconnect as that tries to kill the thread and hits a deadlock! */
+		osync_trace(TRACE_EXIT_ERROR, "%s: cannot find reply queue to send timeout error", __func__);
+		return;
+	}
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
+/* Find and remove a pending message that this message is a reply to */
+static void _osync_queue_remove_pending_reply(OSyncQueue *queue, OSyncMessage *reply, gboolean callback)
+{
+	OSyncPendingMessage *pending = NULL;
+	OSyncList *p = NULL;
+
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %d)", __func__, queue, reply, callback);
+	osync_trace(TRACE_INTERNAL, "Searching for pending message id=%lli", osync_message_get_id(reply));
+
+	/* Search for the pending reply. We have to lock the
+	 * list since another thread might be duing the updates */
+	g_mutex_lock(queue->pendingLock);
+			
+	for (p = queue->pendingReplies; p; p = p->next) {
+		pending = p->data;
+			
+		if (pending->id == osync_message_get_id(reply)) {
+			
+			osync_trace(TRACE_INTERNAL, "Found pending message id=%lli: %p", osync_message_get_id(reply), pending);
+			/* Remove first the pending message!
+			   To avoid that _timeout_dispatch catchs this message
+			   when we're releasing the lock. If _timeout_dispatch
+			   would catch this message, the pending callback
+			   gets called twice! */
+			
+			queue->pendingReplies = osync_list_remove(queue->pendingReplies, pending);
+
+			/* Unlock the pending lock since the messages might be sent during the callback */
+			g_mutex_unlock(queue->pendingLock);
+			
+			if (callback) {
+				/* Call the callback of the pending message */
+				osync_assert(pending->callback);
+				pending->callback(reply, pending->user_data);
+			}
+
+			// TODO: Refcounting for OSyncPendingMessage
+			if (pending->timeout_info)
+				g_free(pending->timeout_info);
+			osync_free(pending);
+
+			osync_trace(TRACE_EXIT, "%s", __func__);
+			return;
+		}
+	}
+	
+	g_mutex_unlock(queue->pendingLock);
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
 /* This function is called from the master thread. The function dispatched incoming data from
  * the remote end */
 static gboolean _incoming_dispatch(GSource *source, GSourceFunc callback, gpointer user_data)
 {
-	OSyncPendingMessage *pending = NULL;
 	OSyncQueue *queue = user_data;
-	OSyncList *p = NULL;
 	OSyncMessage *message = NULL;
+	OSyncError *error = NULL;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, user_data);
 
 	while ((message = g_async_queue_try_pop(queue->incoming))) {
 		/* We check if the message is a reply to something */
-		osync_trace(TRACE_INTERNAL, "Dispatching %p:%i(%s)", message, osync_message_get_cmd(message), osync_message_get_commandstr(message));
+		osync_trace(TRACE_INTERNAL, "Dispatching %p:%i(%s), timeout=%d, id=%lli", message, 
+			    osync_message_get_cmd(message), osync_message_get_commandstr(message), 
+			    osync_message_get_timeout(message), osync_message_get_id(message));
 		
 		if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY || osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-			
-			/* Search for the pending reply. We have to lock the
-			 * list since another thread might be duing the updates */
-			g_mutex_lock(queue->pendingLock);
-			
-			for (p = queue->pendingReplies; p; p = p->next) {
-				pending = p->data;
-			
-				if (pending->id == osync_message_get_id(message)) {
+			/* Remove pending reply and call callback */
+			_osync_queue_remove_pending_reply(queue, message, TRUE);
+		} else {
+			unsigned int timeout = osync_message_get_timeout(message);
+			if (timeout) {
+				/* This message has a timeout. Put message on pending list and run timeout */
+				/* NOTE: We really want to put it on the pending list for the corresponding
+				   outgoing queue but there may not be one at this time (if this is an Initialise,
+				   for example).  So we put it on the pending list of the incoming queue and deal with
+				   finding the outgoing queue if the timeout fires.  This also complicates removing
+				   pending items when sending the responses. Oh well. */
+				
+				OSyncPendingMessage *pending = osync_try_malloc0(sizeof(OSyncPendingMessage), &error);
+				if (!pending)
+					goto error;
 
-					/* Remove first the pending message!
-						 To avoid that _timeout_dispatch catchs this message
-						 when we're releasing the lock. If _timeout_dispatch
-						 would catch this message, the pending callback
-						 gets called twice! */
+				pending->id = osync_message_get_id(message);
 
-					queue->pendingReplies = osync_list_remove(queue->pendingReplies, pending);
+				OSyncTimeoutInfo *toinfo = osync_try_malloc0(sizeof(OSyncTimeoutInfo), &error);
+				if (!toinfo)
+					goto error;
 
-					/* Unlock the pending lock since the messages might be sent during the callback */
-					g_mutex_unlock(queue->pendingLock);
-			
-					/* Call the callback of the pending message */
-					osync_assert(pending->callback);
-					pending->callback(message, pending->user_data);
+				GTimeVal current_time;
+				g_source_get_current_time(queue->timeout_source, &current_time);
 
-					// TODO: Refcounting for OSyncPendingMessage
-					if (pending->timeout_info)
-						g_free(pending->timeout_info);
-					osync_free(pending);
+				toinfo->expiration = current_time;
+				toinfo->expiration.tv_sec += timeout;
 
-					/* Lock again, to keep the iteration of the pendingReplies list atomic. */
-					g_mutex_lock(queue->pendingLock);
-					break;
-				}
+				pending->timeout_info = toinfo;
+
+				pending->callback = _osync_send_timeout_response;
+				pending->user_data = queue;
+		
+				g_mutex_lock(queue->pendingLock);
+				queue->pendingReplies = osync_list_append(queue->pendingReplies, pending);
+				g_mutex_unlock(queue->pendingLock);
 			}
-			
-			g_mutex_unlock(queue->pendingLock);
-		} else 
+
 			queue->message_handler(message, queue->user_data);
+		}
 		
 		osync_message_unref(message);
 	}
 	
 	osync_trace(TRACE_EXIT, "%s: Done dispatching", __func__);
+	return TRUE;
+
+ error:
+	/* TODO: as we can't send the timeout response, disconnect the queue to signal to
+	   the sender that they aren't going to get a response.  Note: we can't just
+	   call osync_queue_disconnect as that tries to kill the thread and hits a deadlock! */
+
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&error));
 	return TRUE;
 }
 
@@ -326,6 +413,10 @@ static gboolean _queue_dispatch(GSource *source, GSourceFunc callback, gpointer 
 
 		/* The id (long long int) */
 		if (!_osync_queue_write_long_long_int(queue, osync_message_get_id(message), &error))
+			goto error;
+		
+		/* The timeout (integer) */
+		if (!_osync_queue_write_int(queue, (int) osync_message_get_timeout(message), &error))
 			goto error;
 		
 		osync_message_get_buffer(message, &data, &length);
@@ -498,7 +589,7 @@ static gboolean _source_dispatch(GSource *source, GSourceFunc callback, gpointer
 	
 	do {
 		int size = 0;
-		int cmd = 0;
+		int cmd = 0, timeout = 0;
 		long long int id = 0;
 		char *buffer = NULL;
 		
@@ -514,11 +605,16 @@ static gboolean _source_dispatch(GSource *source, GSourceFunc callback, gpointer
 		if (!_osync_queue_read_long_long_int(queue, &id, &error))
 			goto error;
 		
+		/* The timeout */
+		if (!_osync_queue_read_int(queue, &timeout, &error))
+			goto error;
+		
 		message = osync_message_new(cmd, size, &error);
 		if (!message)
 			goto error;
 	
 		osync_message_set_id(message, id);
+		osync_message_set_timeout(message, (unsigned int) timeout);
 		
 		/* We now get the buffer from the message which will already
 		 * have the correct size for the read */
@@ -933,10 +1029,26 @@ osync_bool osync_queue_is_connected(OSyncQueue *queue)
 
 void osync_queue_set_message_handler(OSyncQueue *queue, OSyncMessageHandler handler, gpointer user_data)
 {
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, queue, handler, user_data);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, queue, handler, user_data);
 	
 	queue->message_handler = handler;
 	queue->user_data = user_data;
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
+void osync_queue_cross_link(OSyncQueue *cmd_queue, OSyncQueue *reply_queue)
+{
+	/* Cross-linking is needed to make timeouts work when commands are
+	   being received on one queue and replies sent on another.
+	   Note that cross-linking is not needed when commands are being sent. */
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, cmd_queue, reply_queue);
+
+	osync_assert(cmd_queue->type == OSYNC_QUEUE_RECEIVER);
+	osync_assert(reply_queue->type == OSYNC_QUEUE_SENDER);
+
+	cmd_queue->reply_queue = reply_queue;
+	reply_queue->cmd_queue = cmd_queue;
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
@@ -1035,6 +1147,19 @@ osync_bool osync_queue_send_message_with_timeout(OSyncQueue *queue, OSyncQueue *
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %u, %p)", __func__, queue, replyqueue, message, timeout, error);
 
+	if (queue->cmd_queue) {
+		/* This queue is a reply queue for some command receiving queue */
+
+		/* If this is actually a reply message, we check to see if there is
+		   message to remove from the command queue's pending list */
+
+		if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY || osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
+			/* Remove pending reply but do not call callback
+			   (real callback will be called by the receiver of this reply later) */
+			_osync_queue_remove_pending_reply(queue->cmd_queue, message, FALSE);
+		}
+	}
+
 	if (osync_message_get_handler(message)) {
 		OSyncPendingMessage *pending = NULL;
 		GTimeVal current_time;
@@ -1053,14 +1178,8 @@ osync_bool osync_queue_send_message_with_timeout(OSyncQueue *queue, OSyncQueue *
 		osync_trace(TRACE_INTERNAL, "Setting id %lli for pending reply", id);
 
 		if (timeout) {
-			OSyncTimeoutInfo *toinfo = osync_try_malloc0(sizeof(OSyncTimeoutInfo), error);
-			if (!toinfo)
-				goto error;
-
-			toinfo->expiration = current_time;
-			toinfo->expiration.tv_sec += timeout;
-
-			pending->timeout_info = toinfo;
+			/* Send timeout info to other end to handle */
+			osync_message_set_timeout(message, timeout);
 		} else {
 			osync_trace(TRACE_INTERNAL, "handler message got sent without timeout!: %s", osync_message_get_commandstr(message));
 		}
@@ -1118,6 +1237,7 @@ const char *osync_queue_get_path(OSyncQueue *queue)
 {
 	osync_assert(queue);
 	return queue->name;
+
 }
 
 int osync_queue_get_fd(OSyncQueue *queue)

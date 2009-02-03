@@ -74,6 +74,18 @@ OSyncMessageCommand osync_message_get_cmd(OSyncMessage *message)
 	return message->cmd;
 }
 
+void osync_message_set_timeout(OSyncMessage *message, unsigned int timeout)
+{
+	osync_assert(message);
+	message->timeout = timeout;
+}
+
+unsigned int osync_message_get_timeout(OSyncMessage *message)
+{
+	osync_assert(message);
+	return message->timeout;
+}
+
 void osync_message_set_id(OSyncMessage *message, long long int id)
 {
 	osync_assert(message);

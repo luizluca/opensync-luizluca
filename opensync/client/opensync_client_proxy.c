@@ -227,9 +227,8 @@ static void _osync_client_proxy_hup_handler(OSyncMessage *message, void *user_da
 
 	osync_trace(TRACE_INTERNAL, "client received command %i on sending queue", osync_message_get_command(message));
 
-	if (osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_ERROR) {
-		/* Houston, we have a problem */
-	} else if (osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_HUP) {
+	if ( (osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_ERROR) /* Treat an error as a disconnect */
+	     || (osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_HUP) ) {
 		/* The remote side disconnected. So we can now disconnect as well and then
 		 * shutdown */
 		if (!osync_queue_disconnect(proxy->outgoing, &error))
@@ -916,6 +915,7 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 			
 			osync_client_set_incoming_queue(proxy->client, read1);
 			osync_client_set_outgoing_queue(proxy->client, write2);
+			osync_queue_cross_link(read1, write2);
 			
 			if (!osync_client_run(proxy->client, error))
 				goto error_free_pipe2;

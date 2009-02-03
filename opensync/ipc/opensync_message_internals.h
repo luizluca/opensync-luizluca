@@ -193,6 +193,21 @@ OSYNC_TEST_EXPORT void osync_message_set_message_size(OSyncMessage *message, uns
  */
 OSYNC_TEST_EXPORT void osync_message_get_buffer(OSyncMessage *message, char **data, unsigned int *size);
 
+/** @brief Set timeout (in seconds) for the message object
+ * 
+ * @param message The message to modify 
+ * @param timeout The new message timeout
+ * 
+ */
+OSYNC_TEST_EXPORT void osync_message_set_timeout(OSyncMessage *message, unsigned int timeout);
+
+/** @brief Get timeout (in seconds) for the message object
+ * 
+ * @param message The message
+ * 
+ */
+OSYNC_TEST_EXPORT unsigned int osync_message_get_timeout(OSyncMessage *message);
+
 /** @brief Sets the handler that will receive the reply
  * 
  * @param message The message to work on
