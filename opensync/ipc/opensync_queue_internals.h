@@ -99,6 +99,37 @@ OSYNC_TEST_EXPORT void osync_queue_set_message_handler(OSyncQueue *queue, OSyncM
 OSYNC_TEST_EXPORT void osync_queue_cross_link(OSyncQueue *cmd_queue, OSyncQueue *reply_queue);
 
 /**
+ * @brief Remove cross links between command queues and reply queues
+ * 
+ * Removes the cross-links from this queue and all queues linked
+ * from it, recursively
+ * 
+ * @param queue The queue to unlink
+ * 
+ */
+OSYNC_TEST_EXPORT void osync_queue_remove_cross_link(OSyncQueue *queue);
+
+/**
+ * @brief Set pending limit on queue
+ * 
+ * This should be used on queues used to receive incoming commands to
+ * limit the number of outstanding commands waiting for replies.
+ * This avoids timing out commands which are just waiting for previous
+ * commands to finish.
+ *
+ * Note: the pending limit should not be set on other queues and
+ * MUST NOT be set on command reply queues as it could cause deadlocks.
+ *
+ * The recommended value to use is OSYNC_QUEUE_PENDING_LIMIT.
+ * 
+ * @param queue The command queue used to receive incoming commands
+ * @param limit The maximum number of waiting commands 
+ * 
+ */
+OSYNC_TEST_EXPORT void osync_queue_set_pending_limit(OSyncQueue *queue, unsigned int limit);
+#define OSYNC_QUEUE_PENDING_LIMIT 5
+
+/**
  * @brief Sends a Message to a Queue
  * @param queue Pointer to the queue
  * @param replyqueue

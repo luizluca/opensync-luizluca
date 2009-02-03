@@ -248,6 +248,7 @@ OSYNC_TESTCASE_DISABLED(ipc ipc_callback_break_pipes "1039")
 OSYNC_TESTCASE(ipc ipc_timeout)
 OSYNC_TESTCASE(ipc ipc_loop_with_timeout)
 OSYNC_TESTCASE(ipc ipc_late_reply)
+OSYNC_TESTCASE(ipc ipc_loop_timeout_with_idle)
 ENDIF (NOT WIN32)
 
 BUILD_CHECK_TEST( mapping mapping-tests/check_mapping.c ${TEST_TARGET_LIBRARIES} )

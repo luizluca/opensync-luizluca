@@ -128,6 +128,7 @@ static gboolean _timeout_dispatch(GSource *source, GSourceFunc callback, gpointe
 				 gets called twice! */
 
 			queue->pendingReplies = osync_list_remove(queue->pendingReplies, pending);
+			queue->pendingCount--;
 			/* Unlock the pending lock since the messages might be sent during the callback */
 			g_mutex_unlock(queue->pendingLock);
 
@@ -163,7 +164,18 @@ static gboolean _incoming_prepare(GSource *source, gint *timeout_)
 static gboolean _incoming_check(GSource *source)
 {
 	OSyncQueue *queue = *((OSyncQueue **)(source + 1));
-	if (g_async_queue_length(queue->incoming) > 0)
+
+	/* As well as checking there is something on the incoming queue, we check
+	   that we are not blocked because we have too many pending commands.
+	   This check is only done if the pendingLimit has been set.
+
+	   Note, to avoid taking out the pending lock in order to count
+	   the length of the pending queue we use the pendingCount counter.
+	   This better not get out of line! */
+
+	if (g_async_queue_length(queue->incoming) > 0
+	    && (queue->pendingLimit == 0 
+		|| queue->pendingCount < queue->pendingLimit) )
 		return TRUE;
 	
 	return FALSE;
@@ -214,6 +226,7 @@ static void _osync_queue_remove_pending_reply(OSyncQueue *queue, OSyncMessage *r
 			   gets called twice! */
 			
 			queue->pendingReplies = osync_list_remove(queue->pendingReplies, pending);
+			queue->pendingCount--;
 
 			/* Unlock the pending lock since the messages might be sent during the callback */
 			g_mutex_unlock(queue->pendingLock);
@@ -247,8 +260,11 @@ static gboolean _incoming_dispatch(GSource *source, GSourceFunc callback, gpoint
 	OSyncError *error = NULL;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, user_data);
+	osync_trace(TRACE_INTERNAL, "queue->pendingCount = %d, queue->pendingLimit = %d", queue->pendingCount, queue->pendingLimit);
 
-	while ((message = g_async_queue_try_pop(queue->incoming))) {
+	while ( (queue->pendingLimit == 0 || queue->pendingCount < queue->pendingLimit)
+		&& (message = g_async_queue_try_pop(queue->incoming)) ) {
+
 		/* We check if the message is a reply to something */
 		osync_trace(TRACE_INTERNAL, "Dispatching %p:%i(%s), timeout=%d, id=%lli", message, 
 			    osync_message_get_cmd(message), osync_message_get_commandstr(message), 
@@ -290,6 +306,7 @@ static gboolean _incoming_dispatch(GSource *source, GSourceFunc callback, gpoint
 		
 				g_mutex_lock(queue->pendingLock);
 				queue->pendingReplies = osync_list_append(queue->pendingReplies, pending);
+				queue->pendingCount++;
 				g_mutex_unlock(queue->pendingLock);
 			}
 
@@ -807,6 +824,7 @@ void osync_queue_unref(OSyncQueue *queue)
 			pending = queue->pendingReplies->data;
 
 			queue->pendingReplies = osync_list_remove(queue->pendingReplies, pending);
+			queue->pendingCount--;
 
 			/** @todo Refcounting for OSyncPendingMessage */
 			if (pending->timeout_info)
@@ -814,6 +832,8 @@ void osync_queue_unref(OSyncQueue *queue)
 
 			osync_free(pending);
 		}
+
+		osync_assert(queue->pendingCount == 0);
 
 		if (queue->name)
 			osync_free(queue->name);
@@ -980,6 +1000,8 @@ osync_bool osync_queue_disconnect(OSyncQueue *queue, OSyncError **error)
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, queue, error);
 	osync_assert(queue);
 
+	osync_queue_remove_cross_link(queue);
+
 	g_mutex_lock(queue->disconnectLock);
 	if (queue->thread) {
 		osync_thread_stop(queue->thread);
@@ -1048,7 +1070,41 @@ void osync_queue_cross_link(OSyncQueue *cmd_queue, OSyncQueue *reply_queue)
 	osync_assert(reply_queue->type == OSYNC_QUEUE_SENDER);
 
 	cmd_queue->reply_queue = reply_queue;
+	osync_queue_ref(reply_queue);
 	reply_queue->cmd_queue = cmd_queue;
+	osync_queue_ref(cmd_queue);
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
+void osync_queue_remove_cross_link(OSyncQueue *queue)
+{
+	/* Remove the cross links from this queue and all queues linked
+	   from it, recursively */
+	if (queue->cmd_queue) {
+		OSyncQueue *linked_queue = queue->cmd_queue;
+		queue->cmd_queue = NULL;
+		osync_queue_remove_cross_link(linked_queue);
+		osync_queue_unref(linked_queue);
+	}
+	if (queue->reply_queue) {
+		OSyncQueue *linked_queue = queue->reply_queue;
+		queue->reply_queue = NULL;
+		osync_queue_remove_cross_link(linked_queue);
+		osync_queue_unref(linked_queue);
+	}
+}
+
+void osync_queue_set_pending_limit(OSyncQueue *queue, unsigned int limit)
+{
+	/* The pending limit is used on queues which receive commands and run timeouts.
+	   It is used to limit the number of pending transactions so timeouts don't occur
+	   just because there are a lot of commands waiting to complete.
+	   It is not necessary on other queues and, in fact, MUST NOT be set on
+	   queues which receive command replies as it could cause deadlocks. */
+	osync_trace(TRACE_ENTRY, "%s(%p, %u)", __func__, queue, limit);
+
+	queue->pendingLimit = limit;
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
@@ -1189,6 +1245,7 @@ osync_bool osync_queue_send_message_with_timeout(OSyncQueue *queue, OSyncQueue *
 		
 		g_mutex_lock(replyqueue->pendingLock);
 		replyqueue->pendingReplies = osync_list_append(replyqueue->pendingReplies, pending);
+		replyqueue->pendingCount++;
 		g_mutex_unlock(replyqueue->pendingLock);
 	}
 	

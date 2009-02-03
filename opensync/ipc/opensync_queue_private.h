@@ -71,6 +71,7 @@ struct OSyncQueue {
 	/** List of pending replies */
 	OSyncList *pendingReplies;
 	GMutex *pendingLock;
+	unsigned int pendingCount, pendingLimit;
 	
 	GSourceFuncs *write_functions;
 	GSource *write_source;

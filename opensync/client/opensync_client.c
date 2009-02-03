@@ -1611,6 +1611,7 @@ void osync_client_set_incoming_queue(OSyncClient *client, OSyncQueue *incoming)
 	osync_queue_set_message_handler(incoming, _osync_client_message_handler, client);
 	osync_queue_setup_with_gmainloop(incoming, client->context);
 	client->incoming = osync_queue_ref(incoming);
+	osync_queue_set_pending_limit(incoming, OSYNC_QUEUE_PENDING_LIMIT);
 }
 
 void osync_client_set_outgoing_queue(OSyncClient *client, OSyncQueue *outgoing)

@@ -1362,7 +1362,7 @@ START_TEST (ipc_loop_stress)
 }
 END_TEST
 
-void callback_handler(OSyncMessage *message, void *user_data)
+void callback_handler_check_reply(OSyncMessage *message, void *user_data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
 	OSyncError *error = NULL;
@@ -1380,7 +1380,7 @@ void callback_handler(OSyncMessage *message, void *user_data)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void server_handler3(OSyncMessage *message, void *user_data)
+void server_handler_abort(OSyncMessage *message, void *user_data)
 {
 	abort();
 }
@@ -1484,7 +1484,7 @@ START_TEST (ipc_loop_callback)
 		GMainContext *context = g_main_context_new();
 		OSyncThread *thread = osync_thread_new(context, &error);
 		
-		osync_queue_set_message_handler(server_queue, server_handler3, GINT_TO_POINTER(1));
+		osync_queue_set_message_handler(server_queue, server_handler_abort, GINT_TO_POINTER(1));
 		
 		osync_queue_setup_with_gmainloop(server_queue, context);
 		
@@ -1507,7 +1507,7 @@ START_TEST (ipc_loop_callback)
 			osync_message_write_long_long_int(message, 400000000);
 			osync_message_write_data(message, data, strlen(data) + 1);
 			
-			osync_message_set_handler(message, callback_handler, GINT_TO_POINTER(1));
+			osync_message_set_handler(message, callback_handler_check_reply, GINT_TO_POINTER(1));
 			
 			fail_unless(osync_queue_send_message(client_queue, server_queue, message, &error), NULL);
 			fail_unless(!osync_error_is_set(&error), NULL);
@@ -2164,6 +2164,7 @@ START_TEST (ipc_timeout)
 		OSyncThread *thread = osync_thread_new(context, &error);
 	
 		osync_queue_set_message_handler(client_queue, client_handler5, GINT_TO_POINTER(1));
+		osync_queue_set_pending_limit(client_queue, OSYNC_QUEUE_PENDING_LIMIT);
 		
 		osync_queue_setup_with_gmainloop(client_queue, context);
 		
@@ -2275,7 +2276,8 @@ START_TEST (ipc_timeout)
 }
 END_TEST
 
-void client_handler6(OSyncMessage *message, void *user_data)
+int ch_sleep_time = 3; // Seconds
+void client_handler_sleep(OSyncMessage *message, void *user_data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
 	OSyncError *error = NULL;
@@ -2300,7 +2302,7 @@ void client_handler6(OSyncMessage *message, void *user_data)
 	osync_assert(!strcmp(databuf, data5));
 
 	// Do some time consuming processing
-	g_usleep(3*G_USEC_PER_SEC);
+	g_usleep(ch_sleep_time*G_USEC_PER_SEC);
 	
 	OSyncMessage *reply = osync_message_new_reply(message, &error);
 	
@@ -2330,7 +2332,8 @@ START_TEST (ipc_late_reply)
 
 	num_callback_timeout = 0;
 	num_callback = 0;
-	
+	ch_sleep_time = 3;
+
 	OSyncError *error = NULL;
 	server_queue = osync_queue_new("/tmp/testpipe-server", &error);
 	client_queue = osync_queue_new("/tmp/testpipe-client", &error);
@@ -2348,7 +2351,8 @@ START_TEST (ipc_late_reply)
 		GMainContext *context = g_main_context_new();
 		OSyncThread *thread = osync_thread_new(context, &error);
 	
-		osync_queue_set_message_handler(client_queue, client_handler6, GINT_TO_POINTER(1));
+		osync_queue_set_message_handler(client_queue, client_handler_sleep, GINT_TO_POINTER(1));
+		osync_queue_set_pending_limit(client_queue, OSYNC_QUEUE_PENDING_LIMIT);
 		
 		osync_queue_setup_with_gmainloop(client_queue, context);
 		
@@ -2460,64 +2464,6 @@ START_TEST (ipc_late_reply)
 }
 END_TEST
 
-void callback_handler7(OSyncMessage *message, void *user_data)
-{
-	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
-	OSyncError *error = NULL;
-	
-	osync_assert(GPOINTER_TO_INT(user_data) == 1);
-	
-	num_msgs++;
-	osync_assert(osync_message_get_command(message) == OSYNC_MESSAGE_REPLY);
-	
-	if (num_msgs >= req_msgs) {
-		osync_queue_disconnect(server_queue, &error);
-		osync_assert(error == NULL);
-	}
-	
-	osync_trace(TRACE_EXIT, "%s", __func__);
-}
-
-void server_handler7(OSyncMessage *message, void *user_data)
-{
-	abort();
-}
-
-void client_handler7(OSyncMessage *message, void *user_data)
-{
-	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
-	OSyncError *error = NULL;
-	
-	osync_assert(GPOINTER_TO_INT(user_data) ==1);
-	osync_assert(osync_message_get_command(message) == OSYNC_MESSAGE_INITIALIZE);
-	
-	int int1;
-	long long int longint1;
-	char *string;
-	void *databuf;
-	
-	osync_message_read_int(message, &int1);
-	osync_message_read_const_string(message, &string);
-	osync_message_read_long_long_int(message, &longint1);
-	osync_message_read_const_data(message, &databuf, strlen("this is another test string") + 1);
-	
-	osync_assert(int1 == 4000000);
-	osync_assert(!strcmp(string, "this is a test string"));
-	osync_assert(longint1 == 400000000);
-	osync_assert(!strcmp(databuf, "this is another test string"));
-
-	// Do some time consuming processing
-	g_usleep(1*G_USEC_PER_SEC);
-	
-	OSyncMessage *reply = osync_message_new_reply(message, &error);
-	
-	osync_queue_send_message(server_queue, NULL, reply, &error);
-	
-	osync_message_unref(reply);
-	
-	osync_trace(TRACE_EXIT, "%s", __func__);
-}
-
 START_TEST (ipc_loop_with_timeout)
 {
 	
@@ -2526,6 +2472,7 @@ START_TEST (ipc_loop_with_timeout)
 	
 	num_msgs = 0;
 	req_msgs = 20;
+	ch_sleep_time = 1; // Second
 	
 	char *testbed = setup_testbed(NULL);
 	osync_testing_file_remove("/tmp/testpipe-server");
@@ -2549,7 +2496,8 @@ START_TEST (ipc_loop_with_timeout)
 		GMainContext *context = g_main_context_new();
 		OSyncThread *thread = osync_thread_new(context, &error);
 	
-		osync_queue_set_message_handler(client_queue, client_handler7, GINT_TO_POINTER(1));
+		osync_queue_set_message_handler(client_queue, client_handler_sleep, GINT_TO_POINTER(1));
+		osync_queue_set_pending_limit(client_queue, OSYNC_QUEUE_PENDING_LIMIT);
 		
 		osync_queue_setup_with_gmainloop(client_queue, context);
 		
@@ -2590,7 +2538,7 @@ START_TEST (ipc_loop_with_timeout)
 		GMainContext *context = g_main_context_new();
 		OSyncThread *thread = osync_thread_new(context, &error);
 		
-		osync_queue_set_message_handler(server_queue, server_handler7, GINT_TO_POINTER(1));
+		osync_queue_set_message_handler(server_queue, server_handler_abort, GINT_TO_POINTER(1));
 		
 		osync_queue_setup_with_gmainloop(server_queue, context);
 		
@@ -2613,9 +2561,211 @@ START_TEST (ipc_loop_with_timeout)
 			osync_message_write_long_long_int(message, 400000000);
 			osync_message_write_data(message, data, strlen(data) + 1);
 			
-			osync_message_set_handler(message, callback_handler7, GINT_TO_POINTER(1));
+			osync_message_set_handler(message, callback_handler_check_reply, GINT_TO_POINTER(1));
 			
 			fail_unless(osync_queue_send_message_with_timeout(client_queue, server_queue, message, 3, &error), NULL);
+			fail_unless(!osync_error_is_set(&error), NULL);
+			
+			osync_message_unref(message);
+		}
+		
+		message = osync_queue_get_message(client_queue);
+		
+		fail_unless(osync_message_get_command(message) == OSYNC_MESSAGE_QUEUE_HUP);
+		
+		osync_message_unref(message);
+		
+		osync_queue_disconnect(client_queue, &error);
+		fail_unless(error == NULL, NULL);
+		
+		osync_thread_stop(thread);
+		osync_thread_unref(thread);
+		
+		int status = 0;
+		wait(&status);
+		fail_unless(WEXITSTATUS(status) == 0, NULL);
+	}
+	
+	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == TRUE, NULL);
+	
+	fail_unless(osync_queue_remove(client_queue, &error), NULL);
+	fail_unless(osync_queue_remove(server_queue, &error), NULL);
+	fail_unless(!osync_error_is_set(&error), NULL);
+	
+	fail_unless(osync_testing_file_exists("/tmp/testpipe-client") == FALSE, NULL);
+
+	osync_queue_unref(client_queue);
+	osync_queue_unref(server_queue);
+	
+	destroy_testbed(testbed);
+}
+END_TEST
+
+GSList *ch_pending = NULL;
+void client_handler_first_part(OSyncMessage *message, void *user_data)
+{
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
+	OSyncError *error = NULL;
+	
+	osync_assert(GPOINTER_TO_INT(user_data) ==1);
+	osync_assert(osync_message_get_command(message) == OSYNC_MESSAGE_INITIALIZE);
+		
+	int int1;
+	long long int longint1;
+	char *string;
+	char databuf[strlen(data5) + 1];
+	
+	
+	osync_message_read_int(message, &int1);
+	osync_message_read_string(message, &string);
+	osync_message_read_long_long_int(message, &longint1);
+	osync_message_read_data(message, databuf, strlen(data5) + 1);
+	
+	osync_assert(int1 == 4000000);
+	osync_assert(!strcmp(string, "this is a test string"));
+	osync_assert(longint1 == 400000000);
+	osync_assert(!strcmp(databuf, data5));
+
+	// Put message on pending queue and return
+	osync_message_ref(message);
+	ch_pending = g_slist_append(ch_pending, message);
+
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+gboolean client_handler_second_part(gpointer userdata)
+{
+	OSyncError *error = NULL;
+
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, userdata);
+
+	if (ch_pending) {
+		
+		OSyncMessage *message = ch_pending->data;
+
+		OSyncMessage *reply = osync_message_new_reply(message, &error);
+	
+		osync_queue_send_message(server_queue, NULL, reply, &error);
+	
+		osync_message_unref(reply);
+
+		ch_pending = g_slist_remove(ch_pending, message);
+		osync_message_unref(message);
+
+		osync_trace(TRACE_EXIT, "%s", __func__);
+		return TRUE;
+	}
+		
+	osync_trace(TRACE_EXIT, "%s: no more entries", __func__);
+	return FALSE;
+}
+
+START_TEST (ipc_loop_timeout_with_idle)
+{
+	
+	/* Same as ipc_loop_with_timeout except that the client handler doesn't sleep,
+	   so the queue dispatchers can run while the operation is waiting.
+	   Even though each action takes 1 second, none of these messages should time out
+	   as they are being sent with a timeout of 3 seconds */
+	
+	num_msgs = 0;
+	req_msgs = 30;
+	
+	char *testbed = setup_testbed(NULL);
+	osync_testing_file_remove("/tmp/testpipe-server");
+	osync_testing_file_remove("/tmp/testpipe-client");
+	
+	OSyncError *error = NULL;
+	server_queue = osync_queue_new("/tmp/testpipe-server", &error);
+	client_queue = osync_queue_new("/tmp/testpipe-client", &error);
+	OSyncMessage *message = NULL;
+	
+	osync_queue_create(server_queue, &error);
+	fail_unless(error == NULL, NULL);
+	
+	osync_queue_create(client_queue, &error);
+	fail_unless(error == NULL, NULL);
+	char *data = "this is another test string";
+	
+	pid_t cpid = fork();
+	if (cpid == 0) { //Child
+		
+		GMainContext *context = g_main_context_new();
+		OSyncThread *thread = osync_thread_new(context, &error);
+	
+		osync_queue_set_message_handler(client_queue, client_handler_first_part, GINT_TO_POINTER(1));
+		osync_queue_set_pending_limit(client_queue, OSYNC_QUEUE_PENDING_LIMIT);
+		
+		osync_queue_setup_with_gmainloop(client_queue, context);
+		
+		osync_thread_start(thread);
+		
+		osync_assert(osync_queue_connect(client_queue, OSYNC_QUEUE_RECEIVER, &error));
+		osync_assert(error == NULL);
+
+		osync_assert(osync_queue_connect(server_queue, OSYNC_QUEUE_SENDER, &error));
+		osync_assert(error == NULL);
+
+		osync_queue_cross_link(client_queue, server_queue);
+
+		GSource *tsource = g_timeout_source_new(1000);
+		osync_assert(tsource);
+		g_source_set_callback(tsource, client_handler_second_part, NULL, NULL);
+		osync_assert(g_source_attach(tsource, context));
+		g_source_unref(tsource);
+		
+		message = osync_queue_get_message(server_queue);
+		
+		if (osync_message_get_command(message) != OSYNC_MESSAGE_QUEUE_HUP) {
+			exit (1);
+		}
+		
+		osync_message_unref(message);
+	
+		if (osync_queue_disconnect(server_queue, &error) != TRUE || error != NULL)
+			exit(1);
+		osync_queue_unref(server_queue);
+		
+		osync_assert(osync_queue_disconnect(client_queue, &error));
+		osync_assert(error == NULL);
+		
+		osync_thread_stop(thread);
+		osync_thread_unref(thread);
+		
+		osync_queue_unref(client_queue);
+		
+		g_free(testbed);
+		
+		exit(0);
+	} else {
+		GMainContext *context = g_main_context_new();
+		OSyncThread *thread = osync_thread_new(context, &error);
+		
+		osync_queue_set_message_handler(server_queue, server_handler_abort, GINT_TO_POINTER(1));
+		
+		osync_queue_setup_with_gmainloop(server_queue, context);
+		
+		osync_thread_start(thread);
+	
+		fail_unless(osync_queue_connect(client_queue, OSYNC_QUEUE_SENDER, &error), NULL);
+		fail_unless(error == NULL, NULL);
+		
+		fail_unless(osync_queue_connect(server_queue, OSYNC_QUEUE_RECEIVER, &error), NULL);
+		fail_unless(error == NULL, NULL);
+		
+		int i = 0;
+		for (i = 0; i < req_msgs; i++) {
+			message = osync_message_new(OSYNC_MESSAGE_INITIALIZE, 0, &error);
+			fail_unless(message != NULL, NULL);
+			fail_unless(!osync_error_is_set(&error), NULL);
+			
+			osync_message_write_int(message, 4000000);
+			osync_message_write_string(message, "this is a test string");
+			osync_message_write_long_long_int(message, 400000000);
+			osync_message_write_data(message, data, strlen(data) + 1);
+			
+			osync_message_set_handler(message, callback_handler_check_reply, GINT_TO_POINTER(1));
+			
+			fail_unless(osync_queue_send_message_with_timeout(client_queue, server_queue, message, 10, &error), NULL);
 			fail_unless(!osync_error_is_set(&error), NULL);
 			
 			osync_message_unref(message);
@@ -2681,5 +2831,6 @@ OSYNC_TESTCASE_ADD(ipc_callback_break_pipes)
 OSYNC_TESTCASE_ADD(ipc_timeout)
 OSYNC_TESTCASE_ADD(ipc_late_reply)
 OSYNC_TESTCASE_ADD(ipc_loop_with_timeout)
+OSYNC_TESTCASE_ADD(ipc_loop_timeout_with_idle)
 OSYNC_TESTCASE_END
 

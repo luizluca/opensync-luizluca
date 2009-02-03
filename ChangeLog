@@ -1,3 +1,34 @@
+2009-01-24  Graham Cobb  <g+770@cobb.uk.net>
+
+	* opensync/ipc/opensync_queue.c (osync_queue_remove_cross_link): Add
+	osync_queue_remove_cross_link
+	(osync_queue_disconnect): Call osync_queue_remove_cross_link
+
+	* opensync/ipc/opensync_queue_internals.h: Add osync_queue_remove_cross_link
+
+2009-01-23  Graham Cobb  <g+770@cobb.uk.net>
+
+	* opensync/client/opensync_client.c (osync_client_set_incoming_queue): Call
+	osync_queue_set_pending_limit
+
+	* tests/ipc-tests/check_ipc.c: Call osync_queue_set_pending_limit in timeout tests.
+
+	* opensync/ipc/opensync_queue_internals.h: Add osync_queue_set_pending_limit
+	and OSYNC_QUEUE_PENDING_LIMIT
+
+	* opensync/ipc/opensync_queue.c (_incoming_check): Check pendingLimit not exceeded.
+	Add increments/decrements of pendingCount whenever pendingReplies is manipulated.
+	(osync_queue_set_pending_limit): Add osync_queue_set_pending_limit
+
+	* opensync/ipc/opensync_queue_private.h: Add pendingCount, pendingLimit to OSyncQueue
+
+	* tests/CMakeLists.txt: Add ipc_loop_timeout_with_idle.
+
+	* tests/ipc-tests/check_ipc.c: Rename callback_handler as callback_handler_check_reply.
+	Rename server_handler3 as server_handler_abort.
+	Rename client_handler6 as client_handler_sleep.
+	Add ipc_loop_timeout_with_idle.
+
 2009-01-22  Graham Cobb  <g+770@cobb.uk.net>
 
 	* tests/CMakeLists.txt: Add ipc_loop_with_timeout
