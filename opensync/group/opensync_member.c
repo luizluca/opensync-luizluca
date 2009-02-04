@@ -396,7 +396,7 @@ osync_bool osync_member_load(OSyncMember *member, const char *path, OSyncError *
 				if (!sink)
 					goto error_free_doc;
 
-				member->objtypes = g_list_append(member->objtypes, sink);
+				osync_member_add_objtype_sink(member, sink);
 			} else if (!xmlStrcmp(cur->name, (const xmlChar *)"timeout")) {
 				/* Sink Function Timeout settings for main sink */
 				if (!member->main_sink)
@@ -832,8 +832,7 @@ void osync_member_flush_objtypes(OSyncMember *member)
 
 	while (member->objtypes) {
 		OSyncObjTypeSink *sink = member->objtypes->data;
-		osync_objtype_sink_unref(sink);
-		member->objtypes = g_list_remove(member->objtypes, member->objtypes->data);
+		osync_member_remove_objtype_sink(member, sink);
 	}
 
 	if (member->main_sink) {

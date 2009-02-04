@@ -1169,7 +1169,7 @@ osync_bool osync_queue_is_connected(OSyncQueue *queue)
 
 void osync_queue_set_message_handler(OSyncQueue *queue, OSyncMessageHandler handler, gpointer user_data)
 {
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, queue, handler, user_data);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, queue, handler, user_data);
 	
 	queue->message_handler = handler;
 	queue->user_data = user_data;
