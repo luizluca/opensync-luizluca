@@ -124,9 +124,9 @@ OSYNC_EXPORT OSyncList *osync_plugin_config_get_advancedoptions(OSyncPluginConfi
  *
  * @param config An OSyncPluginConfig to search
  * @param name The name of the advanced option to get
- * @returns The first OSyncPluginAdvancedOption with the given name or NULL if not found
+ * @returns The value associated with the first OSyncPluginAdvancedOption with the given name or NULL if not found
  */
-OSYNC_EXPORT OSyncPluginAdvancedOption *osync_plugin_config_get_advancedoption_value_by_name(OSyncPluginConfig *config, const char *name);
+OSYNC_EXPORT const char *osync_plugin_config_get_advancedoption_value_by_name(OSyncPluginConfig *config, const char *name);
 
 /**@brief Add an advanced option to a config
  *

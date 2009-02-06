@@ -9,6 +9,15 @@
 
 2009-02-03  Graham Cobb  <g+770@cobb.uk.net>
 
+	* tests/plugin-tests/check_plugin_config.c (plugin_config_advancedoption_set_get): Use new definition
+	of osync_plugin_config_get_advancedoption_value_by_name
+
+	* opensync/plugin/opensync_plugin_config.c (osync_plugin_config_get_advancedoption_value_by_name): Return
+	option value [Bug #1032]
+
+	* opensync/plugin/opensync_plugin_config.h: Fix osync_plugin_config_get_advancedoption_value_by_name
+	to return a const char * [Bug #1032]
+
 	* tests/ipc-tests/check_ipc.c (ipc_loop_timeout_with_idle): Change test parameters
 	so test completes within 30 second limit.
 

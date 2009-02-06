@@ -1388,7 +1388,7 @@ OSyncList *osync_plugin_config_get_advancedoptions(OSyncPluginConfig *config)
 	return config->advancedoptions;
 }
 
-OSyncPluginAdvancedOption *osync_plugin_config_get_advancedoption_value_by_name(OSyncPluginConfig *config, const char *name)
+const char *osync_plugin_config_get_advancedoption_value_by_name(OSyncPluginConfig *config, const char *name)
 {
 	OSyncList *opt;
 
@@ -1401,7 +1401,7 @@ OSyncPluginAdvancedOption *osync_plugin_config_get_advancedoption_value_by_name(
 		osync_assert(opt_name);
 
 		if (!strcmp(opt_name, name))
-			return option;
+			return osync_plugin_advancedoption_get_value(option);
 	}
 
 	return NULL;

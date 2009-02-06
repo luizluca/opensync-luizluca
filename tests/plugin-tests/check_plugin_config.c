@@ -273,6 +273,7 @@ START_TEST (plugin_config_advancedoption_set_get)
 	fail_unless(error == NULL, NULL);
 	fail_unless(option != NULL, NULL);
 	osync_plugin_advancedoption_set_name(option, "foo");
+	osync_plugin_advancedoption_set_value(option, "value for foo");
 
 	osync_plugin_config_add_advancedoption(config, option);
 	OSyncList *advanced_options;
@@ -280,9 +281,9 @@ START_TEST (plugin_config_advancedoption_set_get)
 	fail_unless(osync_list_length(advanced_options) == 1, NULL);
 	fail_unless(advanced_options->data == option, NULL);
 
-	OSyncPluginAdvancedOption *test_option = NULL;
+	const char *test_option = NULL;
 	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "foo");
-	fail_unless(test_option == option);
+	fail_unless(test_option == osync_plugin_advancedoption_get_value(option));
 
 	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "foo2");
 	fail_unless(test_option == NULL, NULL);
@@ -297,16 +298,17 @@ START_TEST (plugin_config_advancedoption_set_get)
 	fail_unless(error == NULL, NULL);
 	fail_unless(option2 != NULL, NULL);
 	osync_plugin_advancedoption_set_name(option2, "bar");
+	osync_plugin_advancedoption_set_value(option2, "value for bar");
 	osync_plugin_config_add_advancedoption(config, option2);
 
 	advanced_options = osync_plugin_config_get_advancedoptions(config);
 	fail_unless(osync_list_length(advanced_options) == 2, NULL);
 
 	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "foo");
-	fail_unless(test_option == option);
+	fail_unless(test_option == osync_plugin_advancedoption_get_value(option));
 
 	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "bar");
-	fail_unless(test_option == option2, NULL);
+	fail_unless(test_option == osync_plugin_advancedoption_get_value(option2), NULL);
 
 	/* Removal */
 	OSyncPluginAdvancedOption *option3 = osync_plugin_advancedoption_new(&error);
@@ -325,7 +327,7 @@ START_TEST (plugin_config_advancedoption_set_get)
 	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "foo");
 	fail_unless(test_option == NULL);
 	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "bar");
-	fail_unless(test_option == option2);
+	fail_unless(test_option == osync_plugin_advancedoption_get_value(option2));
 
 	osync_plugin_config_remove_advancedoption(config, option2);
 	fail_unless(osync_plugin_config_get_advancedoptions(config) == NULL, NULL);
