@@ -117,7 +117,7 @@ static void mock_connect_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSy
 		osync_objtype_sink_set_slowsync(sink, TRUE);
 
 	/* Validate connect_done() call before get_changes(),
-	 * and after conncet().
+	 * and after connect().
 	 */
 	osync_assert(!dir->connect_done);
 	dir->connect_done = TRUE;
@@ -652,7 +652,7 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 		//Rewrite the batch commit functions so we can enable them if necessary
 		if (mock_get_error(info->memberid, "BATCH_COMMIT")) {
 			osync_trace(TRACE_INTERNAL, "Enabling batch_commit on %p:%s", sink, osync_objtype_sink_get_name(sink) ? osync_objtype_sink_get_name(sink) : "None");
-	                functions.batch_commit = mock_batch_commit; 
+			functions.batch_commit = mock_batch_commit; 
 		} else {
 			functions.committed_all = mock_committed_all;
 			functions.commit = mock_commit_change;

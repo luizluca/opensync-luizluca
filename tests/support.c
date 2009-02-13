@@ -159,7 +159,7 @@ char *setup_testbed(const char *fkt_name)
 	g_free(command);
 
 #ifndef _WIN32	/* chmod is useless on windows system */
-        command = g_strdup_printf("chmod -R 700 %s", testbed);
+	command = g_strdup_printf("chmod -R 700 %s", testbed);
 	if (system(command))
 		abort();
 	g_free(command);

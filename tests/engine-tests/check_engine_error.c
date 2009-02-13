@@ -33,6 +33,7 @@ int num_connect = 0;
 int num_disconnect = 0;
 int num_get_changes = 0;
 
+/*
 static void connect1(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
@@ -43,6 +44,7 @@ static void connect1(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
+*/
 
 static void connect_error(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
@@ -77,6 +79,7 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
+/*
 static void *initialize_error(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, info, error);
@@ -119,6 +122,7 @@ error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return NULL;
 }
+*/
 
 static void *initialize_connect_error(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
@@ -146,6 +150,7 @@ static void *initialize_connect_error(OSyncPlugin *plugin, OSyncPluginInfo *info
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
 	return (void *)env;
 }
+
 
 static void finalize(void *data)
 {

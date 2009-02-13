@@ -2102,7 +2102,6 @@ char *data5 = "this is another test string";
 void client_handler5(OSyncMessage *message, void *user_data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
-	OSyncError *error = NULL;
 	
 	osync_assert(GPOINTER_TO_INT(user_data) ==1);
 	osync_assert(osync_message_get_command(message) == OSYNC_MESSAGE_INITIALIZE);
@@ -2608,7 +2607,6 @@ GSList *ch_pending = NULL;
 void client_handler_first_part(OSyncMessage *message, void *user_data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
-	OSyncError *error = NULL;
 	
 	osync_assert(GPOINTER_TO_INT(user_data) ==1);
 	osync_assert(osync_message_get_command(message) == OSYNC_MESSAGE_INITIALIZE);
@@ -2812,7 +2810,6 @@ END_TEST
 void client_handler6(OSyncMessage *message, void *user_data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
-	OSyncError *error = NULL;
 	
 	osync_assert(GPOINTER_TO_INT(user_data) ==1);
 
