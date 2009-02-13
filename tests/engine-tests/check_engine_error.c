@@ -18,15 +18,15 @@
 
 static void _member_add_objtype(OSyncMember *member, const char *objtype)
 {
-       OSyncObjTypeSink *sink = NULL;
-       osync_assert(member);
-       osync_assert(objtype);
+	OSyncObjTypeSink *sink = NULL;
+	osync_assert(member);
+	osync_assert(objtype);
 
-       if (!osync_member_find_objtype_sink(member, objtype)) {
-               sink = osync_objtype_sink_new(objtype, NULL);
-	       osync_member_add_objtype_sink(member, sink);
-	       osync_objtype_sink_unref(sink);
-       }
+	if (!osync_member_find_objtype_sink(member, objtype)) {
+		sink = osync_objtype_sink_new(objtype, NULL);
+		osync_member_add_objtype_sink(member, sink);
+		osync_objtype_sink_unref(sink);
+	}
 }
 
 int num_connect = 0;
@@ -150,7 +150,6 @@ static void *initialize_connect_error(OSyncPlugin *plugin, OSyncPluginInfo *info
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
 	return (void *)env;
 }
-
 
 static void finalize(void *data)
 {
