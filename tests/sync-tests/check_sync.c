@@ -2540,19 +2540,19 @@ START_TEST (sync_detect_obj)
 	g_free(path);
 	check_mapping(maptable, 1, -1, 2, "file1");
 	check_mapping(maptable, 2, -1, 2, "file1");
-    osync_mapping_table_close(maptable);
-    osync_mapping_table_unref(maptable);
-    
+	osync_mapping_table_close(maptable);
+	osync_mapping_table_unref(maptable);
+
 	path = g_strdup_printf("%s/configs/group/1/hashtable.db", testbed);
-    OSyncHashTable *table = hashtable_load(path, "mockobjtype1", 1);
+	OSyncHashTable *table = hashtable_load(path, "mockobjtype1", 1);
 	g_free(path);
-    check_hash(table, "file1");
+	check_hash(table, "file1");
 	osync_hashtable_unref(table);
 
 	path = g_strdup_printf("%s/configs/group/2/hashtable.db", testbed);
-    table = hashtable_load(path, "mockobjtype1", 1);
+	table = hashtable_load(path, "mockobjtype1", 1);
 	g_free(path);
-    check_hash(table, "file1");
+	check_hash(table, "file1");
 	osync_hashtable_unref(table);
 
 	g_free(formatdir);
