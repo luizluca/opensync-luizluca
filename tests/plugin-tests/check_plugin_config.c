@@ -335,7 +335,6 @@ START_TEST (plugin_config_advancedoption_set_get)
 	osync_plugin_advancedoption_unref(option);
 	osync_plugin_advancedoption_unref(option2);
 	osync_plugin_advancedoption_unref(option3);
-	osync_plugin_advancedoption_unref(test_option);
 	osync_plugin_config_unref(config);
 	destroy_testbed(testbed);
 }
