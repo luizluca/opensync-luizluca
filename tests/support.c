@@ -100,13 +100,13 @@ char *setup_testbed(const char *fkt_name)
 	char *testbed = g_strdup_printf("%s/testbed.XXXXXX", g_get_tmp_dir());
 	char *command = NULL, *dirname = NULL;
 #ifdef _WIN32
-        if(g_file_test(testbed, G_FILE_TEST_IS_DIR))
-          destroy_testbed(g_strdup(testbed));
+	if(g_file_test(testbed, G_FILE_TEST_IS_DIR))
+		destroy_testbed(g_strdup(testbed));
 
-        if(g_mkdir(testbed,0777) < 0){
-          osync_trace(TRACE_INTERNAL, "%s: Cannot create testbed directory %s", __func__, testbed);
-          abort();
-        }
+	if(g_mkdir(testbed,0777) < 0){
+			osync_trace(TRACE_INTERNAL, "%s: Cannot create testbed directory %s", __func__, testbed);
+			abort();
+	}
 #else /* WIN32 */
 	if (!mkdtemp(testbed))
 		abort();
@@ -218,7 +218,7 @@ OSyncMappingTable *mappingtable_load(const char *path, const char *objtype, int 
 {
 	OSyncError *error = NULL;
 	OSyncMappingTable *table = NULL;
-        OSyncArchive *archive = NULL;
+	OSyncArchive *archive = NULL;
 
 	osync_trace(TRACE_ENTRY, "%s(%s, %s, %i)", __func__, path, objtype, num_mappings);
 	
@@ -250,7 +250,7 @@ void check_mapping(OSyncMappingTable *maptable, int memberid, int mappingid, int
 		OSyncMapping *mapping = osync_mapping_table_nth_mapping(maptable, i);
 		OSyncMappingEntry *testentry = osync_mapping_find_entry_by_member_id(mapping, memberid);
 		if ((mappingid != -1 && osync_mapping_get_id(mapping) == mappingid) || (mappingid == -1 && !strcmp(osync_mapping_entry_get_uid(testentry), uid))) {
-                        int n = 0;
+			int n = 0;
 			fail_unless(osync_mapping_num_entries(mapping) == numentries);
 			for (n = 0; n < osync_mapping_num_entries(mapping); n++) {
 				OSyncMappingEntry *entry = osync_mapping_nth_entry(mapping, n);
@@ -278,8 +278,8 @@ OSyncHashTable *hashtable_load(const char *path, const char *objtype, int entrie
 	fail_unless(osync_hashtable_load(table, &error), NULL);
 	
 	fail_unless(osync_hashtable_num_entries(table) == entries, NULL);
-    
-    return table;
+
+	return table;
 }
 
 void check_hash(OSyncHashTable *table, const char *cmpuid)
@@ -486,7 +486,7 @@ void mapping_status(OSyncMappingUpdate *status, void *user_data)
 
 void conflict_handler_choose_first(OSyncEngine *engine, OSyncMappingEngine *mapping, void *user_data)
 {
-        OSyncChange *change = NULL;
+	OSyncChange *change = NULL;
 	OSyncError *error = NULL;
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, engine, mapping, user_data);
@@ -590,7 +590,7 @@ OSyncEngine *gengine = NULL;
 
 void solve_conflict(OSyncMappingEngine *mapping)
 {
-        OSyncChange *change = NULL;
+	OSyncChange *change = NULL;
 	OSyncError *error = NULL;
 
 	g_usleep(5*G_USEC_PER_SEC);
@@ -680,7 +680,7 @@ OSyncFormatEnv *osync_testing_load_formatenv(const char *formatdir)
 	return formatenv;
 }
 
-/*! @brief Check if file or directory exists. No check for regular file! 
+/** @brief Check if file or directory exists. No check for regular file! 
  * 
  * @param file filename or fullpath of file/directory 
  * @returns TRUE if exists, FALSE otherwise
@@ -691,7 +691,7 @@ osync_bool osync_testing_file_exists(const char *file)
 	return g_file_test(file, G_FILE_TEST_EXISTS);
 }
 
-/*! @brief Removes files and directories 
+/** @brief Removes files and directories 
  * 
  * @param file filename or fullpath of file/directory 
  * @returns TRUE on success, FALSE otherwise
@@ -702,7 +702,7 @@ osync_bool osync_testing_file_remove(const char *file)
 	return g_remove(file);
 }
 
-/*! @brief Modifies permission of file - like chmod() 
+/** @brief Modifies permission of file - like chmod() 
  * 
  * @param file filename or fullpath of file 
  * @param mode the permission mode like chmod()
@@ -718,7 +718,7 @@ osync_bool osync_testing_file_chmod(const char *file, int mode)
 	return g_chmod(file, mode);
 }
 
-/*! @brief Copy files
+/** @brief Copy files
  *
  * @param source source filename
  * @param dest destination filename
@@ -727,29 +727,29 @@ osync_bool osync_testing_file_chmod(const char *file, int mode)
  */
 osync_bool osync_testing_file_copy(const char *source, const char *dest)
 {
-        gboolean ret;
-        const char *argv[] = { "cp", source, dest, NULL };
-        int exitstatus = -1;
+	gboolean ret;
+	const char *argv[] = { "cp", source, dest, NULL };
+	int exitstatus = -1;
 
-        ret = g_spawn_sync(NULL,	        /* working directory */
-                           (char **)argv,	/* arguments */
-                           NULL,	        /* environment */
-                           G_SPAWN_STDOUT_TO_DEV_NULL | G_SPAWN_STDERR_TO_DEV_NULL,
-                           NULL,	        /* child setup function */
-                           NULL,	        /* user data for child setup func */
-                           NULL,	        /* stdin */
-                           NULL,	        /* stdout */
-                           &exitstatus,	        /* exit status */
-                           NULL		        /* error function */
-                        );
+	ret = g_spawn_sync(NULL,			/* working directory */
+						(char **)argv,	/* arguments */
+						NULL,			/* environment */
+						G_SPAWN_STDOUT_TO_DEV_NULL | G_SPAWN_STDERR_TO_DEV_NULL,
+						NULL,			/* child setup function */
+						NULL,			/* user data for child setup func */
+						NULL,			/* stdin */
+						NULL,			/* stdout */
+						&exitstatus,	/* exit status */
+						NULL			/* error function */
+						);
 #ifndef _WIN32
-        return ret && WEXITSTATUS(exitstatus) == 0;
+	return ret && WEXITSTATUS(exitstatus) == 0;
 #else
-        return ret;
+	return ret;
 #endif
 }
 
-/*! @brief Find differences between two files
+/** @brief Find differences between two files
  *
  * @param source source filename
  * @param dest destination filename
@@ -758,20 +758,20 @@ osync_bool osync_testing_file_copy(const char *source, const char *dest)
  */
 osync_bool osync_testing_diff(const char *file1, const char *file2)
 {
-        gchar *cmd;
-        int ret;
+	gchar *cmd;
+	int ret;
 
 	osync_assert(file1);
 	osync_assert(file2);
 
-        cmd = g_strdup_printf(DIFF " -x \".*\" %s %s", file1, file2);
-        ret = system(cmd);
-        g_free(cmd);
+	cmd = g_strdup_printf(DIFF " -x \".*\" %s %s", file1, file2);
+	ret = system(cmd);
+	g_free(cmd);
 
-        return !ret;
+	return !ret;
 }
 
-/*! @brief Creates a simple OSyncPluginConfig with a single resource.
+/** @brief Creates a simple OSyncPluginConfig with a single resource.
  *         If config is not null the resource information gets added.
  * 
  * @param config OSyncPluginConfig pointer to add resource info
@@ -784,7 +784,7 @@ osync_bool osync_testing_diff(const char *file1, const char *file2)
 OSyncPluginConfig *simple_plugin_config(OSyncPluginConfig *config, const char *path, const char *objtype, const char *objformat, const char *format_config) {
 	OSyncError *error = NULL;
 	OSyncObjFormatSink *format_sink = NULL;
-        OSyncPluginResource *res = NULL;
+	OSyncPluginResource *res = NULL;
 	osync_assert(objtype);
 	osync_assert(objformat);
 
@@ -810,7 +810,7 @@ OSyncPluginConfig *simple_plugin_config(OSyncPluginConfig *config, const char *p
 	return config;
 }
 
-/*! @brief Creates a simple OSyncEngine with nth Members with mock-sync
+/** @brief Creates a simple OSyncEngine with nth Members with mock-sync
  *         plugins.
  * 
  * @param member_size The number of member the Group for this Engine should have
