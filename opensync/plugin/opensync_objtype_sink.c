@@ -718,7 +718,6 @@ unsigned int osync_objtype_sink_get_read_timeout(OSyncObjTypeSink *sink)
 osync_bool osync_objtype_sink_load_anchor(OSyncObjTypeSink *sink, OSyncPluginInfo *plugin_info, OSyncError **error)
 {
 	char *anchorpath;
-	OSyncAnchor *anchor = NULL;
 
 	osync_assert(sink);
 
@@ -733,11 +732,9 @@ osync_bool osync_objtype_sink_load_anchor(OSyncObjTypeSink *sink, OSyncPluginInf
 			osync_plugin_info_get_configdir(plugin_info),
 			G_DIR_SEPARATOR);
 
-	anchor = osync_anchor_new(anchorpath, sink->objtype, error);
-	if (!anchor)
+	sink->anchor = osync_anchor_new(anchorpath, sink->objtype, error);
+	if (!sink->anchor)
 		goto error;
-
-	osync_objtype_sink_set_anchor(sink, anchor);
 
 	osync_free(anchorpath);
 
