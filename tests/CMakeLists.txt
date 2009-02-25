@@ -226,7 +226,7 @@ OSYNC_TESTCASE(lock lock_simple_seq_lock)
 OSYNC_TESTCASE(lock lock_dual_lock)
 OSYNC_TESTCASE(lock lock_dual_lock2)
 OSYNC_TESTCASE(lock lock_dual_sync_engine_lock)
-OSYNC_TESTCASE(lock lock_dual_sync_engine_unclean)
+OSYNC_TESTCASE_DISABLED(lock lock_dual_sync_engine_unclean "1066" )
 
 IF (NOT WIN32)
 BUILD_CHECK_TEST( ipc ipc-tests/check_ipc.c ${TEST_TARGET_LIBRARIES} )
