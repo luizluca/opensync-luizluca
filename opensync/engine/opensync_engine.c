@@ -690,7 +690,7 @@ static void _osync_engine_stop(OSyncEngine *engine)
 
 static osync_bool _osync_engine_finalize_member(OSyncEngine *engine, OSyncClientProxy *proxy, OSyncError **error)
 {
-	unsigned int i = 2000;
+	unsigned int i = 1000;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, engine, proxy, error);
 		
 	engine->busy = TRUE;
@@ -699,7 +699,13 @@ static osync_bool _osync_engine_finalize_member(OSyncEngine *engine, OSyncClient
 		goto error;
 	
 	//FIXME
-	while (engine->busy && i > 0) { g_usleep(1000); g_main_context_iteration(engine->context, FALSE); i--; }
+	osync_trace(TRACE_INTERNAL, "Start waiting for engine");
+//	while (engine->busy && i > 0) { g_usleep(1000); g_main_context_iteration(engine->context, FALSE); i--; }
+	while (engine->busy && i > 0) { g_usleep(1000); i--; }
+
+	if (engine->busy)
+		osync_trace(TRACE_INTERNAL, "Engine still busy - I give up waiting");
+
 	osync_trace(TRACE_INTERNAL, "Done waiting");
 	
 	if (!osync_client_proxy_shutdown(proxy, error))

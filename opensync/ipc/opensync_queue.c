@@ -497,6 +497,13 @@ static gboolean _queue_dispatch(GSource *source, GSourceFunc callback, gpointer 
 			osync_error_set(&error, OSYNC_ERROR_GENERIC, "Trying to send to a queue thats not connected");
 			goto error;
 		}
+
+		/* When using threadec communication, the message is directly passed to the */
+		/* incoming asynch queue of the connected queue                             */
+		if (queue->usethreadcom){
+			g_async_queue_push(queue->connected_queue->incoming, message);
+			continue;
+		}
 		
 		/* The size of the message */
 		if (!_osync_queue_write_int(queue, osync_message_get_message_size(message), &error))
@@ -638,6 +645,12 @@ static gboolean _source_check(GSource *source)
 			g_mutex_unlock(queue->pendingLock);
 		}
 		
+		return FALSE;
+	}
+
+	if (queue->usethreadcom){
+		if (queue->connection_closing)
+			_osync_queue_generate_error(queue, OSYNC_MESSAGE_QUEUE_HUP, &error);
 		return FALSE;
 	}
 	
@@ -794,6 +807,10 @@ OSyncQueue *osync_queue_new(const char *name, OSyncError **error)
 
 	queue->ref_count = 1;
 
+	queue->usethreadcom = FALSE;
+	queue->connected_queue = NULL;
+	queue->connection_closing = FALSE;
+
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, queue);
 	return queue;
 
@@ -819,6 +836,32 @@ OSyncQueue *osync_queue_new_from_fd(int fd, OSyncError **error)
  error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return NULL;
+}
+
+osync_bool osync_queue_new_threadcom(OSyncQueue **read_queue, OSyncQueue **write_queue, OSyncError **error){
+
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, read_queue, write_queue, error);
+	*read_queue = osync_queue_new(NULL, error);
+	if (!*read_queue)
+		goto error;
+	*write_queue = osync_queue_new(NULL, error);
+	if (!*write_queue)
+		goto error_free_read_queue;
+
+	(*read_queue)->usethreadcom = TRUE;
+	(*write_queue)->usethreadcom = TRUE;
+	(*read_queue)->connected_queue = *write_queue;
+	(*write_queue)->connected_queue = *read_queue;
+       	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+
+ error_free_read_queue:
+	osync_queue_unref(*read_queue);
+ error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
+
 }
 
 osync_bool osync_queue_new_pipes(OSyncQueue **read_queue, OSyncQueue **write_queue, OSyncError **error)
@@ -905,6 +948,9 @@ void osync_queue_unref(OSyncQueue *queue)
 
 		if (queue->name)
 			osync_free(queue->name);
+
+		if (queue->connected_queue)
+			queue->connected_queue = NULL;
 		
 		osync_free(queue);
 		queue = NULL;
@@ -963,38 +1009,44 @@ osync_bool osync_queue_remove(OSyncQueue *queue, OSyncError **error)
 
 osync_bool osync_queue_connect(OSyncQueue *queue, OSyncQueueType type, OSyncError **error)
 {
-#ifdef _WIN32
-	return FALSE;
-#else //_WIN32
 	OSyncQueue **queueptr = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p)", __func__, queue, type, error);
 	osync_assert(queue);
 	osync_assert(queue->connected == FALSE);
 	
 	queue->type = type;
-	
-	if (queue->fd == -1) {
-		/* First, open the queue with the flags provided by the user */
-		int fd = open(queue->name, type == OSYNC_QUEUE_SENDER ? O_WRONLY : O_RDONLY);
-		if (fd == -1) {
-			osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to open fifo");
-			goto error;
+
+	if (!queue->usethreadcom){
+#ifdef _WIN32	
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Windows does not support pipes");
+		goto error;
+#else
+		if (queue->fd == -1) {
+			/* First, open the queue with the flags provided by the user */
+			int fd = open(queue->name, type == OSYNC_QUEUE_SENDER ? O_WRONLY : O_RDONLY);
+			if (fd == -1) {
+				osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to open fifo");
+				goto error;
+			}
+			queue->fd = fd;
 		}
-		queue->fd = fd;
-	}
 
-	int oldflags = fcntl(queue->fd, F_GETFD);
-	if (oldflags == -1) {
-		osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to get fifo flags");
-		goto error_close;
+		int oldflags = fcntl(queue->fd, F_GETFD);
+		if (oldflags == -1) {
+			osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to get fifo flags");
+			goto error_close;
+		}
+		if (fcntl(queue->fd, F_SETFD, oldflags|FD_CLOEXEC) == -1) {
+			osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to set fifo flags");
+			goto error_close;
+		}
+#endif /*_WIN32*/
 	}
-	if (fcntl(queue->fd, F_SETFD, oldflags|FD_CLOEXEC) == -1) {
-		osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to set fifo flags");
-		goto error_close;
-	}
-
 	queue->connected = TRUE;
+	queue->connection_closing = FALSE;
+#ifndef _WIN32
 	signal(SIGPIPE, SIG_IGN);
+#endif
 	
 	/* now we start a thread which handles reading/writing of the queue */
 	queue->thread = osync_thread_new(queue->context, error);
@@ -1056,11 +1108,13 @@ osync_bool osync_queue_connect(OSyncQueue *queue, OSyncQueueType type, OSyncErro
 	return TRUE;
 
  error_close:
-	close(queue->fd);
+#ifndef _WIN32
+	if (!queue->usethreadcom)
+		close(queue->fd);
+#endif
  error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
-#endif //_WIN32
 }
 
 osync_bool osync_queue_disconnect(OSyncQueue *queue, OSyncError **error)
@@ -1142,11 +1196,15 @@ osync_bool osync_queue_disconnect(OSyncQueue *queue, OSyncError **error)
 	/* We have to empty the incoming queue if we disconnect the queue. Otherwise, the
 	 * consumer threads might try to pick up messages even after we are done. */
 	_osync_queue_flush_messages(queue->incoming);
-	
-	if (queue->fd != -1 && close(queue->fd) != 0) {
-		osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to close queue");
-		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-		return FALSE;
+
+	if (queue->usethreadcom){
+		queue->connected_queue->connection_closing = TRUE;
+	}else{
+		if (queue->fd != -1 && close(queue->fd) != 0) {
+			osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to close queue");
+			osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+			return FALSE;
+		}
 	}
 	
 	queue->fd = -1;

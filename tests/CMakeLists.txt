@@ -52,8 +52,13 @@ OSYNC_TESTCASE(capabilities capabilities_sort)
 
 BUILD_CHECK_TEST(client client-tests/check_client.c ${TEST_TARGET_LIBRARIES} )
 OSYNC_TESTCASE(client client_new)
+IF (NOT WIN32)
 OSYNC_TESTCASE(client client_pipes)
 OSYNC_TESTCASE(client client_run)
+ENDIF (NOT WIN32)
+OSYNC_TESTCASE(client client_threadcom)
+OSYNC_TESTCASE(client client_run_threadcom)
+
 
 BUILD_CHECK_TEST( filter sync-tests/check_filter.c ${TEST_TARGET_LIBRARIES} )
 OSYNC_TESTCASE(filter filter_setup)

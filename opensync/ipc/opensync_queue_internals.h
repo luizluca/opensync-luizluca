@@ -51,6 +51,11 @@
 OSYNC_TEST_EXPORT osync_bool osync_queue_new_pipes(OSyncQueue **read_queue, OSyncQueue **write_queue, OSyncError **error);
 
 /**
+ * @brief Creates two queues which are connected via thread communication 
+ */
+OSYNC_TEST_EXPORT osync_bool osync_queue_new_threadcom(OSyncQueue **read_queue, OSyncQueue **write_queue, OSyncError **error);
+
+/**
  * @brief Removes a Queue
  * @param queue OpenSync Queue that should be removed
  * @param error

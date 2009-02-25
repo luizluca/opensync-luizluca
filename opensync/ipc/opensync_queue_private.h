@@ -105,6 +105,14 @@ struct OSyncQueue {
 
 	/* Expiration time of pending queue timeout */
 	GTimeVal pending_timeout;
+
+	/* Threaded communication */
+	gboolean usethreadcom;
+	/* Connected queue */
+	OSyncQueue *connected_queue;
+
+	/* Indicate that the connection is closing for threaded com */
+	gboolean connection_closing;
 };
 
 /** @brief Pending queue timeout addition for ipc delay

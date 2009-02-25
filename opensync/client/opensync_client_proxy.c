@@ -887,19 +887,17 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 	proxy->type = type;
 	
 	if (type != OSYNC_START_TYPE_EXTERNAL) {
-		// First, create the pipe from the engine to the client
-		if (!osync_queue_new_pipes(&read1, &write1, error))
-			goto error;
-			
-		// Then the pipe from the client to the engine
-		if (!osync_queue_new_pipes(&read2, &write2, error))
-			goto error_free_pipe1;
-		
-		proxy->outgoing = osync_queue_ref(write1);
-		proxy->incoming = osync_queue_ref(read2);
-		
 		/* Now we either spawn a new process, or we create a new thread */
 		if (type == OSYNC_START_TYPE_THREAD) {
+			// First, create the pipe from the engine to the client
+			if (!osync_queue_new_threadcom(&read1, &write1, error))
+				goto error;
+			// Then the pipe from the client to the engine
+			if (!osync_queue_new_threadcom(&read2, &write2, error))
+				goto error_free_pipe1;
+			proxy->outgoing = osync_queue_ref(write1);
+			proxy->incoming = osync_queue_ref(read2);
+
 			proxy->client = osync_client_new(error);
 			if (!proxy->client)
 				goto error_free_pipe2;
@@ -920,6 +918,13 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 			if (!osync_client_run(proxy->client, error))
 				goto error_free_pipe2;
 		} else {
+			if (!osync_queue_new_pipes(&read1, &write1, error))
+				goto error;
+			if (!osync_queue_new_pipes(&read2, &write2, error))
+				goto error_free_pipe1;
+			proxy->outgoing = osync_queue_ref(write1);
+			proxy->incoming = osync_queue_ref(read2);
+
 			/* First lets see if the old plugin exists, and kill it if it does */
 			//if (!_osync_client_kill_old_osplugin(proxy, error))
 			//	goto error;
