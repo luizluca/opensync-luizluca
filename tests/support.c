@@ -771,6 +771,18 @@ osync_bool osync_testing_diff(const char *file1, const char *file2)
 	return !ret;
 }
 
+/**
+ * @brief Test if the directory is empty 
+ */
+osync_bool osync_testing_directory_is_empty(const char *dirname)
+{
+	gchar *cmd;
+	int ret;
+	cmd = g_strdup_printf("ls %s | grep \".*\"", dirname);
+	ret = system(cmd);
+	return (ret != 0);
+}
+
 /** @brief Creates a simple OSyncPluginConfig with a single resource.
  *         If config is not null the resource information gets added.
  * 

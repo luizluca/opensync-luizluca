@@ -130,6 +130,7 @@ osync_bool osync_testing_file_remove(const char *file);
 osync_bool osync_testing_file_chmod(const char *file, int mode);
 osync_bool osync_testing_file_copy(const char *source, const char *dest);
 osync_bool osync_testing_diff(const char *file1, const char *file2);
+osync_bool osync_testing_directory_is_empty(const char *dirname);
 
 /* Plugin config helper */
 OSyncPluginConfig *simple_plugin_config(OSyncPluginConfig *config, const char *path, const char *objtype, const char *objformat, const char *format_config);

@@ -43,8 +43,8 @@ START_TEST (multisync_easy_new)
 
 	osync_engine_unref(engine);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
+	fail_unless(osync_testing_diff("data1", "data3"));
 	
 	/* Client checks */
 	fail_unless(num_client_connected == 3, NULL);
@@ -146,8 +146,8 @@ START_TEST (multisync_dual_new)
 	fail_unless(osync_engine_synchronize_and_block(engine, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
+	fail_unless(osync_testing_diff("data1", "data3"));
 	
 	/* Client checks */
 	fail_unless(num_client_connected == 3, NULL);
@@ -221,19 +221,22 @@ START_TEST (multisync_dual_new)
 
 	path = g_strdup_printf("%s/configs/group/1/hashtable.db", testbed);
 	table = hashtable_load(path, "mockobjtype1", 0);
+	osync_hashtable_unref(table);
 	g_free(path);
 
 	path = g_strdup_printf("%s/configs/group/2/hashtable.db", testbed);
 	table = hashtable_load(path, "mockobjtype1", 0);
+	osync_hashtable_unref(table);
 	g_free(path);
 
 	path = g_strdup_printf("%s/configs/group/3/hashtable.db", testbed);
 	table = hashtable_load(path, "mockobjtype1", 0);
+	osync_hashtable_unref(table);
 	g_free(path);
 
-	fail_unless(!system("test \"x$(ls data1)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data3)\" = \"x\""), NULL);
+	fail_unless(osync_testing_directory_is_empty("data1"), NULL);
+	fail_unless(osync_testing_directory_is_empty("data2"), NULL);
+	fail_unless(osync_testing_directory_is_empty("data3"), NULL);
 	
 	destroy_testbed(testbed);
 }
@@ -278,8 +281,8 @@ START_TEST (multisync_triple_new)
 	fail_unless(osync_engine_synchronize_and_block(engine, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
+	fail_unless(osync_testing_diff("data1", "data3"));
 	
 	/* Client checks */
 	fail_unless(num_client_connected == 3, NULL);
@@ -353,20 +356,23 @@ START_TEST (multisync_triple_new)
 
 	path = g_strdup_printf("%s/configs/group/1/hashtable.db", testbed);
 	table = hashtable_load(path, "mockobjtype1", 0);
+	osync_hashtable_unref(table);
 	g_free(path);
 
 	path = g_strdup_printf("%s/configs/group/2/hashtable.db", testbed);
 	table = hashtable_load(path, "mockobjtype1", 0);
+	osync_hashtable_unref(table);
 	g_free(path);
 
 	path = g_strdup_printf("%s/configs/group/3/hashtable.db", testbed);
 	table = hashtable_load(path, "mockobjtype1", 0);
+	osync_hashtable_unref(table);
 	g_free(path);
 
-	fail_unless(!system("test \"x$(ls data1)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data3)\" = \"x\""), NULL);
-	
+	fail_unless(osync_testing_directory_is_empty("data1"), NULL);
+	fail_unless(osync_testing_directory_is_empty("data2"), NULL);
+	fail_unless(osync_testing_directory_is_empty("data3"), NULL);
+
 	destroy_testbed(testbed);
 	
 }
@@ -388,8 +394,8 @@ START_TEST (multisync_easy_mod)
 	
 	synchronize_once(engine, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
+	fail_unless(osync_testing_diff("data1", "data3"));
 	
 	fail_unless(num_written == 2, NULL);
 	fail_unless(num_read == 1, NULL);

@@ -433,7 +433,8 @@ START_TEST (engine_error_no_objtype_error)
 	fail_unless(!synchronize_once(engine, &error), NULL);
 	fail_unless(error != NULL, NULL);
 	osync_error_unref(&error);
-	
+
+	fail_unless(osync_engine_finalize(engine, &error), NULL);
 	osync_engine_unref(engine);
 	osync_group_unref(group);	
 	g_free(formatdir);
@@ -576,12 +577,12 @@ START_TEST (engine_error_one_of_two_connect_error)
 	fail_unless(num_engine_errors == 1, NULL);
 
 	osync_error_unref(&error);
-	
-	osync_engine_unref(engine);
 
+	fail_unless(osync_engine_finalize(engine, &error), NULL);	
+	osync_engine_unref(engine);
 	osync_group_unref(group);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -635,7 +636,7 @@ START_TEST (engine_error_two_of_three_connect_error)
 	osync_engine_finalize(engine, &error);
 	osync_engine_unref(engine);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -687,9 +688,8 @@ START_TEST (engine_error_two_of_three_connect_error2)
 	osync_error_unref(&error);
 	osync_engine_finalize(engine, &error);
 	osync_engine_unref(engine);
-	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
 
+	fail_unless(!osync_testing_diff("data1", "data2"));
 	g_free(formatdir);
 	g_free(plugindir);
 	
@@ -741,7 +741,7 @@ START_TEST (engine_error_three_of_three_connect_error)
 	osync_engine_finalize(engine, &error);
 	osync_engine_unref(engine);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -794,7 +794,7 @@ START_TEST (engine_error_one_of_three_connect_error)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_client_disconnected == 2, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -908,7 +908,7 @@ START_TEST (engine_error_single_connect_timeout)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_engine_successful == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -967,7 +967,7 @@ START_TEST (engine_error_dual_connect_timeout)
 	fail_unless(num_engine_errors == 1, "Number of Engine Errors: %u Expected: 1", num_engine_errors);
 	fail_unless(num_engine_successful == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1023,7 +1023,7 @@ START_TEST (engine_error_one_of_three_timeout)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_engine_successful == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1080,7 +1080,7 @@ START_TEST (engine_error_timeout_and_error)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_engine_successful == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1138,7 +1138,7 @@ START_TEST (engine_error_single_get_changes_error)
 
 	fail_unless(num_engine_successful == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1198,7 +1198,7 @@ START_TEST (engine_error_dual_get_changes_error)
 
 	fail_unless(num_engine_successful == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1256,7 +1256,7 @@ START_TEST (engine_error_two_of_three_get_changes_error)
 
 	fail_unless(num_engine_successful == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1314,7 +1314,7 @@ START_TEST (engine_error_one_of_three_get_changes_error)
 
 	fail_unless(num_engine_successful == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1375,7 +1375,7 @@ START_TEST (engine_error_one_of_three_get_changes_timeout)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_engine_successful == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1437,7 +1437,7 @@ START_TEST (engine_error_get_changes_timeout_and_error)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_engine_successful == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1506,7 +1506,7 @@ START_TEST (engine_error_get_changes_timeout_sleep)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_engine_successful == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1571,7 +1571,7 @@ START_TEST (engine_error_single_commit_error)
 	fail_unless(num_engine_successful == 0, NULL);
 
 	fail_unless(osync_testing_diff("data1", "data2"));
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data3"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1631,8 +1631,8 @@ START_TEST (engine_error_dual_commit_error)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_engine_successful == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
+	fail_unless(!osync_testing_diff("data1", "data3"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1695,7 +1695,7 @@ START_TEST (engine_error_single_commit_timeout)
 	fail_unless(num_engine_successful == 0, NULL);
 
 	fail_unless(osync_testing_diff("data1", "data2"));
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data3"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1757,8 +1757,8 @@ START_TEST (engine_error_dual_commit_timeout)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_engine_successful == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
+	fail_unless(!osync_testing_diff("data1", "data3"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1821,8 +1821,8 @@ START_TEST (engine_error_commit_timeout_and_error)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_engine_successful == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
+	fail_unless(!osync_testing_diff("data1", "data3"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1885,8 +1885,8 @@ START_TEST (engine_error_commit_timeout_and_error2)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_engine_successful == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
+	fail_unless(!osync_testing_diff("data1", "data3"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1958,8 +1958,8 @@ START_TEST (engine_error_commit_error_modify)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_engine_successful == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
+	fail_unless(!osync_testing_diff("data1", "data3"));
 	fail_unless(osync_testing_diff("data2", "data3"));
 
 	g_free(formatdir);
@@ -2032,8 +2032,8 @@ START_TEST (engine_error_commit_error_delete)
 	fail_unless(num_engine_errors == 1, NULL);
 	fail_unless(num_engine_successful == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
+	fail_unless(!osync_testing_diff("data1", "data3"));
 	fail_unless(osync_testing_diff("data2", "data3"));
 
 	g_free(formatdir);
@@ -2956,8 +2956,8 @@ START_TEST (engine_error_get_changes_disconnect_error)
 	osync_engine_finalize(engine, &error);
 	osync_engine_unref(engine);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data3)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
+	fail_unless(!osync_testing_diff("data1", "data3"));
 
 	g_free(formatdir);
 	g_free(plugindir);
