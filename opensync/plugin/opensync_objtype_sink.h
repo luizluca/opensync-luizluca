@@ -214,20 +214,10 @@ OSYNC_EXPORT void osync_objtype_sink_remove_objformat_sink(OSyncObjTypeSink *sin
  *
  * @param sink Pointer to the sink
  * @param functions struct containing pointers to the sink functions
- * @param userdata user data pointer that can be retrieved within the functions using osync_objtype_sink_get_userdata()
+ * @param userdata user data pointer that is passed to all objtype sink functions like connect(), commit(), ...
  * 
  */
 OSYNC_EXPORT void osync_objtype_sink_set_functions(OSyncObjTypeSink *sink, OSyncObjTypeSinkFunctions functions, void *userdata);
-
-/** @brief Gets the user data from a sink
- * 
- * Gets the user data from a sink, as previously set by osync_objtype_sink_set_functions()
- *
- * @param sink Pointer to the sink
- * @returns the sink-specific user data
- * 
- */
-OSYNC_EXPORT void *osync_objtype_sink_get_userdata(OSyncObjTypeSink *sink);
 
 
 /** @brief Checks if a sink is enabled

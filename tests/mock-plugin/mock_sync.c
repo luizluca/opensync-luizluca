@@ -54,7 +54,7 @@ static void mock_connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCon
 {
 	osync_bool anchor_compare_match;
 	OSyncAnchor *anchor = osync_objtype_sink_get_anchor(sink); 
-	MockDir *dir = osync_objtype_sink_get_userdata(sink);
+	MockDir *dir = data;
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, ctx, data);
 	
@@ -104,7 +104,7 @@ end:
 static void mock_connect_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, ctx, data);
-	MockDir *dir = osync_objtype_sink_get_userdata(sink);
+	MockDir *dir = data;
 
 	if (mock_get_error(info->memberid, "CONNECT_DONE_ERROR")) {
 		osync_context_report_error(ctx, OSYNC_ERROR_EXPECTED, "Triggering CONNECT_DONE_ERROR error");
@@ -127,29 +127,45 @@ static void mock_connect_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSy
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
+static void mock_mainsink_disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
+{
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, ctx, data);
+
+	mock_env *env = data;
+	
+	osync_assert(data);
+	
+	GList *o = env->directories;
+	for (; o; o = o->next) {
+		MockDir *sink_dir = o->data;
+		if (!g_getenv("NO_COMMITTED_ALL_CHECK"))
+				osync_assert(sink_dir->committed_all == TRUE);
+		sink_dir->committed_all = FALSE;
+	}
+
+	if (mock_get_error(info->memberid, "DISCONNECT_ERROR")) {
+		osync_context_report_error(ctx, OSYNC_ERROR_EXPECTED, "Triggering DISCONNECT_ERROR error");
+		return;
+	}
+	if (mock_get_error(info->memberid, "DISCONNECT_TIMEOUT"))
+		return;
+
+	osync_context_report_success(ctx);
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
 
 static void mock_disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, ctx, data);
 
-	MockDir *dir = osync_objtype_sink_get_userdata(sink);
-	mock_env *env = data;
+	MockDir *dir = data;
 
-	if (!dir) {
-		GList *o = env->directories;
-		for (; o; o = o->next) {
-			MockDir *sink_dir = o->data;
-			if (!g_getenv("NO_COMMITTED_ALL_CHECK"))
-				osync_assert(sink_dir->committed_all == TRUE);
-
-			sink_dir->committed_all = FALSE;
-		}
-	} else {
-		if (!g_getenv("NO_COMMITTED_ALL_CHECK"))
-			osync_assert(dir->committed_all == TRUE);
-
-		dir->committed_all = FALSE;
-	}
+	osync_assert(dir);
+	
+	if (!g_getenv("NO_COMMITTED_ALL_CHECK"))
+		osync_assert(dir->committed_all == TRUE);
+	dir->committed_all = FALSE;
 
 
 	if (mock_get_error(info->memberid, "DISCONNECT_ERROR")) {
@@ -172,7 +188,7 @@ static void mock_disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSync
 static osync_bool mock_read(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %p)", __func__, sink, info, ctx, change, data);
-	MockDir *dir = osync_objtype_sink_get_userdata(sink);
+	MockDir *dir = data;
 	OSyncError *error = NULL;
 
 	char *filename = g_strdup_printf("%s/%s", dir->path, osync_change_get_uid(change));
@@ -210,7 +226,7 @@ static osync_bool mock_read(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSync
 static osync_bool mock_write(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %p)", __func__, sink, info, ctx, change, data);
-	MockDir *dir = osync_objtype_sink_get_userdata(sink);
+	MockDir *dir = data;
 	OSyncError *error = NULL;
 	OSyncData *odata = NULL;
 	char *buffer = NULL;
@@ -364,7 +380,7 @@ static void mock_report_dir(MockDir *directory, const char *subdir, OSyncContext
 static void mock_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %i, %p)", __func__, sink, info, ctx, slow_sync, data);
-	MockDir *dir = osync_objtype_sink_get_userdata(sink);
+	MockDir *dir = data;
 	OSyncError *error = NULL;
 
 	osync_assert(dir->committed_all == TRUE);
@@ -427,7 +443,7 @@ static void mock_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyn
 static void mock_commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %p)", __func__, sink, info, ctx, change, data);
-	MockDir *dir = osync_objtype_sink_get_userdata(sink);
+	MockDir *dir = data;
 	
 	char *filename = NULL;
 
@@ -470,7 +486,7 @@ static void mock_commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OS
 static void mock_batch_commit(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *context, OSyncContext **contexts, OSyncChange **changes, void *data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %p, %p)", __func__, sink, info, context, contexts, changes, data);
-	MockDir *dir = osync_objtype_sink_get_userdata(sink);
+	MockDir *dir = data;
 
 	osync_assert(dir->committed_all == FALSE);
 	dir->committed_all = TRUE;
@@ -512,7 +528,7 @@ static void mock_batch_commit(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSy
 static void mock_committed_all(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *context, void *data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, context, data);
-	MockDir *dir = osync_objtype_sink_get_userdata(sink);
+	MockDir *dir = data;
 
 	osync_assert(dir->committed_all == FALSE);
 	dir->committed_all = TRUE;
@@ -532,7 +548,7 @@ static void mock_sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncC
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, ctx, data);
 	OSyncAnchor *anchor = osync_objtype_sink_get_anchor(sink);
-	MockDir *dir = osync_objtype_sink_get_userdata(sink);
+	MockDir *dir = data;
 
 	if (mock_get_error(info->memberid, "SYNC_DONE_ERROR")) {
 		osync_context_report_error(ctx, OSYNC_ERROR_EXPECTED, "Triggering SYNC_DONE_ERROR error");
@@ -582,9 +598,9 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 		memset(&functions, 0, sizeof(functions));
 
 		functions.connect = mock_connect;
-		functions.disconnect = mock_disconnect;
+		functions.disconnect = mock_mainsink_disconnect;
 
-		osync_objtype_sink_set_functions(env->mainsink, functions, NULL);
+		osync_objtype_sink_set_functions(env->mainsink, functions, env);
 		osync_plugin_info_set_main_sink(info, env->mainsink);
 	}
 	

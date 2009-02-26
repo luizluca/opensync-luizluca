@@ -327,7 +327,7 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 static void _osync_obj_engine_read_ignored_callback(OSyncClientProxy *proxy, void *userdata, OSyncError *error)
 {
 	OSyncSinkEngine *sinkengine = userdata;
-	OSyncObjEngine *engine = sinkengine->engine;
+	/* OSyncObjEngine *engine = sinkengine->engine; */
 	/* TODO: Share _generate_read_event fucntion with _osync_obj_engine_read_callback?
 	   To report errors .. and handle _timeout problems of _read_ignored call.
 	*/
@@ -1052,8 +1052,8 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 		/* Now we can multiply the winner in the mapping */
 		osync_trace(TRACE_INTERNAL, "Multiplying %u mappings", osync_list_length(engine->mapping_engines));
 		for (p = engine->mapping_engines; p; p = p->next) {
-		        OSyncMappingEngine *mapping_engine = p->data;
-		        if (!osync_mapping_engine_multiply(mapping_engine, error))
+			OSyncMappingEngine *mapping_engine = p->data;
+			if (!osync_mapping_engine_multiply(mapping_engine, error))
 				break;
 		}
 

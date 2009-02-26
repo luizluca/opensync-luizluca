@@ -139,6 +139,7 @@ static void connect1(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 0);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 0);
@@ -158,6 +159,7 @@ static void disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncConte
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 1);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 1);
@@ -177,6 +179,7 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 1);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 0);
@@ -213,7 +216,7 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 	functions.disconnect = disconnect;
 	functions.get_changes = get_changes;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 
@@ -229,6 +232,7 @@ static void finalize(void *data)
 {
 	mock_env *env = data;
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 1);
 	osync_assert(env->num_disconnect == 1);
 	osync_assert(env->num_get_changes == 1);
@@ -369,6 +373,7 @@ static void connect2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect < 3);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 0);
@@ -388,6 +393,7 @@ static void disconnect2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect < 3);
 	osync_assert(env->num_get_changes == 3);
@@ -407,6 +413,7 @@ static void get_changes2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCon
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes < 3);
@@ -426,6 +433,7 @@ static void main_connect2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCo
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 0);
@@ -445,6 +453,7 @@ static void main_disconnect2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyn
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 3);
 	osync_assert(env->num_get_changes == 3);
@@ -464,6 +473,7 @@ static void main_get_changes2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSy
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 3);
@@ -500,7 +510,7 @@ static void *initialize_multi(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	functions.disconnect = disconnect2;
 	functions.get_changes = get_changes2;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -517,7 +527,7 @@ static void *initialize_multi(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	functions.disconnect = disconnect2;
 	functions.get_changes = get_changes2;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -534,7 +544,7 @@ static void *initialize_multi(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	functions.disconnect = disconnect2;
 	functions.get_changes = get_changes2;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -548,7 +558,7 @@ static void *initialize_multi(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	functions.disconnect = main_disconnect2;
 	functions.get_changes = main_get_changes2;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_set_main_sink(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -564,6 +574,7 @@ static void finalize_multi(void *data)
 {
 	mock_env *env = data;
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 3);
 	osync_assert(env->num_get_changes == 3);
@@ -684,6 +695,7 @@ static void connect3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect < 3);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 0);
@@ -704,6 +716,7 @@ static void disconnect3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect < 3);
 	osync_assert(env->num_get_changes == 3);
@@ -726,6 +739,7 @@ static void get_changes3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCon
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes < 3);
@@ -746,6 +760,7 @@ static void sync_done3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncConte
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 3);
@@ -768,6 +783,7 @@ static void main_connect3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCo
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 0);
@@ -794,6 +810,7 @@ static void main_disconnect3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyn
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 3);
 	osync_assert(env->num_get_changes == 3);
@@ -822,6 +839,7 @@ static void main_get_changes3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSy
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 3);
@@ -849,6 +867,7 @@ static void main_sync_done3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSync
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 3);
@@ -896,7 +915,7 @@ static void *initialize_order(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	functions.get_changes = get_changes3;
 	functions.sync_done = sync_done3;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -914,7 +933,7 @@ static void *initialize_order(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	functions.get_changes = get_changes3;
 	functions.sync_done = sync_done3;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -932,7 +951,7 @@ static void *initialize_order(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	functions.get_changes = get_changes3;
 	functions.sync_done = sync_done3;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -947,7 +966,7 @@ static void *initialize_order(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	functions.get_changes = main_get_changes3;
 	functions.sync_done = main_sync_done3;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_set_main_sink(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1085,6 +1104,7 @@ static void main_disconnect4(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyn
 	mock_env *env = data;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
+	osync_assert(env);
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 3);
 	osync_assert(env->num_get_changes == 3);
@@ -1138,7 +1158,7 @@ static void *initialize_reuse(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	functions.get_changes = get_changes3;
 	functions.sync_done = sync_done3;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1156,7 +1176,7 @@ static void *initialize_reuse(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	functions.get_changes = get_changes3;
 	functions.sync_done = sync_done3;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1174,7 +1194,7 @@ static void *initialize_reuse(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	functions.get_changes = get_changes3;
 	functions.sync_done = sync_done3;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1189,7 +1209,7 @@ static void *initialize_reuse(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	functions.get_changes = main_get_changes3;
 	functions.sync_done = main_sync_done3;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_set_main_sink(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1465,7 +1485,7 @@ static void *initialize5(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError 
 	functions.get_changes = get_changes5;
 	functions.commit = commit_change5;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1667,7 +1687,7 @@ static void *initialize6(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError 
 	functions.get_changes = get_changes6;
 	functions.commit = commit_change5;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1871,7 +1891,7 @@ static void *initialize7(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError 
 	functions.get_changes = get_changes7;
 	functions.commit = commit_change5;
 	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	

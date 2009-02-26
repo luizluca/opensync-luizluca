@@ -331,10 +331,12 @@ typedef struct {} ObjTypeSink;
 	}
 
 	~ObjTypeSink() {
+		/* FIXME free userdata
 		PyObject *callback_obj = osync_objtype_sink_get_userdata(self);
 		if (callback_obj) {
 			Py_DECREF(callback_obj);
 		}
+		*/
 		osync_objtype_sink_unref(self);
 	}
 
@@ -354,11 +356,11 @@ typedef struct {} ObjTypeSink;
 		return osync_objtype_sink_nth_objformat_sink(self, nth);
 	}
 
-        ObjFormatSink *find_objformat(ObjFormat *objformat) {
-                return osync_objtype_sink_find_objformat_sink(self, objformat);
-        }
+	ObjFormatSink *find_objformat(ObjFormat *objformat) {
+		return osync_objtype_sink_find_objformat_sink(self, objformat);
+	}
 
-        /* TODO: osync_objtype_sink_get_objformat_sinks with OSyncList */
+	/* TODO: osync_objtype_sink_get_objformat_sinks with OSyncList */
 
 	void add_objformat(ObjFormatSink *format_sink) {
 		osync_objtype_sink_add_objformat_sink(self, format_sink);
@@ -370,14 +372,18 @@ typedef struct {} ObjTypeSink;
 
 	/* TODO: set_functions */
 
+	/*
 	void *get_userdata() {
 		return osync_objtype_sink_get_userdata(self);
 	}
+	
 
 	/* as above, but return it as a PyObject * for python code */
+	/*
 	PyObject *get_callback_obj() {
 		return osync_objtype_sink_get_userdata(self);
 	}
+	*/
 
 	void get_changes(void *plugindata, PluginInfo *info, Context *ctx) {
 		osync_objtype_sink_get_changes(self, plugindata, info, ctx);
