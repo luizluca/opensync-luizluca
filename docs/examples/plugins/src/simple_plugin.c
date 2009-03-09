@@ -35,12 +35,10 @@ static void connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext 
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, ctx, userdata);
 	//Each time you get passed a context (which is used to track
-	//calls to your plugin) you can get the data your returned in
-	//initialize via this call:
-	// plugin_environment *env = (plugin_environment *)userdata;
+	//calls to your plugin)
 
-	//The sink specific userdata you can get with this call:
-	sink_environment *sinkenv = osync_objtype_sink_get_userdata(sink);
+	//cast void* userdata to the sink specific data type
+	sink_environment *sinkenv = (sink_environment*)userdata;
 
 
 	OSyncError *error = NULL;
@@ -88,9 +86,8 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, userdata, info, ctx);
 
-	//plugin_environment *env = (plugin_environment *)userdata;
 	OSyncFormatEnv *formatenv = osync_plugin_info_get_format_env(info);
-	sink_environment *sinkenv = osync_objtype_sink_get_userdata(sink);
+	sink_environment *sinkenv = (sink_environment*) userdata;
 
 	OSyncError *error = NULL;
 
@@ -161,9 +158,7 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 
 static void commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *userdata)
 {
-	//plugin_environment *env = (plugin_environment *)userdata;
-
-	sink_environment *sinkenv = osync_objtype_sink_get_userdata(sink);
+	sink_environment *sinkenv = (sink_environment*)userdata;;
 	
 	/*
 	 * Here you have to add, modify or delete a object
@@ -196,7 +191,7 @@ static void sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContex
 	 * This function will only be called if the sync was successful
 	 */
 	OSyncError *error = NULL;
-	sink_environment *sinkenv = osync_objtype_sink_get_userdata(sink);
+	sink_environment *sinkenv = (sink_environment*)userdata;
 	
 	//If we use anchors we have to update it now.
 	//Now you get/calculate the current anchor of the device
@@ -213,9 +208,9 @@ error:
 	return;
 }
 
-static void disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
+static void disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *userdata)
 {
-	sink_environment *sinkenv = osync_objtype_sink_get_userdata(sink);
+	sink_environment *sinkenv = (sink_environment*)userdata;
 	
 	//Close all stuff you need to close
 	
