@@ -41,7 +41,7 @@ struct OSyncMarshal {
 	/** The pointer to the internal **/
 	GByteArray *buffer;
 	/** The current read position **/
-	int buffer_read_pos;
+	unsigned int buffer_read_pos;
 };
 
 /*@}*/

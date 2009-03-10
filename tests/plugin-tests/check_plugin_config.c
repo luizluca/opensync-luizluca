@@ -880,7 +880,7 @@ START_TEST (plugin_config_save_and_load)
 	fail_unless(!strcmp(osync_plugin_authentication_get_reference(reloaded_auth), "ref"), NULL);
 
 	OSyncList *r, *p, *v;
-	int i, j, k;
+	unsigned int i, j, k;
 	for (i = 1, r = reloaded_resources; r; r = r->next, i++) {
 		char *value = g_strdup_printf("foobar%i", i);
 		fail_unless(!strcmp(osync_plugin_resource_get_name(r->data), value), NULL);

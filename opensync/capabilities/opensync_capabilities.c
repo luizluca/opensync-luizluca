@@ -205,7 +205,7 @@ osync_bool osync_capabilities_assemble(OSyncCapabilities *capabilities, char **b
 
 void osync_capabilities_sort(OSyncCapabilities *capabilities)
 {
-	int index;
+	unsigned int index;
 	OSyncCapabilitiesObjType *objtype;
 	OSyncCapability *cur;
 		

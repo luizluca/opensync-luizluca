@@ -18,7 +18,7 @@ void osync_testsuite_all(Suite *s, struct osync_testcase_s *tc)
 unsigned int osync_testsuite_selected(Suite *s, int argc, char **argv,
 		struct osync_testcase_s *tc)
 {
-	unsigned int i, j, n=0;
+	int i, j, n=0;
 	/* Also argv[0]! for symlink-ed calls */
 	for (i=0; argc > i; i++) {
 		for (j=0; tc[j].name; j++) {
@@ -268,7 +268,7 @@ out:
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-OSyncHashTable *hashtable_load(const char *path, const char *objtype, int entries)
+OSyncHashTable *hashtable_load(const char *path, const char *objtype, unsigned int entries)
 {
 	OSyncError *error = NULL;
 	OSyncHashTable *table = osync_hashtable_new(path, objtype, &error);

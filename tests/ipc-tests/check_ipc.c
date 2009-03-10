@@ -152,7 +152,7 @@ START_TEST (ipc_payload)
 		
 		int int1;
 		long long int longint1;
-		char *string;
+		const char *string;
 		void *databuf;
 		
 		osync_message_read_int(message, &int1);
@@ -1032,7 +1032,7 @@ void client_handler1(OSyncMessage *message, void *user_data)
 	
 	int int1;
 	long long int longint1;
-	char *string;
+	const char *string;
 	void *databuf;
 	
 	osync_message_read_int(message, &int1);
@@ -1218,7 +1218,7 @@ void client_handler2(OSyncMessage *message, void *user_data)
 	
 	int int1;
 	long long int longint1;
-	char *string;
+	const char *string;
 	void *databuf;
 	
 	osync_message_read_int(message, &int1);
@@ -1395,7 +1395,7 @@ void client_handler3(OSyncMessage *message, void *user_data)
 	
 	int int1;
 	long long int longint1;
-	char *string;
+	const char *string;
 	void *databuf;
 	
 	osync_message_read_int(message, &int1);
@@ -1583,7 +1583,7 @@ void client_handler4(OSyncMessage *message, void *user_data)
 	
 	int int1;
 	long long int longint1;
-	char *string;
+	const char *string;
 	void *databuf;
 	
 	
@@ -1775,7 +1775,7 @@ START_TEST (ipc_pipes)
 	
 	int int1;
 	long long int longint1;
-	char *string;
+	const char *string;
 	void *databuf;
 	
 	osync_message_read_int(message, &int1);

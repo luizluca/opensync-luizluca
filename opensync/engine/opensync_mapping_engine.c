@@ -425,7 +425,7 @@ static unsigned int prod(unsigned int n)
 
 osync_bool osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 {
-	int is_same = 0;
+	unsigned int is_same = 0;
 	OSyncList *e = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, engine);
 	osync_assert(engine != NULL);

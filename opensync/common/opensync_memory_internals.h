@@ -21,7 +21,7 @@
 #ifndef _OPENSYNC_MEMORY_INTERNALS_H
 #define _OPENSYNC_MEMORY_INTERNALS_H
 
-int osync_bitcount(unsigned int u);
+unsigned char osync_bitcount(unsigned int u);
 
 #endif /* _OPENSYNC_MEMORY_INTERNALS_H */
 

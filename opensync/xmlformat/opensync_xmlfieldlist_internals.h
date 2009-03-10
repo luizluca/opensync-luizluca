@@ -50,7 +50,7 @@ void osync_xmlfieldlist_add(OSyncXMLFieldList *xmlfieldlist, OSyncXMLField *xmlf
  * @param xmlfieldlist The pointer to a xmlfieldlist object
  * @param index The index of the xmlfield pointer to remove
  */
-void osync_xmlfieldlist_remove(OSyncXMLFieldList *xmlfieldlist, int index);
+void osync_xmlfieldlist_remove(OSyncXMLFieldList *xmlfieldlist, unsigned int index);
 
 /*@}*/
 

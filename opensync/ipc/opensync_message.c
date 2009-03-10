@@ -251,7 +251,7 @@ void osync_message_read_long_long_int(OSyncMessage *message, long long int *valu
 }
 
 /* TODO Change char** to const char ** */
-void osync_message_read_const_string(OSyncMessage *message, char **value)
+void osync_message_read_const_string(OSyncMessage *message, const char **value)
 {
 	osync_marshal_read_const_string(message->marshal, value);
 }

@@ -18,7 +18,7 @@ static void usage (char *name, int ecode)
 
 osync_bool convert_hex(const char *input, unsigned int inpsize, char **output, unsigned int *outsize)
 {
-	int i = 0;
+	unsigned int i = 0;
 	GString *string = g_string_new("");
 	unsigned int character = 0;
 	for (i = 0; i < inpsize - 1; i = i + 2) {
@@ -40,7 +40,7 @@ osync_bool convert_hex(const char *input, unsigned int inpsize, char **output, u
 
 osync_bool convert_bin(const char *input, unsigned int inpsize, char **output, unsigned int *outsize)
 {
-	int i = 0;
+	unsigned int i = 0;
 	GString *string = g_string_new("");
 	
 	for (i = 0; i < inpsize; i++) {

@@ -475,7 +475,7 @@ static osync_bool _osync_member_save_sink_timeout(xmlNode *cur, OSyncObjTypeSink
 
 static osync_bool _osync_member_save_sink(xmlDoc *doc, OSyncObjTypeSink *sink, OSyncError **error)
 {
-	int i = 0;
+	unsigned int i = 0;
 	xmlNode *node = NULL;
 
 	/* Write main sink stuff in main node. */

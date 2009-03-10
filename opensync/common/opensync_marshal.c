@@ -154,8 +154,7 @@ void osync_marshal_read_long_long_int(OSyncMarshal *marshal, long long int *valu
 	marshal->buffer_read_pos += sizeof(long long int);
 }
 
-/* TODO Change char** to const char ** */
-void osync_marshal_read_const_string(OSyncMarshal *marshal, char **value)
+void osync_marshal_read_const_string(OSyncMarshal *marshal, const char **value)
 {
 	int length = 0;
 	osync_marshal_read_int(marshal, &length);

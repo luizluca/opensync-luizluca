@@ -52,7 +52,7 @@ void osync_xmlfieldlist_add(OSyncXMLFieldList *xmlfieldlist, OSyncXMLField *xmlf
 	g_ptr_array_add(xmlfieldlist->array, xmlfield);
 }
 
-void osync_xmlfieldlist_remove(OSyncXMLFieldList *xmlfieldlist, int index)
+void osync_xmlfieldlist_remove(OSyncXMLFieldList *xmlfieldlist, unsigned int index)
 {
 	osync_assert(xmlfieldlist);
 	
@@ -68,14 +68,14 @@ void osync_xmlfieldlist_free(OSyncXMLFieldList *xmlfieldlist)
 	g_free(xmlfieldlist);
 }
 
-int osync_xmlfieldlist_get_length(OSyncXMLFieldList *xmlfieldlist)
+unsigned int osync_xmlfieldlist_get_length(OSyncXMLFieldList *xmlfieldlist)
 {
 	osync_assert(xmlfieldlist);
 	
 	return xmlfieldlist->array->len;
 }
 
-OSyncXMLField *osync_xmlfieldlist_item(OSyncXMLFieldList *xmlfieldlist, int index)
+OSyncXMLField *osync_xmlfieldlist_item(OSyncXMLFieldList *xmlfieldlist, unsigned int index)
 {
 	osync_assert(xmlfieldlist);
 	

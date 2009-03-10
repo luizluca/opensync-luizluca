@@ -42,7 +42,7 @@ OSYNC_EXPORT void osync_xmlfieldlist_free(OSyncXMLFieldList *xmlfieldlist);
  * @param xmlfieldlist Pointer to the xmlfieldlist object
  * @return The number of xmlfield items in the xmlfieldlist
  */
-OSYNC_EXPORT int osync_xmlfieldlist_get_length(OSyncXMLFieldList *xmlfieldlist);
+OSYNC_EXPORT unsigned int osync_xmlfieldlist_get_length(OSyncXMLFieldList *xmlfieldlist);
 
 /**
  * @brief Get the xmlfield at the given index of an xmlfieldlist
@@ -50,7 +50,7 @@ OSYNC_EXPORT int osync_xmlfieldlist_get_length(OSyncXMLFieldList *xmlfieldlist);
  * @param index The index of the xmlfield pointer to return
  * @return The item at the specified index, or NULL in case of error.
  */
-OSYNC_EXPORT OSyncXMLField *osync_xmlfieldlist_item(OSyncXMLFieldList *xmlfieldlist, int index);
+OSYNC_EXPORT OSyncXMLField *osync_xmlfieldlist_item(OSyncXMLFieldList *xmlfieldlist, unsigned int index);
 
 /*@}*/
 

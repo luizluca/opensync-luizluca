@@ -196,7 +196,7 @@ OSYNC_EXPORT void osync_marshal_read_const_data(OSyncMarshal *marshal, void **va
  * @param marshal The marshal object
  * @param value Reference to store the string pointer 
  */
-OSYNC_EXPORT void osync_marshal_read_const_string(OSyncMarshal *marshal, char **value);
+OSYNC_EXPORT void osync_marshal_read_const_string(OSyncMarshal *marshal, const char **value);
 
 /** @brief Read serialized data from marshal buffer. This increments the read
  * position of the marshal buffer. Caller is responsible for freeing the duplicated

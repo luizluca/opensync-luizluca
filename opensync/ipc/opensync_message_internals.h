@@ -378,7 +378,7 @@ OSYNC_TEST_EXPORT void osync_message_read_const_data(OSyncMessage *message, void
  * @param message The message
  * @param value Reference to store the string pointer 
  */
-OSYNC_TEST_EXPORT void osync_message_read_const_string(OSyncMessage *message, char **value);
+OSYNC_TEST_EXPORT void osync_message_read_const_string(OSyncMessage *message, const char **value);
 
 /** @brief Read serialized data from message buffer. This increments the read
  * position of the message buffer. Caller is responsible for freeing the duplicated

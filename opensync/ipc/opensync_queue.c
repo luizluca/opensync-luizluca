@@ -524,7 +524,7 @@ static gboolean _queue_dispatch(GSource *source, GSourceFunc callback, gpointer 
 		osync_message_get_buffer(message, &data, &length);
 		
 		if (length) {
-			int sent = 0;
+			unsigned int sent = 0;
 			do {
 				int written = _osync_queue_write_data(queue, data + sent, length - sent, &error);
 				if (written < 0)
@@ -718,7 +718,7 @@ static gboolean _source_dispatch(GSource *source, GSourceFunc callback, gpointer
 		 * have the correct size for the read */
 		osync_message_get_buffer(message, &buffer, NULL);
 		if (size) {
-			unsigned int read = 0;
+			int read = 0;
 			do {
 				int inc = _osync_queue_read_data(queue, buffer + read, size - read, &error);
 				

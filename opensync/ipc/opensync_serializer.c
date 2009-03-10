@@ -278,7 +278,7 @@ osync_bool osync_demarshal_objformat_sink(OSyncMessage *message, OSyncObjFormatS
 osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *sink, OSyncError **error)
 {
 	int i = 0;
-	unsigned int num = 0;
+	int num = 0;
 
 	osync_assert(message);
 	osync_assert(sink);

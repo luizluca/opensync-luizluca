@@ -95,7 +95,7 @@ void conflict_handler_random(OSyncEngine *engine, OSyncMapping *mapping, void *u
 OSyncMappingTable *mappingtable_load(const char *path, const char *objtype, int num_mappings);
 void mappingtable_close(OSyncMappingTable *maptable);
 
-OSyncHashTable *hashtable_load(const char *path, const char *objtype, int entries);
+OSyncHashTable *hashtable_load(const char *path, const char *objtype, unsigned int entries);
 void check_hash(OSyncHashTable *table, const char *cmpuid);
 void check_mapping(OSyncMappingTable *table, int memberid, int mappingid, int numentries, const char *uid);
 
