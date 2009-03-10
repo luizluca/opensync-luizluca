@@ -209,12 +209,12 @@ OSyncPlugin *osync_plugin_env_find_plugin(OSyncPluginEnv *env, const char *name)
 	return NULL;
 }
 
-int osync_plugin_env_num_plugins(OSyncPluginEnv *env)
+unsigned int osync_plugin_env_num_plugins(OSyncPluginEnv *env)
 {
 	return osync_list_length(env->plugins);
 }
 
-OSyncPlugin *osync_plugin_env_nth_plugin(OSyncPluginEnv *env, int nth)
+OSyncPlugin *osync_plugin_env_nth_plugin(OSyncPluginEnv *env, unsigned int nth)
 {
 	return (OSyncPlugin *)osync_list_nth_data(env->plugins, nth);
 }

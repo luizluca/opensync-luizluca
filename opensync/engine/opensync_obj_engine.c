@@ -596,7 +596,7 @@ static void _osync_obj_engine_sync_done_callback(OSyncClientProxy *proxy, void *
 
 static osync_bool _create_mapping_engines(OSyncObjEngine *engine, OSyncError **error)
 {
-	int i = 0;
+	unsigned int i = 0;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
 	
 	for (i = 0; i < osync_mapping_table_num_mappings(engine->mapping_table); i++) {

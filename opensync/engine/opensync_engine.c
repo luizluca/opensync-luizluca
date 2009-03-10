@@ -1585,7 +1585,7 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 	osync_bool prev_sync_unclean = FALSE, first_sync = FALSE;
 	OSyncGroup *group = NULL;
 	OSyncList *o, *supported_objtypes;
-	int i;
+	unsigned int i;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
 
 	if (engine->state != OSYNC_ENGINE_STATE_UNINITIALIZED) {

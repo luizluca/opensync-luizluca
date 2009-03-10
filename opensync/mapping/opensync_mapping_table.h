@@ -114,7 +114,7 @@ OSYNC_EXPORT void osync_mapping_table_remove_mapping(OSyncMappingTable *table, O
  * @param table The mapping table object
  * @return Number of mappings
  */ 
-OSYNC_EXPORT int osync_mapping_table_num_mappings(OSyncMappingTable *table);
+OSYNC_EXPORT unsigned int osync_mapping_table_num_mappings(OSyncMappingTable *table);
 
 /**
  * @brief Get nth mapping object from mapping table 
@@ -123,7 +123,7 @@ OSYNC_EXPORT int osync_mapping_table_num_mappings(OSyncMappingTable *table);
  * @param nth The position of the mapping object
  * @return The nth mapping object from mapping table or NULL if nth position isn't available 
  */ 
-OSYNC_EXPORT OSyncMapping *osync_mapping_table_nth_mapping(OSyncMappingTable *table, int nth);
+OSYNC_EXPORT OSyncMapping *osync_mapping_table_nth_mapping(OSyncMappingTable *table, unsigned int nth);
 
 
 /**

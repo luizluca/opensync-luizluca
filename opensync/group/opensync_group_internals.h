@@ -95,7 +95,7 @@ OSYNC_TEST_EXPORT void osync_group_remove_filter(OSyncGroup *group, OSyncFilter 
  * @returns The number of filters
  * 
  */
-OSYNC_TEST_EXPORT int osync_group_num_filters(OSyncGroup *group);
+OSYNC_TEST_EXPORT unsigned int osync_group_num_filters(OSyncGroup *group);
 
 /** @brief Gets the nth filter of a group
  * 
@@ -107,7 +107,7 @@ OSYNC_TEST_EXPORT int osync_group_num_filters(OSyncGroup *group);
  * @returns The filter or NULL if not found
  * 
  */
-OSYNC_TEST_EXPORT OSyncFilter *osync_group_nth_filter(OSyncGroup *group, int nth);
+OSYNC_TEST_EXPORT OSyncFilter *osync_group_nth_filter(OSyncGroup *group, unsigned int nth);
 
 /** @brief Gets list of all supported object types in this group, including
  * mixed object types

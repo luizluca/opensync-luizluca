@@ -120,13 +120,13 @@ OSyncMappingEntry *osync_mapping_find_entry_by_member_id(OSyncMapping *mapping, 
 	return NULL;
 }
 
-int osync_mapping_num_entries(OSyncMapping *mapping)
+unsigned int osync_mapping_num_entries(OSyncMapping *mapping)
 {
 	osync_assert(mapping);
 	return osync_list_length(mapping->entries);
 }
 
-OSyncMappingEntry *osync_mapping_nth_entry(OSyncMapping *mapping, int nth)
+OSyncMappingEntry *osync_mapping_nth_entry(OSyncMapping *mapping, unsigned int nth)
 {
 	osync_assert(mapping);
 	return osync_list_nth_data(mapping->entries, nth);

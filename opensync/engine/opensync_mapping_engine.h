@@ -22,7 +22,7 @@
 #ifndef OPENSYNC_MAPPING_ENGINE_H_
 #define OPENSYNC_MAPPING_ENGINE_H_
 
-OSYNC_EXPORT int osync_mapping_engine_num_changes(OSyncMappingEngine *engine);
+OSYNC_EXPORT unsigned int osync_mapping_engine_num_changes(OSyncMappingEngine *engine);
 
 /** @brief Search for the nth entry in the mapping
  *
@@ -30,7 +30,7 @@ OSYNC_EXPORT int osync_mapping_engine_num_changes(OSyncMappingEngine *engine);
  * @param nth The value of the position
  * @returns The pointer to the nth change. NULL if there isn't enough entries in the mapping.
  */
-OSYNC_EXPORT OSyncChange *osync_mapping_engine_nth_change(OSyncMappingEngine *engine, int nth);
+OSYNC_EXPORT OSyncChange *osync_mapping_engine_nth_change(OSyncMappingEngine *engine, unsigned int nth);
 
 /** @brief Search in the mapping for the change of the member.
  *

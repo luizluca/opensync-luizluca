@@ -131,7 +131,7 @@ OSYNC_EXPORT void osync_xmlfield_set_attr(OSyncXMLField *xmlfield, const char *a
  * @param xmlfield Pointer to the xmlfield object
  * @return The count of attributes in the xmlfield
  */
-OSYNC_EXPORT int osync_xmlfield_get_attr_count(OSyncXMLField *xmlfield);
+OSYNC_EXPORT unsigned int osync_xmlfield_get_attr_count(OSyncXMLField *xmlfield);
 
 /**
  * @brief Get the name of the nth attribute of a xmlfield
@@ -139,7 +139,7 @@ OSYNC_EXPORT int osync_xmlfield_get_attr_count(OSyncXMLField *xmlfield);
  * @param nth The index of the attribute
  * @return The name of the nth attribute of the xmlfield or NULL in case of error
  */
-OSYNC_EXPORT const char *osync_xmlfield_get_nth_attr_name(OSyncXMLField *xmlfield, int nth);
+OSYNC_EXPORT const char *osync_xmlfield_get_nth_attr_name(OSyncXMLField *xmlfield, unsigned int nth);
 
 /**
  * @brief Get the value of the nth attribute of a xmlfield
@@ -147,7 +147,7 @@ OSYNC_EXPORT const char *osync_xmlfield_get_nth_attr_name(OSyncXMLField *xmlfiel
  * @param nth The index of the attribute
  * @return The value of the nth attribute of the xmlfield or NULL in case of error
  */
-OSYNC_EXPORT const char *osync_xmlfield_get_nth_attr_value(OSyncXMLField *xmlfield, int nth);
+OSYNC_EXPORT const char *osync_xmlfield_get_nth_attr_value(OSyncXMLField *xmlfield, unsigned int nth);
 
 /**
  * @brief Get the value of a key/value pair of a xmlfield
@@ -178,7 +178,7 @@ OSYNC_EXPORT void osync_xmlfield_add_key_value(OSyncXMLField *xmlfield, const ch
  * @param xmlfield Pointer to the xmlfield object
  * @return The count of keys in the xmlfield
  */
-OSYNC_EXPORT int osync_xmlfield_get_key_count(OSyncXMLField *xmlfield);
+OSYNC_EXPORT unsigned int osync_xmlfield_get_key_count(OSyncXMLField *xmlfield);
 
 /**
  * @brief Get the name of the nth key of a xmlfield
@@ -186,7 +186,7 @@ OSYNC_EXPORT int osync_xmlfield_get_key_count(OSyncXMLField *xmlfield);
  * @param nth The index of the key
  * @return The name of the nth key of the xmlfield or NULL in case of error
  */
-OSYNC_EXPORT const char *osync_xmlfield_get_nth_key_name(OSyncXMLField *xmlfield, int nth);
+OSYNC_EXPORT const char *osync_xmlfield_get_nth_key_name(OSyncXMLField *xmlfield, unsigned int nth);
 
 /**
  * @brief Get the value of the nth key of a xmlfield
@@ -194,7 +194,7 @@ OSYNC_EXPORT const char *osync_xmlfield_get_nth_key_name(OSyncXMLField *xmlfield
  * @param nth The index of the key
  * @return The value of the nth key of the xmlfield or NULL in case of error
  */
-OSYNC_EXPORT const char *osync_xmlfield_get_nth_key_value(OSyncXMLField *xmlfield, int nth);
+OSYNC_EXPORT const char *osync_xmlfield_get_nth_key_value(OSyncXMLField *xmlfield, unsigned int nth);
 
 /**
  * @brief Set the value of the nth key of a xmlfield
@@ -203,7 +203,7 @@ OSYNC_EXPORT const char *osync_xmlfield_get_nth_key_value(OSyncXMLField *xmlfiel
  * @param value The value of the key/value pair
  * @return The value of the nth key of the xmlfield or NULL in case of error
  */
-OSYNC_EXPORT void osync_xmlfield_set_nth_key_value(OSyncXMLField *xmlfield, int nth, const char *value);
+OSYNC_EXPORT void osync_xmlfield_set_nth_key_value(OSyncXMLField *xmlfield, unsigned int nth, const char *value);
 
 /**
  * @brief Sort all key nodes of an xmlfield. This function needs to be called

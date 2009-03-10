@@ -458,7 +458,7 @@ const char *osync_group_get_name(OSyncGroup *group)
 osync_bool osync_group_save(OSyncGroup *group, OSyncError **error)
 {
 	char *filename = NULL;
-	int i;
+	unsigned int i;
 	xmlDocPtr doc;
 	char *tmstr = NULL;
 	char *version_str = NULL;
@@ -798,13 +798,13 @@ OSyncMember *osync_group_find_member(OSyncGroup *group, int id)
 	return NULL;
 }
 
-OSyncMember *osync_group_nth_member(OSyncGroup *group, int nth)
+OSyncMember *osync_group_nth_member(OSyncGroup *group, unsigned int nth)
 {
 	osync_assert(group);
 	return (OSyncMember *)g_list_nth_data(group->members, nth);
 }
 
-int osync_group_num_members(OSyncGroup *group)
+unsigned int osync_group_num_members(OSyncGroup *group)
 {
 	osync_assert(group);
 	return g_list_length(group->members);
@@ -824,10 +824,10 @@ void osync_group_set_configdir(OSyncGroup *group, const char *directory)
 	group->configdir = osync_strdup(directory);
 }
 
-int osync_group_num_objtypes(OSyncGroup *group)
+unsigned int osync_group_num_objtypes(OSyncGroup *group)
 {
 	GList *objs = NULL;
-	int len = 0;
+	unsigned int len = 0;
 	osync_assert(group);
 	objs = osync_group_get_supported_objtypes(group);
 	len = g_list_length(objs);
@@ -835,7 +835,7 @@ int osync_group_num_objtypes(OSyncGroup *group)
 	return len;
 }
 
-const char *osync_group_nth_objtype(OSyncGroup *group, int nth)
+const char *osync_group_nth_objtype(OSyncGroup *group, unsigned int nth)
 {
 	GList *objs = NULL;
 	const char *objtype = NULL;
@@ -916,13 +916,13 @@ void osync_group_remove_filter(OSyncGroup *group, OSyncFilter *filter)
 	osync_filter_unref(filter);
 }
 
-int osync_group_num_filters(OSyncGroup *group)
+unsigned int osync_group_num_filters(OSyncGroup *group)
 {
 	osync_assert(group);
 	return g_list_length(group->filters);
 }
 
-OSyncFilter *osync_group_nth_filter(OSyncGroup *group, int nth)
+OSyncFilter *osync_group_nth_filter(OSyncGroup *group, unsigned int nth)
 {
 	osync_assert(group);
 	return g_list_nth_data(group->filters, nth);

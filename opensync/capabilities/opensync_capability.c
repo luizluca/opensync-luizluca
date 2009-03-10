@@ -228,9 +228,9 @@ osync_bool osync_capability_has_key(OSyncCapability *capability)
 		return FALSE;	
 }
 
-int osync_capability_get_key_count(OSyncCapability *capability)
+unsigned int osync_capability_get_key_count(OSyncCapability *capability)
 {
-	int count;
+	unsigned int count;
 	xmlNodePtr child = NULL;
 
 	osync_assert(capability);
@@ -243,9 +243,9 @@ int osync_capability_get_key_count(OSyncCapability *capability)
 	return count;
 }
 
-const char *osync_capability_get_nth_key(OSyncCapability *capability, int nth)
+const char *osync_capability_get_nth_key(OSyncCapability *capability, unsigned int nth)
 {
-	int count = 0;
+	unsigned int count = 0;
 	xmlNodePtr child = NULL;
 
 	osync_assert(capability);

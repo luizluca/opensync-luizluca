@@ -92,12 +92,12 @@ void create_case_timeout(Suite *s, const char *name, TFun function, int timeout)
 
 void conflict_handler_random(OSyncEngine *engine, OSyncMapping *mapping, void *user_data);
 
-OSyncMappingTable *mappingtable_load(const char *path, const char *objtype, int num_mappings);
+OSyncMappingTable *mappingtable_load(const char *path, const char *objtype, unsigned int num_mappings);
 void mappingtable_close(OSyncMappingTable *maptable);
 
 OSyncHashTable *hashtable_load(const char *path, const char *objtype, unsigned int entries);
 void check_hash(OSyncHashTable *table, const char *cmpuid);
-void check_mapping(OSyncMappingTable *table, int memberid, int mappingid, int numentries, const char *uid);
+void check_mapping(OSyncMappingTable *table, int memberid, int mappingid, unsigned int numentries, const char *uid);
 
 void create_random_file(const char *path);
 

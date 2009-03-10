@@ -90,7 +90,7 @@ OSYNC_EXPORT osync_bool osync_capability_has_key(OSyncCapability *capability);
  * @param capability The pointer to a capability object
  * @return The count of keys of the capability
  */
-OSYNC_EXPORT int osync_capability_get_key_count(OSyncCapability *capability);
+OSYNC_EXPORT unsigned int osync_capability_get_key_count(OSyncCapability *capability);
 
 /**
  * @brief Get the name of the nth key of a capability
@@ -98,7 +98,7 @@ OSYNC_EXPORT int osync_capability_get_key_count(OSyncCapability *capability);
  * @param nth The number of the key
  * @return The name of the nth key of the capability or NULL in case of error
  */
-OSYNC_EXPORT const char *osync_capability_get_nth_key(OSyncCapability *capability, int nth);
+OSYNC_EXPORT const char *osync_capability_get_nth_key(OSyncCapability *capability, unsigned int nth);
 
 /**
  * @brief Add a key to a capability

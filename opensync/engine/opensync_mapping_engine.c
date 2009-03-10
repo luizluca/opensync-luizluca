@@ -161,7 +161,7 @@ static OSyncMappingEntryEngine *_osync_mapping_engine_get_latest_entry(OSyncMapp
 	OSyncMappingEntryEngine *latest_entry = NULL; 
 	OSyncChange *latest_change = NULL;
 	time_t latest = 0;
-	int i;
+	unsigned int i;
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
 	osync_trace(TRACE_INTERNAL, "mapping number: %i", osync_mapping_engine_num_changes(engine));
@@ -530,9 +530,9 @@ OSyncMappingEntryEngine *osync_mapping_engine_get_entry(OSyncMappingEngine *engi
 
 
 
-int osync_mapping_engine_num_changes(OSyncMappingEngine *engine)
+unsigned int osync_mapping_engine_num_changes(OSyncMappingEngine *engine)
 {
-	int num = 0;
+	unsigned int num = 0;
 	OSyncList *e = NULL;
 	osync_assert(engine);
 	for (e = engine->entries; e; e = e->next) {
@@ -544,9 +544,9 @@ int osync_mapping_engine_num_changes(OSyncMappingEngine *engine)
 	return num;
 }
 
-OSyncChange *osync_mapping_engine_nth_change(OSyncMappingEngine *engine, int nth)
+OSyncChange *osync_mapping_engine_nth_change(OSyncMappingEngine *engine, unsigned int nth)
 {
-	int num = 0;
+	unsigned int num = 0;
 	OSyncList *e = NULL;
 	osync_assert(engine);
 	for (e = engine->entries; e; e = e->next) {

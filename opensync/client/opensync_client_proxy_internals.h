@@ -59,8 +59,8 @@ OSYNC_TEST_EXPORT osync_bool osync_client_proxy_discover(OSyncClientProxy *proxy
 void osync_client_proxy_set_discover_timeout(OSyncClientProxy *proxy, unsigned int timeout);
 unsigned int osync_client_proxy_get_discover_timeout(OSyncClientProxy *proxy);
 
-OSYNC_TEST_EXPORT int osync_client_proxy_num_objtypes(OSyncClientProxy *proxy);
-OSYNC_TEST_EXPORT OSyncObjTypeSink *osync_client_proxy_nth_objtype(OSyncClientProxy *proxy, int nth);
+OSYNC_TEST_EXPORT unsigned int osync_client_proxy_num_objtypes(OSyncClientProxy *proxy);
+OSYNC_TEST_EXPORT OSyncObjTypeSink *osync_client_proxy_nth_objtype(OSyncClientProxy *proxy, unsigned int nth);
 OSyncObjTypeSink *osync_client_proxy_find_objtype_sink(OSyncClientProxy *proxy, const char *objtype);
 
 OSYNC_TEST_EXPORT osync_bool osync_client_proxy_connect(OSyncClientProxy *proxy, connect_cb callback, void *userdata, const char *objtype, osync_bool slowsync, OSyncError **error);

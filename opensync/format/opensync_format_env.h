@@ -108,7 +108,7 @@ OSYNC_EXPORT OSyncObjFormat *osync_format_env_find_objformat(OSyncFormatEnv *env
  * @returns The number of object formats
  * 
  */
-OSYNC_EXPORT int osync_format_env_num_objformats(OSyncFormatEnv *env);
+OSYNC_EXPORT unsigned int osync_format_env_num_objformats(OSyncFormatEnv *env);
 
 /** @brief Gets the nth object format
  * 
@@ -117,7 +117,7 @@ OSYNC_EXPORT int osync_format_env_num_objformats(OSyncFormatEnv *env);
  * @returns The object format
  * 
  */
-OSYNC_EXPORT OSyncObjFormat *osync_format_env_nth_objformat(OSyncFormatEnv *env, int nth);
+OSYNC_EXPORT OSyncObjFormat *osync_format_env_nth_objformat(OSyncFormatEnv *env, unsigned int nth);
 
 /** @brief Registers Format Converter or Detector to Format Environment
  * 

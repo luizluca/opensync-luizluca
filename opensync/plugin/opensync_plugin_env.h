@@ -109,7 +109,7 @@ OSYNC_EXPORT OSyncPlugin *osync_plugin_env_find_plugin(OSyncPluginEnv *env, cons
  * @returns Number of plugins
  * 
  */
-OSYNC_EXPORT int osync_plugin_env_num_plugins(OSyncPluginEnv *env);
+OSYNC_EXPORT unsigned int osync_plugin_env_num_plugins(OSyncPluginEnv *env);
 
 /** @brief Returns pointer to nth plugin
  * 
@@ -120,7 +120,7 @@ OSYNC_EXPORT int osync_plugin_env_num_plugins(OSyncPluginEnv *env);
  * @returns Pointer to plugin
  * 
  */
-OSYNC_EXPORT OSyncPlugin *osync_plugin_env_nth_plugin(OSyncPluginEnv *env, int nth);
+OSYNC_EXPORT OSyncPlugin *osync_plugin_env_nth_plugin(OSyncPluginEnv *env, unsigned int nth);
 
 /*@}*/
 

@@ -123,7 +123,7 @@ static osync_bool osync_updater_process_member_config(OSyncUpdater *updater, OSy
  * @param error Pointer to OSyncError which get stacked
  * @returns TRUE on success, FALSE on error. 
  */
-static osync_bool osync_updater_process_member(OSyncUpdater *updater, int nthmember, OSyncError **error);
+static osync_bool osync_updater_process_member(OSyncUpdater *updater, unsigned int nthmember, OSyncError **error);
 
 /** @brief Process update on group configuration.
  *

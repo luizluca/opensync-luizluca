@@ -98,7 +98,7 @@ OSYNC_TEST_EXPORT void osync_format_env_register_filter(OSyncFormatEnv *env, OSy
  * @returns The number of filters
  * 
  */
-OSYNC_TEST_EXPORT int osync_format_env_num_filters(OSyncFormatEnv *env);
+OSYNC_TEST_EXPORT unsigned int osync_format_env_num_filters(OSyncFormatEnv *env);
 
 /** @brief Gets the nth filter
  * 
@@ -107,7 +107,7 @@ OSYNC_TEST_EXPORT int osync_format_env_num_filters(OSyncFormatEnv *env);
  * @returns The filter
  * 
  */
-OSYNC_TEST_EXPORT OSyncCustomFilter *osync_format_env_nth_filter(OSyncFormatEnv *env, int nth);
+OSYNC_TEST_EXPORT OSyncCustomFilter *osync_format_env_nth_filter(OSyncFormatEnv *env, unsigned int nth);
 
 
 /** @brief Initialize all object formats of the format environment 

@@ -203,7 +203,7 @@ OSYNC_EXPORT OSyncMember *osync_group_find_member(OSyncGroup *group, int id);
  * @returns Pointer to the member
  * 
  */
-OSYNC_EXPORT OSyncMember *osync_group_nth_member(OSyncGroup *group, int nth);
+OSYNC_EXPORT OSyncMember *osync_group_nth_member(OSyncGroup *group, unsigned int nth);
 
 /** @brief Counts the members of the group
  * 
@@ -213,7 +213,7 @@ OSYNC_EXPORT OSyncMember *osync_group_nth_member(OSyncGroup *group, int nth);
  * @returns Number of members
  * 
  */
-OSYNC_EXPORT int osync_group_num_members(OSyncGroup *group);
+OSYNC_EXPORT unsigned int osync_group_num_members(OSyncGroup *group);
 
 
 /** @brief Returns the configdir for the group
@@ -242,7 +242,7 @@ OSYNC_EXPORT void osync_group_set_configdir(OSyncGroup *group, const char *direc
  * @returns Number of object types of the group 
  * 
  */
-OSYNC_EXPORT int osync_group_num_objtypes(OSyncGroup *group);
+OSYNC_EXPORT unsigned int osync_group_num_objtypes(OSyncGroup *group);
 
 /** @brief Gets the nth object type of the group
  * 
@@ -251,7 +251,7 @@ OSYNC_EXPORT int osync_group_num_objtypes(OSyncGroup *group);
  * @returns Name of the nth object type of the group
  * 
  */
-OSYNC_EXPORT const char *osync_group_nth_objtype(OSyncGroup *group, int nth);
+OSYNC_EXPORT const char *osync_group_nth_objtype(OSyncGroup *group, unsigned int nth);
 
 /** @brief Change the status of an object type in the group.
  * 

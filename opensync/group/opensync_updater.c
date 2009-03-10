@@ -265,7 +265,7 @@ static osync_bool osync_updater_process_member_config(OSyncUpdater *updater, OSy
 	return FALSE;
 }
 
-static osync_bool osync_updater_process_member(OSyncUpdater *updater, int nthmember, OSyncError **error)
+static osync_bool osync_updater_process_member(OSyncUpdater *updater, unsigned int nthmember, OSyncError **error)
 {
 	OSyncMember *member = NULL;
 	osync_assert(updater);

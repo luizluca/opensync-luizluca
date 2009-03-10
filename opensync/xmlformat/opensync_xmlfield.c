@@ -327,9 +327,9 @@ void osync_xmlfield_set_attr(OSyncXMLField *xmlfield, const char *attr, const ch
 	xmlSetProp(xmlfield->node, BAD_CAST attr, BAD_CAST value);
 }
 
-int osync_xmlfield_get_attr_count(OSyncXMLField *xmlfield)
+unsigned int osync_xmlfield_get_attr_count(OSyncXMLField *xmlfield)
 {
-	int count;
+	unsigned int count;
 	xmlAttrPtr attr = NULL;
 
 	osync_assert(xmlfield);
@@ -341,9 +341,9 @@ int osync_xmlfield_get_attr_count(OSyncXMLField *xmlfield)
 	return count;
 }
 
-const char *osync_xmlfield_get_nth_attr_name(OSyncXMLField *xmlfield, int nth)
+const char *osync_xmlfield_get_nth_attr_name(OSyncXMLField *xmlfield, unsigned int nth)
 {
-	int count;
+	unsigned int count;
 	xmlAttrPtr attr = NULL;
 
 	osync_assert(xmlfield);
@@ -358,9 +358,9 @@ const char *osync_xmlfield_get_nth_attr_name(OSyncXMLField *xmlfield, int nth)
 	return NULL;
 }
 
-const char *osync_xmlfield_get_nth_attr_value(OSyncXMLField *xmlfield, int nth)
+const char *osync_xmlfield_get_nth_attr_value(OSyncXMLField *xmlfield, unsigned int nth)
 {
-	int count;
+	unsigned int count;
 	xmlAttrPtr attr = NULL;
 
 	osync_assert(xmlfield);
@@ -436,9 +436,9 @@ void osync_xmlfield_add_key_value(OSyncXMLField *xmlfield, const char *key, cons
 	xmlfield->sorted = FALSE;
 }
 
-int osync_xmlfield_get_key_count(OSyncXMLField *xmlfield)
+unsigned int osync_xmlfield_get_key_count(OSyncXMLField *xmlfield)
 {
-	int count;
+	unsigned int count;
 	xmlNodePtr child = NULL;
 
 	osync_assert(xmlfield);
@@ -451,9 +451,9 @@ int osync_xmlfield_get_key_count(OSyncXMLField *xmlfield)
 	return count;
 }
 
-const char *osync_xmlfield_get_nth_key_name(OSyncXMLField *xmlfield, int nth)
+const char *osync_xmlfield_get_nth_key_name(OSyncXMLField *xmlfield, unsigned int nth)
 {
-	int count;
+	unsigned int count;
 	xmlNodePtr child = NULL;
 
 	osync_assert(xmlfield);
@@ -468,9 +468,9 @@ const char *osync_xmlfield_get_nth_key_name(OSyncXMLField *xmlfield, int nth)
 	return NULL;
 }
 
-const char *osync_xmlfield_get_nth_key_value(OSyncXMLField *xmlfield, int nth)
+const char *osync_xmlfield_get_nth_key_value(OSyncXMLField *xmlfield, unsigned int nth)
 {
-	int count;
+	unsigned int count;
 	xmlNodePtr child = NULL;
 
 	osync_assert(xmlfield);
@@ -487,9 +487,9 @@ const char *osync_xmlfield_get_nth_key_value(OSyncXMLField *xmlfield, int nth)
 	return NULL;
 }
 
-void osync_xmlfield_set_nth_key_value(OSyncXMLField *xmlfield, int nth, const char *value)
+void osync_xmlfield_set_nth_key_value(OSyncXMLField *xmlfield, unsigned int nth, const char *value)
 {
-	int count;
+	unsigned int count;
 	xmlNodePtr cur = NULL;
 
 	osync_assert(xmlfield);

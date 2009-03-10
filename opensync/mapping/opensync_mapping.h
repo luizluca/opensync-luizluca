@@ -77,7 +77,7 @@ OSYNC_EXPORT void osync_mapping_set_id(OSyncMapping *mapping, long long int id);
  * @param mapping Pointer to a mapping object
  * @returns the number of entries in the mapping
  */
-OSYNC_EXPORT int osync_mapping_num_entries(OSyncMapping *mapping);
+OSYNC_EXPORT unsigned int osync_mapping_num_entries(OSyncMapping *mapping);
 
 /**
  * @brief Get the nth entry in a mapping
@@ -85,7 +85,7 @@ OSYNC_EXPORT int osync_mapping_num_entries(OSyncMapping *mapping);
  * @param nth the index of the entry to get
  * @returns the nth entry in the mapping or NULL in case of error
  */
-OSYNC_EXPORT OSyncMappingEntry *osync_mapping_nth_entry(OSyncMapping *mapping, int nth);
+OSYNC_EXPORT OSyncMappingEntry *osync_mapping_nth_entry(OSyncMapping *mapping, unsigned int nth);
 
 
 /**

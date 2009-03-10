@@ -835,13 +835,13 @@ OSyncObjFormat *osync_format_env_find_objformat(OSyncFormatEnv *env, const char 
 	return NULL;
 }
 
-int osync_format_env_num_objformats(OSyncFormatEnv *env)
+unsigned int osync_format_env_num_objformats(OSyncFormatEnv *env)
 {
 	osync_assert(env);
 	return osync_list_length(env->objformats);
 }
 
-OSyncObjFormat *osync_format_env_nth_objformat(OSyncFormatEnv *env, int nth)
+OSyncObjFormat *osync_format_env_nth_objformat(OSyncFormatEnv *env, unsigned int nth)
 {
 	osync_assert(env);
 	return osync_list_nth_data(env->objformats, nth);
@@ -933,13 +933,13 @@ void osync_format_env_register_filter(OSyncFormatEnv *env, OSyncCustomFilter *fi
 	osync_custom_filter_ref(filter);
 }
 
-int osync_format_env_num_filters(OSyncFormatEnv *env)
+unsigned int osync_format_env_num_filters(OSyncFormatEnv *env)
 {
 	osync_assert(env);
 	return osync_list_length(env->custom_filters);
 }
 
-OSyncCustomFilter *osync_format_env_nth_filter(OSyncFormatEnv *env, int nth)
+OSyncCustomFilter *osync_format_env_nth_filter(OSyncFormatEnv *env, unsigned int nth)
 {
 	osync_assert(env);
 	return osync_list_nth_data(env->custom_filters, nth);

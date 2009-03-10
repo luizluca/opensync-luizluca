@@ -1330,13 +1330,13 @@ void osync_client_proxy_set_discover_timeout(OSyncClientProxy *proxy, unsigned i
 	proxy->timeout.discover = timeout;
 }
 
-int osync_client_proxy_num_objtypes(OSyncClientProxy *proxy)
+unsigned int osync_client_proxy_num_objtypes(OSyncClientProxy *proxy)
 {
 	osync_assert(proxy);
 	return g_list_length(proxy->objtypes);
 }
 
-OSyncObjTypeSink *osync_client_proxy_nth_objtype(OSyncClientProxy *proxy, int nth)
+OSyncObjTypeSink *osync_client_proxy_nth_objtype(OSyncClientProxy *proxy, unsigned int nth)
 {
 	osync_assert(proxy);
 	return g_list_nth_data(proxy->objtypes, nth);

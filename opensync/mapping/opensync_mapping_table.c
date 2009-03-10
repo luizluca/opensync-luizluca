@@ -204,13 +204,13 @@ void osync_mapping_table_remove_mapping(OSyncMappingTable *table, OSyncMapping *
 	osync_mapping_unref(mapping);
 }
 
-int osync_mapping_table_num_mappings(OSyncMappingTable *table)
+unsigned int osync_mapping_table_num_mappings(OSyncMappingTable *table)
 {
 	osync_assert(table);
 	return osync_list_length(table->mappings);
 }
 
-OSyncMapping *osync_mapping_table_nth_mapping(OSyncMappingTable *table, int nth)
+OSyncMapping *osync_mapping_table_nth_mapping(OSyncMappingTable *table, unsigned int nth)
 {
 	osync_assert(table);
 	return osync_list_nth_data(table->mappings, nth);
