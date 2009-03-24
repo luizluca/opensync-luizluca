@@ -26,7 +26,7 @@
 
 #include "opensync-data.h"
 #include "opensync-helper.h"
-#include "opensync-db.h"
+#include "db/opensync_db_internals.h"
 
 /* start private api */
 

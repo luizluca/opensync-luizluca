@@ -23,7 +23,12 @@
 
 OPENSYNC_BEGIN_DECLS
 
+/* FIXME: Legacy include. Will be dropped for 0.39 */
+#warning "FIXME: <opensync/opensync-db.h> Legacy include. Will be dropped for 0.39."
+
+/* TODO: new public interface of #1050
 #include "db/opensync_db.h"
+*/
 
 OPENSYNC_END_DECLS
 

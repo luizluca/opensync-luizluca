@@ -22,13 +22,14 @@
 #include "opensync_internals.h"
 
 #include "opensync-format.h"
+
 #include "format/opensync_filter_internals.h"
 #include "common/opensync_xml_internals.h"
+#include "db/opensync_db_internals.h"
 
 #include "opensync-group.h"
 #include "opensync_group_internals.h"
 #include "opensync_group_private.h"
-#include "opensync-db.h"
 #include "opensync_member_internals.h"
 
 #ifdef OPENSYNC_UNITTESTS

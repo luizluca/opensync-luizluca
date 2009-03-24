@@ -29,7 +29,7 @@
 #include "opensync-archive.h"
 #include "opensync_archive_private.h"
 #include "opensync_archive_internals.h"
-#include "opensync-db.h"
+#include "db/opensync_db_internals.h"
 
 static osync_bool osync_archive_create_changes(OSyncDB *db, const char *objtype, OSyncError **error)
 {

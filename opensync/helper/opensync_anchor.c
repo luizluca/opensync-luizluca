@@ -22,7 +22,7 @@
 #include "opensync_internals.h"
 
 #include "opensync-helper.h"
-#include "opensync-db.h"
+#include "db/opensync_db_internals.h"
 
 #include "opensync_anchor_internals.h"
 #include "opensync_anchor_private.h"
