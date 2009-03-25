@@ -259,6 +259,7 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 	OSyncList *unmapped_mappings = NULL;
 	OSyncConvCmpResult result = 0;
 	OSyncMappingEntryEngine *entry_engine = NULL;
+	OSyncChange *old_change;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, engine);
 	//osync_trace_disable();
@@ -298,10 +299,33 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 				mapping_engine->conflict = TRUE;
 			} else if (result == OSYNC_CONV_DATA_SAME) {
 				unmapped_mappings = osync_list_remove(unmapped_mappings, mapping_engine);
+				mapping_engine->conflict = FALSE;
 			}
+
 			/* Update the entry which belongs to our sinkengine with the the change */
 			entry_engine = osync_mapping_engine_get_entry(mapping_engine, sinkengine);
 			osync_assert(entry_engine);
+
+			/* Don't overwrite unprefered entry_engines (e.g. SIMILAR).
+			 *
+			 * Secenario: First a mapping with SIMILAR get created. Later a mapping
+			 * with SAME compare result gets detected. The SAME mapping engine get prefered.
+			 * 
+			 * The old change gets moved into a new mapping_engine.
+			 */
+			if ((old_change = osync_entry_engine_get_change(entry_engine))) {
+				OSyncMappingEngine *old_mapping_engine = NULL;
+				OSyncMappingEntryEngine *old_entry_engine = NULL;
+				old_mapping_engine = _osync_obj_engine_create_mapping_engine(engine, error);
+				if (!old_mapping_engine)
+					goto error;
+				
+				new_mappings = osync_list_append(new_mappings, old_mapping_engine);
+				unmapped_mappings = osync_list_append(unmapped_mappings, old_mapping_engine);
+
+				old_entry_engine = osync_mapping_engine_get_entry(old_mapping_engine, sinkengine);
+				osync_entry_engine_update(old_entry_engine, old_change);
+			}
 			
 			osync_entry_engine_update(entry_engine, change);
 			sinkengine->unmapped = osync_list_remove(sinkengine->unmapped, sinkengine->unmapped->data);
