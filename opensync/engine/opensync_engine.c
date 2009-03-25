@@ -1556,9 +1556,9 @@ osync_bool osync_engine_initialize_formats(OSyncEngine *engine, OSyncError **err
 	return FALSE;
 }
 
-unsigned int osync_engine_num_active_proxies_for_objtypes(OSyncEngine *engine, const char *objtype)
+unsigned int osync_engine_num_proxies_for_objtypes(OSyncEngine *engine, const char *objtype)
 {
-	unsigned int num, i, active_proxies = 0;
+	unsigned int num, i, proxies = 0;
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %s)", __func__, engine, objtype);
 
@@ -1567,17 +1567,44 @@ unsigned int osync_engine_num_active_proxies_for_objtypes(OSyncEngine *engine, c
 		OSyncClientProxy *proxy = osync_engine_nth_proxy(engine, i);
 		OSyncObjTypeSink *sink = osync_client_proxy_find_objtype_sink(proxy, objtype);
 
-		if (!sink) {
-			OSyncMember *member = osync_client_proxy_get_member(proxy);
-			if (!osync_member_get_alternative_objtype(member, objtype))
-				continue;
-		}
+		if (!sink)
+			continue;
 
-		active_proxies++;
+		proxies++;
 	}
 
-	osync_trace(TRACE_EXIT, "%s: %u", __func__, active_proxies);
-	return active_proxies;
+	osync_trace(TRACE_EXIT, "%s: %u", __func__, proxies);
+	return proxies;
+}
+
+unsigned int osync_engine_num_proxies_for_alternative_objtypes(OSyncEngine *engine, const char *objtype)
+{
+	const char *alternative_objtype;
+	unsigned int num, i, proxies = 0;
+
+	osync_trace(TRACE_ENTRY, "%s(%p, %s)", __func__, engine, objtype);
+
+	num = osync_engine_num_proxies(engine);
+	for (i = 0; i < num; i++) {
+		OSyncClientProxy *proxy = osync_engine_nth_proxy(engine, i);
+		OSyncMember *member = osync_client_proxy_get_member(proxy);
+		OSyncObjTypeSink *sink = osync_client_proxy_find_objtype_sink(proxy, objtype);
+
+		if (sink)
+			continue;
+
+		/* Don't count alternative_objtype of the member if this alternative_objtype has
+		 * is already in a (potential) sink pair/objengine.
+		 */
+		if (!(alternative_objtype = osync_member_get_alternative_objtype(member, objtype))
+				|| osync_engine_num_proxies_for_objtypes(engine, alternative_objtype) > 1)
+			continue;
+
+		proxies++;
+	}
+
+	osync_trace(TRACE_EXIT, "%s: %u", __func__, proxies);
+	return proxies;
 }
 
 osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
@@ -1643,8 +1670,6 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 		const char *objtype = o->data;
 		OSyncObjEngine *objengine = NULL;
 
-		osync_trace(TRACE_INTERNAL, "ObjType: %s", objtype);
-
 		/* Respect if the object type is disabled */
 		if (!osync_group_objtype_enabled(engine->group, objtype))
 			continue;
@@ -1652,8 +1677,11 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 		/* Check if there are at least two proxies with native objtype
 		 * and alternative-objtypes to sync this objtype
 		 */
-		if (osync_engine_num_active_proxies_for_objtypes(engine, objtype) < 2)
+		if (osync_engine_num_proxies_for_alternative_objtypes(engine, objtype)
+			+ osync_engine_num_proxies_for_objtypes(engine, objtype) < 2)
 			continue;
+
+		osync_trace(TRACE_INTERNAL, "Activating ObjType: %s", objtype);
 
 		objengine = osync_obj_engine_new(engine, objtype, engine->formatenv, error);
 		if (!objengine)

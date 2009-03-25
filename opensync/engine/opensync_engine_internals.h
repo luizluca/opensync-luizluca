@@ -144,6 +144,28 @@ osync_bool osync_engine_handle_mixed_objtypes(OSyncEngine *engine, OSyncError **
  */
 osync_bool osync_engine_slowsync_for_mixed_objengines(OSyncEngine *engine, OSyncError **error);
 
+/** @brief Returns the number of proxies which support natively the specific ObjType
+ *
+ * @param engine Pointer to engine
+ * @param objtype The name of the ObjType
+ * @returns Number of proxies which support the supplied objtype natively.
+ *
+ */
+unsigned int osync_engine_num_proxies_for_objtypes(OSyncEngine *engine, const char *objtype);
+
+
+/** @brief Returns the number of proxies which support an ObjType indirect via an alternative
+ * ObjType
+ *
+ * This function is useful to setup sinks for mixed-objtype synchronization
+ *
+ * @param engine Pointer to engine
+ * @param objtype The name of the ObjType
+ * @returns Number of proxies which support the supplied objtype via an alternative ObjType (mixed objtype syncing)
+ *
+ */
+unsigned int osync_engine_num_proxies_for_alternative_objtypes(OSyncEngine *engine, const char *objtype);
+
 /*@}*/
 
 #endif /*OPENSYNC_ENGINE_INTERNALS_H_*/
