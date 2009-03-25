@@ -119,7 +119,7 @@ OSYNC_EXPORT osync_bool osync_data_has_data(OSyncData *data);
  * objects they should specify a print function.
  * 
  * @param data The data to get printable
- * @return A string describing the object
+ * @return A string describing the object which must be freed by the caller with osync_free()
  */
 OSYNC_EXPORT char *osync_data_get_printable(OSyncData *data);
 
