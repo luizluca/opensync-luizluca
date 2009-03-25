@@ -509,7 +509,15 @@ START_TEST (engine_error_dual_connect_error)
 	fail_unless(num_engine_read == 0, NULL);
 	fail_unless(num_engine_written == 0, NULL);
 	fail_unless(num_engine_sync_done == 0, NULL);
-	fail_unless(num_engine_disconnected == 0, NULL);
+
+	/* Engine always disconnects - even on an error.
+	 * See _osync_engine_generate_disconnected_event()
+	 *
+	 * This is just the call of the event callback,
+	 * in theory no disconnect function of proxies get called.
+	 */
+	fail_unless(num_engine_disconnected == 1, NULL);
+
 	fail_unless(num_engine_successful == 0, NULL);
 	fail_unless(num_engine_end_conflicts == 0, NULL);
 	fail_unless(num_engine_prev_unclean == 0, NULL);
