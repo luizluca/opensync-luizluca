@@ -2562,6 +2562,24 @@ START_TEST (sync_detect_obj)
 }
 END_TEST
 
+
+/* Problem: Groups with several ObjTypeSink configured. 
+ * With additional sink combiniation due to mixed-objtype syncing.
+ *
+ * Example:
+ *
+ * Member1: mockformat1, mockformat2, mockformat3
+ * Member2: mockformat1
+ *
+ * mockformat2 and mockformat1 are candidates for mixed-objtype type syncing.
+ *
+ * (mockformat1/mockobjtype1 and mockformat2/mockobjtype2)
+ *
+ * Expected behavior should be that only one Sink Pair of Proxies gets created,
+ * NOT 2 Sink Pairs with an additional dummy Sink.
+ *
+ * Expected result: ObjTypeSink mockobjtype1 with mockformat1 for member 1 and 2
+ */
 START_TEST (sync_detect_obj2)
 {
 	char *testbed = setup_testbed("sync_multi");
