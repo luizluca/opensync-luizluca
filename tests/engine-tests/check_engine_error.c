@@ -3001,6 +3001,47 @@ START_TEST (engine_error_missing_format_plugin)
 }
 END_TEST
 
+START_TEST (engine_error_discover_error)
+{
+	char *testbed = setup_testbed("sync");
+	char *formatdir = g_strdup_printf("%s/formats", testbed);
+	char *plugindir = g_strdup_printf("%s/plugins", testbed);
+
+	OSyncError *error = NULL;
+	OSyncGroup *group = osync_group_new(&error);
+	osync_group_set_schemadir(group, testbed);
+	osync_group_load(group, "configs/group", &error); 
+	fail_unless(error == NULL, NULL);
+
+	OSyncMember *member = osync_group_nth_member(group, 1);
+		
+	OSyncEngine *engine = osync_engine_new(group, &error);
+	fail_unless(engine != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+
+	osync_engine_set_schemadir(engine, testbed);
+	osync_engine_set_plugindir(engine, plugindir);
+	osync_engine_set_formatdir(engine, formatdir);
+
+	/* This will trigger an error in the mock-sync plugin of member 1 */
+	/* in the discover function                                     */
+	g_setenv("MOCK_DISCOVER_ERROR", "1", TRUE);
+	
+	fail_unless(!osync_engine_discover_and_block(engine, member, &error), NULL);
+	fail_unless(error != NULL, NULL);
+	fail_unless(strcmp("MOCK_DISCOVER_ERROR on purpose!", osync_error_print(&error)) == 0, NULL);
+	osync_error_unref(&error);
+	
+	osync_engine_unref(engine);
+	osync_group_unref(group);	
+	g_free(formatdir);
+	g_free(plugindir);
+	
+	destroy_testbed(testbed);
+}
+END_TEST
+
+
 OSYNC_TESTCASE_START("engine_error")
 OSYNC_TESTCASE_ADD(engine_error_single_init_error)
 OSYNC_TESTCASE_ADD(engine_error_double_init_error)
@@ -3064,6 +3105,8 @@ OSYNC_TESTCASE_ADD(engine_error_disconnect_timeout_and_error)
 OSYNC_TESTCASE_ADD(engine_error_get_changes_disconnect_error)
 
 OSYNC_TESTCASE_ADD(engine_error_missing_format_plugin)
+
+OSYNC_TESTCASE_ADD(engine_error_discover_error)
 
 OSYNC_TESTCASE_END
 

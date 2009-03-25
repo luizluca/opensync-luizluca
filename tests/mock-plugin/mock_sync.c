@@ -796,6 +796,13 @@ static osync_bool mock_discover(OSyncPluginInfo *info, void *data, OSyncError **
 	/* we can set here the capabilities, but for the file-sync
 	 * plugin they are static and shipped with opensync */
 
+
+	if (mock_get_error(info->memberid, "MOCK_DISCOVER_ERROR")) {
+		osync_error_set(error, OSYNC_ERROR_EXPECTED, "MOCK_DISCOVER_ERROR on purpose!");
+		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+		return FALSE;
+	}
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
 }

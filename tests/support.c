@@ -78,6 +78,8 @@ static void reset_env(void)
 	g_unsetenv("MOCK_SYNC_ALWAYS_CHANGETYPE_MODIFIED");
 
 	g_unsetenv("MOCK_FORMAT_PATH_COMPARE_NO");
+
+	g_unsetenv("MOCK_DISCOVER_ERROR");
 }
 
 

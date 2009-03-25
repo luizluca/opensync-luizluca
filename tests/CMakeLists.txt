@@ -196,6 +196,7 @@ OSYNC_TESTCASE( engine-error engine_error_dual_disconnect_timeout)
 OSYNC_TESTCASE( engine-error engine_error_disconnect_timeout_and_error)
 OSYNC_TESTCASE( engine-error engine_error_get_changes_disconnect_error)
 OSYNC_TESTCASE( engine-error engine_error_missing_format_plugin)
+OSYNC_TESTCASE( engine-error engine_error_discover_error)
 
 BUILD_CHECK_TEST( formatenv format-tests/check_format_env.c ${TEST_TARGET_LIBRARIES} )
 OSYNC_TESTCASE(formatenv format_env_create)

@@ -2244,15 +2244,16 @@ osync_bool osync_engine_discover_and_block(OSyncEngine *engine, OSyncMember *mem
 	g_cond_wait(engine->syncing, engine->syncing_mutex);
 	g_mutex_unlock(engine->syncing_mutex);
 	
-	if (!osync_engine_finalize(engine, error))
-		goto error;
-	
+
 	if (engine->error) {
 		osync_error_set_from_error(error, &(engine->error));
 		osync_error_unref(&(engine->error));
 		engine->error = NULL;
-		goto error;
+		goto error_finalize;
 	}
+
+	if (!osync_engine_finalize(engine, error))
+		goto error;
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
