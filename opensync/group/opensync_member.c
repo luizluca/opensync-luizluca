@@ -683,7 +683,13 @@ OSyncList *osync_member_get_objformat_sinks_all(OSyncMember *member)
 	for (o = member->objtypes; o; o = o->next) {
 		OSyncObjTypeSink *sink = o->data;
 		OSyncList *format_sinks = osync_objtype_sink_get_objformat_sinks(sink);
-		list = osync_list_concat(list, format_sinks);
+
+		/* Use a copy of the list to allow full processing without impact
+		 * on the orignal ObjFormatSink list of OSyncObjTypeSink
+		 */
+		OSyncList *copy_format_sinks = osync_list_copy(format_sinks);
+
+		list = osync_list_concat(list, copy_format_sinks);
 	}
 
 	return list;
