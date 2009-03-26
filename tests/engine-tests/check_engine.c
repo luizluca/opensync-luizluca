@@ -1612,6 +1612,8 @@ START_TEST (engine_sync_read_write)
 }
 END_TEST
 
+#define COMMIT_STRESS_GROUP6 250
+
 static void get_changes6(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data)
 {
 	mock_env *env = data;
@@ -1626,7 +1628,7 @@ static void get_changes6(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCon
 	
 	OSyncError *error = NULL;
 	
-	for (i = 0; i < 1000; i++) {
+	for (i = 0; i < COMMIT_STRESS_GROUP6; i++) {
 		OSyncChange *change = osync_change_new(&error);
 		osync_assert(change != NULL);
 		osync_assert(error == NULL);
@@ -1708,7 +1710,7 @@ static void finalize6(void *data)
 	osync_assert(env->num_connect == 1);
 	osync_assert(env->num_disconnect == 1);
 	osync_assert(env->num_get_changes == 1);
-	osync_assert(env->num_commit_changes == 1000);
+	osync_assert(env->num_commit_changes == COMMIT_STRESS_GROUP6);
 	osync_assert(env->main_connect == 0);
 	osync_assert(env->main_disconnect == 0);
 	osync_assert(env->main_get_changes == 0);
@@ -1783,7 +1785,7 @@ static OSyncDebugGroup *_create_group6(char *testbed)
 	return debug;
 }
 
-OSYNC_UNUSED START_TEST (engine_sync_read_write_stress)
+START_TEST (engine_sync_read_write_stress)
 {
 	char *testbed = setup_testbed("sync_setup");
 	char *formatdir = g_strdup_printf("%s/formats",  testbed);
@@ -2032,11 +2034,7 @@ OSYNC_TESTCASE_ADD(engine_sync_reuse)
 OSYNC_TESTCASE_ADD(engine_sync_stress)
 
 OSYNC_TESTCASE_ADD(engine_sync_read_write)
-/* Disabled due to randomly failing - #994
- *
-*/
 OSYNC_TESTCASE_ADD(engine_sync_read_write_stress)
-
 OSYNC_TESTCASE_ADD(engine_sync_read_write_stress2)
 
 //batch commit

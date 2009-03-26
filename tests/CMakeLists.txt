@@ -146,7 +146,7 @@ OSYNC_TESTCASE( engine engine_sync_out_of_order )
 OSYNC_TESTCASE( engine engine_sync_reuse )
 OSYNC_TESTCASE_DISABLED( engine engine_sync_stress "1040" )
 OSYNC_TESTCASE( engine engine_sync_read_write )
-OSYNC_TESTCASE_DISABLED( engine engine_sync_read_write_stress "994" )
+OSYNC_TESTCASE( engine engine_sync_read_write_stress )
 OSYNC_TESTCASE( engine engine_sync_read_write_stress2 )
 
 BUILD_CHECK_TEST( engine-error engine-tests/check_engine_error.c ${TEST_TARGET_LIBRARIES} )
