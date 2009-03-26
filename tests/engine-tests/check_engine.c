@@ -1341,7 +1341,7 @@ END_TEST
 
 START_TEST (engine_sync_stress)
 {
-	int n = 1000;
+	int n = 250; /* FIXME: Used to be 1000 - #1040 */
 	int i = 0;
 	
 	char *testbed = setup_testbed("sync_setup");
