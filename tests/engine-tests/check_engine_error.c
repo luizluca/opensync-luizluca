@@ -1455,9 +1455,11 @@ START_TEST (engine_error_get_changes_timeout_and_error)
 END_TEST
 
 
-/* FIXME: If get_changes delays and got timed out .. set change_callback to NULL.
-   Make sure changes from the plugin got completely ignored by the engine when the timout handler got called.
-   Even better would be to abort the get_changes call from the plugin process...
+/* If get_changes delays and got timed out ... tainted proxy with an error.
+ *
+ * Make sure changes from the plugin got completely ignored by the engine when the timout handler got called.
+ * Even better would be to abort the get_changes call from the plugin process...
+ *
 */
 START_TEST (engine_error_get_changes_timeout_sleep)
 {
@@ -1506,7 +1508,9 @@ START_TEST (engine_error_get_changes_timeout_sleep)
 	fail_unless(num_client_read == 0, NULL);
 	fail_unless(num_client_written == 0, NULL);
 
-	// FIXME: If get_changes delays and get timed out .. set change_callback to NULL. To make sure changes got completely ignored by the engine
+	/* If get_changes delays and get timed out .. proxy get tainted with an error.
+	 * To make sure changes got completely ignored by the engine.
+	 */
 	fail_unless(num_change_read == 0, NULL);
 
 	fail_unless(num_change_written == 0, NULL);

@@ -626,6 +626,7 @@ static void _osync_client_proxy_get_changes_handler(OSyncMessage *message, void 
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
 		osync_demarshal_error(message, &error);
 		ctx->get_changes_callback(proxy, ctx->get_changes_callback_data, error);
+		osync_client_proxy_set_error(proxy, error);
 		osync_error_unref(&error);
 	} else {
 		osync_error_set(&locerror, OSYNC_ERROR_GENERIC, "Unexpected reply");
@@ -761,6 +762,11 @@ static void _osync_client_proxy_message_handler(OSyncMessage *message, void *use
 	case OSYNC_MESSAGE_READ_CHANGE:
 
 		osync_assert(proxy->change_callback);
+
+		if (proxy->error) {
+			osync_trace(TRACE_INTERNAL, "WARNING: Proxy error taintend! Ignoring incoming changes!");
+			break;
+		}
 			
 		if (!osync_demarshal_change(message, &change, proxy->formatenv, &error))
 			goto error;
@@ -841,6 +847,9 @@ void osync_client_proxy_unref(OSyncClientProxy *proxy)
 
 		if (proxy->formatenv)
 			osync_format_env_unref(proxy->formatenv);
+
+		if (proxy->error)
+			osync_error_unref(&proxy->error);
 		
 		osync_free(proxy);
 	}
@@ -1759,3 +1768,17 @@ osync_bool osync_client_proxy_sync_done(OSyncClientProxy *proxy, sync_done_cb ca
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
 }
+
+void osync_client_proxy_set_error(OSyncClientProxy *proxy, OSyncError *error)
+{
+	osync_assert(proxy);
+	if (proxy->error) {
+		osync_error_stack(&error, &proxy->error);
+		osync_error_unref(&proxy->error);
+	}
+	
+	proxy->error = error;
+	if (error)
+		osync_error_ref(&error);
+}
+

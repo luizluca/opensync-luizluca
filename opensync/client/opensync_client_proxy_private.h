@@ -72,6 +72,11 @@
 		
 		change_cb change_callback;
 		void *change_callback_data;
+
+		/** Proxy specific error struct */
+		OSyncError *error;
 	};
+
+void osync_client_proxy_set_error(OSyncClientProxy *proxy, OSyncError *error);
 
 #endif /*OSYNC_CLIENT_PROXY_PRIVATE_H_*/
