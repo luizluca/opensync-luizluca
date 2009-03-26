@@ -1421,7 +1421,7 @@ static void get_changes5(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCon
 	
 	osync_change_set_changetype(change, OSYNC_CHANGE_TYPE_ADDED);
 
-	char *uid = g_strdup_printf("uid_%p", change);
+	char *uid = osync_rand_str(16); 
 	osync_change_set_uid(change, uid);
 	g_free(uid);
 	
@@ -1632,7 +1632,7 @@ static void get_changes6(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCon
 		osync_assert(error == NULL);
 		
 		osync_change_set_changetype(change, OSYNC_CHANGE_TYPE_ADDED);
-		char *uid = g_strdup_printf("uid_%p_%i", change, i);
+		char *uid = osync_rand_str(16);
 		osync_change_set_uid(change, uid);
 		g_free(uid);
 
@@ -1836,7 +1836,7 @@ static void get_changes7(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCon
 		osync_assert(error == NULL);
 		
 		osync_change_set_changetype(change, OSYNC_CHANGE_TYPE_ADDED);
-		char *uid = g_strdup_printf("uid_%p_%i", change, i);
+		char *uid = osync_rand_str(16);
 		osync_change_set_uid(change, uid);
 		g_free(uid);
 		
