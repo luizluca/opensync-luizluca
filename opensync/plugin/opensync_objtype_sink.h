@@ -358,86 +358,79 @@ OSYNC_EXPORT void osync_objtype_sink_set_slowsync(OSyncObjTypeSink *sink, osync_
  * Calls the get_changes function on a sink
  * 
  * @param sink Pointer to the sink
- * @param plugindata User data that will be passed on to the callback function
  * @param info Pointer to the plugin info object
  * @param ctx The sync context
  * 
  */
-OSYNC_EXPORT void osync_objtype_sink_get_changes(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx);
+OSYNC_EXPORT void osync_objtype_sink_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx);
 
 /** @brief Reads a single object by its uid
  * 
  * Calls the read_change function on the sink
  * 
  * @param sink Pointer to the sink
- * @param plugindata User data that will be passed on to the callback function
  * @param info Pointer to the plugin info object
  * @param change The change to read. The change must have the uid set
  * @param ctx The sync context
  * 
  */
-OSYNC_EXPORT void osync_objtype_sink_read_change(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncChange *change, OSyncContext *ctx);
+OSYNC_EXPORT void osync_objtype_sink_read_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncChange *change, OSyncContext *ctx);
 
 /** @brief Connects a sink to its device
  * 
  * Calls the connect function on a sink
  * 
  * @param sink Pointer to the sink
- * @param plugindata User data that will be passed on to the callback function
  * @param info Pointer to the plugin info object
  * @param ctx The sync context
  * 
  */
-OSYNC_EXPORT void osync_objtype_sink_connect(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx);
+OSYNC_EXPORT void osync_objtype_sink_connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx);
 
 /** @brief Disconnects a sink from its device
  * 
  * Calls the disconnect function on a sink
  * 
  * @param sink Pointer to the sink
- * @param plugindata User data that will be passed on to the callback function
  * @param info Pointer to the plugin info object
  * @param ctx The sync context
  * 
  */
-OSYNC_EXPORT void osync_objtype_sink_disconnect(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx);
+OSYNC_EXPORT void osync_objtype_sink_disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx);
 
 /** @brief Tells the sink that the sync was successfully completed
  * 
  * Calls the sync_done function on a sink
  * 
  * @param sink Pointer to the sink
- * @param plugindata User data that will be passed on to the callback function
  * @param info Pointer to the plugin info object
  * @param ctx The sync context
  * 
  */
-OSYNC_EXPORT void osync_objtype_sink_sync_done(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx);
+OSYNC_EXPORT void osync_objtype_sink_sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx);
 
 /** @brief Tells the sink that the connection was successfully completed
  * 
  * Calls the connect_done function on a sink
  * 
  * @param sink Pointer to the sink
- * @param plugindata User data that will be passed on to the callback function
  * @param info Pointer to the plugin info object
  * @param ctx The sync context
  * 
  */
-OSYNC_EXPORT void osync_objtype_sink_connect_done(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx);
+OSYNC_EXPORT void osync_objtype_sink_connect_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx);
 
 /** @brief Commits a change to the device
  * 
  * Calls the commit_change function on a sink
  * 
  * @param sink Pointer to the sink
- * @param plugindata User data that will be passed on to the callback function
  * @param info Pointer to the plugin info object
  * @param change The change to write
  * @param ctx The sync context
  * 
  */
-OSYNC_EXPORT void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncChange *change, OSyncContext *ctx);
+OSYNC_EXPORT void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncChange *change, OSyncContext *ctx);
 
 /** @brief Tells the sink that all changes have been committed
  * 
@@ -445,12 +438,11 @@ OSYNC_EXPORT void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, void 
  * depending on which function the sink wants to use.
  * 
  * @param sink Pointer to the sink
- * @param plugindata User data that will be passed on to the callback function
  * @param info Pointer to the plugin info object
  * @param ctx The sync context
  * 
  */
-OSYNC_EXPORT void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx);
+OSYNC_EXPORT void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx);
 
 
 /** @brief Sets the connect timeout in seconds for the OSyncObjTypeSink 

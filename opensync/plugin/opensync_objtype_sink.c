@@ -257,10 +257,10 @@ void *osync_objtype_sink_get_userdata(OSyncObjTypeSink *sink)
 	return sink->userdata;
 }
 
-void osync_objtype_sink_get_changes(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx)
+void osync_objtype_sink_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx)
 {
 	OSyncObjTypeSinkFunctions functions;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, plugindata, info, ctx);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, sink, info, ctx);
 	osync_assert(sink);
 	osync_assert(ctx);
 	
@@ -272,16 +272,16 @@ void osync_objtype_sink_get_changes(OSyncObjTypeSink *sink, void *plugindata, OS
 	} else if (!functions.get_changes) {
 		osync_context_report_success(ctx);
 	} else {
-		functions.get_changes(sink, info, ctx, osync_objtype_sink_get_slowsync(sink), plugindata);
+		functions.get_changes(sink, info, ctx, osync_objtype_sink_get_slowsync(sink), osync_objtype_sink_get_userdata(sink));
 	}
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void osync_objtype_sink_read_change(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncChange *change, OSyncContext *ctx)
+void osync_objtype_sink_read_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncChange *change, OSyncContext *ctx)
 {
 	OSyncObjTypeSinkFunctions functions;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %p)", __func__, sink, plugindata, info, change, ctx);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, change, ctx);
 	osync_assert(sink);
 	osync_assert(ctx);
 	osync_assert(change);
@@ -296,16 +296,16 @@ void osync_objtype_sink_read_change(OSyncObjTypeSink *sink, void *plugindata, OS
 	} else if (!functions.read) {
 		osync_context_report_success(ctx);
 	} else {
-		functions.read(sink, info, ctx, change, plugindata);
+		functions.read(sink, info, ctx, change,  osync_objtype_sink_get_userdata(sink));
 	}
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void osync_objtype_sink_connect(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx)
+void osync_objtype_sink_connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx)
 {
 	OSyncObjTypeSinkFunctions functions;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, plugindata, info, ctx);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, sink, info, ctx);
 	osync_assert(sink);
 	osync_assert(ctx);
 	
@@ -313,16 +313,16 @@ void osync_objtype_sink_connect(OSyncObjTypeSink *sink, void *plugindata, OSyncP
 	if (!functions.connect) {
 		osync_context_report_success(ctx);
 	} else {
-		functions.connect(sink, info, ctx, plugindata);
+		functions.connect(sink, info, ctx, osync_objtype_sink_get_userdata(sink));
 	}
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void osync_objtype_sink_disconnect(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx)
+void osync_objtype_sink_disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx)
 {
 	OSyncObjTypeSinkFunctions functions;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, plugindata, info, ctx);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, sink, info, ctx);
 	osync_assert(sink);
 	osync_assert(ctx);
 	
@@ -330,16 +330,16 @@ void osync_objtype_sink_disconnect(OSyncObjTypeSink *sink, void *plugindata, OSy
 	if (!functions.disconnect) {
 		osync_context_report_success(ctx);
 	} else {
-		functions.disconnect(sink, info, ctx, plugindata);
+		functions.disconnect(sink, info, ctx, osync_objtype_sink_get_userdata(sink));
 	}
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void osync_objtype_sink_sync_done(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx)
+void osync_objtype_sink_sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx)
 {
 	OSyncObjTypeSinkFunctions functions;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, plugindata, info, ctx);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, sink, info, ctx);
 	osync_assert(sink);
 	osync_assert(ctx);
 	
@@ -347,15 +347,15 @@ void osync_objtype_sink_sync_done(OSyncObjTypeSink *sink, void *plugindata, OSyn
 	if (!functions.sync_done)
 		osync_context_report_success(ctx);
 	else
-		functions.sync_done(sink, info, ctx, plugindata);
+		functions.sync_done(sink, info, ctx, osync_objtype_sink_get_userdata(sink));
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void osync_objtype_sink_connect_done(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx)
+void osync_objtype_sink_connect_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx)
 {
 	OSyncObjTypeSinkFunctions functions;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, plugindata, info, ctx);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, sink, info, ctx);
 	osync_assert(sink);
 	osync_assert(ctx);
 	
@@ -363,15 +363,15 @@ void osync_objtype_sink_connect_done(OSyncObjTypeSink *sink, void *plugindata, O
 	if (!functions.connect_done)
 		osync_context_report_success(ctx);
 	else
-		functions.connect_done(sink, info, ctx, plugindata);
+		functions.connect_done(sink, info, ctx, osync_objtype_sink_get_userdata(sink));
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncChange *change, OSyncContext *ctx)
+void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncChange *change, OSyncContext *ctx)
 {
 	OSyncObjTypeSinkFunctions functions;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %p)", __func__, sink, plugindata, info, change, ctx);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, change, ctx);
 	g_assert(sink);
 	g_assert(change);
 	g_assert(ctx);
@@ -398,14 +398,14 @@ void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, void *plugindata, 
 		} else if (!functions.commit) {
 			osync_context_report_success(ctx);
 		} else {
-			functions.commit(sink, info, ctx, change, plugindata);
+			functions.commit(sink, info, ctx, change, osync_objtype_sink_get_userdata(sink));
 		}
 	}
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, void *plugindata, OSyncPluginInfo *info, OSyncContext *ctx)
+void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx)
 {
 	OSyncObjTypeSinkFunctions functions;
 	int i = 0;
@@ -415,7 +415,7 @@ void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, void *plugindata, 
 	OSyncChange *change = NULL;
 	OSyncContext *context = NULL;
 	
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, plugindata, info, ctx);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, sink,  info, ctx);
 	osync_assert(sink);
 	osync_assert(ctx);
 	
@@ -444,12 +444,12 @@ void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, void *plugindata, 
 		osync_list_free(sink->commit_changes);
 		osync_list_free(sink->commit_contexts);
 		
-		functions.batch_commit(sink, info, ctx, contexts, changes, plugindata);
+		functions.batch_commit(sink, info, ctx, contexts, changes, osync_objtype_sink_get_userdata(sink));
 		
 		osync_free(changes);
 		osync_free(contexts);
 	} else if (functions.committed_all) {
-		functions.committed_all(sink, info, ctx, plugindata);
+		functions.committed_all(sink, info, ctx, osync_objtype_sink_get_userdata(sink));
 	} else {
 		osync_context_report_success(ctx);
 	}

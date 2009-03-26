@@ -967,7 +967,7 @@ static osync_bool _osync_client_handle_connect(OSyncClient *client, OSyncMessage
 			goto error;
 		
 		osync_plugin_info_set_sink(client->plugin_info, sink);
-		osync_objtype_sink_connect(sink, osync_objtype_sink_get_userdata(sink), client->plugin_info, context);
+		osync_objtype_sink_connect(sink, client->plugin_info, context);
 
 		osync_context_unref(context);
 	}
@@ -1022,7 +1022,7 @@ static osync_bool _osync_client_handle_connect_done(OSyncClient *client, OSyncMe
 			goto error;
 		
 		osync_plugin_info_set_sink(client->plugin_info, sink);
-		osync_objtype_sink_connect_done(sink, osync_objtype_sink_get_userdata(sink), client->plugin_info, context);
+		osync_objtype_sink_connect_done(sink, client->plugin_info, context);
 	
 		osync_context_unref(context);
 	}
@@ -1076,7 +1076,7 @@ static osync_bool _osync_client_handle_disconnect(OSyncClient *client, OSyncMess
 			goto error;
 		
 		osync_plugin_info_set_sink(client->plugin_info, sink);
-		osync_objtype_sink_disconnect(sink, osync_objtype_sink_get_userdata(sink), client->plugin_info, context);
+		osync_objtype_sink_disconnect(sink, client->plugin_info, context);
 	
 		osync_context_unref(context);
 	}
@@ -1141,7 +1141,7 @@ static osync_bool _osync_client_handle_get_changes(OSyncClient *client, OSyncMes
 		
 		osync_plugin_info_set_sink(client->plugin_info, sink);
 
-		osync_objtype_sink_get_changes(sink, osync_objtype_sink_get_userdata(sink), client->plugin_info, context);
+		osync_objtype_sink_get_changes(sink, client->plugin_info, context);
 	
 		osync_context_unref(context);
 	}
@@ -1200,7 +1200,7 @@ static osync_bool _osync_client_handle_read_change(OSyncClient *client, OSyncMes
 		
 		osync_plugin_info_set_sink(client->plugin_info, sink);
 
-		osync_objtype_sink_read_change(sink, osync_objtype_sink_get_userdata(sink), client->plugin_info, change, context);
+		osync_objtype_sink_read_change(sink, client->plugin_info, change, context);
 	
 		osync_context_unref(context);
 	}
@@ -1247,7 +1247,7 @@ static osync_bool _osync_client_handle_commit_change(OSyncClient *client, OSyncM
 		goto error;
 		
 	osync_plugin_info_set_sink(client->plugin_info, sink);
-	osync_objtype_sink_commit_change(sink, osync_objtype_sink_get_userdata(sink), client->plugin_info, change, context);
+	osync_objtype_sink_commit_change(sink, client->plugin_info, change, context);
 	
 	osync_change_unref(change);
 	osync_context_unref(context);
@@ -1300,7 +1300,7 @@ static osync_bool _osync_client_handle_committed_all(OSyncClient *client, OSyncM
 			goto error;
 		
 		osync_plugin_info_set_sink(client->plugin_info, sink);
-		osync_objtype_sink_committed_all(sink, osync_objtype_sink_get_userdata(sink), client->plugin_info, context);
+		osync_objtype_sink_committed_all(sink, client->plugin_info, context);
 	
 		osync_context_unref(context);
 	}
@@ -1354,7 +1354,7 @@ static osync_bool _osync_client_handle_sync_done(OSyncClient *client, OSyncMessa
 			goto error;
 		
 		osync_plugin_info_set_sink(client->plugin_info, sink);
-		osync_objtype_sink_sync_done(sink, osync_objtype_sink_get_userdata(sink), client->plugin_info, context);
+		osync_objtype_sink_sync_done(sink, client->plugin_info, context);
 	
 		osync_context_unref(context);
 	}
