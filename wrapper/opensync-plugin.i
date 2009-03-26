@@ -385,32 +385,32 @@ typedef struct {} ObjTypeSink;
 	}
 	*/
 
-	void get_changes(void *plugindata, PluginInfo *info, Context *ctx) {
-		osync_objtype_sink_get_changes(self, plugindata, info, ctx);
+	void get_changes(PluginInfo *info, Context *ctx) {
+		osync_objtype_sink_get_changes(self, info, ctx);
 	}
 
-	void read_change(void *plugindata, PluginInfo *info, Change *change, Context *ctx) {
-		osync_objtype_sink_read_change(self, plugindata, info, change, ctx);
+	void read_change(PluginInfo *info, Change *change, Context *ctx) {
+		osync_objtype_sink_read_change(self, info, change, ctx);
 	}
 
-	void connect(void *plugindata, PluginInfo *info, Context *ctx) {
-		osync_objtype_sink_connect(self, plugindata, info, ctx);
+	void connect(PluginInfo *info, Context *ctx) {
+		osync_objtype_sink_connect(self, info, ctx);
 	}
 
-	void disconnect(void *plugindata, PluginInfo *info, Context *ctx) {
-		osync_objtype_sink_disconnect(self, plugindata, info, ctx);
+	void disconnect(PluginInfo *info, Context *ctx) {
+		osync_objtype_sink_disconnect(self, info, ctx);
 	}
 
-	void sync_done(void *plugindata, PluginInfo *info, Context *ctx) {
-		osync_objtype_sink_sync_done(self, plugindata, info, ctx);
+	void sync_done(PluginInfo *info, Context *ctx) {
+		osync_objtype_sink_sync_done(self, info, ctx);
 	}
 
-	void commit_change(void *plugindata, PluginInfo *info, Change *change, Context *ctx) {
-		osync_objtype_sink_commit_change(self, plugindata, info, change, ctx);
+	void commit_change(PluginInfo *info, Change *change, Context *ctx) {
+		osync_objtype_sink_commit_change(self, info, change, ctx);
 	}
 
-	void committed_all(void *plugindata, PluginInfo *info, Context *ctx) {
-		osync_objtype_sink_committed_all(self, plugindata, info, ctx);
+	void committed_all(PluginInfo *info, Context *ctx) {
+		osync_objtype_sink_committed_all(self, info, ctx);
 	}
 
 	bool is_enabled() {
