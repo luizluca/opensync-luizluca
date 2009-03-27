@@ -25,6 +25,7 @@
 #include "opensync-plugin.h"
 #include "plugin/opensync_plugin_internals.h"
 #include "plugin/opensync_objtype_sink_internals.h"
+#include "plugin/opensync_plugin_info_internals.h"
 
 #include "opensync-ipc.h"
 #include "ipc/opensync_serializer_internals.h"

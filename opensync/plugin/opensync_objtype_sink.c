@@ -29,6 +29,7 @@
 #include "opensync_plugin_info.h" /* due to osync_plugin_info_get_configdir() */
 
 #include "opensync_objtype_sink.h"
+#include "opensync_objtype_sink_internals.h"
 #include "opensync_objtype_sink_private.h"
 
 OSyncObjTypeSink *osync_objtype_main_sink_new(OSyncError **error)

@@ -278,7 +278,7 @@ static osync_bool mock_write(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyn
  *            start with a slash. See note above.
  *
  */
-static void mock_report_dir(MockDir *directory, const char *subdir, OSyncContext *ctx, OSyncPluginInfo *info)
+static void mock_report_dir(MockDir *directory, const char *subdir, OSyncContext *ctx, OSyncPluginInfo *info, OSyncObjTypeSink *sink)
 {
 	GError *gerror = NULL;
 	const char *de = NULL;
@@ -286,10 +286,7 @@ static void mock_report_dir(MockDir *directory, const char *subdir, OSyncContext
 	GDir *dir = NULL;
 	OSyncError *error = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p)", __func__, directory, subdir, ctx);
-	
-	OSyncObjTypeSink *sink = osync_plugin_info_get_sink(info);
-	osync_assert(sink);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p, %p)", __func__, directory, subdir, ctx, sink);
 
 	OSyncFormatEnv *formatenv = osync_plugin_info_get_format_env(info);
 	osync_assert(formatenv);
@@ -403,14 +400,14 @@ static void mock_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyn
 	if (mock_get_error(info->memberid, "GET_CHANGES_TIMEOUT2"))
 		g_usleep(8*G_USEC_PER_SEC);
 		
-	if (osync_objtype_sink_get_slowsync(sink)) {
+	if (slow_sync) {
 		osync_trace(TRACE_INTERNAL, "Slow sync requested");
 		osync_assert(osync_hashtable_slowsync(dir->hashtable, &error));
 	}
 	
 	osync_trace(TRACE_INTERNAL, "get_changes for %s", osync_objtype_sink_get_name(sink));
 
-	mock_report_dir(dir, NULL, ctx, info);
+	mock_report_dir(dir, NULL, ctx, info, sink);
 	
 	OSyncList *u, *uids = osync_hashtable_get_deleted(dir->hashtable);
 	for (u = uids; u; u = u->next) {

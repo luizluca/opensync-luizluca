@@ -224,13 +224,6 @@ typedef struct {} PluginInfo;
 		osync_plugin_info_set_format_env(self, env);
 	}
 
-	ObjTypeSink *get_sink() {
-		ObjTypeSink *ret = osync_plugin_info_get_sink(self);
-		if (ret)
-			osync_objtype_sink_ref(ret);
-		return ret;
-	}
-
 	void set_sink(ObjTypeSink *sink) {
 		osync_plugin_info_set_sink(self, sink);
 	}
@@ -444,11 +437,7 @@ typedef struct {} ObjTypeSink;
 	void set_read(bool read) {
 		osync_objtype_sink_set_read(self, read);
 	}
-
-	bool get_slowsync() {
-		return osync_objtype_sink_get_slowsync(self);
-	}
-
+	
 	void set_slowsync(bool slowsync) {
 		osync_objtype_sink_set_slowsync(self, slowsync);
 	}

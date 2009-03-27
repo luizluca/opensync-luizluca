@@ -648,6 +648,7 @@ static void _osyncplugin_ctx_callback_connect(void *user_data, OSyncError *error
 		goto error;
 	}
 
+	/*
 	if (osync_objtype_sink_get_slowsync(sink)) {
 		printf("SlowSync got requested by CONNECT function");
 		if (osync_objtype_sink_get_name(sink))
@@ -655,6 +656,7 @@ static void _osyncplugin_ctx_callback_connect(void *user_data, OSyncError *error
 
 		printf(".\n");
 	}
+	*/
 
 	g_mutex_lock(cmd->mutex);
 	g_cond_signal(cmd->cond);

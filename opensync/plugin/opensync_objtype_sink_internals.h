@@ -272,6 +272,23 @@ unsigned int osync_objtype_sink_get_read_timeout(OSyncObjTypeSink *sink);
  */
 void *osync_objtype_sink_get_userdata(OSyncObjTypeSink *sink);
 
+/** @brief Checks if slow-sync has been requested
+ * 
+ * When slow-sync is requested, OpenSync synchronizes all entries rather than
+ * just the changes.
+ *
+ * If you are using hashtables, you should call this function in your sink's
+ * get_changes() function and if slow-sync has been requested, call
+ * osync_hashtable_slowsync() on your hashtable. If you don't do this, OpenSync
+ * will assume that all entries should be deleted, which is usually not what 
+ * the user wants.
+ *
+ * @param sink Pointer to the sink
+ * @returns TRUE if slow-sync has been requested, FALSE for normal sync
+ * 
+ */
+osync_bool osync_objtype_sink_get_slowsync(OSyncObjTypeSink *sink);
+
 /*@}*/
 
 #endif /*OPENSYNC_SINK_INTERNALS_H_*/

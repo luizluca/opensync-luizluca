@@ -170,15 +170,6 @@ OSYNC_EXPORT OSyncFormatEnv *osync_plugin_info_get_format_env(OSyncPluginInfo *i
  */
 OSYNC_EXPORT void osync_plugin_info_set_format_env(OSyncPluginInfo *info, OSyncFormatEnv *env);
 
-
-/** @brief Returns the currently running sink
- * 
- * @param info Pointer to the plugin info object
- * @returns the current sink
- * 
- */
-OSYNC_EXPORT OSyncObjTypeSink *osync_plugin_info_get_sink(OSyncPluginInfo *info);
-
 /** @brief Sets the current OSyncObjTypeSink 
  * 
  * @param info Pointer to the plugin info object

@@ -1211,7 +1211,7 @@ void osync_obj_engine_set_error(OSyncObjEngine *engine, OSyncError *error)
 OSyncSinkEngine *osync_obj_engine_find_proxy_sinkengine(OSyncObjEngine *engine, OSyncClientProxy *proxy)
 {
 	OSyncList *s;
-	OSyncSinkEngine *sinkengine;
+	OSyncSinkEngine *sinkengine = NULL;
 	osync_return_val_if_fail(engine, NULL);
 	osync_return_val_if_fail(proxy, NULL);
 
