@@ -1548,6 +1548,8 @@ START_TEST (ipc_loop_callback)
 END_TEST
 
 int stop_after = 500;
+GCond *callback_handler2_cond;
+GMutex *callback_handler2_mutex;
 
 void callback_handler2(OSyncMessage *message, void *user_data)
 {
@@ -1562,6 +1564,10 @@ void callback_handler2(OSyncMessage *message, void *user_data)
 	}
 	
 	num_msgs++;
+
+	g_mutex_lock(callback_handler2_mutex);
+	g_cond_signal(callback_handler2_cond);
+	g_mutex_unlock(callback_handler2_mutex);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
@@ -1632,6 +1638,9 @@ START_TEST (ipc_callback_break)
 	osync_queue_create(client_queue, &error);
 	fail_unless(error == NULL, NULL);
 	char *data = "this is another test string";
+
+	callback_handler2_cond = g_cond_new();
+	callback_handler2_mutex = g_mutex_new();
 	
 	pid_t cpid = fork();
 	if (cpid == 0) { //Child
@@ -1699,6 +1708,19 @@ START_TEST (ipc_callback_break)
 			fail_unless(!osync_error_is_set(&error), NULL);
 			
 			osync_message_unref(message);
+
+			/* Send and process one by one and wait for the call
+			 * of the server callback. This avoids that the pipe
+			 * break (e.g. disconnect call) happens to early.
+			 *
+			 * With the disconnect call the queues get flushed
+			 * and the callback_handler2 function would get
+			 * immeditally the error messages. Which is not expected
+			 * or designed in this testcase.
+			 *
+			 * (related) Fixes #1039
+			 */
+			g_cond_wait(callback_handler2_cond, callback_handler2_mutex);
 		}
 		
 		message = osync_queue_get_message(client_queue);
@@ -1733,6 +1755,11 @@ START_TEST (ipc_callback_break)
 
 	osync_queue_unref(client_queue);
 	osync_queue_unref(server_queue);
+
+	g_mutex_free(callback_handler2_mutex);
+	g_cond_free(callback_handler2_cond);
+	callback_handler2_cond = NULL;
+	callback_handler2_mutex = NULL;
 	
 	destroy_testbed(testbed);
 }
@@ -1967,6 +1994,9 @@ START_TEST (ipc_callback_break_pipes)
 	osync_assert(error == NULL);
 	
 	char *data = "this is another test string";
+
+	callback_handler2_cond = g_cond_new();
+	callback_handler2_mutex = g_mutex_new();
 	
 	pid_t cpid = fork();
 	if (cpid == 0) { //Child
@@ -2053,6 +2083,19 @@ START_TEST (ipc_callback_break_pipes)
 			fail_unless(!osync_error_is_set(&error), NULL);
 			
 			osync_message_unref(message);
+
+			/* Send and process one by one and wait for the call
+			 * of the server callback. This avoids that the pipe
+			 * break (e.g. disconnect call) happens to early.
+			 *
+			 * With the disconnect call the queues get flushed
+			 * and the callback_handler2 function would get
+			 * immeditally the error messages. Which is not expected
+			 * or designed in this testcase.
+			 *
+			 * Fixes #1039
+			 */
+			g_cond_wait(callback_handler2_cond, callback_handler2_mutex);
 		}
 		
 		message = osync_queue_get_message(client_queue);
@@ -2079,6 +2122,11 @@ START_TEST (ipc_callback_break_pipes)
 	
 	osync_queue_unref(client_queue);
 	osync_queue_unref(server_queue);
+
+	g_mutex_free(callback_handler2_mutex);
+	g_cond_free(callback_handler2_cond);
+	callback_handler2_cond = NULL;
+	callback_handler2_mutex = NULL;
 	
 	destroy_testbed(testbed);
 }
