@@ -15,6 +15,11 @@ TARGET_LINK_LIBRARIES( support opensync-testing ${CHECK_LIBRARIES} )
 SET( TEST_TARGET_LIBRARIES support ) 
 
 ADD_TEST( symbols ${CMAKE_CURRENT_SOURCE_DIR}/abiapi-tests/check-symbols ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} )
+
+### Example how to diasble a testcase ###
+# OSYNC_TESTCASE_DISABLED(lock lock_dual_sync_engine_unclean "1066" ) 
+# OSYNC_TESTCASE_DISABLED($test_binary $testcase_name "$ticket_number" ) 
+
 BUILD_CHECK_TEST( error check_error.c ${TEST_TARGET_LIBRARIES} )
 OSYNC_TESTCASE(error error_create)
 OSYNC_TESTCASE(error error_create_null)
