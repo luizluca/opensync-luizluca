@@ -9,6 +9,8 @@
 
 #include "support.h"
 
+#include "opensync/format/opensync_time_internals.h"
+
 // this test assumes Eastern time, sorry.
 START_TEST (time_timezone_diff)
 {

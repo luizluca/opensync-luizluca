@@ -24,6 +24,7 @@
 
 #include "opensync.h"
 #include "opensync_time.h"
+#include "opensync_time_internals.h"
 #include "opensync_time_private.h"
 #include "opensync_internals.h"
 
