@@ -38,7 +38,7 @@ static void connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext 
 	//calls to your plugin)
 
 	//cast void* userdata to the sink specific data type
-	sink_environment *sinkenv = (sink_environment*)userdata;
+	//sink_environment *sinkenv = (sink_environment*)userdata;
 
 
 	OSyncError *error = NULL;
@@ -87,7 +87,7 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, userdata, info, ctx);
 
 	OSyncFormatEnv *formatenv = osync_plugin_info_get_format_env(info);
-	sink_environment *sinkenv = (sink_environment*) userdata;
+	//sink_environment *sinkenv = (sink_environment*) userdata;
 
 	OSyncError *error = NULL;
 
@@ -137,7 +137,7 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 			continue;
 		}
 
-		osync_data_set_objtype(odata, osync_objtype_sink_get_name(sinkenv->sink));
+		osync_data_set_objtype(odata, osync_objtype_sink_get_name(sink));
 
 		//Now you can set the data for the object
 		osync_change_set_data(change, odata);
@@ -158,7 +158,7 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 
 static void commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *userdata)
 {
-	sink_environment *sinkenv = (sink_environment*)userdata;;
+	//sink_environment *sinkenv = (sink_environment*)userdata;;
 	
 	/*
 	 * Here you have to add, modify or delete a object
@@ -191,7 +191,7 @@ static void sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContex
 	 * This function will only be called if the sync was successful
 	 */
 	OSyncError *error = NULL;
-	sink_environment *sinkenv = (sink_environment*)userdata;
+	//sink_environment *sinkenv = (sink_environment*)userdata;
 	
 	//If we use anchors we have to update it now.
 	//Now you get/calculate the current anchor of the device
@@ -210,7 +210,7 @@ error:
 
 static void disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *userdata)
 {
-	sink_environment *sinkenv = (sink_environment*)userdata;
+	//sink_environment *sinkenv = (sink_environment*)userdata;
 	
 	//Close all stuff you need to close
 	
