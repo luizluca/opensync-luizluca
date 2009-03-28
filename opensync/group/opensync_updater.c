@@ -38,6 +38,7 @@
 
 #include "common/opensync_xml_internals.h"
 #include "common/opensync_file.h"
+#include "common/opensync_file_internals.h"
 
 #include "opensync_updater.h"
 #include "opensync_updater_private.h"

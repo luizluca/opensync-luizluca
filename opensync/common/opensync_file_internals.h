@@ -18,45 +18,30 @@
  * 
  */
 
-#ifndef _OPENSYNC_FILE_H
-#define _OPENSYNC_FILE_H
+#ifndef _OPENSYNC_FILE_INTERNALS_H
+#define _OPENSYNC_FILE_INTERNALS_H
 
 /**
- * @defgroup OSyncFileAPI OpenSync File 
- * @ingroup OSyncCommon
+ * @defgroup OSyncFileInternalAPI OpenSync File 
+ * @ingroup OSyncCommonPrivate
  * @brief Functions for handling common file operations 
  */
 
 /*@{*/
 
-/** @brief Writes data to a file
+/** @brief Removes a directory recursively
  * 
- * Writes data to a file
+ * Removes a directory recursively. This is an 
+ * internal function for portability. 
  * 
- * @param filename Where to save the data
- * @param data Pointer to the data
- * @param size Size of the data
- * @param mode The mode to set on the file
- * @param error Pointer to a error struct
- * @returns TRUE if successful, FALSE otherwise
+ * @param dirname Directory which will be deleted
+ * @returns 0 if successful, -1 otherwise
  * 
  */
-OSYNC_EXPORT osync_bool osync_file_write(const char *filename, const char *data, unsigned int size, int mode, OSyncError **error);
 
-/** @brief Reads a file
- * 
- * Reads a file
- * 
- * @param filename Where to read the data from
- * @param data Pointer to the data
- * @param size Size of the data
- * @param error Pointer to a error struct
- * @returns TRUE if successful, FALSE otherwise
- * 
- */
-OSYNC_EXPORT osync_bool osync_file_read(const char *filename, char **data, unsigned int *size, OSyncError **error);
+int osync_remove_directory_recursively(const char *dirname);
 
 /*@} */
 
-#endif /* _OPENSYNC_FILE_H */
+#endif /* _OPENSYNC_FILE_INTERNALS_H */
 
