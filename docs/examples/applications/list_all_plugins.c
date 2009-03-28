@@ -5,11 +5,10 @@ int main(int argc, char *argv[]) {
 	
 	OSyncPluginEnv *env;
 	OSyncPlugin* plugin;
+	OSyncList *list, *l;
 	
 	osync_bool couldloadplugins;
 	
-	int numplugins;
-	int i = 0;
 	
 	env = osync_plugin_env_new(NULL);
 	/* load plugins from default dir */
@@ -20,13 +19,15 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 	
-	numplugins = osync_plugin_env_num_plugins(env);
-	printf("found %i plugins\n", i);
+	list = osync_plugin_env_get_plugins(env);
+	printf("found %i plugins\n", osync_list_length(list));
 	
-	for( i=0; i < numplugins; i++ ) {
-		plugin = osync_plugin_env_nth_plugin(env, i);
-		printf("plugin nr. %i is %s\n", i+1, osync_plugin_get_name(plugin));
+	for(l=list; l; l = l->next) {
+		plugin = (OSyncPlugin *) l->data;
+		printf("plugin: %s\n", osync_plugin_get_name(plugin));
 	}
+
+	osync_list_free(list);
 	
 	/* free env */
 	osync_plugin_env_unref(env);
