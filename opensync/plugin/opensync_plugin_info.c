@@ -62,10 +62,10 @@ void osync_plugin_info_unref(OSyncPluginInfo *info)
 		if (info->groupname)
 			osync_free(info->groupname);
 		
-		while (info->objtypes) {
-			OSyncObjTypeSink *sink = info->objtypes->data;
+		while (info->objtype_sinks) {
+			OSyncObjTypeSink *sink = info->objtype_sinks->data;
 			osync_objtype_sink_unref(sink);
-			info->objtypes = osync_list_remove(info->objtypes, sink);
+			info->objtype_sinks = osync_list_remove(info->objtype_sinks, sink);
 		}
 		
 		if (info->main_sink)
@@ -149,7 +149,7 @@ OSyncObjTypeSink *osync_plugin_info_find_objtype(OSyncPluginInfo *info, const ch
 	osync_trace(TRACE_ENTRY, "%s(%p, %s)", __func__, info, name);
 	osync_assert(info);
 
-	for (p = info->objtypes; p; p = p->next) {
+	for (p = info->objtype_sinks; p; p = p->next) {
 		sink = p->data;
 		if (g_ascii_strcasecmp(osync_objtype_sink_get_name(sink), name) == 0)
 			goto done;
@@ -167,13 +167,13 @@ OSyncObjTypeSink *osync_plugin_info_find_objtype(OSyncPluginInfo *info, const ch
 void osync_plugin_info_add_objtype(OSyncPluginInfo *info, OSyncObjTypeSink *sink)
 {
 	osync_assert(info);
-	info->objtypes = osync_list_append(info->objtypes, sink);
+	info->objtype_sinks = osync_list_append(info->objtype_sinks, sink);
 	osync_objtype_sink_ref(sink);
 }
 
-OSyncList *osync_plugin_info_get_objtypes(OSyncPluginInfo *info) {
+OSyncList *osync_plugin_info_get_objtype_sinks(OSyncPluginInfo *info) {
 	osync_assert(info);
-	return osync_list_copy(info->objtypes);
+	return osync_list_copy(info->objtype_sinks);
 }
 
 OSyncObjTypeSink *osync_plugin_info_get_main_sink(OSyncPluginInfo *info)

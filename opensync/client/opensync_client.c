@@ -697,7 +697,7 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 		goto error;
 	}
 
-	objtypesinks = osync_plugin_info_get_objtypes(client->plugin_info);
+	objtypesinks = osync_plugin_info_get_objtype_sinks(client->plugin_info);
 	list = objtypesinks;
 	while (list) {
 		sink = (OSyncObjTypeSink*)list->data;
@@ -847,7 +847,7 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	else
 		osync_message_write_int(reply, 0);
 
-	objtypesinks = osync_plugin_info_get_objtypes(client->plugin_info);
+	objtypesinks = osync_plugin_info_get_objtype_sinks(client->plugin_info);
 	list = objtypesinks;
 	while(list) {
 		sink = (OSyncObjTypeSink*)list->data;

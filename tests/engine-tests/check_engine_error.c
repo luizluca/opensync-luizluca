@@ -130,7 +130,7 @@ static void *initialize_connect_error(OSyncPlugin *plugin, OSyncPluginInfo *info
 
 	mock_env *env = osync_try_malloc0(sizeof(mock_env), error);
 	osync_assert(env);
-	OSyncList *objtypesinks = osync_plugin_info_get_objtypes(info);
+	OSyncList *objtypesinks = osync_plugin_info_get_objtype_sinks(info);
 	OSyncObjTypeSink *sink = (OSyncObjTypeSink*)objtypesinks->data;
 	osync_assert(sink);
 	

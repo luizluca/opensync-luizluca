@@ -452,7 +452,7 @@ static void *plugin_initialize(OSyncError **error)
 	osync_bool couldinit;
 	couldinit = osync_plugin_initialize(plugin, &(plugin_data), plugin_info, error);
 
-	objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+	objtypesinks = osync_plugin_info_get_objtype_sinks(plugin_info);
 	list = objtypesinks;
 	while(list) {
 		OSyncObjTypeSink *sink = (OSyncObjTypeSink*)list->data;
@@ -619,7 +619,7 @@ static osync_bool get_changes(Command *cmd, SyncType type, OSyncError **error)
 
 	} else {
 		/* all available objtypes */
-		objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+		objtypesinks = osync_plugin_info_get_objtype_sinks(plugin_info);
 		list = objtypesinks;
 		while(list) {
 			sink = (OSyncObjTypeSink*)list->data;
@@ -721,7 +721,7 @@ static osync_bool connect_plugin(Command *cmd, OSyncError **error)
 		if (!connect_sink(cmd, sink, error))
 			goto error;
 	} else {
-		objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+		objtypesinks = osync_plugin_info_get_objtype_sinks(plugin_info);
 		list = objtypesinks;
 		while(list) {
 			sink = (OSyncObjTypeSink*)list->data;
@@ -818,7 +818,7 @@ static osync_bool disconnect(Command *cmd, OSyncError **error)
 		if (!disconnect_sink(cmd, sink, error))
 			goto error;
 	} else {
-		objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+		objtypesinks = osync_plugin_info_get_objtype_sinks(plugin_info);
 		list = objtypesinks;
 		while(list) {
 			sink = (OSyncObjTypeSink*)list->data;
@@ -917,7 +917,7 @@ static osync_bool commit(Command *cmd, OSyncChange *change, OSyncError **error)
 		if (!commit_sink(cmd, sink, change, error))
 			goto error;
 	} else {
-		objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+		objtypesinks = osync_plugin_info_get_objtype_sinks(plugin_info);
 		list = objtypesinks;
 		while(list){
 			sink = (OSyncObjTypeSink*)list->data;
@@ -1037,7 +1037,7 @@ static osync_bool syncdone(Command *cmd, OSyncError **error)
 		if (!syncdone_sink(cmd, sink, error))
 			goto error;
 	} else {
-		objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+		objtypesinks = osync_plugin_info_get_objtype_sinks(plugin_info);
 		list = objtypesinks;
 		while(list) {
 			sink = (OSyncObjTypeSink*)list->data;
@@ -1127,7 +1127,7 @@ static osync_bool committedall(Command *cmd, OSyncError **error)
 		if (!committedall_sink(cmd, sink, error))
 			goto error;
 	} else {
-		objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+		objtypesinks = osync_plugin_info_get_objtype_sinks(plugin_info);
 		list = objtypesinks;
 		while(list) {
 			sink = (OSyncObjTypeSink*)list->data;

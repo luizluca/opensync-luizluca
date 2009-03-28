@@ -34,7 +34,7 @@
 struct OSyncPluginInfo {
 	void *loop;
 	OSyncPluginConfig *config;
-	OSyncList *objtypes;
+	OSyncList *objtype_sinks;
 	char *configdir;
 
 	/* The main sink */

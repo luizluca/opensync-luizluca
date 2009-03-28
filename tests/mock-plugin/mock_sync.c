@@ -607,7 +607,7 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 	/* Now we register the objtypes that we can sync. This plugin is special. It can
 	 * synchronize any objtype we configure it to sync and where a conversion
 	 * path to the file format can be found */
-	OSyncList *objtypesinks = osync_plugin_info_get_objtypes(info);
+	OSyncList *objtypesinks = osync_plugin_info_get_objtype_sinks(info);
 	OSyncList *list = objtypesinks;
 	while(list) {
 		MockDir *dir = osync_try_malloc0(sizeof(MockDir), error);

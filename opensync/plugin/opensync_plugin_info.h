@@ -116,7 +116,7 @@ OSYNC_EXPORT void osync_plugin_info_add_objtype(OSyncPluginInfo *info, OSyncObjT
  * @param Pointer to a OSyncPluginInfo
  * @return A shallow copy of the internal objtype list
  */
-OSYNC_EXPORT OSyncList *osync_plugin_info_get_objtypes(OSyncPluginInfo *info);
+OSYNC_EXPORT OSyncList *osync_plugin_info_get_objtype_sinks(OSyncPluginInfo *info);
 
 /** @brief Returns the Main Sink 
  * 

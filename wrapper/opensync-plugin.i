@@ -193,8 +193,8 @@ typedef struct {} PluginInfo;
 		osync_plugin_info_add_objtype(self, sink);
 	}
 
-	unsigned int num_objtypes() {
-		OSyncList *objtypesinks = osync_plugin_info_get_objtypes(self);
+	unsigned int num_objtype_sinks() {
+		OSyncList *objtypesinks = osync_plugin_info_get_objtype_sinks(self);
 		unsigned int num = osync_list_length(objtypesinks);
 		osync_list_free(objtypesinks);
 		return num;
@@ -202,7 +202,7 @@ typedef struct {} PluginInfo;
 
 	ObjTypeSink *nth_objtype(int nth) {
 		/* TODO: return a list structure of phython */
-		OSyncList *objtypesinks = osync_plugin_info_get_objtypes(self);
+		OSyncList *objtypesinks = osync_plugin_info_get_objtype_sinks(self);
 		ObjTypeSink *ret = (ObjTypeSink*)osync_list_nth_data(objtypesinks, nth);
 		if (ret)
 			osync_objtype_sink_ref(ret);
@@ -277,7 +277,7 @@ typedef struct {} PluginInfo;
 	__oldinit = __init__
 	def __init__(self, *args):
 		self.__oldinit(*args)
-		self.objtypes = _ListWrapper(self.num_objtypes, self.nth_objtype)
+		self.objtypes = _ListWrapper(self.num_objtype_sinks, self.nth_objtype)
 %}
 }
 
