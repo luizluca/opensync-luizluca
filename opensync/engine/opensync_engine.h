@@ -142,81 +142,26 @@ typedef enum {
 } OSyncEngineEvent;
 
 typedef enum {
-	OSYNC_CLIENT_EVENT_CONNECTED = 1,
-	OSYNC_CLIENT_EVENT_CONNECT_DONE,
-	OSYNC_CLIENT_EVENT_ERROR,
-	OSYNC_CLIENT_EVENT_READ,
-	OSYNC_CLIENT_EVENT_WRITTEN,
-	OSYNC_CLIENT_EVENT_SYNC_DONE,
-	OSYNC_CLIENT_EVENT_DISCONNECTED,
-	OSYNC_CLIENT_EVENT_DISCOVERED
-} OSyncMemberEvent;
+	OSYNC_ENGINE_MEMBER_EVENT_CONNECTED = 1,
+	OSYNC_ENGINE_MEMBER_EVENT_CONNECT_DONE,
+	OSYNC_ENGINE_MEMBER_EVENT_ERROR,
+	OSYNC_ENGINE_MEMBER_EVENT_READ,
+	OSYNC_ENGINE_MEMBER_EVENT_WRITTEN,
+	OSYNC_ENGINE_MEMBER_EVENT_SYNC_DONE,
+	OSYNC_ENGINE_MEMBER_EVENT_DISCONNECTED,
+	OSYNC_ENGINE_MEMBER_EVENT_DISCOVERED
+} OSyncEngineMemberEvent;
 
 typedef enum {
-	OSYNC_CHANGE_EVENT_READ = 1,
-	OSYNC_CHANGE_EVENT_WRITTEN = 2,
-	OSYNC_CHANGE_EVENT_ERROR = 3
-} OSyncChangeEvent;
+	OSYNC_ENGINE_CHANGE_EVENT_READ = 1,
+	OSYNC_ENGINE_CHANGE_EVENT_WRITTEN,
+	OSYNC_ENGINE_CHANGE_EVENT_ERROR
+} OSyncEngineChangeEvent;
 
 typedef enum {
-	OSYNC_MAPPING_EVENT_SOLVED = 1,
-	//OSYNC_MAPPING_EVENT_WRITTEN = 2,
-	OSYNC_MAPPING_EVENT_ERROR = 3
-} OSyncMappingEvent;
-
-
-/**
- * @brief Struct for the member status callback
- */
-typedef struct OSyncMemberUpdate {
-	/** The type of the status update */
-	OSyncMemberEvent type;
-	char *objtype;
-	/** The member for which the status update is */
-	OSyncMember *member;
-	/** If the status was a error, this error will be set */
-	OSyncError *error;
-} OSyncMemberUpdate;
-
-/**
- * @brief Struct for the change status callback
- */
-typedef struct OSyncChangeUpdate {
-	/** The type of the status update */
-	OSyncChangeEvent type;
-	/** The change for which the status update is */
-	OSyncChange *change;
-	/** The id of the member which sent this change */
-	OSyncMember *member;
-	/** The id of the mapping to which this change belongs if any */
-	int mapping_id;
-	/** If the status was a error, this error will be set */
-	OSyncError *error;
-} OSyncChangeUpdate;
-
-/**
- * @brief Struct for the mapping status callback
- */
-typedef struct OSyncMappingUpdate {
-	/** The type of the status update */
-	OSyncMappingEvent type;
-	/** If the mapping was already solved, this will have the id if the winning entry */
-	long long int winner;
-	/** The mapping for which the status update is */
-	OSyncMapping *mapping;
-	/** If the status was a error, this error will be set */
-	OSyncError *error;
-} OSyncMappingUpdate;
-
-/**
- * @brief Struct for the engine status callback
- */
-typedef struct OSyncEngineUpdate {
-	/** The type of the status update */
-	OSyncEngineEvent type;
-	/** If the status was a error, this error will be set */
-	OSyncError *error;
-} OSyncEngineUpdate;
+	OSYNC_ENGINE_MAPPING_EVENT_SOLVED = 1, 
+	OSYNC_ENGINE_MAPPING_EVENT_ERROR
+} OSyncEngineMappingEvent;
 
 /** @brief This will create a new engine for the given group
  *
@@ -342,11 +287,27 @@ OSYNC_EXPORT osync_bool osync_engine_abort(OSyncEngine *engine, OSyncError **err
 OSYNC_EXPORT osync_bool osync_engine_continue(OSyncEngine *engine, OSyncError **error);
 
 typedef void (* osync_conflict_cb) (OSyncEngine *, OSyncMappingEngine *, void *);
-typedef void (* osync_status_change_cb) (OSyncChangeUpdate *, void *);
-typedef void (* osync_status_mapping_cb) (OSyncMappingUpdate *, void *);
 typedef void (* osync_multiply_cb) (OSyncEngine *, void *); 
-typedef void (* osync_status_member_cb) (OSyncMemberUpdate *, void *);
+
+typedef void (* osync_status_change_cb) (OSyncEngineChangeUpdate *, void *);
+OSYNC_EXPORT OSyncError *osync_engine_change_update_get_error(OSyncEngineChangeUpdate *update);
+OSYNC_EXPORT OSyncEngineChangeEvent osync_engine_change_update_get_event(OSyncEngineChangeUpdate *update);
+OSYNC_EXPORT OSyncMember *osync_engine_change_update_get_member(OSyncEngineChangeUpdate *update);
+OSYNC_EXPORT OSyncChange *osync_engine_change_update_get_change(OSyncEngineChangeUpdate *update);
+
+typedef void (* osync_status_member_cb) (OSyncEngineMemberUpdate *, void *);
+OSYNC_EXPORT OSyncError *osync_engine_member_update_get_error(OSyncEngineMemberUpdate *update);
+OSYNC_EXPORT OSyncEngineMemberEvent osync_engine_member_update_get_event(OSyncEngineMemberUpdate *update);
+OSYNC_EXPORT OSyncMember *osync_engine_member_update_get_member(OSyncEngineMemberUpdate *update);
+OSYNC_EXPORT const char *osync_engine_member_update_get_objtype(OSyncEngineMemberUpdate *update);
+
+typedef void (* osync_status_mapping_cb) (OSyncEngineMappingUpdate *, void *);
+OSYNC_EXPORT OSyncError *osync_engine_mapping_update_get_error(OSyncEngineMappingUpdate *update);
+OSYNC_EXPORT OSyncEngineMappingEvent osync_engine_mapping_update_get_event(OSyncEngineMappingUpdate *update);
+
 typedef void (* osync_status_engine_cb) (OSyncEngineUpdate *, void *);
+OSYNC_EXPORT OSyncError *osync_engine_update_get_error(OSyncEngineUpdate *update);
+OSYNC_EXPORT OSyncEngineEvent osync_engine_update_get_event(OSyncEngineUpdate *update);
 
 /** @brief This will set the conflict handler for the given engine
  *

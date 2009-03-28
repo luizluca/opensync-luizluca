@@ -107,10 +107,10 @@ osync_bool synchronize_once(OSyncEngine *engine, OSyncError **error);
 void discover_all_once(OSyncEngine *engine, OSyncError **error);
 
 /* Status callbacks */
-void member_status(OSyncMemberUpdate *status, void *user_data);
-void entry_status(OSyncChangeUpdate *status, void *user_data);
+void member_status(OSyncEngineMemberUpdate *status, void *user_data);
+void entry_status(OSyncEngineChangeUpdate *status, void *user_data);
 void engine_status(OSyncEngineUpdate *status, void *user_data);
-void mapping_status(OSyncMappingUpdate *status, void *user_data);
+void mapping_status(OSyncEngineMappingUpdate *status, void *user_data);
 
 /* Conflict handlers */
 void conflict_handler_choose_first(OSyncEngine *engine, OSyncMappingEngine *mapping, void *user_data);

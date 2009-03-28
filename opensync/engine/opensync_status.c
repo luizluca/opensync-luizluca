@@ -32,7 +32,7 @@
 
 #include "opensync_mapping_engine_internals.h"
 
-void osync_status_free_member_update(OSyncMemberUpdate *update)
+void osync_status_free_member_update(OSyncEngineMemberUpdate *update)
 {
 	osync_assert(update);
 	
@@ -57,7 +57,7 @@ void osync_status_free_engine_update(OSyncEngineUpdate *update)
 	osync_free(update);
 }
 
-void osync_status_free_change_update(OSyncChangeUpdate *update)
+void osync_status_free_change_update(OSyncEngineChangeUpdate *update)
 {
 	osync_assert(update);
 	
@@ -72,7 +72,7 @@ void osync_status_free_change_update(OSyncChangeUpdate *update)
 	osync_free(update);
 }
 
-void osync_status_free_mapping_update(OSyncMappingUpdate *update)
+void osync_status_free_mapping_update(OSyncEngineMappingUpdate *update)
 {
 	osync_assert(update);
 	
@@ -116,13 +116,13 @@ void osync_status_multiply(OSyncEngine *engine)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void osync_status_update_member(OSyncEngine *engine, OSyncMember *member, OSyncMemberEvent type, const char *objtype, OSyncError *error)
+void osync_status_update_member(OSyncEngine *engine, OSyncMember *member, OSyncEngineMemberEvent type, const char *objtype, OSyncError *error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %i, %s, %p)", __func__, engine, member, type, objtype, error);
 	
 	if (engine->mebstat_callback) {
 		OSyncError *internal_error = NULL;
-		OSyncMemberUpdate *update = osync_try_malloc0(sizeof(OSyncMemberUpdate), &internal_error);
+		OSyncEngineMemberUpdate *update = osync_try_malloc0(sizeof(OSyncEngineMemberUpdate), &internal_error);
 		if (!update) {
 			osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&internal_error));
 			osync_error_unref(&internal_error);
@@ -148,13 +148,13 @@ void osync_status_update_member(OSyncEngine *engine, OSyncMember *member, OSyncM
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void osync_status_update_change(OSyncEngine *engine, OSyncChange *change, OSyncMember *member, OSyncMapping *mapping, OSyncChangeEvent type, OSyncError *error)
+void osync_status_update_change(OSyncEngine *engine, OSyncChange *change, OSyncMember *member, OSyncMapping *mapping, OSyncEngineChangeEvent type, OSyncError *error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %i, %p)", __func__, engine, change, member, mapping, type, error);
 	
 	if (engine->changestat_callback) {
 		OSyncError *internal_error = NULL;
-		OSyncChangeUpdate *update = osync_try_malloc0(sizeof(OSyncChangeUpdate), &internal_error);
+		OSyncEngineChangeUpdate *update = osync_try_malloc0(sizeof(OSyncEngineChangeUpdate), &internal_error);
 		if (!update) {
 			osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&internal_error));
 			osync_error_unref(&internal_error);
@@ -181,13 +181,13 @@ void osync_status_update_change(OSyncEngine *engine, OSyncChange *change, OSyncM
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void osync_status_update_mapping(OSyncEngine *engine, OSyncMappingEngine *mapping, OSyncMappingEvent type, OSyncError *error)
+void osync_status_update_mapping(OSyncEngine *engine, OSyncMappingEngine *mapping, OSyncEngineMappingEvent type, OSyncError *error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %i, %p)", __func__, engine, mapping, type, error);
 	
 	if (engine->mapstat_callback) {
 		OSyncError *internal_error = NULL;
-		OSyncMappingUpdate *update = osync_try_malloc0(sizeof(OSyncMappingUpdate), &internal_error);
+		OSyncEngineMappingUpdate *update = osync_try_malloc0(sizeof(OSyncEngineMappingUpdate), &internal_error);
 		if (!update) {
 			osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&internal_error));
 			osync_error_unref(&internal_error);

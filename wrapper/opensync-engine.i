@@ -28,22 +28,22 @@ typedef enum {} EngineEvent;
 %constant int ENGINE_EVENT_PREV_UNCLEAN = OSYNC_ENGINE_EVENT_PREV_UNCLEAN;
 
 typedef enum {} MemberEvent;
-%constant int CLIENT_EVENT_CONNECTED = OSYNC_CLIENT_EVENT_CONNECTED;
-%constant int CLIENT_EVENT_ERROR = OSYNC_CLIENT_EVENT_ERROR;
-%constant int CLIENT_EVENT_READ = OSYNC_CLIENT_EVENT_READ;
-%constant int CLIENT_EVENT_WRITTEN = OSYNC_CLIENT_EVENT_WRITTEN;
-%constant int CLIENT_EVENT_SYNC_DONE = OSYNC_CLIENT_EVENT_SYNC_DONE;
-%constant int CLIENT_EVENT_DISCONNECTED = OSYNC_CLIENT_EVENT_DISCONNECTED;
-%constant int CLIENT_EVENT_DISCOVERED = OSYNC_CLIENT_EVENT_DISCOVERED;
+%constant int ENGINE_MEMBER_EVENT_CONNECTED = OSYNC_ENGINE_MEMBER_EVENT_CONNECTED;
+%constant int ENGINE_MEMBER_EVENT_ERROR = OSYNC_ENGINE_MEMBER_EVENT_ERROR;
+%constant int ENGINE_MEMBER_EVENT_READ = OSYNC_ENGINE_MEMBER_EVENT_READ;
+%constant int ENGINE_MEMBER_EVENT_WRITTEN = OSYNC_ENGINE_MEMBER_EVENT_WRITTEN;
+%constant int ENGINE_MEMBER_EVENT_SYNC_DONE = OSYNC_ENGINE_MEMBER_EVENT_SYNC_DONE;
+%constant int ENGINE_MEMBER_EVENT_DISCONNECTED = OSYNC_ENGINE_MEMBER_EVENT_DISCONNECTED;
+%constant int ENGINE_MEMBER_EVENT_DISCOVERED = OSYNC_ENGINE_MEMBER_EVENT_DISCOVERED;
 
 typedef enum {} ChangeEvent;
-%constant int CHANGE_EVENT_READ = OSYNC_CHANGE_EVENT_READ;
-%constant int CHANGE_EVENT_WRITTEN = OSYNC_CHANGE_EVENT_WRITTEN;
-%constant int CHANGE_EVENT_ERROR = OSYNC_CHANGE_EVENT_ERROR;
+%constant int ENGINE_CHANGE_EVENT_READ = OSYNC_ENGINE_CHANGE_EVENT_READ;
+%constant int ENGINE_CHANGE_EVENT_WRITTEN = OSYNC_ENGINE_CHANGE_EVENT_WRITTEN;
+%constant int ENGINE_CHANGE_EVENT_ERROR = OSYNC_ENGINE_CHANGE_EVENT_ERROR;
 
 typedef enum {} MappingEvent;
-%constant int MAPPING_EVENT_SOLVED = OSYNC_MAPPING_EVENT_SOLVED;
-%constant int MAPPING_EVENT_ERROR = OSYNC_MAPPING_EVENT_ERROR;
+%constant int ENGINE_MAPPING_EVENT_SOLVED = OSYNC_ENGINE_MAPPING_EVENT_SOLVED;
+%constant int ENGINE_MAPPING_EVENT_ERROR = OSYNC_ENGINE_MAPPING_EVENT_ERROR;
 
 /* modified from SWIG docs, typemap to pass a python callable (function) object */
 %typemap(in) PyObject *pyfunc {
@@ -176,9 +176,12 @@ typedef struct {} Engine;
 		static void enginestatus_cb_wrapper(OSyncEngineUpdate *arg, void *clientdata) {
 			PyGILState_STATE pystate = PyGILState_Ensure();
 
+                        OSyncError *error = osync_engine_update_get_error(arg);
+                        OSyncEngineEvent event = osync_engine_update_get_event(arg);
+
 			PyObject *pyfunc = clientdata;
-			PyObject *errobj = SWIG_NewPointerObj(arg->error, SWIGTYPE_p_Error, 0);
-			PyObject *args = Py_BuildValue("(iO)", arg->type, errobj);
+			PyObject *errobj = SWIG_NewPointerObj(error, SWIGTYPE_p_Error, 0);
+			PyObject *args = Py_BuildValue("(iO)", event, errobj);
 			PyObject *result = PyEval_CallObject(pyfunc, args);
 			Py_DECREF(args);
 			Py_XDECREF(result);

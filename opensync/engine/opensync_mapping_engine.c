@@ -493,7 +493,7 @@ osync_bool osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 		return TRUE;
 	}
 	osync_assert(engine->master);
-	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_MAPPING_EVENT_SOLVED, NULL);
+	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_ENGINE_MAPPING_EVENT_SOLVED, NULL);
 	
 	if (is_same == prod(osync_list_length(engine->entries) - 1)) {
 		OSyncList *e = NULL;
@@ -583,7 +583,7 @@ osync_bool osync_mapping_engine_solve(OSyncMappingEngine *engine, OSyncChange *c
 	entry = _osync_mapping_engine_find_entry(engine, change);
 	engine->conflict = FALSE;
 	osync_mapping_engine_set_master(engine, entry);
-	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_MAPPING_EVENT_SOLVED, NULL);
+	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_ENGINE_MAPPING_EVENT_SOLVED, NULL);
 	engine->parent->conflicts = osync_list_remove(engine->parent->conflicts, engine);
 
 	if (!osync_obj_engine_command(engine->parent, OSYNC_ENGINE_COMMAND_END_CONFLICTS, error))
@@ -619,7 +619,7 @@ osync_bool osync_mapping_engine_ignore(OSyncMappingEngine *engine, OSyncError **
 		osync_archive_save_ignored_conflict(archive, objtype, id, osync_change_get_changetype(entry->change), error);
 	}
 
-	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_MAPPING_EVENT_SOLVED, NULL);
+	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_ENGINE_MAPPING_EVENT_SOLVED, NULL);
 	engine->parent->conflicts = osync_list_remove(engine->parent->conflicts, engine);
 
 	if (!osync_obj_engine_command(engine->parent, OSYNC_ENGINE_COMMAND_END_CONFLICTS, error))
@@ -646,7 +646,7 @@ osync_bool osync_mapping_engine_use_latest(OSyncMappingEngine *engine, OSyncErro
 	osync_mapping_engine_set_master(engine, latest_entry);
 
 	engine->conflict = FALSE;
-	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_MAPPING_EVENT_SOLVED, NULL);
+	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_ENGINE_MAPPING_EVENT_SOLVED, NULL);
 	engine->parent->conflicts = osync_list_remove(engine->parent->conflicts, engine);
 
 	if (!osync_obj_engine_command(engine->parent, OSYNC_ENGINE_COMMAND_END_CONFLICTS, error))
@@ -785,7 +785,7 @@ osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, O
 	}
 	
 	objengine->conflicts = osync_list_remove(objengine->conflicts, existingMapping);
-	osync_status_update_mapping(objengine->parent, existingMapping, OSYNC_MAPPING_EVENT_SOLVED, NULL);
+	osync_status_update_mapping(objengine->parent, existingMapping, OSYNC_ENGINE_MAPPING_EVENT_SOLVED, NULL);
 
 	if (!osync_obj_engine_command(objengine, OSYNC_ENGINE_COMMAND_END_CONFLICTS, error))
 		goto error;

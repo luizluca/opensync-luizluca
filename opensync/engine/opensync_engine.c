@@ -337,7 +337,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 	osync_free(member_objtype);
 	
 	osync_engine_set_error(engine, error);
-	osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_ERROR, NULL, error);
+	osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, NULL, error);
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&error));
 }
 
@@ -1264,10 +1264,10 @@ static void _osync_engine_connect_callback(OSyncClientProxy *proxy, void *userda
 	if (error) {
 		osync_engine_set_error(engine, error);
 		engine->proxy_errors = engine->proxy_errors | (0x1 << position);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_ERROR, NULL, error);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, NULL, error);
 	} else {
 		engine->proxy_connects = engine->proxy_connects | (0x1 << position);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_CONNECTED, NULL, NULL);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_CONNECTED, NULL, NULL);
 	}
 
 	/* If MainSink request a SlowSync, flag all objengines with SlowSync */
@@ -1294,10 +1294,10 @@ static void _osync_engine_connect_done_callback(OSyncClientProxy *proxy, void *u
 	if (error) {
 		osync_engine_set_error(engine, error);
 		engine->proxy_errors = engine->proxy_errors | (0x1 << position);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_ERROR, NULL, error);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, NULL, error);
 	} else {
 		engine->proxy_connect_done = engine->proxy_connect_done | (0x1 << position);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_CONNECT_DONE, NULL, NULL);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_CONNECT_DONE, NULL, NULL);
 	}
 	
 	_osync_engine_generate_connect_done_event(engine);
@@ -1316,10 +1316,10 @@ static void _osync_engine_disconnect_callback(OSyncClientProxy *proxy, void *use
 	if (error) {
 		osync_engine_set_error(engine, error);
 		engine->proxy_errors = engine->proxy_errors | (0x1 << position);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_ERROR, NULL, error);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, NULL, error);
 	} else {
 		engine->proxy_disconnects = engine->proxy_disconnects | (0x1 << position);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_DISCONNECTED, NULL, NULL);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_DISCONNECTED, NULL, NULL);
 	}
 	
 	_osync_engine_generate_disconnected_event(engine);
@@ -1338,10 +1338,10 @@ static void _osync_engine_get_changes_callback(OSyncClientProxy *proxy, void *us
 	if (error) {
 		osync_engine_set_error(engine, error);
 		engine->proxy_errors = engine->proxy_errors | (0x1 << position);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_ERROR, NULL, error);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, NULL, error);
 	} else {
 		engine->proxy_get_changes = engine->proxy_get_changes | (0x1 << position);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_READ, NULL, NULL);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_READ, NULL, NULL);
 	}
 	
 	_osync_engine_generate_get_changes_event(engine);
@@ -1360,10 +1360,10 @@ static void _osync_engine_written_callback(OSyncClientProxy *proxy, void *userda
 	if (error) {
 		osync_engine_set_error(engine, error);
 		engine->proxy_errors = engine->proxy_errors | (0x1 << position);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_ERROR, NULL, error);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, NULL, error);
 	} else {
 		engine->proxy_written = engine->proxy_written | (0x1 << position);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_WRITTEN, NULL, NULL);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_WRITTEN, NULL, NULL);
 	}
 	
 	_osync_engine_generate_written_event(engine);
@@ -1382,10 +1382,10 @@ static void _osync_engine_sync_done_callback(OSyncClientProxy *proxy, void *user
 	if (error) {
 		osync_engine_set_error(engine, error);
 		engine->proxy_errors = engine->proxy_errors | (0x1 << position);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_ERROR, NULL, error);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, NULL, error);
 	} else {
 		engine->proxy_sync_done = engine->proxy_sync_done | (0x1 << position);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_SYNC_DONE, NULL, NULL);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_SYNC_DONE, NULL, NULL);
 	}
 	
 	_osync_engine_generate_sync_done_event(engine);
@@ -1516,9 +1516,9 @@ static void _osync_engine_discover_callback(OSyncClientProxy *proxy, void *userd
 	
 	if (error) {
 		osync_engine_set_error(engine, error);
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_ERROR, NULL, error);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, NULL, error);
 	} else {
-		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_CLIENT_EVENT_DISCOVERED, NULL, NULL);
+		osync_status_update_member(engine, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_DISCOVERED, NULL, NULL);
 	}
 	
 	g_mutex_lock(engine->syncing_mutex);
@@ -2337,10 +2337,46 @@ void osync_engine_set_changestatus_callback(OSyncEngine *engine, osync_status_ch
 	engine->changestat_userdata = user_data;
 }
 
+OSyncError *osync_engine_change_update_get_error(OSyncEngineChangeUpdate *update)
+{
+        osync_return_val_if_fail(update, NULL);
+        return update->error;
+}
+
+OSyncEngineChangeEvent osync_engine_change_update_get_event(OSyncEngineChangeUpdate *update)
+{
+        osync_return_val_if_fail(update, 0);
+        return update->type;
+}
+
+OSyncMember *osync_engine_change_update_get_member(OSyncEngineChangeUpdate *update)
+{
+        osync_return_val_if_fail(update, NULL);
+        return update->member;
+}
+
+OSyncChange *osync_engine_change_update_get_change(OSyncEngineChangeUpdate *update)
+{
+        osync_return_val_if_fail(update, NULL);
+        return update->change;
+}
+
 void osync_engine_set_mappingstatus_callback(OSyncEngine *engine, osync_status_mapping_cb callback, void *user_data)
 {
 	engine->mapstat_callback = callback;
 	engine->mapstat_userdata = user_data;
+}
+
+OSyncError *osync_engine_mapping_update_get_error(OSyncEngineMappingUpdate *update)
+{
+        osync_return_val_if_fail(update, NULL);
+        return update->error;
+}
+
+OSyncEngineMappingEvent osync_engine_mapping_update_get_event(OSyncEngineMappingUpdate *update)
+{
+        osync_return_val_if_fail(update, 0);
+        return update->type;
 }
 
 void osync_engine_set_enginestatus_callback(OSyncEngine *engine, osync_status_engine_cb callback, void *user_data)
@@ -2349,10 +2385,44 @@ void osync_engine_set_enginestatus_callback(OSyncEngine *engine, osync_status_en
 	engine->engstat_userdata = user_data;
 }
 
+OSyncError *osync_engine_update_get_error(OSyncEngineUpdate *update)
+{
+        osync_return_val_if_fail(update, NULL);
+        return update->error;
+}
+
+OSyncEngineEvent osync_engine_update_get_event(OSyncEngineUpdate *update)
+{
+        osync_return_val_if_fail(update, 0);
+        return update->type;
+}
+
 void osync_engine_set_memberstatus_callback(OSyncEngine *engine, osync_status_member_cb callback, void *user_data)
 {
 	engine->mebstat_callback = callback;
 	engine->mebstat_userdata = user_data;
+}
+
+OSyncError *osync_engine_member_update_get_error(OSyncEngineMemberUpdate *update)
+{
+        osync_return_val_if_fail(update, NULL);
+        return update->error;
+}
+
+OSyncEngineMemberEvent osync_engine_member_update_get_event(OSyncEngineMemberUpdate *update)
+{
+        osync_return_val_if_fail(update, 0);
+        return update->type;
+}
+OSyncMember *osync_engine_member_update_get_member(OSyncEngineMemberUpdate *update)
+{
+        osync_return_val_if_fail(update, NULL);
+        return update->member;
+}
+const char *osync_engine_member_update_get_objtype(OSyncEngineMemberUpdate *update)
+{
+        osync_return_val_if_fail(update, NULL);
+        return update->objtype;
 }
 
 osync_bool osync_engine_abort(OSyncEngine *engine, OSyncError **error)
@@ -2546,7 +2616,7 @@ const char *osync_engine_get_eventstr(OSyncEngineEvent event)
 		case OSYNC_ENGINE_EVENT_PREPARED_MAP:
 			eventstr = "PREPARE_MAP";
 			break;
-	}
+        }
 
 	return eventstr;
 }

@@ -29,17 +29,17 @@
 
 /*@{*/
 
-void osync_status_free_member_update(OSyncMemberUpdate *update);
+void osync_status_free_member_update(OSyncEngineMemberUpdate *update);
 void osync_status_free_engine_update(OSyncEngineUpdate *update);
-void osync_status_free_change_update(OSyncChangeUpdate *update);
-void osync_status_free_mapping_update(OSyncMappingUpdate *update);
+void osync_status_free_change_update(OSyncEngineChangeUpdate *update);
+void osync_status_free_mapping_update(OSyncEngineMappingUpdate *update);
 
-void osync_status_update_member(OSyncEngine *engine, OSyncMember *member, OSyncMemberEvent type, const char *objtype, OSyncError *error);
+void osync_status_update_member(OSyncEngine *engine, OSyncMember *member, OSyncEngineMemberEvent type, const char *objtype, OSyncError *error);
 void osync_status_update_engine(OSyncEngine *engine, OSyncEngineEvent type, OSyncError *error);
-void osync_status_update_change(OSyncEngine *engine, OSyncChange *change, OSyncMember *member, OSyncMapping *mapping, OSyncChangeEvent type, OSyncError *error);
+void osync_status_update_change(OSyncEngine *engine, OSyncChange *change, OSyncMember *member, OSyncMapping *mapping, OSyncEngineChangeEvent type, OSyncError *error);
 
 
-void osync_status_update_mapping(OSyncEngine *engine, OSyncMappingEngine *mapping, OSyncMappingEvent type, OSyncError *error);
+void osync_status_update_mapping(OSyncEngine *engine, OSyncMappingEngine *mapping, OSyncEngineMappingEvent type, OSyncError *error);
 
 /**
  * @brief Send conflict status for a mapping

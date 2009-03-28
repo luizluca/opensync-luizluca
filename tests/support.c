@@ -298,83 +298,86 @@ void create_random_file(const char *path)
 	g_free(content);
 }
 
-void member_status(OSyncMemberUpdate *status, void *user_data)
+void member_status(OSyncEngineMemberUpdate *status, void *user_data)
 {
-	osync_trace(TRACE_ENTRY, "%s(%p (%i), %p)", __func__, status, status->type, user_data);
+	osync_trace(TRACE_ENTRY, "%s(%p), %p)", __func__, status, user_data);
 	fail_unless(GINT_TO_POINTER(1) == user_data, NULL);
+
+        OSyncError *error = osync_engine_member_update_get_error(status);
+        const char *objtype = osync_engine_member_update_get_objtype(status);
 	
-	switch (status->type) {
-		case OSYNC_CLIENT_EVENT_CONNECTED:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+	switch (osync_engine_member_update_get_event(status)) {
+		case OSYNC_ENGINE_MEMBER_EVENT_CONNECTED:
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			
-			if (status->objtype == NULL) {
+			if (objtype == NULL) {
 				num_client_main_connected++;
 			} else {
-				fail_unless(!strncmp(status->objtype, "mockobjtype", 11), NULL);
+				fail_unless(!strncmp(objtype, "mockobjtype", 11), NULL);
 				num_client_connected++;
 			}
 			
 			break;
-		case OSYNC_CLIENT_EVENT_CONNECT_DONE:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+		case OSYNC_ENGINE_MEMBER_EVENT_CONNECT_DONE:
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			
-			if (status->objtype == NULL) {
+			if (objtype == NULL) {
 				num_client_main_connect_done++;
 			} else {
-				fail_unless(!strncmp(status->objtype, "mockobjtype", 11), NULL);
+				fail_unless(!strncmp(objtype, "mockobjtype", 11), NULL);
 				num_client_connect_done++;
 			}
 			break;
-		case OSYNC_CLIENT_EVENT_DISCONNECTED:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+		case OSYNC_ENGINE_MEMBER_EVENT_DISCONNECTED:
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			
-			if (status->objtype == NULL) {
+			if (objtype == NULL) {
 				num_client_main_disconnected++;
 			} else {
-				fail_unless(!strncmp(status->objtype, "mockobjtype", 11), NULL);
+				fail_unless(!strncmp(objtype, "mockobjtype", 11), NULL);
 				num_client_disconnected++;
 			}
 			
 			break;
-		case OSYNC_CLIENT_EVENT_READ:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+		case OSYNC_ENGINE_MEMBER_EVENT_READ:
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			
-			if (status->objtype == NULL) {
+			if (objtype == NULL) {
 				num_client_main_read++;
 			} else {
-				fail_unless(!strncmp(status->objtype, "mockobjtype", 11), NULL);
+				fail_unless(!strncmp(objtype, "mockobjtype", 11), NULL);
 				num_client_read++;
 			}
 			
 			break;
-		case OSYNC_CLIENT_EVENT_WRITTEN:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+		case OSYNC_ENGINE_MEMBER_EVENT_WRITTEN:
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			
-			if (status->objtype == NULL) {
+			if (objtype == NULL) {
 				num_client_main_written++;
 			} else {
-				fail_unless(!strncmp(status->objtype, "mockobjtype", 11), NULL);
+				fail_unless(!strncmp(objtype, "mockobjtype", 11), NULL);
 				num_client_written++;
 			}
 			
 			break;
-		case OSYNC_CLIENT_EVENT_ERROR:
-			fail_unless(osync_error_is_set(&(status->error)), NULL);
+		case OSYNC_ENGINE_MEMBER_EVENT_ERROR:
+			fail_unless(osync_error_is_set(&(error)), NULL);
 			num_client_errors++;
 			break;
-		case OSYNC_CLIENT_EVENT_SYNC_DONE:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+		case OSYNC_ENGINE_MEMBER_EVENT_SYNC_DONE:
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			
-			if (status->objtype == NULL) {
+			if (objtype == NULL) {
 				num_client_main_sync_done++;
 			} else {
-				fail_unless(!strncmp(status->objtype, "mockobjtype", 11), NULL);
+				fail_unless(!strncmp(objtype, "mockobjtype", 11), NULL);
 				num_client_sync_done++;
 			}
 			
 			break;
-		case OSYNC_CLIENT_EVENT_DISCOVERED:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+		case OSYNC_ENGINE_MEMBER_EVENT_DISCOVERED:
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_client_discovered++;
 			break;
 	}
@@ -382,21 +385,23 @@ void member_status(OSyncMemberUpdate *status, void *user_data)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void entry_status(OSyncChangeUpdate *status, void *user_data)
+void entry_status(OSyncEngineChangeUpdate *status, void *user_data)
 {
-	osync_trace(TRACE_ENTRY, "%s(%p (%i), %p)", __func__, status, status->type, user_data);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, status, user_data);
+
+        OSyncError *error = osync_engine_change_update_get_error(status);
 	
-	switch (status->type) {
-		case OSYNC_CHANGE_EVENT_READ:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+	switch (osync_engine_change_update_get_event(status)) {
+		case OSYNC_ENGINE_CHANGE_EVENT_READ:
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_change_read++;
 			break;
-		case OSYNC_CHANGE_EVENT_WRITTEN:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+		case OSYNC_ENGINE_CHANGE_EVENT_WRITTEN:
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_change_written++;
 			break;
-		case OSYNC_CHANGE_EVENT_ERROR:
-			fail_unless(osync_error_is_set(&(status->error)), NULL);
+		case OSYNC_ENGINE_CHANGE_EVENT_ERROR:
+			fail_unless(osync_error_is_set(&(error)), NULL);
 			num_change_error++;
 			break;
 	}
@@ -406,62 +411,65 @@ void entry_status(OSyncChangeUpdate *status, void *user_data)
 
 void engine_status(OSyncEngineUpdate *status, void *user_data)
 {
-	osync_trace(TRACE_ENTRY, "%s(%p(%i), %p)", __func__, status, status->type, user_data);
-	switch (status->type) {
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, status, user_data);
+
+        OSyncError *error = osync_engine_update_get_error(status);
+
+	switch (osync_engine_update_get_event(status)) {
 		case OSYNC_ENGINE_EVENT_CONNECTED:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_connected++;
 			break;
 		case OSYNC_ENGINE_EVENT_CONNECT_DONE:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_connect_done++;
 			break;
 		case OSYNC_ENGINE_EVENT_READ:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_read++;
 			break;
 		case OSYNC_ENGINE_EVENT_PREPARED_MAP:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_prepared_map++;
 			break;
 		case OSYNC_ENGINE_EVENT_MAPPED:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_mapped++;
 			break;
 		case OSYNC_ENGINE_EVENT_MULTIPLIED: 
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_multiplied++;
 			break;
 		case OSYNC_ENGINE_EVENT_PREPARED_WRITE:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_prepared_write++;
 			break;
 		case OSYNC_ENGINE_EVENT_WRITTEN:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_written++;
 			break;
 		case OSYNC_ENGINE_EVENT_DISCONNECTED:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_disconnected++;
 			break;
 		case OSYNC_ENGINE_EVENT_ERROR:
-			fail_unless(osync_error_is_set(&(status->error)), NULL);
+			fail_unless(osync_error_is_set(&(error)), NULL);
 			num_engine_errors++;
 			break;
 		case OSYNC_ENGINE_EVENT_SUCCESSFUL:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_successful++;
 			break;
 		case OSYNC_ENGINE_EVENT_PREV_UNCLEAN:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_prev_unclean++;
 			break;
 		case OSYNC_ENGINE_EVENT_END_CONFLICTS:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_end_conflicts++;
 			break;
 		case OSYNC_ENGINE_EVENT_SYNC_DONE:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_engine_sync_done++;
 			break;
 	}
@@ -469,19 +477,21 @@ void engine_status(OSyncEngineUpdate *status, void *user_data)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void mapping_status(OSyncMappingUpdate *status, void *user_data)
+void mapping_status(OSyncEngineMappingUpdate *status, void *user_data)
 {
-	switch (status->type) {
-		case OSYNC_MAPPING_EVENT_SOLVED:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+        OSyncError *error = osync_engine_mapping_update_get_error(status);
+
+	switch (osync_engine_mapping_update_get_event(status)) {
+		case OSYNC_ENGINE_MAPPING_EVENT_SOLVED:
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_mapping_solved++;
 			break;
-		/*case OSYNC_MAPPING_EVENT_WRITTEN:
-			fail_unless(!osync_error_is_set(&(status->error)), NULL);
+		/*case OSYNC_ENGINE_MAPPING_EVENT_WRITTEN:
+			fail_unless(!osync_error_is_set(&(error)), NULL);
 			num_mapping_written++;
 			break;*/
-		case OSYNC_MAPPING_EVENT_ERROR:
-			fail_unless(osync_error_is_set(&(status->error)), NULL);
+		case OSYNC_ENGINE_MAPPING_EVENT_ERROR:
+			fail_unless(osync_error_is_set(&(error)), NULL);
 			num_mapping_errors++;
 			break;
 	}

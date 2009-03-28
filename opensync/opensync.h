@@ -217,6 +217,11 @@ typedef struct OSyncSinkEngine OSyncSinkEngine;
 typedef struct OSyncMappingEntryEngine OSyncMappingEntryEngine;
 typedef struct OSyncMappingEngine OSyncMappingEngine;
 
+typedef struct  OSyncEngineMemberUpdate OSyncEngineMemberUpdate;
+typedef struct  OSyncEngineChangeUpdate OSyncEngineChangeUpdate;
+typedef struct  OSyncEngineMappingUpdate OSyncEngineMappingUpdate;
+typedef struct  OSyncEngineUpdate OSyncEngineUpdate;
+
 /* Client component */
 typedef struct OSyncClient OSyncClient;
 typedef struct OSyncClientProxy OSyncClientProxy;

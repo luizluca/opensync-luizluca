@@ -141,6 +141,59 @@ struct OSyncEngine {
 };
 
 /**
+ * @brief Struct for the member status callback
+ */
+struct OSyncEngineMemberUpdate {
+	/** The type of the status update */
+	OSyncEngineMemberEvent type;
+	char *objtype;
+	/** The member for which the status update is */
+	OSyncMember *member;
+	/** If the status was a error, this error will be set */
+	OSyncError *error;
+};
+
+/**
+ * @brief Struct for the change status callback
+ */
+struct OSyncEngineChangeUpdate {
+	/** The type of the status update */
+	OSyncEngineChangeEvent type;
+	/** The change for which the status update is */
+	OSyncChange *change;
+	/** The id of the member which sent this change */
+	OSyncMember *member;
+	/** The id of the mapping to which this change belongs if any */
+	int mapping_id;
+	/** If the status was a error, this error will be set */
+	OSyncError *error;
+} ;
+
+/**
+ * @brief Struct for the mapping status callback
+ */
+struct OSyncEngineMappingUpdate {
+	/** The type of the status update */
+	OSyncEngineMappingEvent type;
+	/** If the mapping was already solved, this will have the id if the winning entry */
+	long long int winner;
+	/** The mapping for which the status update is */
+	OSyncMapping *mapping;
+	/** If the status was a error, this error will be set */
+	OSyncError *error;
+};
+
+/**
+ * @brief Struct for the engine status callback
+ */
+struct OSyncEngineUpdate {
+	/** The type of the status update */
+	OSyncEngineEvent type;
+	/** If the status was a error, this error will be set */
+	OSyncError *error;
+};
+
+/**
  * @brief Set error for OSyncEngine.
  * 
  * Stack error message. If an error is already set, the error get stacked.
