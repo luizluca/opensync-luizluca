@@ -459,6 +459,9 @@ static void *plugin_initialize(OSyncError **error)
 
 		if (!osync_objtype_sink_load_anchor(sink, plugin_info, error))
 			return NULL;
+
+		if (!osync_objtype_sink_load_hashtable(sink, plugin_info, error))
+			return NULL;
 	}
 
 	return plugin_data;
@@ -982,6 +985,9 @@ static osync_bool syncdone_sink(Command *cmd, OSyncObjTypeSink *sink, OSyncError
 	osync_objtype_sink_sync_done(sink, plugin_info, context);
 
 	osync_context_unref(context);
+
+	if (!osync_objtype_sink_save_hashtable(sink, error))
+		goto error;
 
 	return TRUE;
 

@@ -105,26 +105,37 @@ static void dump_map(OSyncGroupEnv *env, const char *groupname)
 
 }
 
+#if 0
 static void print_hashtable(const char *uid, const char *hash, void *user_data)
 {
 	printf("UID: %s\tHASH:%s\n", uid, hash);
 }
+#endif
 
 static void dump_hash(OSyncGroupEnv *env, const char *objtype, const char *groupname, char *memberid)
 {
-	OSyncError *error = NULL;
 	OSyncGroup *group = osync_group_env_find_group(env, groupname);
+#if 0 /* Unused */	
+	OSyncError *error = NULL;
 	long long int id = 0;
 	OSyncMember *member = NULL;
 	char *path = NULL;
 	OSyncHashTable *table = NULL;
-
+#endif	
 	
 	if (!group) {
 		printf("Unable to find group with name \"%s\"\n", groupname);
 		return;
 	}
+
+	printf("Dumping hashtable is currently not implemented!\n");
 	
+	return;
+
+/* FIXME: public interface osync_hashltable_new() is gone!
+ * no interface to access the disk directly!
+ * */
+#if 0	
 	id = atoi(memberid);
 	member = osync_group_find_member(group, id);
 	if (!member) {
@@ -144,12 +155,12 @@ static void dump_hash(OSyncGroupEnv *env, const char *objtype, const char *group
 	osync_hashtable_foreach(table, print_hashtable, NULL);
 
 	osync_hashtable_unref(table);
-	
-	return;
 
  error:
 	printf("ERROR: %s", osync_error_print(&error));
 	osync_error_unref(&error);
+
+#endif	
 }
 
 static void reset(OSyncGroupEnv *osync, char *groupname)

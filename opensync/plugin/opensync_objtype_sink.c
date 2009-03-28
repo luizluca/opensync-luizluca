@@ -815,3 +815,21 @@ error:
 	return FALSE;
 }
 
+osync_bool osync_objtype_sink_save_hashtable(OSyncObjTypeSink *sink, OSyncError **error)
+{
+	osync_assert(sink);
+
+	if (!osync_objtype_sink_has_hashtable(sink))
+		return TRUE;
+
+	osync_assert(sink->hashtable);
+
+	if (!osync_hashtable_save(sink->hashtable, error))
+		goto error;
+
+	return TRUE;
+
+error:
+	return FALSE;
+}
+

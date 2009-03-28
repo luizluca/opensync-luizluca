@@ -1329,7 +1329,6 @@ static osync_bool _osync_client_handle_sync_done(OSyncClient *client, OSyncMessa
 	OSyncMessage *reply = NULL;
 	OSyncObjTypeSink *sink = NULL;
 	OSyncContext *context = NULL;
-	OSyncHashTable *hashtable = NULL;
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
 	
@@ -1368,14 +1367,8 @@ static osync_bool _osync_client_handle_sync_done(OSyncClient *client, OSyncMessa
 	
 		osync_context_unref(context);
 
-		/* Check if Hashtable is used */
-		if ((hashtable = osync_objtype_sink_get_hashtable(sink))) {
-
-			/* Save Hashtable */
-			if (!osync_hashtable_save(hashtable, error))
-				goto error;
-		}
-
+		if (!osync_objtype_sink_save_hashtable(sink, error))
+			goto error;
 	}
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;

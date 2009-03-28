@@ -551,6 +551,18 @@ OSYNC_EXPORT osync_bool osync_objtype_sink_load_anchor(OSyncObjTypeSink *sink, O
  */
 OSYNC_EXPORT osync_bool osync_objtype_sink_load_hashtable(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncError **error);
 
+/*! @brief Save the Hashtable for a specific Sink if requested 
+ * 
+ * Write hashes to the hashtable database. If no Hashtable is requested for this sink
+ * this functions just returns TRUE.
+ *
+ * @param sink Pointer to the sink
+ * @param error Pointer to error struct, get set on any error
+ * @returns TRUE on success, FALSE on any error
+ * 
+ */
+OSYNC_EXPORT osync_bool osync_objtype_sink_save_hashtable(OSyncObjTypeSink *sink, OSyncError **error);
+
 /*@}*/
 
 #endif /* _OPENSYNC_OBJTYPE_SINK_H_ */
