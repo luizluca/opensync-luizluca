@@ -288,6 +288,7 @@ static void mock_report_dir(MockDir *directory, const char *subdir, OSyncContext
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p, %p)", __func__, directory, subdir, ctx, sink);
 
+	OSyncHashTable *hashtable = osync_objtype_sink_get_hashtable(sink);
 	OSyncFormatEnv *formatenv = osync_plugin_info_get_format_env(info);
 	osync_assert(formatenv);
 
@@ -322,10 +323,10 @@ static void mock_report_dir(MockDir *directory, const char *subdir, OSyncContext
 			osync_change_set_hash(change, hash);
 			g_free(hash);
 
-			OSyncChangeType type = osync_hashtable_get_changetype(directory->hashtable, change);
+			OSyncChangeType type = osync_hashtable_get_changetype(hashtable, change);
 			
 			osync_change_set_changetype(change, type);
-			osync_hashtable_update_change(directory->hashtable, change);
+			osync_hashtable_update_change(hashtable, change);
 
 			if (type == OSYNC_CHANGE_TYPE_UNMODIFIED) {
 				g_free(filename);
@@ -379,6 +380,7 @@ static void mock_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyn
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %i, %p)", __func__, sink, info, ctx, slow_sync, data);
 	MockDir *dir = data;
 	OSyncError *error = NULL;
+	OSyncHashTable *hashtable = osync_objtype_sink_get_hashtable(sink);
 
 	osync_assert(dir->committed_all == TRUE);
 	dir->committed_all = FALSE;
@@ -402,14 +404,14 @@ static void mock_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyn
 		
 	if (slow_sync) {
 		osync_trace(TRACE_INTERNAL, "Slow sync requested");
-		osync_assert(osync_hashtable_slowsync(dir->hashtable, &error));
+		osync_assert(osync_hashtable_slowsync(hashtable, &error));
 	}
 	
 	osync_trace(TRACE_INTERNAL, "get_changes for %s", osync_objtype_sink_get_name(sink));
 
 	mock_report_dir(dir, NULL, ctx, info, sink);
 	
-	OSyncList *u, *uids = osync_hashtable_get_deleted(dir->hashtable);
+	OSyncList *u, *uids = osync_hashtable_get_deleted(hashtable);
 	for (u = uids; u; u = u->next) {
 		OSyncChange *change = osync_change_new(&error);
 		osync_assert(change);
@@ -428,7 +430,7 @@ static void mock_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyn
 		
 		osync_context_report_change(ctx, change);
 		
-		osync_hashtable_update_change(dir->hashtable, change);
+		osync_hashtable_update_change(hashtable, change);
 	
 		osync_change_unref(change);
 	}
@@ -441,6 +443,7 @@ static void mock_commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OS
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %p)", __func__, sink, info, ctx, change, data);
 	MockDir *dir = data;
+	OSyncHashTable *hashtable = osync_objtype_sink_get_hashtable(sink);
 	
 	char *filename = NULL;
 
@@ -473,7 +476,7 @@ static void mock_commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OS
 	g_free(filename);
 
 
-	osync_hashtable_update_change(dir->hashtable, change);
+	osync_hashtable_update_change(hashtable, change);
 	
 	osync_context_report_success(ctx);
 	
@@ -484,6 +487,7 @@ static void mock_batch_commit(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSy
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %p, %p)", __func__, sink, info, context, contexts, changes, data);
 	MockDir *dir = data;
+	OSyncHashTable *hashtable = osync_objtype_sink_get_hashtable(sink);
 
 	osync_assert(dir->committed_all == FALSE);
 	dir->committed_all = TRUE;
@@ -502,7 +506,7 @@ static void mock_batch_commit(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSy
 			}
 			g_free(filename);
 
-			osync_hashtable_update_change(dir->hashtable, changes[i]);
+			osync_hashtable_update_change(hashtable, changes[i]);
 			osync_context_report_success(contexts[i]);
 		}
 	}
@@ -555,7 +559,6 @@ static void mock_sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncC
 		return;
 	
 	osync_assert_msg(osync_anchor_update(anchor, dir->path, NULL), "Not expected to fail!");
-	osync_assert(osync_hashtable_save(dir->hashtable, NULL));
 	
 	osync_context_report_success(ctx);
 	
@@ -628,16 +631,6 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 		osync_assert(dir->objformat);
 		osync_objformat_ref(dir->objformat);
 
-		osync_trace(TRACE_INTERNAL, "The configdir: %s", osync_plugin_info_get_configdir(info));
-		char *tablepath = g_strdup_printf("%s/hashtable.db", osync_plugin_info_get_configdir(info));
-		dir->hashtable = osync_hashtable_new(tablepath, objtype, error);
-		g_free(tablepath);
-		
-		osync_assert(dir->hashtable);
-
-		osync_assert(osync_hashtable_load(dir->hashtable, error));
-
-
 		/*
 		const char *objformat = osync_objformat_get_name(dir->objformat); 
 		OSyncObjFormatSink *format_sink = osync_objformat_sink_new(objformat, error);
@@ -680,6 +673,9 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 
 		/* Request an Anchor */
 		osync_objtype_sink_enable_anchor(sink, TRUE);
+
+		/* Request an Hashtable */
+		osync_objtype_sink_enable_hashtable(sink, TRUE);
 
 		//Lets reduce the timeouts a bit so the checks work faster
 		osync_objtype_sink_set_connect_timeout(sink, 2);
@@ -741,7 +737,6 @@ static void mock_finalize(void *data)
 
 		osync_plugin_resource_unref(dir->res);
 		osync_objformat_unref(dir->objformat);
-		osync_hashtable_unref(dir->hashtable);
 
 		env->directories = g_list_remove(env->directories, dir);
 		g_free(dir);

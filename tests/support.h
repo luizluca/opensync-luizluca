@@ -14,6 +14,8 @@
 #include <opensync/opensync-group.h>
 #include <opensync/opensync-plugin.h>
 
+#include "opensync/helper/opensync_hashtable_internals.h"
+
 #include "config.h"
 
 #define OSYNC_TESTCASE_START(x)		\
