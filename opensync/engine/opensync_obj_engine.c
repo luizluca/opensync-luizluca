@@ -1226,12 +1226,18 @@ OSyncSinkEngine *osync_obj_engine_find_proxy_sinkengine(OSyncObjEngine *engine, 
 OSyncSinkEngine *osync_obj_engine_nth_sinkengine(OSyncObjEngine *engine, unsigned int nth)
 {
 	osync_return_val_if_fail(engine, NULL);
-	return osync_list_nth_data(engine->sink_engines, nth);
+	/* This is an public interace - we only deal here with "real" and active
+	 * sink_engines. Not with dummies.
+	 */
+	return osync_list_nth_data(engine->active_sink_engines, nth);
 }
 
 unsigned int osync_obj_engine_num_sinkengines(OSyncObjEngine *engine)
 {
 	osync_assert(engine);
+	/* This is an public interace - we only deal here with "real" and active
+	 * sink_engines. Not with dummies.
+	 */
 	return osync_list_length(engine->active_sink_engines);
 }
 
