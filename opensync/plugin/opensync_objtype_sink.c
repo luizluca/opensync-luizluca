@@ -23,8 +23,10 @@
 
 #include "opensync-context.h"
 #include "opensync-format.h"
+#include "opensync-helper.h"
 
 #include "opensync/helper/opensync_anchor_internals.h"
+#include "opensync/helper/opensync_hashtable_internals.h"
 
 #include "opensync_plugin_info.h" /* due to osync_plugin_info_get_configdir() */
 
@@ -80,7 +82,10 @@ void osync_objtype_sink_unref(OSyncObjTypeSink *sink)
 
 		if (sink->anchor)
 			osync_anchor_unref(sink->anchor);
-		
+
+		if (sink->hashtable)
+			osync_hashtable_unref(sink->hashtable);
+
 		if (sink->preferred_format)
 			osync_free(sink->preferred_format);
 
@@ -116,6 +121,33 @@ void osync_objtype_sink_set_anchor(OSyncObjTypeSink *sink, OSyncAnchor *anchor)
 		osync_anchor_unref(sink->anchor);
 
 	sink->anchor = osync_anchor_ref(anchor);
+}
+
+void osync_objtype_sink_enable_hashtable(OSyncObjTypeSink *sink, osync_bool enable)
+{
+	osync_return_if_fail(sink);
+	sink->hashtable_requested = enable;
+}
+
+osync_bool osync_objtype_sink_has_hashtable(OSyncObjTypeSink *sink)
+{
+	osync_return_val_if_fail(sink, FALSE);
+	return sink->hashtable_requested; 
+}
+
+OSyncHashTable *osync_objtype_sink_get_hashtable(OSyncObjTypeSink *sink)
+{
+	osync_return_val_if_fail(sink, NULL);
+	return sink->hashtable;
+}
+
+void osync_objtype_sink_set_hashtable(OSyncObjTypeSink *sink, OSyncHashTable *hashtable)
+{
+	osync_return_if_fail(sink);
+	if (sink->hashtable)
+		osync_hashtable_unref(sink->hashtable);
+
+	sink->hashtable = osync_hashtable_ref(hashtable);
 }
 
 const char *osync_objtype_sink_get_name(OSyncObjTypeSink *sink)
@@ -742,6 +774,35 @@ osync_bool osync_objtype_sink_load_anchor(OSyncObjTypeSink *sink, OSyncPluginInf
 	return TRUE;
 error:
 	osync_free(anchorpath);
+	return FALSE;
+}
+
+osync_bool osync_objtype_sink_load_hashtable(OSyncObjTypeSink *sink, OSyncPluginInfo *plugin_info, OSyncError **error)
+{
+	char *hashtablepath;
+
+	osync_assert(sink);
+
+	if (!osync_objtype_sink_has_hashtable(sink))
+		return TRUE;
+	
+	/* FIXME: Get rid of file lcoation!
+	 * Later with fruther OSyncDB modifications this should be file-hiarchy indepdendent.
+	 * And The first arg should just consists of the Member ID
+	 */
+	hashtablepath = osync_strdup_printf("%s%chashtable.db",
+			osync_plugin_info_get_configdir(plugin_info),
+			G_DIR_SEPARATOR);
+
+	sink->hashtable = osync_hashtable_new(hashtablepath, sink->objtype, error);
+	if (!sink->hashtable)
+		goto error;
+
+	osync_free(hashtablepath);
+
+	return TRUE;
+error:
+	osync_free(hashtablepath);
 	return FALSE;
 }
 

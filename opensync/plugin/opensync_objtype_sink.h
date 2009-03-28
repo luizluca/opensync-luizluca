@@ -113,10 +113,36 @@ OSYNC_EXPORT void osync_objtype_sink_enable_anchor(OSyncObjTypeSink *sink, osync
  * or not.
  * 
  * @param sink Pointer to the sink
- * @returns the name of the object type of the specified sink
+ * @returns Pointer to the requested OSyncAnchor, or NULL if no anchor is requested
  * 
  */
 OSYNC_EXPORT OSyncAnchor *osync_objtype_sink_get_anchor(OSyncObjTypeSink *sink);
+
+/** @brief Request a hashtable for this Sink 
+ *
+ * If for this sink a hashtable is required, this needs to be requested by this
+ * function. If hashtable gets enabled/requested inside the plugin, the framework
+ * will take care about preparing the hashtable. The created hashtable can be accessed
+ * by using the function osync_objtype_sink_get_hashtable()
+ *
+ * By default no hashtable is requested/enabled.
+ *
+ * @param sink Pointer to the sink
+ * @param enable Flag to enable, disbable hashtable.
+ * 
+ */
+OSYNC_EXPORT void osync_objtype_sink_enable_hashtable(OSyncObjTypeSink *sink, osync_bool enable);
+
+/** @brief Get the pointer to the sink OSyncHashTable
+ *
+ * This Hashtable is sink specific and can store persistent hash values of changes.
+ * Designed to help to determine the change type of an entry.
+ * 
+ * @param sink Pointer to the sink
+ * @returns the name of the object type of the specified sink
+ * 
+ */
+OSYNC_EXPORT OSyncHashTable *osync_objtype_sink_get_hashtable(OSyncObjTypeSink *sink);
 
 
 /** @brief Return the name of the object type of a sink

@@ -702,6 +702,11 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 		if (!osync_objtype_sink_load_anchor(sink, client->plugin_info, error)) {
 			goto error_finalize;
 		}
+
+		if (!osync_objtype_sink_load_hashtable(sink, client->plugin_info, error)) {
+			goto error_finalize;
+		}
+
 	}
 
 	main_sink = osync_plugin_info_get_main_sink(client->plugin_info);

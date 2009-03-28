@@ -81,6 +81,12 @@ struct OSyncObjTypeSink {
 	/** Flag if anchor is requested by plugin */
 	osync_bool anchor_requested;
 
+	/** The sink hashtable if requested by the plugin */
+	OSyncHashTable *hashtable;
+
+	/** Flag if hashtable is requested by plugin */
+	osync_bool hashtable_requested;
+
 	/** The preferred step or target format for the conversion path of this sink */
 	char *preferred_format;
 	/** The format which can be synchronized by this sink */
