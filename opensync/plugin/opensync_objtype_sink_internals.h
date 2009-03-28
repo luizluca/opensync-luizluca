@@ -68,19 +68,6 @@ osync_bool osync_objtype_sink_has_hashtable(OSyncObjTypeSink *sink);
  */
 void osync_objtype_sink_set_hashtable(OSyncObjTypeSink *sink, OSyncHashTable *hashtable);
 
-/*! @brief Load the Hashtable for a specific Sink if requested 
- * 
- * Load (i.e. connects) to the Hashtable. If no Hashtable is requested for this sink
- * this functions just returns TRUE.
- *
- * @param sink Pointer to the sink
- * @param info Pointer to the plugin info object
- * @param error Pointer to error struct, get set on any error
- * @returns TRUE on success, FALSE on any error
- * 
- */
-osync_bool osync_objtype_sink_load_hashtable(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncError **error);
-
 /** @brief Checks if sink has a read single entries function (read)
  *
  * @param sink Pointer to the sink

@@ -197,13 +197,8 @@ osync_hashtable_foreach
 osync_hashtable_get_changetype
 osync_hashtable_get_deleted
 osync_hashtable_get_hash
-osync_hashtable_load
-osync_hashtable_new
 osync_hashtable_num_entries
-osync_hashtable_ref
-osync_hashtable_save
 osync_hashtable_slowsync
-osync_hashtable_unref
 osync_hashtable_update_change
 osync_list_alloc
 osync_list_append
@@ -396,6 +391,7 @@ osync_objtype_sink_get_write
 osync_objtype_sink_is_available
 osync_objtype_sink_is_enabled
 osync_objtype_sink_load_anchor
+osync_objtype_sink_load_hashtable
 osync_objtype_sink_new
 osync_objtype_sink_nth_objformat_sink
 osync_objtype_sink_num_objformat_sinks

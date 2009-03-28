@@ -45,4 +45,57 @@ struct OSyncHashTable {
 	GString *query;
 };
 
+/** @brief Creates a hashtable access object
+ *
+ * Hashtables can be used to detect what has been changed since
+ * the last sync.
+ *
+ * @param path the full path and file name of the hashtable .db file to load from or create
+ * @param objtype the object type of the hashtable
+ * @param error Pointer to an error struct
+ * @returns A new hashtable, or NULL if an error occurred.
+ *
+ */
+OSYNC_TEST_EXPORT OSyncHashTable *osync_hashtable_new(const char *path, const char *objtype, OSyncError **error);
+
+/** @brief Increase the reference count of a hashtable object.
+ *
+ * @param table The hashtable to increase the reference count
+ * @returns Pointer to increased hashtable object
+ */
+OSYNC_TEST_EXPORT OSyncHashTable *osync_hashtable_ref(OSyncHashTable *table);
+
+/** @brief Decrease the reference count of a hastable object.
+ *
+ * The object will be freed if the reference count reaches zero.
+ *
+ * @param table The hashtable to decrease the reference count
+ *
+ */
+OSYNC_TEST_EXPORT void osync_hashtable_unref(OSyncHashTable *table);
+
+/** @brief Loads the hashtable
+ *
+ * This function must be called to load the hashtable before attempting
+ * to use it (eg. in your plugin objtype sink initialization code).
+ *
+ * @param table The hashtable to load from
+ * @param error Pointer to an error struct
+ * @returns TRUE on success or FALSE if an error occurred.
+ *
+ */
+OSYNC_TEST_EXPORT osync_bool osync_hashtable_load(OSyncHashTable *table, OSyncError **error);
+
+/** @brief Saves the data in a hashtable
+ *
+ * Call this function in your syncdone() plugin sink function.
+ *
+ * @param table The hashtable to save
+ * @param error Pointer to an error struct
+ * @returns TRUE on success or FALSE if an error occurred.
+ *
+ */
+OSYNC_TEST_EXPORT osync_bool osync_hashtable_save(OSyncHashTable *table, OSyncError **error);
+
 #endif /*_OPENSYNC_HASHTABLE_INTERNALS_H_*/
+

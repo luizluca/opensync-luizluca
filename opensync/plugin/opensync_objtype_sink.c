@@ -785,6 +785,9 @@ osync_bool osync_objtype_sink_load_hashtable(OSyncObjTypeSink *sink, OSyncPlugin
 
 	if (!osync_objtype_sink_has_hashtable(sink))
 		return TRUE;
+
+	if (sink->hashtable)
+		osync_hashtable_unref(sink->hashtable);
 	
 	/* FIXME: Get rid of file lcoation!
 	 * Later with fruther OSyncDB modifications this should be file-hiarchy indepdendent.
@@ -798,9 +801,15 @@ osync_bool osync_objtype_sink_load_hashtable(OSyncObjTypeSink *sink, OSyncPlugin
 	if (!sink->hashtable)
 		goto error;
 
+	if (!osync_hashtable_load(sink->hashtable, error))
+		goto error_free_hashtable;
+
 	osync_free(hashtablepath);
 
 	return TRUE;
+
+error_free_hashtable:
+	osync_hashtable_unref(sink->hashtable);
 error:
 	osync_free(hashtablepath);
 	return FALSE;

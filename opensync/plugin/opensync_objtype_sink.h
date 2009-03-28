@@ -538,6 +538,19 @@ OSYNC_EXPORT void osync_objtype_sink_set_read_timeout(OSyncObjTypeSink *sink, un
  */
 OSYNC_EXPORT osync_bool osync_objtype_sink_load_anchor(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncError **error);
 
+/*! @brief Load the Hashtable for a specific Sink if requested 
+ * 
+ * Load (i.e. connects) to the Hashtable. If no Hashtable is requested for this sink
+ * this functions just returns TRUE.
+ *
+ * @param sink Pointer to the sink
+ * @param info Pointer to the plugin info object
+ * @param error Pointer to error struct, get set on any error
+ * @returns TRUE on success, FALSE on any error
+ * 
+ */
+OSYNC_EXPORT osync_bool osync_objtype_sink_load_hashtable(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncError **error);
+
 /*@}*/
 
 #endif /* _OPENSYNC_OBJTYPE_SINK_H_ */
