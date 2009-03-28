@@ -36,6 +36,14 @@
  */
 OSyncObjTypeSink *osync_plugin_info_get_sink(OSyncPluginInfo *info);
 
+/** @brief Returns the plugin configuration directory
+ * 
+ * @param info Pointer to the plugin info object
+ * @returns the full path where configuration files for the plugin are stored
+ * 
+ */
+OSYNC_TEST_EXPORT const char *osync_plugin_info_get_configdir(OSyncPluginInfo *info);
+
 /*@}*/
 
 

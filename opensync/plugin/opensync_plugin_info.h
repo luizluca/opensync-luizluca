@@ -93,15 +93,6 @@ OSYNC_EXPORT OSyncPluginConfig *osync_plugin_info_get_config(OSyncPluginInfo *in
  */
 OSYNC_EXPORT void osync_plugin_info_set_configdir(OSyncPluginInfo *info, const char *configdir);
 
-/** @brief Returns the plugin configuration directory
- * 
- * @param info Pointer to the plugin info object
- * @returns the full path where configuration files for the plugin are stored
- * 
- */
-OSYNC_EXPORT const char *osync_plugin_info_get_configdir(OSyncPluginInfo *info);
-
-
 /** @brief Find ObjTypeSink of corresponding Object Type in OSyncPluginInfo object
  * 
  * @param info Pointer to the OSyncPluginInfo object
