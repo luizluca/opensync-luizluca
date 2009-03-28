@@ -21,8 +21,6 @@
 #ifndef _OPENSYNC_MEMBER_H_
 #define _OPENSYNC_MEMBER_H_
 
-#include <opensync/opensync_list.h>
-
 /**
  * @defgroup OSyncMemberAPI OpenSync Member
  * @ingroup OSyncGroup

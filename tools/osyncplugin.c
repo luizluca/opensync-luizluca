@@ -35,8 +35,6 @@
 #include <opensync/opensync-plugin.h>
 #include <opensync/opensync-format.h>
 
-#include <opensync/opensync-context.h>
-
 char *pluginpath = NULL;
 char *formatpath = NULL;
 char *pluginname = NULL;

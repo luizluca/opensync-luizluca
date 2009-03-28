@@ -23,7 +23,7 @@
 
 #include "opensync-data.h"
 
-#include "opensync-context.h"
+#include "opensync_context.h"
 #include "opensync_context_private.h"
 
 OSyncContext *osync_context_new(OSyncError **error)

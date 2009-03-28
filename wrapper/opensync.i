@@ -4,16 +4,13 @@
 
 %{
 #include <opensync/opensync.h>
-#include <opensync/opensync-context.h>
+#include <opensync/opensync-capabilities.h>
 #include <opensync/opensync-data.h>
 #include <opensync/opensync-engine.h>
-#include <opensync/opensync-error.h>
 #include <opensync/opensync-format.h>
 #include <opensync/opensync-group.h>
 #include <opensync/opensync-helper.h>
-#include <opensync/opensync-merger.h>
 #include <opensync/opensync-plugin.h>
-#include <opensync/opensync-support.h>
 #include <opensync/opensync-version.h>
 #include <opensync/opensync-xmlformat.h>
 

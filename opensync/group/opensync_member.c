@@ -24,12 +24,12 @@
 #include "opensync-plugin.h"
 #include "plugin/opensync_objtype_sink_internals.h"
 
+#include "opensync-capabilities.h"
 #include "opensync-group.h"
 #include "opensync-format.h"
 #include "opensync_member_internals.h"
 #include "opensync_member_private.h"
 
-#include "opensync-merger.h"
 #include "capabilities/opensync-capabilities_internals.h"
 
 #include "common/opensync_xml_internals.h"

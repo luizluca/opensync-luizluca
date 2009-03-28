@@ -23,8 +23,6 @@
 #ifndef OPENSYNC_VERSION_H_
 #define OPENSYNC_VERSION_H_
 
-#include <opensync/opensync_list.h>
-
 /**
  * @defgroup OSyncVersion OpenSync Version Module
  * @ingroup OSyncPublic

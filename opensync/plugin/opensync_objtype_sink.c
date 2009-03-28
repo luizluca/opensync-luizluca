@@ -21,9 +21,9 @@
 #include "opensync.h"
 #include "opensync_internals.h"
 
-#include "opensync-context.h"
 #include "opensync-format.h"
 #include "opensync-helper.h"
+#include "opensync-plugin.h"
 
 #include "opensync/helper/opensync_anchor_internals.h"
 #include "opensync/helper/opensync_hashtable_internals.h"

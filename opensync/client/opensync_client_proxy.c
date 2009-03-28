@@ -29,9 +29,9 @@
 #include "ipc/opensync_queue_internals.h"
 #include "plugin/opensync_objtype_sink_internals.h"
 
+#include "opensync-capabilities.h"
 #include "opensync-group.h"
 #include "opensync-plugin.h"
-#include "opensync-merger.h"
 #include "opensync-format.h"
 
 #include "opensync-version.h"

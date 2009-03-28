@@ -22,8 +22,6 @@
 #ifndef OPENSYNC_HASHTABLE_H_
 #define OPENSYNC_HASHTABLE_H_
 
-#include <opensync/opensync_list.h>
-
 typedef void (*OSyncHashtableForEach) (const char *uid, const char *hash, void *user_data);
 
 /**

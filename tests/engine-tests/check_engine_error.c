@@ -12,7 +12,7 @@
 #include <opensync/opensync-format.h>
 #include <opensync/opensync-client.h>
 #include <opensync/opensync-engine.h>
-#include <opensync/opensync-context.h>
+#include <opensync/opensync-plugin.h>
 
 #include "../mock-plugin/mock_sync.h"
 

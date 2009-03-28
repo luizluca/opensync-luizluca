@@ -25,8 +25,6 @@
 #ifndef OPENSYNC_ARCHIVE_INTERNALS_H_
 #define OPENSYNC_ARCHIVE_INTERNALS_H_
 
-#include <opensync/opensync_list.h>
-  
 /**
  * @defgroup OSyncArchiveInternalAPI OpenSync Archive Internals
  * @ingroup OSyncArchivePrivate

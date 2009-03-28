@@ -21,13 +21,12 @@
 #include "opensync.h"
 #include "opensync_internals.h"
 
+#include "opensync-capabilities.h"
 #include "opensync-format.h"
 #include "opensync-plugin.h"
 #include "opensync_plugin_info_private.h"
 
-#include "opensync-merger.h"
 #include "opensync-version.h"
-#include "opensync_list.h"
 
 OSyncPluginInfo *osync_plugin_info_new(OSyncError **error)
 {

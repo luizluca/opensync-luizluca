@@ -22,8 +22,6 @@
 #ifndef OPENSYNC_SINK_ENGINE_H_
 #define OPENSYNC_SINK_ENGINE_H_
 
-#include <opensync/opensync_list.h>
-
 /*! @brief Get list of OSyncMappingEntryEngines of the OSyncSinkEngine
  *
  * @param engine Pointer to an OSyncSinkEngine

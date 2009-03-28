@@ -21,7 +21,6 @@
 #include "opensync.h"
 #include "opensync_internals.h"
 
-#include "opensync-context.h"
 #include "opensync-plugin.h"
 #include "plugin/opensync_plugin_internals.h"
 #include "plugin/opensync_objtype_sink_internals.h"
@@ -30,8 +29,6 @@
 #include "opensync-helper.h"
 #include "helper/opensync_hashtable_internals.h"
 
-#include "common/opensync_list.h"
-
 #include "opensync-ipc.h"
 #include "ipc/opensync_serializer_internals.h"
 #include "ipc/opensync_message_internals.h"
@@ -39,10 +36,9 @@
 
 #include "opensync-format.h"
 
+#include "opensync-capabilities.h"
 #include "opensync-version.h"
 #include "version/opensync_version_internals.h"
-
-#include "opensync-merger.h"
 
 #include "opensync-client.h"
 #include "opensync_client_internals.h"

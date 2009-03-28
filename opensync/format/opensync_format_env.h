@@ -21,8 +21,6 @@
 #ifndef _OPENSYNC_FORMAT_ENV_H_
 #define _OPENSYNC_FORMAT_ENV_H_
 
-#include <opensync/opensync_list.h>
-
 /**
  * @defgroup OSyncPublic OpenSync Public API
  * @brief The public API of opensync

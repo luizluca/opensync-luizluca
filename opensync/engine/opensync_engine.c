@@ -28,7 +28,6 @@
 #include "opensync-format.h"
 #include "opensync-data.h"
 #include "opensync-plugin.h"
-#include "opensync-merger.h"
 #include "opensync-xmlformat.h"
 
 #include "archive/opensync_archive_internals.h"

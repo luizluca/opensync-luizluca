@@ -21,8 +21,6 @@
 #ifndef _OPENSYNC_DB_H_
 #define _OPENSYNC_DB_H_
 
-#include <opensync/opensync_list.h>
-
 /**
  * @defgroup OSyncDB OpenSync Database Module
  * @ingroup OSyncPublic

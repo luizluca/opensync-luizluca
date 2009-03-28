@@ -27,7 +27,6 @@
 #include "opensync-data.h"
 #include "opensync-mapping.h"
 #include "opensync-format.h"
-#include "opensync-merger.h"
 #include "opensync-plugin.h"
 #include "opensync-xmlformat.h"
 

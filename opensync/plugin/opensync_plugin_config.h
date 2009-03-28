@@ -21,7 +21,6 @@
 #ifndef _OPENSYNC_PLUGIN_CONFIG_H_
 #define _OPENSYNC_PLUGIN_CONFIG_H_
 
-#include <opensync/opensync_list.h>
 /** \todo Review open OSyncPluginConfig documentation */
 
 /**

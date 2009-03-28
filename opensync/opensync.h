@@ -271,7 +271,7 @@ OSYNC_EXPORT const char *osync_get_version(void);
 
 OPENSYNC_END_DECLS
 
-#include "opensync/opensync-support.h"
-#include "opensync-error.h"
+#include "opensync/opensync-common.h"
+#include "opensync/opensync-debug.h"
 
 #endif

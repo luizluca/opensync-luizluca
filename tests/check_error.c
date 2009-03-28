@@ -1,5 +1,4 @@
 #include "support.h"
-#include <opensync/opensync-error.h>
 
 START_TEST (error_create)
 {
