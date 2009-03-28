@@ -22,7 +22,6 @@
 #include "opensync.h"
 #include "opensync_internals.h"
 
-#include "opensync-archive.h"
 #include "opensync-group.h"
 #include "opensync-engine.h"
 #include "opensync-client.h"

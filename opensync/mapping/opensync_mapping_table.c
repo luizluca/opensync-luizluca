@@ -22,7 +22,6 @@
 #include "opensync_internals.h"
 
 #include "opensync-mapping.h"
-#include "opensync-archive.h"
 #include "opensync-support.h"
 
 #include "opensync_mapping_table_internals.h"

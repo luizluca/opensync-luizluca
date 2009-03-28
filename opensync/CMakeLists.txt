@@ -113,7 +113,6 @@ PATTERN "*.h.*" EXCLUDE )
 
 INSTALL( FILES
    opensync.h
-   opensync-archive.h
    opensync-capabilities.h
    opensync-client.h
    opensync-context.h

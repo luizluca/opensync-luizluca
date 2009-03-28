@@ -7,7 +7,6 @@
 #include <opensync/opensync_internals.h>
 #include <opensync/opensync-engine.h>
 #include <opensync/opensync-mapping.h>
-#include <opensync/opensync-archive.h>
 #include <opensync/opensync-helper.h>
 #include <opensync/opensync-format.h>
 #include <opensync/opensync-data.h>

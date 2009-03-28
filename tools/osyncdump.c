@@ -1,6 +1,5 @@
 #include <opensync/opensync.h>
 #include <opensync/opensync-group.h>
-#include <opensync/opensync-archive.h>
 #include <opensync/opensync-mapping.h>
 #include <opensync/opensync-helper.h>
 
@@ -9,7 +8,6 @@
 #include <string.h>
 #include <sys/types.h>
 //#include <sys/wait.h>
-#include <sqlite3.h>
 
 #include <glib.h>
 
@@ -31,9 +29,14 @@ typedef enum {
 
 static void dump_map_objtype(OSyncGroupEnv *env, const char *objtype, const char *groupname)
 {
+	printf("Dumping of mappings got temporarliy disabled\n");
+
+/* FIXME: Temporarily disabled - OSyncArchive got removed from 0.40 API draft */
+#if 0	
+
 	OSyncError *error = NULL;
 	OSyncGroup *group = osync_group_env_find_group(env, groupname);
-	
+
 	char *path = g_strdup_printf("%s/archive.db", osync_group_get_configdir(group));
 	OSyncArchive *archive = osync_archive_new(path, &error);
 	OSyncList *ids = NULL;
@@ -78,6 +81,7 @@ static void dump_map_objtype(OSyncGroupEnv *env, const char *objtype, const char
  error:
 	printf("ERROR: %s", osync_error_print(&error));
 	osync_error_unref(&error);
+#endif	
 }
 
 static void dump_map(OSyncGroupEnv *env, const char *groupname)
