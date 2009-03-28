@@ -120,11 +120,14 @@ typedef struct {} PluginEnv;
 	}
 
 	int num_plugins() {
-		return osync_plugin_env_num_plugins(self);
+		OSyncList *plugins = osync_plugin_env_get_plugins(self);
+		return osync_list_length(plugins);
 	}
 
 	Plugin *nth_plugin(int nth) {
-		Plugin *plugin = osync_plugin_env_nth_plugin(self, nth);
+		OSyncList *plugins = osync_plugin_env_get_plugins(self);
+		
+		Plugin *plugin = (OSyncPlugin*)osync_list_nth_data(plugins, nth);
 		if (plugin)
 			osync_plugin_ref(plugin);
 		return plugin;
@@ -190,14 +193,20 @@ typedef struct {} PluginInfo;
 		osync_plugin_info_add_objtype(self, sink);
 	}
 
-	int num_objtypes() {
-		return osync_plugin_info_num_objtypes(self);
+	unsigned int num_objtypes() {
+		OSyncList *objtypesinks = osync_plugin_info_get_objtypes(self);
+		unsigned int num = osync_list_length(objtypesinks);
+		osync_list_free(objtypesinks);
+		return num;
 	}
 
 	ObjTypeSink *nth_objtype(int nth) {
-		ObjTypeSink *ret = osync_plugin_info_nth_objtype(self, nth);
+		/* TODO: return a list structure of phython */
+		OSyncList *objtypesinks = osync_plugin_info_get_objtypes(self);
+		ObjTypeSink *ret = (ObjTypeSink*)osync_list_nth_data(objtypesinks, nth);
 		if (ret)
 			osync_objtype_sink_ref(ret);
+		osync_list_free(objtypesinks);
 		return ret;
 	}
 

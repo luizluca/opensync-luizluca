@@ -30,6 +30,8 @@
 #include "opensync-helper.h"
 #include "helper/opensync_hashtable_internals.h"
 
+#include "common/opensync_list.h"
+
 #include "opensync-ipc.h"
 #include "ipc/opensync_serializer_internals.h"
 #include "ipc/opensync_message_internals.h"
@@ -575,8 +577,9 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 	const char *objtype = NULL;
 	const char *preferred_format = NULL;
 	OSyncList *o = NULL;
+	OSyncList *objtypesinks = NULL;
+	OSyncList *list;
 	OSyncObjFormatSink *format_sink = NULL;
-	unsigned int n, num_sinks;
 	osync_bool couldinit;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
@@ -698,10 +701,10 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 		goto error;
 	}
 
-	num_sinks = osync_plugin_info_num_objtypes(client->plugin_info);
-	for (n = 0; n < num_sinks; n++) {
-
-		sink = osync_plugin_info_nth_objtype(client->plugin_info, n);
+	objtypesinks = osync_plugin_info_get_objtypes(client->plugin_info);
+	list = objtypesinks;
+	while (list) {
+		sink = (OSyncObjTypeSink*)list->data;
 		if (!osync_objtype_sink_load_anchor(sink, client->plugin_info, error)) {
 			goto error_finalize;
 		}
@@ -709,8 +712,9 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 		if (!osync_objtype_sink_load_hashtable(sink, client->plugin_info, error)) {
 			goto error_finalize;
 		}
-
+		list = list->next;
 	}
+	osync_list_free(objtypesinks);
 
 	main_sink = osync_plugin_info_get_main_sink(client->plugin_info);
 	if (main_sink) {
@@ -745,6 +749,7 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
  error_free_message:
 	osync_message_unref(reply);
  error_finalize:
+	osync_list_free(objtypesinks);
 	osync_plugin_finalize(client->plugin, client->plugin_data);
  error:
 	osync_free(enginepipe);
@@ -816,10 +821,8 @@ static osync_bool _osync_client_handle_finalize(OSyncClient *client, OSyncMessag
 static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessage *message, OSyncError **error)
 {
 	OSyncMessage *reply = NULL;
-	unsigned int i = 0;
 	OSyncPluginConfig *config = NULL;
 	OSyncList *res = NULL;
-	unsigned int numobjs = 0;
 	unsigned int avail = 0;
 	OSyncObjTypeSink *sink = NULL;
 	OSyncVersion *version = NULL;
@@ -828,6 +831,8 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	int size = 0;
 	unsigned int num_res = 0;
 	OSyncPluginResource *resource = NULL;
+	OSyncList *objtypesinks = NULL;
+	OSyncList *list;
 
 	config = osync_plugin_info_get_config(client->plugin_info);
 	res = osync_plugin_config_get_resources(config);
@@ -846,24 +851,29 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	else
 		osync_message_write_int(reply, 0);
 
-	numobjs = osync_plugin_info_num_objtypes(client->plugin_info);
-	for (i = 0; i < numobjs; i++) {
-		sink = osync_plugin_info_nth_objtype(client->plugin_info, i);
+	objtypesinks = osync_plugin_info_get_objtypes(client->plugin_info);
+	list = objtypesinks;
+	while(list) {
+		sink = (OSyncObjTypeSink*)list->data;
 		if (osync_objtype_sink_is_available(sink)) {
 			avail++;
 		}
+		list = list->next;
 	}
 
 	osync_message_write_uint(reply, avail);
 	
-	for (i = 0; i < numobjs; i++) {
-		sink = osync_plugin_info_nth_objtype(client->plugin_info, i);
+	list = objtypesinks;
+	while(list) {
+		sink = (OSyncObjTypeSink*)list->data;
 		if (osync_objtype_sink_is_available(sink)) {
 			if (!osync_marshal_objtype_sink(reply, sink, error))
 				goto error_free_message;
 		}
+		list = list->next;
 	}
-
+	osync_list_free(objtypesinks);
+	
 	version = osync_plugin_info_get_version(client->plugin_info);
 	if (version) {
 		osync_message_write_int(reply, 1);
@@ -909,6 +919,7 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	return TRUE;
 	
  error_free_message:
+	osync_list_free(objtypesinks);
 	osync_message_unref(reply);
  error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));

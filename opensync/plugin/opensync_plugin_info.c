@@ -27,6 +27,7 @@
 
 #include "opensync-merger.h"
 #include "opensync-version.h"
+#include "opensync_list.h"
 
 OSyncPluginInfo *osync_plugin_info_new(OSyncError **error)
 {
@@ -171,16 +172,9 @@ void osync_plugin_info_add_objtype(OSyncPluginInfo *info, OSyncObjTypeSink *sink
 	osync_objtype_sink_ref(sink);
 }
 
-unsigned int osync_plugin_info_num_objtypes(OSyncPluginInfo *info)
-{
+OSyncList *osync_plugin_info_get_objtypes(OSyncPluginInfo *info) {
 	osync_assert(info);
-	return osync_list_length(info->objtypes);
-}
-
-OSyncObjTypeSink *osync_plugin_info_nth_objtype(OSyncPluginInfo *info, unsigned int nth)
-{
-	osync_assert(info);
-	return osync_list_nth_data(info->objtypes, nth);
+	return osync_list_copy(info->objtypes);
 }
 
 OSyncObjTypeSink *osync_plugin_info_get_main_sink(OSyncPluginInfo *info)

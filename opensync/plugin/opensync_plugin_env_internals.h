@@ -50,6 +50,18 @@ osync_bool osync_plugin_env_load_module(OSyncPluginEnv *env, const char *filenam
  */
 OSYNC_TEST_EXPORT osync_bool osync_plugin_env_plugin_is_usable(OSyncPluginEnv *env, const char *pluginname, OSyncError **error);
 
+/** @brief Returns the number of loaded plugins
+ * 
+ * TODO: This function isn't necessary anymore and can possibly be removed
+ * 
+ * Returns the number of loaded plugins. 0 if used before initialization
+ * 
+ * @param env Pointer to a OSyncPluginEnv environment
+ * @returns Number of plugins
+ * 
+ */
+OSYNC_TEST_EXPORT unsigned int osync_plugin_env_num_plugins(OSyncPluginEnv *env);
+
 /*@}*/
 
 #endif /* _OPENSYNC_PLUGIN_ENV_INTERNALS_H_ */

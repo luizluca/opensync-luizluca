@@ -448,23 +448,30 @@ static osync_bool init(OSyncError **error) {
 
 static void *plugin_initialize(OSyncError **error)
 {
-	unsigned int n, num_sinks = osync_plugin_info_num_objtypes(plugin_info);
+	OSyncList *list;
+	OSyncList *objtypesinks = NULL;
 	void *plugin_data;
 	osync_bool couldinit;
 	couldinit = osync_plugin_initialize(plugin, &(plugin_data), plugin_info, error);
 
-
-	for (n = 0; n < num_sinks; n++) {
-		OSyncObjTypeSink *sink = osync_plugin_info_nth_objtype(plugin_info, n);
-
-		if (!osync_objtype_sink_load_anchor(sink, plugin_info, error))
-			return NULL;
+	objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+	list = objtypesinks;
+	while(list) {
+		OSyncObjTypeSink *sink = (OSyncObjTypeSink*)list->data;
+		if (!osync_objtype_sink_load_anchor(sink, plugin_info, error)) 
+			goto error;
 
 		if (!osync_objtype_sink_load_hashtable(sink, plugin_info, error))
-			return NULL;
+			goto error;
+		
+		list = list->next;
 	}
+	osync_list_free(objtypesinks);
 
 	return plugin_data;
+error:
+	osync_list_free(objtypesinks);
+	return NULL;
 }
 
 static void finalize_plugin(void **plugin_data)
@@ -598,8 +605,9 @@ static osync_bool get_changes_sink(Command *cmd, OSyncObjTypeSink *sink, SyncTyp
 
 static osync_bool get_changes(Command *cmd, SyncType type, OSyncError **error)
 {
-	int num, i;
 	OSyncObjTypeSink *sink = NULL;
+	OSyncList *list;
+	OSyncList *objtypesinks = NULL;
 	const char *objtype = cmd->arg;
 
 	if (objtype) {
@@ -613,25 +621,28 @@ static osync_bool get_changes(Command *cmd, SyncType type, OSyncError **error)
 
 	} else {
 		/* all available objtypes */
-		num = osync_plugin_info_num_objtypes(plugin_info);
-		for (i=0; i < num; i++) {
-			sink = osync_plugin_info_nth_objtype(plugin_info, i);
+		objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+		list = objtypesinks;
+		while(list) {
+			sink = (OSyncObjTypeSink*)list->data;
 
 			cmd->sink = sink;
 			if (!get_changes_sink(cmd, sink, type, error))
 				goto error;
+			list = list->next;
 		}
-
 		/* last but not least - the main sink */
 		if (get_main_sink())
-		
 			if (!get_changes_sink(cmd, get_main_sink(), type, error))
 				goto error;
+		
+		osync_list_free(objtypesinks);
 	}
 
 	return TRUE;
 
  error:
+	osync_list_free(objtypesinks);
 	return FALSE;
 }
 
@@ -699,8 +710,9 @@ static osync_bool connect_sink(Command *cmd, OSyncObjTypeSink *sink, OSyncError 
 
 static osync_bool connect_plugin(Command *cmd, OSyncError **error)
 {	
-	unsigned int i, num;
 	OSyncObjTypeSink *sink = NULL;
+	OSyncList *objtypesinks = NULL;
+	OSyncList *list;
 	const char *objtype = cmd->arg;
 
 	if (objtype) {
@@ -711,22 +723,27 @@ static osync_bool connect_plugin(Command *cmd, OSyncError **error)
 		if (!connect_sink(cmd, sink, error))
 			goto error;
 	} else {
-		num = osync_plugin_info_num_objtypes(plugin_info);
-		for (i=0; i < num; i++) {
-			sink = osync_plugin_info_nth_objtype(plugin_info, i);
+		objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+		list = objtypesinks;
+		while(list) {
+			sink = (OSyncObjTypeSink*)list->data;
 
 			if (!connect_sink(cmd, sink, error))
 				goto error;
+			list = list->next;
 		}
 
 		/* last but not least - the main sink */
 		if (get_main_sink())
 			if (!connect_sink(cmd, get_main_sink(), error))
 				goto error;
+		
+		osync_list_free(objtypesinks);
 	}
 
 	return TRUE;
  error:
+	osync_list_free(objtypesinks);
 	return FALSE;
 }
 
@@ -790,8 +807,8 @@ static osync_bool disconnect_sink(Command *cmd, OSyncObjTypeSink *sink, OSyncErr
 
 static osync_bool disconnect(Command *cmd, OSyncError **error)
 {
-	
-	int i, num;
+	OSyncList *list;
+	OSyncList *objtypesinks = NULL;
 	OSyncObjTypeSink *sink = NULL;
 	const char *objtype = cmd->arg;
 
@@ -803,22 +820,27 @@ static osync_bool disconnect(Command *cmd, OSyncError **error)
 		if (!disconnect_sink(cmd, sink, error))
 			goto error;
 	} else {
-		num = osync_plugin_info_num_objtypes(plugin_info);
-		for (i=0; i < num; i++) {
-			sink = osync_plugin_info_nth_objtype(plugin_info, i);
+		objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+		list = objtypesinks;
+		while(list) {
+			sink = (OSyncObjTypeSink*)list->data;
 
 			if (!disconnect_sink(cmd, sink, error))
 				goto error;
+			list = list->next;
 		}
 
 		/* last but not least - the main sink */
 		if (get_main_sink())
 			if (!disconnect_sink(cmd, get_main_sink(), error))
 				goto error;
+		
+		osync_list_free(objtypesinks);
 	}
 
 	return TRUE;
  error:
+	osync_list_free(objtypesinks);
 	return FALSE;
 }
 
@@ -882,7 +904,8 @@ static osync_bool commit_sink(Command *cmd, OSyncObjTypeSink *sink, OSyncChange 
 
 static osync_bool commit(Command *cmd, OSyncChange *change, OSyncError **error)
 {
-	int i, num;
+	OSyncList *list;
+	OSyncList *objtypesinks = NULL;
 	OSyncObjTypeSink *sink = NULL;
 	const char *objtype = cmd->arg;
 
@@ -896,22 +919,27 @@ static osync_bool commit(Command *cmd, OSyncChange *change, OSyncError **error)
 		if (!commit_sink(cmd, sink, change, error))
 			goto error;
 	} else {
-		num = osync_plugin_info_num_objtypes(plugin_info);
-		for (i=0; i < num; i++) {
-			sink = osync_plugin_info_nth_objtype(plugin_info, i);
+		objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+		list = objtypesinks;
+		while(list){
+			sink = (OSyncObjTypeSink*)list->data;
 
 			if (!commit_sink(cmd, sink, change, error))
 				goto error;
+			list = list->next;
 		}
 
 		/* last but not least - the main sink */
 		if (get_main_sink())
 			if (!commit_sink(cmd, get_main_sink(), change, error))
 				goto error;
+		
+		osync_list_free(objtypesinks);
 	}
 	
 	return TRUE;
  error:
+	osync_list_free(objtypesinks);
 	return FALSE;
 }
 
@@ -998,7 +1026,8 @@ static osync_bool syncdone_sink(Command *cmd, OSyncObjTypeSink *sink, OSyncError
 static osync_bool syncdone(Command *cmd, OSyncError **error)
 {
 	
-	int i, num;
+	OSyncList *objtypesinks = NULL;
+	OSyncList *list;
 	OSyncObjTypeSink *sink = NULL;
 	const char *objtype = cmd->arg;
 
@@ -1010,22 +1039,28 @@ static osync_bool syncdone(Command *cmd, OSyncError **error)
 		if (!syncdone_sink(cmd, sink, error))
 			goto error;
 	} else {
-		num = osync_plugin_info_num_objtypes(plugin_info);
-		for (i=0; i < num; i++) {
-			sink = osync_plugin_info_nth_objtype(plugin_info, i);
+		objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+		list = objtypesinks;
+		while(list) {
+			sink = (OSyncObjTypeSink*)list->data;
 
 			if (!syncdone_sink(cmd, sink, error))
 				goto error;
+			
+			list = list->next;
 		}
 
 		/* last but not least - the main sink */
 		if (get_main_sink())
 			if (!syncdone_sink(cmd, get_main_sink(), error))
 				goto error;
+		
+		osync_list_free(objtypesinks);
 	}
 
 	return TRUE;
  error:
+	osync_list_free(objtypesinks);
 	return FALSE;
 }
 
@@ -1081,7 +1116,8 @@ static osync_bool committedall_sink(Command *cmd, OSyncObjTypeSink *sink, OSyncE
 
 static osync_bool committedall(Command *cmd, OSyncError **error)
 {
-	int i, num;
+	OSyncList *list;
+	OSyncList *objtypesinks = NULL;
 	OSyncObjTypeSink *sink = NULL;
 	const char *objtype = cmd->arg;
 
@@ -1093,22 +1129,28 @@ static osync_bool committedall(Command *cmd, OSyncError **error)
 		if (!committedall_sink(cmd, sink, error))
 			goto error;
 	} else {
-		num = osync_plugin_info_num_objtypes(plugin_info);
-		for (i=0; i < num; i++) {
-			sink = osync_plugin_info_nth_objtype(plugin_info, i);
+		objtypesinks = osync_plugin_info_get_objtypes(plugin_info);
+		list = objtypesinks;
+		while(list) {
+			sink = (OSyncObjTypeSink*)list->data;
 
 			if (!committedall_sink(cmd, sink, error))
 				goto error;
+			
+			list = list->next;
 		}
 
 		/* last but not least - the main sink */
 		if (get_main_sink())
 			if (!committedall_sink(cmd, get_main_sink(), error))
 				goto error;
+		
+		osync_list_free(objtypesinks);
 	}
 
 	return TRUE;
  error:
+	osync_list_free(objtypesinks);
 	return FALSE;
 }
 
@@ -1216,8 +1258,8 @@ static osync_bool run_command(Command *cmd, void **plugin_data, OSyncError **err
 }
 
 static osync_bool plugin_list(OSyncError **error) {
-	int num;
-	int i;
+	OSyncList *plugins;
+	OSyncList *list;
 	
 	assert(!plugin_env);
 
@@ -1233,12 +1275,15 @@ static osync_bool plugin_list(OSyncError **error) {
 	if (!osync_plugin_env_load(plugin_env, pluginpath, error))
 		goto error_free_formatenv;
 
-	num= osync_plugin_env_num_plugins(plugin_env);
-	for(i= 0; i < num; i++) {
-		OSyncPlugin* plugin= osync_plugin_env_nth_plugin(plugin_env, i);
+	plugins = osync_plugin_env_get_plugins(plugin_env);
+	list = plugins;
+	while(list) {
+		OSyncPlugin* plugin = (OSyncPlugin*)list->data;
 		fprintf (stdout, "Name:        %s\n", osync_plugin_get_name(plugin));
-		fprintf (stdout, "Description: %s\n", osync_plugin_get_description(plugin));		
-	} 
+		fprintf (stdout, "Description: %s\n", osync_plugin_get_description(plugin));
+		list = list->next;
+	}
+	osync_list_free(plugins);
 	return TRUE;
 	
  error_free_formatenv:

@@ -101,26 +101,12 @@ OSYNC_EXPORT void osync_plugin_env_register_plugin(OSyncPluginEnv *env, OSyncPlu
  */
 OSYNC_EXPORT OSyncPlugin *osync_plugin_env_find_plugin(OSyncPluginEnv *env, const char *name);
 
-/** @brief Returns the number of loaded plugins
+/* @brief Get all plugins which are registered in the Plugin Env
  * 
- * Returns the number of loaded plugins. 0 if used before initialization
- * 
- * @param env Pointer to a OSyncPluginEnv environment
- * @returns Number of plugins
- * 
+ * @param env Pointer to a OSyncPluginEnv
+ * @return A shallow copy of the internal plugin list
  */
-OSYNC_EXPORT unsigned int osync_plugin_env_num_plugins(OSyncPluginEnv *env);
-
-/** @brief Returns pointer to nth plugin
- * 
- * Returns pointer to nth plugin
- * 
- * @param env Pointer to a OSyncPluginEnv environment
- * @param nth Which plugin to return
- * @returns Pointer to plugin
- * 
- */
-OSYNC_EXPORT OSyncPlugin *osync_plugin_env_nth_plugin(OSyncPluginEnv *env, unsigned int nth);
+OSYNC_EXPORT OSyncList *osync_plugin_env_get_plugins(OSyncPluginEnv *env);
 
 /*@}*/
 

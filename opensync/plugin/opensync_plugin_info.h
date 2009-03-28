@@ -110,23 +110,13 @@ OSYNC_EXPORT OSyncObjTypeSink *osync_plugin_info_find_objtype(OSyncPluginInfo *i
  */
 OSYNC_EXPORT void osync_plugin_info_add_objtype(OSyncPluginInfo *info, OSyncObjTypeSink *sink);
 
-/** @brief Returns the number of added object types (sinks)
+/**
+ * @brief Returns all Objtype Sinks as a list
  * 
- * @param info Pointer to the plugin info object
- * @returns the number of object types in the plugin info
- * 
+ * @param Pointer to a OSyncPluginInfo
+ * @return A shallow copy of the internal objtype list
  */
-OSYNC_EXPORT unsigned int osync_plugin_info_num_objtypes(OSyncPluginInfo *info);
-
-/** @brief Returns the nth added object type (sink)
- * 
- * @param info Pointer to the plugin info object
- * @param nth the index of the object type (sink) to return
- * @returns the object type (sink) at the specified index
- * 
- */
-OSYNC_EXPORT OSyncObjTypeSink *osync_plugin_info_nth_objtype(OSyncPluginInfo *info, unsigned int nth);
-
+OSYNC_EXPORT OSyncList *osync_plugin_info_get_objtypes(OSyncPluginInfo *info);
 
 /** @brief Returns the Main Sink 
  * 

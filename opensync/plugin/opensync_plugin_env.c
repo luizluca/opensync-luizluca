@@ -214,9 +214,9 @@ unsigned int osync_plugin_env_num_plugins(OSyncPluginEnv *env)
 	return osync_list_length(env->plugins);
 }
 
-OSyncPlugin *osync_plugin_env_nth_plugin(OSyncPluginEnv *env, unsigned int nth)
+OSyncList *osync_plugin_env_get_plugins(OSyncPluginEnv *env)
 {
-	return (OSyncPlugin *)osync_list_nth_data(env->plugins, nth);
+	return osync_list_copy(env->plugins);
 }
 
 osync_bool osync_plugin_env_plugin_is_usable(OSyncPluginEnv *env, const char *pluginname, OSyncError **error)

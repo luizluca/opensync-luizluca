@@ -130,8 +130,8 @@ static void *initialize_connect_error(OSyncPlugin *plugin, OSyncPluginInfo *info
 
 	mock_env *env = osync_try_malloc0(sizeof(mock_env), error);
 	osync_assert(env);
-
-	OSyncObjTypeSink *sink = osync_plugin_info_nth_objtype(info, 0);
+	OSyncList *objtypesinks = osync_plugin_info_get_objtypes(info);
+	OSyncObjTypeSink *sink = (OSyncObjTypeSink*)objtypesinks->data;
 	osync_assert(sink);
 	
 	OSyncObjFormatSink *formatsink = osync_objformat_sink_new("mockformat1", error);
@@ -147,6 +147,7 @@ static void *initialize_connect_error(OSyncPlugin *plugin, OSyncPluginInfo *info
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 
+	osync_list_free(objtypesinks);
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
 	return (void *)env;
 }
