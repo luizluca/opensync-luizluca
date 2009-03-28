@@ -137,7 +137,7 @@ typedef enum {
 	OSYNC_ENGINE_EVENT_MULTIPLIED,
 	/** Engine completed with preparing a write */
 	OSYNC_ENGINE_EVENT_PREPARED_WRITE,
-	/** Engien completed with preparing for the mapping */
+	/** Engine completed with preparing for the mapping */
 	OSYNC_ENGINE_EVENT_PREPARED_MAP
 } OSyncEngineEvent;
 
