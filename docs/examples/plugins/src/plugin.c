@@ -346,6 +346,8 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 		osync_objtype_sink_enable_hashtable(sink, TRUE);
 
 	}
+
+	osync_list_free(list);
 	
 	//Now your return your environemtn struct.
 	return (void *) env;

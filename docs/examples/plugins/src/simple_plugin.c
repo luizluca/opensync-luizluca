@@ -267,6 +267,8 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 		 * again once the functions are called */
 		osync_objtype_sink_set_functions(sink, functions, NULL);
 	}
+
+	osync_list_free(list);
 	
 	//Now your return your struct.
 	return (void *) env;
