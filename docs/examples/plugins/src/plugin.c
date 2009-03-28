@@ -308,9 +308,11 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 	/*
 	 * Process Ressource options
 	 */
-	unsigned int i, numobjs = osync_plugin_info_num_objtypes(info);
-	for (i = 0; i < numobjs; i++) {
-		OSyncObjTypeSink *sink = osync_plugin_info_nth_objtype(info, i);
+	OSyncList *l, *list = NULL;
+	list = osync_plugin_info_get_objtype_sinks(info);
+	for (l=list; l; l = l->next) {
+		OSyncObjTypeSink *sink = (OSyncObjTypeSink *) l->data;
+
 		const char *objtype = osync_objtype_sink_get_name(sink);
 		OSyncPluginResource *res = osync_plugin_config_find_active_resource(config, objtype);
 		

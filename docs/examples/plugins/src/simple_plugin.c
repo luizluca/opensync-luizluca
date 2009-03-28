@@ -7,28 +7,6 @@
 
 #include <string.h>
 
-typedef struct {
-	OSyncList *sink_envs;
-} plugin_environment;
-
-typedef struct {
-	OSyncObjTypeSink *sink;
-} sink_environment;
-
-static void free_env(plugin_environment *env)
-{
-	while (env->sink_envs) {
-		sink_environment *sinkenv = env->sink_envs->data;
-
-		if (sinkenv->sink)
-			osync_objtype_sink_unref(sinkenv->sink);
-
-		env->sink_envs = osync_list_remove(env->sink_envs, sinkenv);
-	}
-
-	osync_free(env);
-}
-
 static void connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *userdata)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, ctx, userdata);
@@ -36,8 +14,6 @@ static void connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext 
 	//calls to your plugin)
 
 	//cast void* userdata to the sink specific data type
-	//sink_environment *sinkenv = (sink_environment*)userdata;
-
 
 	OSyncError *error = NULL;
 
@@ -85,7 +61,6 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, userdata, info, ctx);
 
 	OSyncFormatEnv *formatenv = osync_plugin_info_get_format_env(info);
-	//sink_environment *sinkenv = (sink_environment*) userdata;
 
 	OSyncError *error = NULL;
 
@@ -156,7 +131,6 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 
 static void commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *userdata)
 {
-	//sink_environment *sinkenv = (sink_environment*)userdata;;
 	
 	/*
 	 * Here you have to add, modify or delete a object
@@ -189,7 +163,6 @@ static void sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContex
 	 * This function will only be called if the sync was successful
 	 */
 	OSyncError *error = NULL;
-	//sink_environment *sinkenv = (sink_environment*)userdata;
 	
 	//If we use anchors we have to update it now.
 	//Now you get/calculate the current anchor of the device
@@ -208,8 +181,6 @@ error:
 
 static void disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *userdata)
 {
-	//sink_environment *sinkenv = (sink_environment*)userdata;
-	
 	//Close all stuff you need to close
 	
 	//Answer the call
@@ -218,10 +189,7 @@ static void disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncConte
 
 static void finalize(void *userdata)
 {
-	plugin_environment *env = (plugin_environment *)userdata;
-
 	//Free all stuff that you have allocated here.
-	free_env(env);
 }
 
 
@@ -239,12 +207,10 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 	 * You need to specify the <some name>_environment somewhere with
 	 * all the members you need
 	*/
-	plugin_environment *env = osync_try_malloc0(sizeof(plugin_environment), error);
+	void *env = NULL;
 	if (!env)
 		goto error;
 
-	env->sink_envs = NULL;
-	
 	osync_trace(TRACE_INTERNAL, "The config: %s", osync_plugin_info_get_config(info));
 
 	/* 
@@ -271,16 +237,12 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 	/*
 	 * Process Ressource options
 	 */
-	int i, numobjs = osync_plugin_info_num_objtypes(info);
-	for (i = 0; i < numobjs; i++) {
-		sink_environment *sinkenv = osync_try_malloc0(sizeof(sink_environment), error);
-		if (!sinkenv)
-			goto error_free_env;
+	OSyncList *l, *list = NULL;
+	list = osync_plugin_info_get_objtype_sinks(info);
+	for (l=list; l; l = l->next) {
+		OSyncObjTypeSink *sink = (OSyncObjTypeSink *) l->data ;
 
-		sinkenv->sink = osync_plugin_info_nth_objtype(info, i);
-		osync_assert(sinkenv->sink);
-
-		const char *objtype = osync_objtype_sink_get_name(sinkenv->sink);
+		const char *objtype = osync_objtype_sink_get_name(sink);
 		OSyncPluginResource *res = osync_plugin_config_find_active_resource(config, objtype);
 		
 		/* get objformat sinks */
@@ -303,16 +265,12 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 
 		/* We pass the OSyncFileDir object to the sink, so we dont have to look it up
 		 * again once the functions are called */
-		osync_objtype_sink_set_functions(sinkenv->sink, functions, sinkenv);
-		
-		env->sink_envs = osync_list_append(env->sink_envs, sinkenv);
+		osync_objtype_sink_set_functions(sink, functions, NULL);
 	}
 	
 	//Now your return your struct.
 	return (void *) env;
 
-error_free_env:
-	free_env(env);
 error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return NULL;
@@ -322,8 +280,6 @@ error:
 static osync_bool discover(OSyncPluginInfo *info, void *userdata, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, userdata, info, error);
-
-//	plugin_environment *env = (plugin_environment *)userdata;
 
 	// Report avaliable sinks...
 	OSyncObjTypeSink *sink = osync_plugin_info_find_objtype(info, "<objtype e.g. note>");
