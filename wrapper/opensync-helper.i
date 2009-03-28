@@ -32,25 +32,10 @@
 	}
 %}
 
-
-typedef struct {} HashTable;
-%extend HashTable {
-	HashTable(const char *path, const char *objtype) {
-		Error *err = NULL;
-		HashTable *hashtable = osync_hashtable_new(path, objtype, &err);
-		if (raise_exception_on_error(err))
-			return NULL;
-		else
-			return hashtable;
-	}
-
-	~HashTable() {
-		osync_hashtable_unref(self);
-	}
-
-        bool load() {
+%inline %{
+        static bool hashtable_slowsync(OSyncHashTable *hashtable) {
                 Error *err = NULL;
-                osync_hashtable_load(self, &err);
+                osync_hashtable_slowsync(hashtable, &err);
 
                 if (raise_exception_on_error(err))
                         return FALSE;
@@ -58,37 +43,17 @@ typedef struct {} HashTable;
                 return TRUE;
         }
 
-        bool save() {
-                Error *err = NULL;
-                osync_hashtable_save(self, &err);
-
-                if (raise_exception_on_error(err))
-                        return FALSE;
-
-                return TRUE;
-        }
-
-        bool slowsync() {
-                Error *err = NULL;
-                osync_hashtable_slowsync(self, &err);
-
-                if (raise_exception_on_error(err))
-                        return FALSE;
-
-                return TRUE;
-        }
-
-	int num_entries() {
-		return osync_hashtable_num_entries(self);
+	static int hashtable_num_entries(OSyncHashTable *hashtable) {
+		return osync_hashtable_num_entries(hashtable);
 	}
 
-	void update_change(Change *change) {
-		osync_hashtable_update_change(self, change);
+	void hashtable_update_change(OSyncHashTable *hashtable, Change *change) {
+		osync_hashtable_update_change(hashtable, change);
 	}
 
 	/* returns a list of deleted UIDs as strings */
-	PyObject *get_deleted() {
-		OSyncList *uids = osync_hashtable_get_deleted(self);
+	static PyObject *hashtable_get_deleted(OSyncHashTable *hashtable) {
+		OSyncList *uids = osync_hashtable_get_deleted(hashtable);
 		if (uids == NULL) {
 			wrapper_exception("osync_hashtable_get_deleted failed");
 			return NULL;
@@ -112,15 +77,7 @@ typedef struct {} HashTable;
 		return ret;
 	}
 
-	ChangeType get_changetype(Change *change) {
-		return osync_hashtable_get_changetype(self, change);
+	static ChangeType hashtable_get_changetype(OSyncHashTable *hashtable, Change *change) {
+		return osync_hashtable_get_changetype(hashtable, change);
 	}
-
-%pythoncode %{
-	# extend the SWIG-generated constructor, so that we can setup our list-wrapper classes
-	__oldinit = __init__
-	def __init__(self, *args):
-		self.__oldinit(*args)
-		self.entries = _ListWrapper(self.num_entries, self.nth_entry)
 %}
-}

@@ -182,10 +182,6 @@ typedef struct {} PluginInfo;
 		osync_plugin_info_set_configdir(self, configdir);
 	}
 
-	const char *get_configdir() {
-		return osync_plugin_info_get_configdir(self);
-	}
-
 	ObjTypeSink *find_objtype(const char *name) {
 		return osync_plugin_info_find_objtype(self, name);
 	}
@@ -261,7 +257,6 @@ typedef struct {} PluginInfo;
 %pythoncode %{
 	loop = property(get_loop, set_loop)
 	config = property(get_config, set_config)
-	configdir = property(get_configdir, set_configdir)
 	main_sink = property(get_main_sink, set_main_sink)
 	format_env = property(get_format_env, set_format_env)
 	sink = property(get_sink, set_sink)
@@ -362,6 +357,14 @@ typedef struct {} ObjTypeSink;
 	void remove_objformat(ObjFormatSink *format_sink) {
 		osync_objtype_sink_remove_objformat_sink(self, format_sink);
 	}
+
+        OSyncAnchor *get_anchor() {
+                return osync_objtype_sink_get_anchor(self);
+        }
+
+        OSyncHashTable *get_hashtable() {
+                return osync_objtype_sink_get_hashtable(self);
+        }
 
 	/* TODO: set_functions */
 
