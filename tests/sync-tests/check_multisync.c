@@ -488,7 +488,7 @@ START_TEST (multisync_easy_mod)
 	fail_unless(num_engine_end_conflicts = 1, NULL);
 	
 	sleep(2);
-	system("cp newdata data3/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
 	
 	synchronize_once(engine, NULL);
 	destroy_engine(engine);
@@ -545,8 +545,8 @@ START_TEST (multisync_dual_mod)
 	fail_unless(num_engine_end_conflicts == 1, NULL);
 	
 	sleep(2);
-	system("cp newdata data1/testdata");
-	system("cp newdata data3/testdata");
+	osync_testing_system_abort("cp newdata data1/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
 	
 	synchronize_once(engine, NULL);
 
@@ -607,9 +607,9 @@ START_TEST (multisync_triple_mod)
 	fail_unless(num_engine_end_conflicts == 1, NULL);
 	
 	sleep(2);
-	system("cp newdata data1/testdata");
-	system("cp newdata data2/testdata");
-	system("cp newdata data3/testdata");
+	osync_testing_system_abort("cp newdata data1/testdata");
+	osync_testing_system_abort("cp newdata data2/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
 	
 	synchronize_once(engine, NULL);
 	destroy_engine(engine);
@@ -651,7 +651,7 @@ START_TEST (multisync_easy_del)
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
 
-	system("rm -f data2/testdata");
+	osync_testing_system_abort("rm -f data2/testdata");
 	
 	synchronize_once(engine, NULL);
 	destroy_engine(engine);
@@ -684,8 +684,8 @@ START_TEST (multisync_dual_del)
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
 
-	system("rm -f data1/testdata");
-	system("rm -f data3/testdata");
+	osync_testing_system_abort("rm -f data1/testdata");
+	osync_testing_system_abort("rm -f data3/testdata");
 	
 	synchronize_once(engine, NULL);
 	fail_unless(osync_engine_finalize(engine, &error), NULL);
@@ -723,9 +723,9 @@ START_TEST (multisync_triple_del)
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
 
-	system("rm -f data1/testdata");
-	system("rm -f data2/testdata");
-	system("rm -f data3/testdata");
+	osync_testing_system_abort("rm -f data1/testdata");
+	osync_testing_system_abort("rm -f data2/testdata");
+	osync_testing_system_abort("rm -f data3/testdata");
 	
 	synchronize_once(engine, NULL);
 	fail_unless(osync_engine_finalize(engine, &error), NULL);
@@ -788,7 +788,7 @@ START_TEST (multisync_conflict_data_choose)
 	hashtable_simple_load_and_check(testbed, 2);
 	hashtable_simple_load_and_check(testbed, 3);
 	
-	system("rm -f data3/testdata");
+	osync_testing_system_abort("rm -f data3/testdata");
 	
 	mark_point();
 
@@ -843,7 +843,7 @@ START_TEST (multisync_conflict_data_choose2)
 	hashtable_simple_load_and_check(testbed, 2);
 	hashtable_simple_load_and_check(testbed, 3);
 	
-	system("rm -f data3/testdata");
+	osync_testing_system_abort("rm -f data3/testdata");
 	
 	mark_point();
 
@@ -883,8 +883,8 @@ START_TEST (multisync_conflict_changetype_choose)
 	
 	sleep(2);
 	
-	system("rm -f data1/testdata");
-	system("cp newdata data3/testdata");
+	osync_testing_system_abort("rm -f data1/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
 	
 	synchronize_once(engine, NULL);
 
@@ -913,7 +913,7 @@ START_TEST (multisync_conflict_changetype_choose)
 	hashtable_simple_load_and_check(testbed, 2);
 	hashtable_simple_load_and_check(testbed, 3);
 	
-	system("rm -f data1/testdata");
+	osync_testing_system_abort("rm -f data1/testdata");
 	
 	mark_point();
 
@@ -950,8 +950,8 @@ START_TEST (multisync_conflict_changetype_choose2)
 	
 	sleep(2);
 	
-	system("rm -f data1/testdata");
-	system("cp newdata data3/testdata");
+	osync_testing_system_abort("rm -f data1/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
 	
 	synchronize_once(engine, NULL);
 
@@ -997,9 +997,9 @@ START_TEST (multisync_conflict_hybrid_choose)
 	
 	sleep(2);
 	
-	system("rm -f data1/testdata");
-	system("cp newdata data3/testdata");
-	system("cp newdata2 data2/testdata");
+	osync_testing_system_abort("rm -f data1/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
+	osync_testing_system_abort("cp newdata2 data2/testdata");
 	
 	synchronize_once(engine, NULL);
 
@@ -1028,7 +1028,7 @@ START_TEST (multisync_conflict_hybrid_choose)
 	hashtable_simple_load_and_check(testbed, 2);
 	hashtable_simple_load_and_check(testbed, 3);
 	
-	system("rm -f data1/testdata");
+	osync_testing_system_abort("rm -f data1/testdata");
 	
 	mark_point();
 
@@ -1064,9 +1064,9 @@ START_TEST (multisync_conflict_hybrid_choose2)
 	
 	sleep(2);
 	
-	system("rm -f data1/testdata");
-	system("cp newdata data3/testdata");
-	system("cp newdata2 data2/testdata");
+	osync_testing_system_abort("rm -f data1/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
+	osync_testing_system_abort("cp newdata2 data2/testdata");
 	
 	synchronize_once(engine, NULL);
 	destroy_engine(engine);
@@ -1133,7 +1133,7 @@ START_TEST (multisync_conflict_data_duplicate)
 	hashtable_load_and_check(testbed, 3, uids, num_uids);
 
 	
-	system("rm -f data3/testdata");
+	osync_testing_system_abort("rm -f data3/testdata");
 	
 	synchronize_once(engine, NULL);
 	
@@ -1153,7 +1153,7 @@ START_TEST (multisync_conflict_data_duplicate)
 	hashtable_load_and_check(testbed, 3, uids, num_uids);	
 
 	
-	system("rm -f data2/testdata-dupe");
+	osync_testing_system_abort("rm -f data2/testdata-dupe");
 	
 	mark_point();
 
@@ -1220,7 +1220,7 @@ START_TEST (multisync_conflict_data_duplicate2)
 	hashtable_load_and_check(testbed, 3, uids, num_uids);
 	
 	/* force the removal of all  but test-data-dupe */
-	system("rm -f data3/testdata data3/testdata-dupe-dupe");
+	osync_testing_system_abort("rm -f data3/testdata data3/testdata-dupe-dupe");
 	mark_point();
 	
 	synchronize_once(engine, NULL);
@@ -1244,7 +1244,7 @@ START_TEST (multisync_conflict_data_duplicate2)
 	hashtable_load_and_check(testbed, 3, uids, num_uids);
  
 	/* force the removal of the remaining testdata-dupe */
-	system("rm -f data2/testdata-dupe");
+	osync_testing_system_abort("rm -f data2/testdata-dupe");
 	mark_point();
 
 	synchronize_once(engine, NULL);
@@ -1273,8 +1273,8 @@ START_TEST (multisync_conflict_changetype_duplicate)
 	
 	sleep(2);
 	
-	system("rm -f data1/testdata");
-	system("cp newdata data3/testdata");
+	osync_testing_system_abort("rm -f data1/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
 	
 	synchronize_once(engine, NULL);
 
@@ -1307,7 +1307,7 @@ START_TEST (multisync_conflict_changetype_duplicate)
     check_hash(table, "testdata");
 	osync_hashtable_close(table);
 	
-	system("rm -f data1/testdata");
+	osync_testing_system_abort("rm -f data1/testdata");
 	
 	mark_point();
 	num_mapping_conflicts = 0;
@@ -1350,9 +1350,9 @@ START_TEST (multisync_conflict_changetype_duplicate2)
 	
 	sleep(2);
 	
-	system("rm -f data2/testdata");
-	system("rm -f data3/testdata");
-	system("cp newdata2 data1/testdata");
+	osync_testing_system_abort("rm -f data2/testdata");
+	osync_testing_system_abort("rm -f data3/testdata");
+	osync_testing_system_abort("cp newdata2 data1/testdata");
 	
 	synchronize_once(engine, NULL);
 
@@ -1385,7 +1385,7 @@ START_TEST (multisync_conflict_changetype_duplicate2)
     check_hash(table, "testdata");
 	osync_hashtable_close(table);
 	
-	system("rm -f data1/testdata");
+	osync_testing_system_abort("rm -f data1/testdata");
 	
 	mark_point();
 	num_mapping_conflicts = 0;
@@ -1428,9 +1428,9 @@ START_TEST (multisync_conflict_hybrid_duplicate)
 	
 	sleep(2);
 	
-	system("rm -f data2/testdata");
-	system("cp newdata data3/testdata");
-	system("cp newdata2 data1/testdata");
+	osync_testing_system_abort("rm -f data2/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
+	osync_testing_system_abort("cp newdata2 data1/testdata");
 	
 	synchronize_once(engine, NULL);
 
@@ -1469,7 +1469,7 @@ START_TEST (multisync_conflict_hybrid_duplicate)
     check_hash(table, "testdata-dupe");
 	osync_hashtable_close(table);
 	
-	system("rm -f data1/testdata data2/testdata-dupe");
+	osync_testing_system_abort("rm -f data1/testdata data2/testdata-dupe");
 	
 	mark_point();
 	num_mapping_conflicts = 0;
@@ -1506,8 +1506,8 @@ START_TEST (multisync_multi_conflict)
 	OSyncEngine *engine = init_engine(group);
 	osengine_set_conflict_callback(engine, conflict_handler_duplication, GINT_TO_POINTER(3));
 	
-	system("cp newdata data3/testdata1");
-	system("cp newdata1 data2/testdata2");
+	osync_testing_system_abort("cp newdata data3/testdata1");
+	osync_testing_system_abort("cp newdata1 data2/testdata2");
 	
 	synchronize_once(engine, NULL);
 
@@ -1577,15 +1577,15 @@ START_TEST (multisync_multi_conflict)
 	
 	sleep(2);
 	
-	system("rm -f data2/testdata");
-	system("cp newdata data3/testdata");
+	osync_testing_system_abort("rm -f data2/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
 
-	system("cp newdata3 data1/testdata1");
-	system("cp newdata4 data3/testdata1");
+	osync_testing_system_abort("cp newdata3 data1/testdata1");
+	osync_testing_system_abort("cp newdata4 data3/testdata1");
 	
-	system("cp newdata data1/testdata2");
-	system("cp newdata5 data3/testdata2");
-	system("rm -f data2/testdata2");
+	osync_testing_system_abort("cp newdata data1/testdata2");
+	osync_testing_system_abort("cp newdata5 data3/testdata2");
+	osync_testing_system_abort("rm -f data2/testdata2");
 	
 	synchronize_once(engine, NULL);
 
@@ -1639,7 +1639,7 @@ START_TEST (multisync_multi_conflict)
     check_hash(table, "testdata2-dupe");
 	osync_hashtable_close(table);
 	
-	system("rm -f data1/*");
+	osync_testing_system_abort("rm -f data1/*");
 	
 	mark_point();
 	num_mapping_conflicts = 0;
@@ -1676,8 +1676,8 @@ START_TEST (multisync_delayed_conflict_handler)
 	OSyncEngine *engine = init_engine(group);
 	osengine_set_conflict_callback(engine, conflict_handler_delay, GINT_TO_POINTER(3));
 	
-	system("cp newdata data3/testdata1");
-	system("cp newdata1 data2/testdata2");
+	osync_testing_system_abort("cp newdata data3/testdata1");
+	osync_testing_system_abort("cp newdata1 data2/testdata2");
 	
 	synchronize_once(engine, NULL);
 
@@ -1725,15 +1725,15 @@ START_TEST (multisync_delayed_conflict_handler)
 	
 	sleep(2);
 	
-	system("rm -f data2/testdata");
-	system("cp newdata data3/testdata");
+	osync_testing_system_abort("rm -f data2/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
 
-	system("cp newdata3 data1/testdata1");
-	system("rm -f data2/testdata1");
+	osync_testing_system_abort("cp newdata3 data1/testdata1");
+	osync_testing_system_abort("rm -f data2/testdata1");
 	
-	system("cp newdata data1/testdata2");
-	system("rm -f data3/testdata2");
-	system("rm -f data2/testdata2");
+	osync_testing_system_abort("cp newdata data1/testdata2");
+	osync_testing_system_abort("rm -f data3/testdata2");
+	osync_testing_system_abort("rm -f data2/testdata2");
 	
 	synchronize_once(engine, NULL);
 
@@ -1775,7 +1775,7 @@ START_TEST (multisync_delayed_conflict_handler)
     check_hash(table, "testdata2");
 	osync_hashtable_close(table);
 	
-	system("rm -f data1/*");
+	osync_testing_system_abort("rm -f data1/*");
 	
 	mark_point();
 	num_mapping_conflicts = 0;
@@ -1812,7 +1812,7 @@ START_TEST (multisync_delayed_slow)
 	OSyncEngine *engine = init_engine(group);
 	osengine_set_conflict_callback(engine, conflict_handler_delay, GINT_TO_POINTER(3));
 	
-	system("cp newdata data3/testdata1");
+	osync_testing_system_abort("cp newdata data3/testdata1");
 	setenv("SLOW_REPORT", "2", TRUE);
 	
 	synchronize_once(engine, NULL);
@@ -1851,10 +1851,10 @@ START_TEST (multisync_delayed_slow)
 	
 	sleep(2);
 	
-	system("cp newdata data3/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
 
-	system("cp newdata3 data1/testdata1");
-	system("rm -f data2/testdata1");
+	osync_testing_system_abort("cp newdata3 data1/testdata1");
+	osync_testing_system_abort("rm -f data2/testdata1");
 	
 	synchronize_once(engine, NULL);
 
@@ -1894,7 +1894,7 @@ START_TEST (multisync_delayed_slow)
     check_hash(table, "testdata1");
 	osync_hashtable_close(table);
 	
-	system("rm -f data1/*");
+	osync_testing_system_abort("rm -f data1/*");
 	
 	mark_point();
 	num_mapping_conflicts = 0;
@@ -1933,7 +1933,7 @@ START_TEST (multisync_conflict_ignore)
 	OSyncEngine *engine = init_engine(group);
 	osengine_set_conflict_callback(engine, conflict_handler_ignore, GINT_TO_POINTER(3));
 	
-	system("cp newdata data3/testdata1");
+	osync_testing_system_abort("cp newdata data3/testdata1");
 	
 	synchronize_once(engine, NULL);
 
@@ -1978,12 +1978,12 @@ START_TEST (multisync_conflict_ignore)
 	
 	sleep(2);
 	
-	system("rm -f data2/testdata");
-	system("cp newdata data3/testdata");
+	osync_testing_system_abort("rm -f data2/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata");
 
-	system("cp newdata3 data1/testdata1");
-	system("cp newdata2 data2/testdata1");
-	system("cp newdata1 data3/testdata1");
+	osync_testing_system_abort("cp newdata3 data1/testdata1");
+	osync_testing_system_abort("cp newdata2 data2/testdata1");
+	osync_testing_system_abort("cp newdata1 data3/testdata1");
 	
 	synchronize_once(engine, NULL);
 
@@ -2095,7 +2095,7 @@ START_TEST (multisync_conflict_ignore)
     check_hash(table, "testdata1");
 	osync_hashtable_close(table);
 	
-	system("rm -f data1/*");
+	osync_testing_system_abort("rm -f data1/*");
 
 	synchronize_once(engine, NULL);
 	osengine_finalize(engine);
@@ -2130,8 +2130,8 @@ START_TEST (multisync_conflict_ignore2)
 	OSyncEngine *engine = init_engine(group);
 	osengine_set_conflict_callback(engine, conflict_handler_ignore, NULL);
 	
-	system("cp newdata data3/testdata1");
-	system("cp newdata1 data3/testdata");
+	osync_testing_system_abort("cp newdata data3/testdata1");
+	osync_testing_system_abort("cp newdata1 data3/testdata");
 	
 	synchronize_once(engine, NULL);
 	
@@ -2169,7 +2169,7 @@ START_TEST (multisync_conflict_ignore2)
     check_hash(table, "testdata1");
 	osync_hashtable_close(table);
 	
-	system("cp newdata2 data2/testdata");
+	osync_testing_system_abort("cp newdata2 data2/testdata");
 	
 	osengine_set_conflict_callback(engine, conflict_handler_choose_first, GINT_TO_POINTER(3));
 	synchronize_once(engine, NULL);
@@ -2210,7 +2210,7 @@ START_TEST (multisync_conflict_ignore2)
     check_hash(table, "testdata1");
 	osync_hashtable_close(table);
 	
-	system("rm -f data1/*");
+	osync_testing_system_abort("rm -f data1/*");
 
 	synchronize_once(engine, NULL);
 	osengine_finalize(engine);
@@ -2365,7 +2365,7 @@ START_TEST(multisync_zero_changes_b)
 	fail_unless(num_change_written == 0, NULL);
 	fail_unless(num_engine_end_conflicts == 0, NULL);
 
-	system("rm -f data1/*");
+	osync_testing_system_abort("rm -f data1/*");
 		
 	unsetenv("NUM_BATCH_COMMITS");
 	
