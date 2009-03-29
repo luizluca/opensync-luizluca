@@ -37,7 +37,6 @@ typedef struct OSyncObjTypeSinkFunctions {
 	OSyncSinkDisconnectFn disconnect;
 	OSyncSinkGetChangesFn get_changes;
 	OSyncSinkCommitFn commit;
-	OSyncSinkWriteFn write;
 	OSyncSinkCommittedAllFn committed_all;
 	OSyncSinkReadFn read;
 	OSyncSinkBatchCommitFn batch_commit;
@@ -110,21 +109,6 @@ osync_bool osync_objtype_sink_get_function_getchanges(OSyncObjTypeSink *sink);
  * @param getchanges TRUE if the sink has a get_changes function, FALSE otherwise
  */
 void osync_objtype_sink_set_function_getchanges(OSyncObjTypeSink *sink, osync_bool getchanges);
-
-/** @brief Checks if sink has a write function (commit)
- *
- * @param sink Pointer to the sink
- * @returns TRUE if the sink has a write function (commit), FALSE otherwise
- */
-osync_bool osync_objtype_sink_get_function_write(OSyncObjTypeSink *sink);
-
-/** @brief Sets the status of the write sink function
- *
- * @param sink Pointer to sink
- * @param write TRUE if the sink has a write function, FALSE otherwise
- */
-void osync_objtype_sink_set_function_write(OSyncObjTypeSink *sink, osync_bool write);
-
 
 /** @brief Get the current or default connect timeout in seconds 
  * 
@@ -260,23 +244,6 @@ unsigned int osync_objtype_sink_get_connectdone_timeout_or_default(OSyncObjTypeS
  */
 unsigned int osync_objtype_sink_get_connectdone_timeout(OSyncObjTypeSink *sink);
 
-/** @brief Get the current or default write timeout in seconds 
- * 
- * @param sink Pointer to the sink
- * @return The timeout in seconds 
- * 
- */
-unsigned int osync_objtype_sink_get_write_timeout_or_default(OSyncObjTypeSink *sink);
-
-/** @brief Get the current write timeout in seconds 
- * 
- * @param sink Pointer to the sink
- * @return The timeout in seconds 
- * 
- */
-unsigned int osync_objtype_sink_get_write_timeout(OSyncObjTypeSink *sink);
-
-
 /** @brief Get the current or default read timeout in seconds 
  * 
  * @param sink Pointer to the sink
@@ -336,7 +303,6 @@ OSYNC_TEST_EXPORT unsigned int osync_objtype_sink_num_objformat_sinks(OSyncObjTy
  * 
  */
 OSYNC_TEST_EXPORT OSyncObjFormatSink *osync_objtype_sink_nth_objformat_sink(OSyncObjTypeSink *sink, unsigned int nth);
-
 
 /*@}*/
 

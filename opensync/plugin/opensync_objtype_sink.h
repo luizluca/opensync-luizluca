@@ -465,14 +465,6 @@ OSYNC_EXPORT void osync_objtype_sink_set_committedall_timeout(OSyncObjTypeSink *
  */
 OSYNC_EXPORT void osync_objtype_sink_set_syncdone_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
 
-/** @brief Sets the write timeout in seconds for the OSyncObjTypeSink 
- * 
- * @param sink Pointer to the sink
- * @param timeout The timeout in seconds 
- * 
- */
-OSYNC_EXPORT void osync_objtype_sink_set_write_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
-
 /** @brief Sets the read timeout in seconds for the OSyncObjTypeSink 
  * 
  * @param sink Pointer to the sink
@@ -529,8 +521,6 @@ OSYNC_EXPORT void osync_objtype_sink_set_connect_done_func(OSyncObjTypeSink *sin
 OSYNC_EXPORT void osync_objtype_sink_set_get_changes_func(OSyncObjTypeSink *sink, OSyncSinkGetChangesFn get_changes_func);
 
 OSYNC_EXPORT void osync_objtype_sink_set_commit_func(OSyncObjTypeSink *sink, OSyncSinkCommitFn commit_func);
-
-OSYNC_EXPORT void osync_objtype_sink_set_write_func(OSyncObjTypeSink *sink, OSyncSinkWriteFn write_func);
 
 OSYNC_EXPORT void osync_objtype_sink_set_committed_all_func(OSyncObjTypeSink *sink, OSyncSinkCommittedAllFn committed_all_func);
 

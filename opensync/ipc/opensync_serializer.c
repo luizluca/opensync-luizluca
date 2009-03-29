@@ -288,7 +288,6 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 	 * name
 	 * read function (bool)
 	 * get_changes function (bool)
-	 * write function (bool)
 	 * preferred_format (string) 
 	 * number of format sinks 
 	 * format sink list (format sinks)
@@ -301,7 +300,6 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 	 * timeout committed_all (int)
 	 * timeout sync_done (int)
 	 * timeout read (int)
-	 * timeout write (int)
 	 * 
 	 */
 	
@@ -310,7 +308,6 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 
 	osync_message_write_int(message, osync_objtype_sink_get_function_read(sink));
 	osync_message_write_int(message, osync_objtype_sink_get_function_getchanges(sink));
-	osync_message_write_int(message, osync_objtype_sink_get_function_write(sink));
 
 	osync_message_write_string(message, osync_objtype_sink_get_preferred_format(sink));
 
@@ -335,7 +332,6 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 	osync_message_write_int(message, osync_objtype_sink_get_syncdone_timeout(sink));
 
 	osync_message_write_int(message, osync_objtype_sink_get_read_timeout(sink));
-	osync_message_write_int(message, osync_objtype_sink_get_write_timeout(sink));
 
 	
 	return TRUE;
@@ -350,7 +346,7 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	char *preferred_format = NULL;
 	int num_formats = 0;
 	int enabled = 0, timeout = 0;
-	int read = 0, get_changes = 0, write = 0;
+	int read = 0, get_changes = 0;
 	int i = 0;
 
 	osync_assert(message);
@@ -360,7 +356,6 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	 * name
 	 * read function (bool)
 	 * get_changes function (bool)
-	 * write function (bool)
 	 * preferred_format (string) 
 	 * number of format sinks 
 	 * format sink list (format sinks)
@@ -373,7 +368,6 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	 * timeout committed_all (int)
 	 * timeout sync_done (int)
 	 * timeout read (int)
-	 * timeout write (int)
 	 * 
 	 */
 	
@@ -390,9 +384,6 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 
 	osync_message_read_int(message, &get_changes);
 	osync_objtype_sink_set_function_getchanges(*sink, get_changes);
-
-	osync_message_read_int(message, &write);
-	osync_objtype_sink_set_function_write(*sink, write);
 
 	osync_message_read_string(message, &preferred_format);
 	osync_objtype_sink_set_preferred_format(*sink, preferred_format);
@@ -436,9 +427,6 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 
 	osync_message_read_int(message, &timeout);
 	osync_objtype_sink_set_read_timeout(*sink, timeout);
-
-	osync_message_read_int(message, &timeout);
-	osync_objtype_sink_set_write_timeout(*sink, timeout);
 
 	return TRUE;
 

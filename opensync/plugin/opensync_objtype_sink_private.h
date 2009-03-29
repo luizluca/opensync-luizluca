@@ -33,7 +33,7 @@
 #define OSYNC_SINK_TIMEOUT_BATCHIO	1800
 
 /* FIXME: OSYNC_SINK_TIMEOUT_COMMIT, OSYNC_SINK_TIMEOUT_READ,
-   OSYNC_SINK_TIMEOUT_WRITE are set to OSYNC_SINK_TIMEOUT_BATCHIO
+   are set to OSYNC_SINK_TIMEOUT_BATCHIO
    to workaround a timeout issue with the async client/proxy
    communication and the current timeout handling.
 
@@ -59,7 +59,6 @@
 #define OSYNC_SINK_TIMEOUT_COMMITTEDALL	OSYNC_SINK_TIMEOUT_SINGLEIO
 #define OSYNC_SINK_TIMEOUT_SYNCDONE	OSYNC_SINK_TIMEOUT_SINGLEIO
 #define OSYNC_SINK_TIMEOUT_READ		OSYNC_SINK_TIMEOUT_BATCHIO /* FIXME */
-#define OSYNC_SINK_TIMEOUT_WRITE	OSYNC_SINK_TIMEOUT_BATCHIO /* FIXME */
 
 typedef struct OSyncObjTypeSinkFunctionTimeouts {
 	unsigned int connect;
@@ -71,7 +70,6 @@ typedef struct OSyncObjTypeSinkFunctionTimeouts {
 	unsigned int committed_all;
 	unsigned int sync_done;
 	unsigned int read;
-	unsigned int write;
 } OSyncObjTypeSinkFunctionTimeouts;
 
 struct OSyncObjTypeSink {
@@ -104,8 +102,6 @@ struct OSyncObjTypeSink {
 
 	/** The status if this sink is allowed to write (commit) */
 	osync_bool write;
-	/** The status if this sink has a write function (commit) */
-	osync_bool func_write;
 
 	/** The status if this sink is allowed to read (single entries) */
 	osync_bool read;

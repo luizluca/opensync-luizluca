@@ -256,22 +256,16 @@ void osync_objtype_sink_set_function_getchanges(OSyncObjTypeSink *sink, osync_bo
 	sink->func_getchanges = getchanges;
 }
 
-osync_bool osync_objtype_sink_get_function_write(OSyncObjTypeSink *sink)
-{
-	osync_assert(sink);
-	return sink->func_write;
-}
-
-void osync_objtype_sink_set_function_write(OSyncObjTypeSink *sink, osync_bool write)
-{
-	osync_assert(sink);
-	sink->func_write = write;
-}
-
 void *osync_objtype_sink_get_userdata(OSyncObjTypeSink *sink)
 {
 	osync_assert(sink);
 	return sink->userdata;
+}
+
+void osync_objtype_sink_set_userdata(OSyncObjTypeSink *sink, void *userdata)
+{
+	osync_return_if_fail(sink);
+	sink->userdata = userdata;
 }
 
 void osync_objtype_sink_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx)
@@ -696,24 +690,6 @@ unsigned int osync_objtype_sink_get_connectdone_timeout(OSyncObjTypeSink *sink)
 	return sink->timeout.connect_done;
 }
 
-void osync_objtype_sink_set_write_timeout(OSyncObjTypeSink *sink, unsigned int timeout)
-{
-	osync_assert(sink);
-	sink->timeout.write = timeout;
-}
-
-unsigned int osync_objtype_sink_get_write_timeout_or_default(OSyncObjTypeSink *sink)
-{
-	osync_assert(sink);
-	return sink->timeout.write ? sink->timeout.write : OSYNC_SINK_TIMEOUT_WRITE;
-}
-
-unsigned int osync_objtype_sink_get_write_timeout(OSyncObjTypeSink *sink)
-{
-	osync_assert(sink);
-	return sink->timeout.write;
-}
-
 void osync_objtype_sink_set_read_timeout(OSyncObjTypeSink *sink, unsigned int timeout)
 {
 	osync_assert(sink);
@@ -817,12 +793,6 @@ error:
 	return FALSE;
 }
 
-void osync_objtype_sink_set_userdata(OSyncObjTypeSink *sink, void *userdata)
-{
-	osync_return_if_fail(sink);
-	sink->userdata = userdata;
-}
-
 void osync_objtype_sink_set_connect_func(OSyncObjTypeSink *sink, OSyncSinkConnectFn connect_func)
 {
 	osync_return_if_fail(sink);
@@ -848,15 +818,6 @@ void osync_objtype_sink_set_commit_func(OSyncObjTypeSink *sink, OSyncSinkCommitF
 {
 	osync_return_if_fail(sink);
 	sink->functions.commit = commit_func;
-}
-
-void osync_objtype_sink_set_write_func(OSyncObjTypeSink *sink, OSyncSinkWriteFn write_func)
-{
-	osync_return_if_fail(sink);
-	sink->functions.write = write_func;
-
-	if (sink->functions.write)
-		sink->func_write = TRUE;
 }
 
 void osync_objtype_sink_set_committed_all_func(OSyncObjTypeSink *sink, OSyncSinkCommittedAllFn committed_all_func)

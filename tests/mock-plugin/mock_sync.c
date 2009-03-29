@@ -668,7 +668,6 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 			osync_objtype_sink_set_commit_func(sink, mock_commit_change);
 		}
 		osync_objtype_sink_set_read_func(sink, mock_read);
-		osync_objtype_sink_set_write_func(sink, mock_write);
 		osync_objtype_sink_set_sync_done_func(sink, mock_sync_done);
 		
 		/* We pass the MockDir object to the sink, so we dont have to look it up
@@ -691,7 +690,6 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 		osync_objtype_sink_set_disconnect_timeout(sink, 2);
 
 		osync_objtype_sink_set_read_timeout(sink, 2);
-		osync_objtype_sink_set_write_timeout(sink, 2);
 
 
 /* XXX No testcase is currently using this at all! */
@@ -716,7 +714,6 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 			osync_objtype_sink_set_disconnect_timeout(sink, 0);
 
 			osync_objtype_sink_set_read_timeout(sink, 0);
-			osync_objtype_sink_set_write_timeout(sink, 0);
 		}
 		
 		/* What is meant by this?! Maybe OSyncPlugin.useable?! Not used at all...
