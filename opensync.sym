@@ -95,6 +95,7 @@ osync_engine_discover
 osync_engine_discover_and_block
 osync_engine_finalize
 osync_engine_find_objengine
+osync_engine_get_objengines
 osync_engine_initialize
 osync_engine_mapping_duplicate
 osync_engine_mapping_ignore_conflict
@@ -107,7 +108,6 @@ osync_engine_member_update_get_event
 osync_engine_member_update_get_member
 osync_engine_member_update_get_objtype
 osync_engine_new
-osync_engine_get_objengines
 osync_engine_ref
 osync_engine_repair
 osync_engine_set_changestatus_callback
@@ -339,7 +339,7 @@ osync_obj_engine_get_objtype
 osync_obj_engine_get_sinkengines
 osync_obj_engine_get_slowsync
 osync_obj_engine_initialize
-osync_obj_engine_news
+osync_obj_engine_new
 osync_obj_engine_receive_change
 osync_obj_engine_ref
 osync_obj_engine_set_callback
