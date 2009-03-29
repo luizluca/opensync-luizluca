@@ -3,6 +3,8 @@
 #include <opensync/opensync-data.h>
 #include <opensync/opensync-format.h>
 
+#include "opensync/format/opensync_converter_internals.h"
+
 osync_bool converter_conv(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
 {
 	return TRUE;

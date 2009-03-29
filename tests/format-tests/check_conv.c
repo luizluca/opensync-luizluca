@@ -3,6 +3,7 @@
 #include <opensync/opensync-format.h>
 #include "opensync/format/opensync_filter_internals.h"
 #include "opensync/format/opensync_format_env_internals.h"
+#include "opensync/format/opensync_converter_internals.h"
 
 START_TEST (conv_env_create)
 {

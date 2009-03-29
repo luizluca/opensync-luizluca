@@ -32,6 +32,8 @@
 #include "opensync_format_env_internals.h"
 #include "opensync_format_env_private.h"
 
+#include "opensync_converter_internals.h"
+
 
 
 static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char *path, osync_bool must_exist, OSyncError **error)
@@ -847,6 +849,10 @@ OSyncObjFormat *osync_format_env_nth_objformat(OSyncFormatEnv *env, unsigned int
 	return osync_list_nth_data(env->objformats, nth);
 }
 
+OSyncList *osync_format_env_get_objformats(OSyncFormatEnv *env) {
+	return osync_list_copy(env->objformats);
+}
+
 void osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConverter *converter)
 {
 	osync_assert(env);
@@ -912,7 +918,7 @@ OSyncList *osync_format_env_find_converters(OSyncFormatEnv *env, OSyncObjFormat 
 	return r;
 }
 
-int osync_format_env_num_converters(OSyncFormatEnv *env)
+unsigned int osync_format_env_num_converters(OSyncFormatEnv *env)
 {
 	osync_assert(env);
 	return osync_list_length(env->converters);
@@ -922,6 +928,10 @@ OSyncFormatConverter *osync_format_env_nth_converter(OSyncFormatEnv *env, int nt
 {
 	osync_assert(env);
 	return osync_list_nth_data(env->converters, nth);
+}
+
+OSyncList *osync_format_env_get_converters(OSyncFormatEnv *env) {
+	return osync_list_copy(env->converters);
 }
 
 void osync_format_env_register_filter(OSyncFormatEnv *env, OSyncCustomFilter *filter)

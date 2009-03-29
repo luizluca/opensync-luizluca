@@ -100,22 +100,16 @@ OSYNC_EXPORT void osync_format_env_register_objformat(OSyncFormatEnv *env, OSync
  */
 OSYNC_EXPORT OSyncObjFormat *osync_format_env_find_objformat(OSyncFormatEnv *env, const char *name);
 
-/** @brief Returns the number of available object formats
+/**
+ * @brief Return a OSyncList of all formats which are store inside this format environment
  * 
- * @param env The format environment
- * @returns The number of object formats
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
  * 
+ * @param A pointer to a OSyncFormatEnv
+ * @return a shallow copy of all OSyncObjFormats stored in the format env
  */
-OSYNC_EXPORT unsigned int osync_format_env_num_objformats(OSyncFormatEnv *env);
-
-/** @brief Gets the nth object format
- * 
- * @param env The format environment
- * @param nth The position of the object format to retrieve
- * @returns The object format
- * 
- */
-OSYNC_EXPORT OSyncObjFormat *osync_format_env_nth_objformat(OSyncFormatEnv *env, unsigned int nth);
+OSYNC_EXPORT OSyncList *osync_format_env_get_objformats(OSyncFormatEnv *env);
 
 /** @brief Registers Format Converter or Detector to Format Environment
  * 
@@ -147,22 +141,16 @@ OSYNC_EXPORT OSyncFormatConverter *osync_format_env_find_converter(OSyncFormatEn
  */
 OSYNC_EXPORT OSyncList *osync_format_env_find_converters(OSyncFormatEnv *env, OSyncObjFormat *sourceformat, OSyncObjFormat *targetformat);
 
-/** @brief Returns the number of available converters
+/**
+ * @brief Return a OSyncList of all converters which are store in this format environment
  * 
- * @param env The format environment
- * @returns The number of converters
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
  * 
+ * @param A pointer to a OSyncFormatEnv
+ * @return a shallow copy of all OSyncFormatConverters stored in the format env
  */
-OSYNC_EXPORT int osync_format_env_num_converters(OSyncFormatEnv *env);
-
-/** @brief Gets the nth format converter
- * 
- * @param env The format environment
- * @param nth The position of the format converter to retrieve
- * @returns The format converter
- * 
- */
-OSYNC_EXPORT OSyncFormatConverter *osync_format_env_nth_converter(OSyncFormatEnv *env, int nth);
+OSYNC_EXPORT OSyncList *osync_format_env_get_converters(OSyncFormatEnv *env);
 
 /** @brief Tries to detect the format of the given data object
  * 

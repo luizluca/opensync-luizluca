@@ -68,14 +68,14 @@ OSYNC_EXPORT OSyncFormatConverter *osync_converter_new(OSyncConverterType type, 
  */
 OSYNC_EXPORT OSyncFormatConverter *osync_converter_new_detector(OSyncObjFormat *sourceformat, OSyncObjFormat *targetformat, OSyncFormatDetectFunc detect_func, OSyncError **error);
 
-/*! @brief Increase the reference count on a converter
+/** @brief Increase the reference count on a converter
  *
  * @param converter Pointer to the converter
  *
  */
 OSYNC_EXPORT OSyncFormatConverter *osync_converter_ref(OSyncFormatConverter *converter);
 
-/*! @brief Decrease the reference count on a converter
+/** @brief Decrease the reference count on a converter
  *
  * @param converter Pointer to the converter
  *
@@ -158,26 +158,13 @@ OSYNC_EXPORT void osync_converter_path_unref(OSyncFormatConverterPath *path);
  */
 OSYNC_EXPORT void osync_converter_path_add_edge(OSyncFormatConverterPath *path, OSyncFormatConverter *edge);
 
-/** @brief Returns the number of converters in a converter path
- * @param path Pointer to the converter path
- * @returns the number of converters in the specified path
- */
-OSYNC_EXPORT unsigned int osync_converter_path_num_edges(OSyncFormatConverterPath *path);
-
-/** @brief Returns the nth converter in a converter path
- * @param path Pointer to the converter path
- * @param nth The position of the converter to retrieve
- * @returns the converter at the specified index
- */
-OSYNC_EXPORT OSyncFormatConverter *osync_converter_path_nth_edge(OSyncFormatConverterPath *path, unsigned int nth);
-
 /** @brief Returns configuration for converter path
  * @param path Pointer to the converter path
  * @returns The converter path configuration
  */
 OSYNC_EXPORT const char *osync_converter_path_get_config(OSyncFormatConverterPath *path);
 
-/*! @brief Sets the configuration for converter path
+/** @brief Sets the configuration for converter path
  * @param path Pointer to the converter path
  * @param config The converter path configuration
  */
@@ -214,6 +201,13 @@ OSYNC_EXPORT void osync_converter_initialize(OSyncFormatConverter *converter, co
  * @param converter Pointer to the converter which should be finalized
  */
 OSYNC_EXPORT void osync_converter_finalize(OSyncFormatConverter *converter);
+
+/**
+ * @brief Returns a OSyncList of the format converters in this path
+ * @param path Pointer to the OSyncFormatConverterPath
+ * @return a shallow copy of the OSyncFormatConverter in the conversion path
+ */
+OSYNC_EXPORT OSyncList *osync_converter_path_get_edges(OSyncFormatConverterPath *path);
 
 /*@}*/
 

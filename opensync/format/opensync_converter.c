@@ -28,6 +28,7 @@
 #include "format/opensync_objformat_internals.h"
 
 #include "opensync_converter_private.h"
+#include "opensync_converter_internals.h"
 
 OSyncFormatConverter *osync_converter_new(OSyncConverterType type, OSyncObjFormat *sourceformat, OSyncObjFormat *targetformat, OSyncFormatConvertFunc convert_func, OSyncError **error)
 {
@@ -337,5 +338,9 @@ void osync_converter_finalize(OSyncFormatConverter *converter)
 	if (converter->finalize_func) {
 		converter->finalize_func(converter->userdata);
 	}
+}
+
+OSyncList *osync_converter_path_get_edges(OSyncFormatConverterPath *path) {
+	return osync_list_copy(path->converters);
 }
 

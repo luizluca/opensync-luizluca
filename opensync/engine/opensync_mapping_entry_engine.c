@@ -30,6 +30,7 @@
 
 #include "archive/opensync_archive_internals.h"
 #include "format/opensync_objformat_internals.h"
+#include "format/opensync_converter_internals.h"
 
 #include "opensync_obj_engine.h"
 #include "opensync_obj_engine.h"

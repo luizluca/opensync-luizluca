@@ -37,7 +37,7 @@ osync_bool osync_conv_find_path_fmtlist(OSyncFormatEnv *env, OSyncChange *start,
 osync_bool osync_conv_convert_fn(OSyncFormatEnv *env, OSyncChange *change, OSyncPathTargetFn target_fn, const void *fndata, const char *extension_name, OSyncError **error);
 osync_bool osync_conv_convert_fmtlist(OSyncFormatEnv *env, OSyncChange *change, GList/*OSyncObjFormat * */ *targets);
 
-/*! @brief The environment used for conversions
+/** @brief The environment used for conversions
  */
 struct OSyncFormatEnv {
 	/** A List of formats */
@@ -53,7 +53,7 @@ struct OSyncFormatEnv {
 	int ref_count;
 };
 
-/*! @brief search tree for format converters
+/** @brief search tree for format converters
  */
 typedef struct OSyncFormatConverterTree {
 	/* The converters that weren't reached yet */
@@ -124,6 +124,41 @@ OSYNC_TEST_EXPORT void osync_format_env_objformat_initialize(OSyncFormatEnv *env
  * 
  */
 OSYNC_TEST_EXPORT void osync_format_env_objformat_finalize(OSyncFormatEnv *env);
+
+/** @brief Returns the number of available object formats
+ * 
+ * @param env The format environment
+ * @returns The number of object formats
+ * 
+ */
+OSYNC_TEST_EXPORT unsigned int osync_format_env_num_objformats(OSyncFormatEnv *env);
+
+/** @brief Gets the nth object format
+ * 
+ * @param env The format environment
+ * @param nth The position of the object format to retrieve
+ * @returns The object format
+ * 
+ */
+OSYNC_TEST_EXPORT OSyncObjFormat *osync_format_env_nth_objformat(OSyncFormatEnv *env, unsigned int nth);
+
+/** @brief Returns the number of available converters
+ * 
+ * @param env The format environment
+ * @returns The number of converters
+ * 
+ */
+OSYNC_TEST_EXPORT unsigned int osync_format_env_num_converters(OSyncFormatEnv *env);
+
+/** @brief Gets the nth format converter
+ * 
+ * @param env The format environment
+ * @param nth The position of the format converter to retrieve
+ * @returns The format converter
+ * 
+ */
+OSYNC_TEST_EXPORT OSyncFormatConverter *osync_format_env_nth_converter(OSyncFormatEnv *env, int nth);
+
 
 /*@}*/
 
