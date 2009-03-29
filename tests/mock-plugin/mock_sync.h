@@ -67,6 +67,7 @@ typedef struct MockDir {
 	mock_env *env;
 	osync_bool committed_all;
 	osync_bool connect_done;
+	osync_bool connect_done_slowsync;
 } MockDir;
 
 #endif //_MOCK_PLUGIN_H

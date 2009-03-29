@@ -969,19 +969,19 @@ static osync_bool _osync_client_handle_connect(OSyncClient *client, OSyncMessage
 		
 		osync_message_unref(reply);
 	} else {
-		/* set slowsync.
-			 otherwise disable slowsync - to avoid slowsyncs every time with the same initiliazed engine
-			 without finalizing the engine the next sync with the same engine would be again a slow-sync.
-			 (unittest: sync - testcases: sync_easy_new_del, sync_easy_new_mapping) */
-		if (slowsync)
-			osync_objtype_sink_set_slowsync(sink, TRUE);
-		else
-			osync_objtype_sink_set_slowsync(sink, FALSE);
+               /* set slowsync.
+                        otherwise disable slowsync - to avoid slowsyncs every time with the same initiliazed engine
+                        without finalizing the engine the next sync with the same engine would be again a slow-sync.
+                        (unittest: sync - testcases: sync_easy_new_del, sync_easy_new_mapping) */
+               if (slowsync)
+                       osync_objtype_sink_set_slowsync(sink, TRUE);
+               else
+                       osync_objtype_sink_set_slowsync(sink, FALSE);
 
 		context = _create_context(client, message, _osync_client_connect_callback, NULL, error);
 		if (!context)
 			goto error;
-		
+
 		osync_plugin_info_set_sink(client->plugin_info, sink);
 		osync_objtype_sink_connect(sink, client->plugin_info, context);
 
@@ -1001,6 +1001,7 @@ static osync_bool _osync_client_handle_connect(OSyncClient *client, OSyncMessage
 static osync_bool _osync_client_handle_connect_done(OSyncClient *client, OSyncMessage *message, OSyncError **error)
 {
 	char *objtype = NULL;
+	int slowsync;
 	OSyncMessage *reply = NULL;
 	OSyncObjTypeSink *sink = NULL;
 	OSyncContext *context = NULL;
@@ -1008,7 +1009,8 @@ static osync_bool _osync_client_handle_connect_done(OSyncClient *client, OSyncMe
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
 	
 	osync_message_read_string(message, &objtype);
-	osync_trace(TRACE_INTERNAL, "Searching sink for %s", objtype);
+	osync_message_read_int(message, &slowsync);
+	osync_trace(TRACE_INTERNAL, "Searching sink for %s (slowsync: %d)", objtype, slowsync);
 	
 	if (objtype) {
 		sink = osync_plugin_info_find_objtype(client->plugin_info, objtype);
@@ -1036,6 +1038,13 @@ static osync_bool _osync_client_handle_connect_done(OSyncClient *client, OSyncMe
 		context = _create_context(client, message, _osync_client_connect_done_callback, NULL, error);
 		if (!context)
 			goto error;
+
+		/* set slowsync (again) if the slow-sync got requested during the connect() call
+			 of a member - and not during frontend/engine itself (e.g. anchor mismatch). */
+		if (slowsync)
+			osync_objtype_sink_set_slowsync(sink, TRUE);
+		else
+			osync_objtype_sink_set_slowsync(sink, FALSE);
 		
 		osync_plugin_info_set_sink(client->plugin_info, sink);
 		osync_objtype_sink_connect_done(sink, client->plugin_info, context);

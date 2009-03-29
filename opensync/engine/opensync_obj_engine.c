@@ -958,7 +958,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 		for (p = engine->active_sink_engines; p; p = p->next) {
 			sinkengine = p->data;
 
-			if (!osync_client_proxy_connect_done(sinkengine->proxy, _osync_obj_engine_connect_done_callback, sinkengine, engine->objtype, error))
+			if (!osync_client_proxy_connect_done(sinkengine->proxy, _osync_obj_engine_connect_done_callback, sinkengine, engine->objtype, engine->slowsync, error))
 				goto error;
 			osync_sink_engine_ref(sinkengine); // Note that connect_done callback has a reference
 		}

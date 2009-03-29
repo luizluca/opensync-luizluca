@@ -396,7 +396,7 @@ void osync_objtype_sink_connect_done(OSyncObjTypeSink *sink, OSyncPluginInfo *in
 	if (!functions.connect_done)
 		osync_context_report_success(ctx);
 	else
-		functions.connect_done(sink, info, ctx, osync_objtype_sink_get_userdata(sink));
+		functions.connect_done(sink, info, ctx, osync_objtype_sink_get_slowsync(sink), osync_objtype_sink_get_userdata(sink));
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }

@@ -1406,7 +1406,6 @@ osync_bool osync_client_proxy_connect(OSyncClientProxy *proxy, connect_cb callba
 
 	osync_message_write_string(message, objtype);
 	osync_message_write_int(message, slowsync);
-
 	
 	if (!osync_queue_send_message_with_timeout(proxy->outgoing, proxy->incoming, message, timeout, error))
 		goto error_free_message;
@@ -1425,7 +1424,7 @@ osync_bool osync_client_proxy_connect(OSyncClientProxy *proxy, connect_cb callba
 	return FALSE;
 }
 
-osync_bool osync_client_proxy_connect_done(OSyncClientProxy *proxy, sync_done_cb callback, void *userdata, const char *objtype, OSyncError **error)
+osync_bool osync_client_proxy_connect_done(OSyncClientProxy *proxy, sync_done_cb callback, void *userdata, const char *objtype, osync_bool slowsync, OSyncError **error)
 {
 	int timeout = 0;
 	callContext *ctx = NULL;
@@ -1456,6 +1455,7 @@ osync_bool osync_client_proxy_connect_done(OSyncClientProxy *proxy, sync_done_cb
 	osync_message_set_handler(message, _osync_client_proxy_connect_done_handler, ctx);
 
 	osync_message_write_string(message, objtype);
+	osync_message_write_int(message, slowsync);
 	
 	if (!osync_queue_send_message_with_timeout(proxy->outgoing, proxy->incoming, message, timeout, error))
 		goto error_free_message;

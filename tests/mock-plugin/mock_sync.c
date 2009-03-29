@@ -101,10 +101,12 @@ end:
 	return;
 }
 
-static void mock_connect_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data)
+static void mock_connect_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data)
 {
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, ctx, data);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %i, %p)", __func__, sink, info, ctx, slow_sync, data);
 	MockDir *dir = data;
+
+	dir->connect_done_slowsync = slow_sync;
 
 	if (mock_get_error(info->memberid, "CONNECT_DONE_ERROR")) {
 		osync_context_report_error(ctx, OSYNC_ERROR_EXPECTED, "Triggering CONNECT_DONE_ERROR error");
@@ -387,6 +389,12 @@ static void mock_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyn
 
 	osync_assert(dir->connect_done == TRUE);
 	dir->connect_done = FALSE;
+
+	/* Validate that connect_doene and get_changes slow_sync
+	 * is the same. To avoid mix-up of a "late slow-sync".
+	 */
+	if (!mock_get_error(info->memberid, "MAINSINK_CONNECT"))
+		osync_assert(dir->connect_done_slowsync == slow_sync);
 
 	if (mock_get_error(info->memberid, "GET_CHANGES_ERROR")) {
 		osync_context_report_error(ctx, OSYNC_ERROR_EXPECTED, "Triggering GET_CHANGES_ERROR error");

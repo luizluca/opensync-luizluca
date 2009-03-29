@@ -1922,7 +1922,7 @@ void osync_engine_event(OSyncEngine *engine, OSyncEngineEvent event)
 		/* Now we send connect_done to the main sink */
 		for (o = engine->proxies; o; o = o->next) {
 			OSyncClientProxy *proxy = o->data;
-			if (!osync_client_proxy_connect_done(proxy, _osync_engine_connect_done_callback, engine, NULL, &locerror))
+			if (!osync_client_proxy_connect_done(proxy, _osync_engine_connect_done_callback, engine, NULL, FALSE, &locerror))
 				goto error;
 		}
 
