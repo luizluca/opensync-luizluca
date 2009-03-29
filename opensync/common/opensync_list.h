@@ -47,9 +47,15 @@ typedef void (*OSyncFunc)(void *data, void *user_data);
 /* Doubly linked lists
  */
 OSYNC_EXPORT OSyncList*   osync_list_alloc                   (void);
+
+/* @note: Slightly modified from original glib version.
+ * osync_list_free() and osync_list_free1 will immeditally return
+ * if list is NULL
+ */
 OSYNC_EXPORT void     osync_list_free                    (OSyncList            *list);
 OSYNC_EXPORT void     osync_list_free_1                  (OSyncList            *list);
 #define osync_list_free1                   osync_list_free_1
+
 OSYNC_EXPORT OSyncList*   osync_list_append                  (OSyncList            *list,
 					 void *          data);
 OSYNC_EXPORT OSyncList*   osync_list_prepend                 (OSyncList            *list,

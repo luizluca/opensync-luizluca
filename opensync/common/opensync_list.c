@@ -47,12 +47,14 @@ osync_list_alloc (void)
 void
 osync_list_free (OSyncList *list)
 {
+	osync_return_if_fail(list);
 	g_slice_free_chain (OSyncList, list, next);
 }
 
 void
 osync_list_free_1 (OSyncList *list)
 {
+	osync_return_if_fail(list);
 	_osync_list_free1 (list);
 }
 
