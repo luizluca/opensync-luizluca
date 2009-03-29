@@ -22,16 +22,6 @@
 #ifndef OPENSYNC_MAPPING_ENGINE_H_
 #define OPENSYNC_MAPPING_ENGINE_H_
 
-OSYNC_EXPORT unsigned int osync_mapping_engine_num_changes(OSyncMappingEngine *engine);
-
-/** @brief Search for the nth entry in the mapping
- *
- * @param engine A pointer to the mapping engine
- * @param nth The value of the position
- * @returns The pointer to the nth change. NULL if there isn't enough entries in the mapping.
- */
-OSYNC_EXPORT OSyncChange *osync_mapping_engine_nth_change(OSyncMappingEngine *engine, unsigned int nth);
-
 /** @brief Search in the mapping for the change of the member.
  *
  * @param engine A pointer to the mapping engine
@@ -56,5 +46,16 @@ OSYNC_EXPORT osync_bool osync_mapping_engine_use_latest(OSyncMappingEngine *engi
  *
  */
 OSYNC_EXPORT osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, OSyncError **error);
+
+/**
+ * @brief Returns the list of OSyncChanges
+ * 
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
+ * 
+ * @param engine A pointer to a OSyncMappingEngine
+ * @return A list containing the changes
+ */
+OSYNC_EXPORT OSyncList *osync_mapping_engine_get_changes(OSyncMappingEngine *engine);
 
 #endif /*OPENSYNC_MAPPING_ENGINE_H_*/

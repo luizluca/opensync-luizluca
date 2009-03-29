@@ -14,6 +14,7 @@
 #include <opensync/opensync-plugin.h>
 
 #include "opensync/helper/opensync_hashtable_internals.h"
+#include "opensync/engine/opensync_mapping_engine_internals.h"
 
 #include "config.h"
 

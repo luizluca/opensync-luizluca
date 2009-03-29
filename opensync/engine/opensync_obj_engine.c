@@ -1241,6 +1241,10 @@ unsigned int osync_obj_engine_num_sinkengines(OSyncObjEngine *engine)
 	return osync_list_length(engine->active_sink_engines);
 }
 
+OSyncList *osync_obj_engine_get_sinkengines(OSyncObjEngine *engine) {
+	return osync_list_copy(engine->active_sink_engines);
+}
+
 unsigned int osync_obj_engine_num_mapping_engines(OSyncObjEngine *engine)
 {
 	osync_assert(engine);
@@ -1260,6 +1264,35 @@ OSyncMember *osync_obj_engine_nth_member(OSyncObjEngine *engine, unsigned int nt
 	sinkengine = osync_list_nth_data(engine->active_sink_engines, nth);
 	osync_assert(sinkengine);
 	return osync_sink_engine_get_member(sinkengine);
+}
+
+OSyncList *osync_obj_engine_get_members(OSyncObjEngine* engine) {
+	
+	OSyncList *list = engine->active_sink_engines;
+	OSyncList *new_list = NULL;
+	OSyncSinkEngine *sinkengine = NULL;
+	
+	if (list) {
+		OSyncList *last;
+
+		new_list = osync_list_alloc();
+		sinkengine = list->data;
+		new_list->data = osync_sink_engine_get_member(sinkengine);
+		new_list->prev = NULL;
+		last = new_list;
+		list = list->next;
+		while (list) {
+			last->next = osync_list_alloc();
+			last->next->prev = last;
+			last = last->next;
+			sinkengine = list->data;
+			last->data = osync_sink_engine_get_member(sinkengine);
+			list = list->next;
+		}
+		last->next = NULL;
+	}
+
+	return new_list;
 }
 
 const OSyncList *osync_obj_engine_get_mapping_entry_engines_of_member(OSyncObjEngine *engine, OSyncMember *member)

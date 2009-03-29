@@ -103,6 +103,9 @@ OSYNC_EXPORT OSyncPlugin *osync_plugin_env_find_plugin(OSyncPluginEnv *env, cons
 
 /* @brief Get all plugins which are registered in the Plugin Env
  * 
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
+ * 
  * @param env Pointer to a OSyncPluginEnv
  * @return A shallow copy of the internal plugin list
  */

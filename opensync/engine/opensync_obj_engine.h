@@ -42,39 +42,7 @@ OSYNC_EXPORT osync_bool osync_obj_engine_receive_change(OSyncObjEngine *objengin
 
 OSYNC_EXPORT void osync_obj_engine_set_error(OSyncObjEngine *engine, OSyncError *error);
 
-/** @brief Get the nth OSyncSinkEngine of the OSyncObjEngine
- *
- * @param engine A pointer to the engine
- * @param nth The position of the OSyncSinkEngine to request
- * @returns Pointer of the nth OSyncSinkEngine, or NULL if not available
- *
- */
-OSYNC_EXPORT OSyncSinkEngine *osync_obj_engine_nth_sinkengine(OSyncObjEngine *engine, unsigned int nth);
-
-/*! @brief Get total number of Sink Engines
- *
- * @param engine Pointer to OSyncObjEngine
- * @returns Total number of Sink Engines
- */
-OSYNC_EXPORT unsigned int osync_obj_engine_num_sinkengines(OSyncObjEngine *engine);
-
-/*! @brief Get total number of Members
- *
- * @param engine Pointer to OSyncObjEngine
- * @returns Total number of OSyncMember elements 
- */
-OSYNC_EXPORT unsigned int osync_obj_engine_num_members(OSyncObjEngine *engine);
-
-/** @brief Get the nth OSyncMember of the OSyncObjEngine
- *
- * @param engine A pointer to the engine
- * @param nth The position of the OSyncMember to request
- * @returns Pointer of the nth OSyncMember, or NULL if not available
- *
- */
-OSYNC_EXPORT OSyncMember *osync_obj_engine_nth_member(OSyncObjEngine *engine, unsigned int nth);
-
-/*! @brief Get list of OSyncMappingEntryEngines of the OSyncObjEngine 
+/** @brief Get list of OSyncMappingEntryEngines of the OSyncObjEngine 
  * for a specific member
  *
  * @param engine Pointer to an OSyncObjEngine
@@ -82,6 +50,28 @@ OSYNC_EXPORT OSyncMember *osync_obj_engine_nth_member(OSyncObjEngine *engine, un
  * @returns List of OSyncMappingEntryEngines-elements or NULL if there are no Mapping Entry Engines. 
  */
 OSYNC_EXPORT const OSyncList *osync_obj_engine_get_mapping_entry_engines_of_member(OSyncObjEngine *engine, OSyncMember *member);
+
+/**
+ * @brief Returns a OSyncList of all active sinkengines
+ * 
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
+ * 
+ * @param A pointer to a OSyncObjEngine
+ * @return a shallow copy of active OSyncSinkEngines
+ */
+OSYNC_EXPORT OSyncList *osync_obj_engine_get_sinkengines(OSyncObjEngine *engine);
+
+/**
+ * @brief Returns a OSyncList of all members
+ * 
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
+ * 
+ * @param A pointer to a OSyncObjEngine
+ * @return a shallow copy of the internal OSyncMembers
+ */
+OSYNC_EXPORT OSyncList *osync_obj_engine_get_members(OSyncObjEngine *engine);
 
 #endif /* OPENSYNC_OBJ_ENGINE_H_ */
 

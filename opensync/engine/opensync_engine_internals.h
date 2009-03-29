@@ -166,6 +166,23 @@ unsigned int osync_engine_num_proxies_for_objtypes(OSyncEngine *engine, const ch
  */
 unsigned int osync_engine_num_proxies_for_alternative_objtypes(OSyncEngine *engine, const char *objtype);
 
+/** @brief Get the nth OSyncObjEngine of the OSyncEngine
+ *
+ * @param engine A pointer to the engine
+ * @param nth The position of the OSyncObjEngine to request
+ * @returns Pointer of the nth OSyncObjEngine
+ *
+ */
+OSYNC_TEST_EXPORT OSyncObjEngine *osync_engine_nth_objengine(OSyncEngine *engine, unsigned int nth);
+
+/** @brief Get the number of OSyncObjEngine-elements in OSyncEngine 
+ *
+ * @param engine A pointer to the engine
+ * @returns Total number of OSyncObjEngine-elements 
+ *
+ */
+OSYNC_TEST_EXPORT unsigned int osync_engine_num_objengines(OSyncEngine *engine);
+
 /*@}*/
 
 #endif /*OPENSYNC_ENGINE_INTERNALS_H_*/

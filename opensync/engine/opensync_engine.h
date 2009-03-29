@@ -390,29 +390,12 @@ OSYNC_EXPORT void osync_engine_set_memberstatus_callback(OSyncEngine *engine, os
  */
 OSYNC_EXPORT OSyncObjEngine *osync_engine_find_objengine(OSyncEngine *engine, const char *objtype);
 
-/** @brief Get the nth OSyncObjEngine of the OSyncEngine
- *
- * @param engine A pointer to the engine
- * @param nth The position of the OSyncObjEngine to request
- * @returns Pointer of the nth OSyncObjEngine
- *
- */
-OSYNC_EXPORT OSyncObjEngine *osync_engine_nth_objengine(OSyncEngine *engine, unsigned int nth);
-
-/** @brief Get the number of OSyncObjEngine-elements in OSyncEngine 
- *
- * @param engine A pointer to the engine
- * @returns Total number of OSyncObjEngine-elements 
- *
- */
-OSYNC_EXPORT unsigned int osync_engine_num_objengines(OSyncEngine *engine);
-
 OSYNC_EXPORT osync_bool osync_engine_mapping_solve(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncChange *change, OSyncError **error);
 OSYNC_EXPORT osync_bool osync_engine_mapping_duplicate(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncError **error);
 OSYNC_EXPORT osync_bool osync_engine_mapping_ignore_conflict(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncError **error);
 OSYNC_EXPORT osync_bool osync_engine_mapping_use_latest(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncError **error);
 
-/*! @brief Repairs engine from failed synchronization processes. 
+/** @brief Repairs engine from failed synchronization processes. 
  *
  * This needs to get called to repair every failed synchronization process,
  * when same engine should get used. (Without initalizing a new engine).
@@ -423,6 +406,17 @@ OSYNC_EXPORT osync_bool osync_engine_mapping_use_latest(OSyncEngine *engine, OSy
  * 
  */
 OSYNC_EXPORT osync_bool osync_engine_repair(OSyncEngine *engine, OSyncError **error);
+
+/**
+ * @brief Returns the list of ObjEngines
+ * 
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
+ * 
+ * @param engine A Pointer to an OSyncEngine
+ * @return a shellow copy of the internal list
+ */
+OSYNC_EXPORT OSyncList *osync_engine_get_objengines(OSyncEngine *engine);
 
 /*@}*/
 

@@ -149,5 +149,37 @@ void osync_obj_engine_written_callback(OSyncClientProxy *proxy, void *userdata, 
  */
 OSyncSinkEngine *osync_obj_engine_find_proxy_sinkengine(OSyncObjEngine *engine, OSyncClientProxy *proxy);
 
+/** @brief Get the nth OSyncSinkEngine of the OSyncObjEngine
+ *
+ * @param engine A pointer to the engine
+ * @param nth The position of the OSyncSinkEngine to request
+ * @returns Pointer of the nth OSyncSinkEngine, or NULL if not available
+ *
+ */
+OSYNC_TEST_EXPORT OSyncSinkEngine *osync_obj_engine_nth_sinkengine(OSyncObjEngine *engine, unsigned int nth);
+
+/** @brief Get total number of Sink Engines
+ *
+ * @param engine Pointer to OSyncObjEngine
+ * @returns Total number of Sink Engines
+ */
+OSYNC_TEST_EXPORT unsigned int osync_obj_engine_num_sinkengines(OSyncObjEngine *engine);
+
+/** @brief Get total number of Members
+ *
+ * @param engine Pointer to OSyncObjEngine
+ * @returns Total number of OSyncMember elements 
+ */
+OSYNC_TEST_EXPORT unsigned int osync_obj_engine_num_members(OSyncObjEngine *engine);
+
+/** @brief Get the nth OSyncMember of the OSyncObjEngine
+ *
+ * @param engine A pointer to the engine
+ * @param nth The position of the OSyncMember to request
+ * @returns Pointer of the nth OSyncMember, or NULL if not available
+ *
+ */
+OSYNC_TEST_EXPORT OSyncMember *osync_obj_engine_nth_member(OSyncObjEngine *engine, unsigned int nth);
+
 #endif /* OPENSYNC_OBJ_ENGINE_INTERNALS_H_ */
 

@@ -66,6 +66,16 @@ osync_bool osync_mapping_engine_check_conflict(OSyncMappingEngine *engine);
 
 OSyncMappingEntryEngine *osync_mapping_engine_get_entry(OSyncMappingEngine *engine, OSyncSinkEngine *sinkengine);
 
+OSYNC_TEST_EXPORT unsigned int osync_mapping_engine_num_changes(OSyncMappingEngine *engine);
+
+/** @brief Search for the nth entry in the mapping
+ *
+ * @param engine A pointer to the mapping engine
+ * @param nth The value of the position
+ * @returns The pointer to the nth change. NULL if there isn't enough entries in the mapping.
+ */
+OSYNC_TEST_EXPORT OSyncChange *osync_mapping_engine_nth_change(OSyncMappingEngine *engine, unsigned int nth);
+
 /*@}*/
 
 #endif /* OPENSYNC_MAPPING_ENGINE_INTERNALS_H_ */

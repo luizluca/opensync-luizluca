@@ -113,6 +113,9 @@ OSYNC_EXPORT void osync_plugin_info_add_objtype(OSyncPluginInfo *info, OSyncObjT
 /**
  * @brief Returns all Objtype Sinks as a list
  * 
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
+ * 
  * @param Pointer to a OSyncPluginInfo
  * @return A shallow copy of the internal objtype list
  */

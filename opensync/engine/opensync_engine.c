@@ -2303,6 +2303,10 @@ OSyncObjEngine *osync_engine_nth_objengine(OSyncEngine *engine, unsigned int nth
 	return osync_list_nth_data(engine->object_engines, nth);
 }
 
+OSyncList *osync_engine_get_objengines(OSyncEngine *engine) {
+	return osync_list_copy(engine->object_engines);
+}
+
 OSyncObjEngine *osync_engine_find_objengine(OSyncEngine *engine, const char *objtype)
 {
 	OSyncList *p = NULL;

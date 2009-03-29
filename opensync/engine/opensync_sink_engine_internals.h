@@ -21,7 +21,7 @@
 #ifndef OPENSYNC_SINK_ENGINE_INTERNALS_H_
 #define OPENSYNC_SINK_ENGINE_INTERNALS_H_
 
-/*! @brief OSyncSinkEngine struct members 
+/** @brief OSyncSinkEngine struct members 
  *
  **/
 struct OSyncSinkEngine {
@@ -44,7 +44,7 @@ OSyncSinkEngine *osync_sink_engine_ref(OSyncSinkEngine *engine);
 void osync_sink_engine_unref(OSyncSinkEngine *engine);
 osync_bool osync_sink_engine_is_connected(OSyncSinkEngine *engine);
 
-/*! @brief Demerge all entries of OSyncSinkEngine
+/** @brief Demerge all entries of OSyncSinkEngine
  *
  * If the Member/Client of the OSyncSinkEngine doesn't have capabilities
  * this functions is NOOP and just returns with TRUE, without error.
@@ -58,7 +58,7 @@ osync_bool osync_sink_engine_is_connected(OSyncSinkEngine *engine);
  */
 osync_bool osync_sink_engine_demerge(OSyncSinkEngine *engine, OSyncArchive *archive, OSyncError **error);
 
-/*! @brief Convert all entries of OSyncSinkEngine to destitination format
+/** @brief Convert all entries of OSyncSinkEngine to destitination format
  *
  * This function converters all entries of the OSyncSinkEngine to the member
  * preferd/requested format (destination).
@@ -70,7 +70,7 @@ osync_bool osync_sink_engine_demerge(OSyncSinkEngine *engine, OSyncArchive *arch
  */
 osync_bool osync_sink_engine_convert_to_dest(OSyncSinkEngine *engine, OSyncFormatEnv *formatenv, OSyncError **error);
 
-/*! @brief Write/commit all entries of OSyncSinkEngine to the client/peer
+/** @brief Write/commit all entries of OSyncSinkEngine to the client/peer
  *
  * This function writes/commits all entries of the OSyncSinkEngine to the member.
  *

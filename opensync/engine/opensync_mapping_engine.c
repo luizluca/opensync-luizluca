@@ -803,3 +803,31 @@ error:
 	return FALSE;
 }
 
+OSyncList *osync_mapping_engine_get_changes(OSyncMappingEngine *engine) {
+	OSyncList *list = engine->entries;
+	OSyncList *new_list = NULL;
+	OSyncMappingEntryEngine *entry = NULL;
+	
+	if (list) {
+		OSyncList *last;
+
+		new_list = osync_list_alloc();
+		entry = list->data;
+		new_list->data = entry->change;
+		new_list->prev = NULL;
+		last = new_list;
+		list = list->next;
+		while (list) {
+			last->next = osync_list_alloc();
+			last->next->prev = last;
+			last = last->next;
+			entry = list->data;
+			last->data = entry->change;
+			list = list->next;
+		}
+		last->next = NULL;
+	}
+
+	return new_list;
+}
+
