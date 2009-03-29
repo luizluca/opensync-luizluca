@@ -46,6 +46,7 @@
 #include "client/opensync_client_proxy_internals.h"
 #include "group/opensync_member_internals.h"
 #include "format/opensync_objformat_internals.h"
+#include "mapping/opensync_mapping_table_internals.h"
 
 OSyncMappingEngine *_osync_obj_engine_create_mapping_engine(OSyncObjEngine *engine, OSyncError **error)
 {
@@ -618,11 +619,13 @@ static void _osync_obj_engine_sync_done_callback(OSyncClientProxy *proxy, void *
 
 static osync_bool _create_mapping_engines(OSyncObjEngine *engine, OSyncError **error)
 {
-	unsigned int i = 0;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
 	
-	for (i = 0; i < osync_mapping_table_num_mappings(engine->mapping_table); i++) {
-		OSyncMapping *mapping = osync_mapping_table_nth_mapping(engine->mapping_table, i);
+	OSyncList *mappings = osync_mapping_table_get_mappings(engine->mapping_table);
+	OSyncList *m = NULL;
+	
+	for (m = mappings; m; m = m->next) {
+		OSyncMapping *mapping = (OSyncMapping*)m->data;
 		
 		OSyncMappingEngine *mapping_engine = osync_mapping_engine_new(engine, mapping, error);
 		if (!mapping_engine)
@@ -631,10 +634,12 @@ static osync_bool _create_mapping_engines(OSyncObjEngine *engine, OSyncError **e
 		engine->mapping_engines = osync_list_append(engine->mapping_engines, mapping_engine);
 	}
 	
+	osync_list_free(mappings);
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
 
  error:
+	osync_list_free(mappings);
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
 }

@@ -131,3 +131,7 @@ OSyncMappingEntry *osync_mapping_nth_entry(OSyncMapping *mapping, unsigned int n
 	osync_assert(mapping);
 	return osync_list_nth_data(mapping->entries, nth);
 }
+
+OSyncList *osync_mapping_get_entries(OSyncMapping *mapping) {
+	return osync_list_copy(mapping->entries);
+}

@@ -109,22 +109,15 @@ OSYNC_EXPORT void osync_mapping_table_add_mapping(OSyncMappingTable *table, OSyn
 OSYNC_EXPORT void osync_mapping_table_remove_mapping(OSyncMappingTable *table, OSyncMapping *mapping);
 
 /**
- * @brief Get the number of mappings in the mapping table
- *
- * @param table The mapping table object
- * @return Number of mappings
- */ 
-OSYNC_EXPORT unsigned int osync_mapping_table_num_mappings(OSyncMappingTable *table);
-
-/**
- * @brief Get nth mapping object from mapping table 
- *
- * @param table The mapping table object to count mappings
- * @param nth The position of the mapping object
- * @return The nth mapping object from mapping table or NULL if nth position isn't available 
- */ 
-OSYNC_EXPORT OSyncMapping *osync_mapping_table_nth_mapping(OSyncMappingTable *table, unsigned int nth);
-
+ * @brief Returns a OSyncList that contains the OSyncMapping of this mapping table
+ * 
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
+ * 
+ * @param table A pointer to a OSyncMappingTable
+ * @return A shallow copy of the internal list of OSyncMappings
+ */
+OSYNC_EXPORT OSyncList *osync_mapping_table_get_mappings(OSyncMappingTable *table);
 
 /**
  * @brief Get next free mapping id from mapping table 

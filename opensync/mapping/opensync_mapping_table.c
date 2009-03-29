@@ -226,3 +226,6 @@ long long int osync_mapping_table_get_next_id(OSyncMappingTable *table)
 	return new_id;
 }
 
+OSyncList *osync_mapping_table_get_mappings(OSyncMappingTable *table) {
+	return osync_list_copy(table->mappings);
+}

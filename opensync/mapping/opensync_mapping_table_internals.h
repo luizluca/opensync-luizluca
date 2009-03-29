@@ -18,8 +18,8 @@
  * 
  */
  
-#ifndef OPENSYNC_MAPPING_TABLE_INTERNALS_H_
-#define OPENSYNC_MAPPING_TABLE_INTERNALS_H_
+#ifndef _OPENSYNC_MAPPING_TABLE_INTERNALS_H_
+#define _OPENSYNC_MAPPING_TABLE_INTERNALS_H_
 
 /**
  * @defgroup OSyncMappingTableInternalAPI OpenSync Mapping Table Internals
@@ -40,6 +40,23 @@ struct OSyncMappingTable {
 	OSyncList *mappings;
 };
 
+/**
+ * @brief Get the number of mappings in the mapping table
+ *
+ * @param table The mapping table object
+ * @return Number of mappings
+ */ 
+OSYNC_TEST_EXPORT unsigned int osync_mapping_table_num_mappings(OSyncMappingTable *table);
+
+/**
+ * @brief Get nth mapping object from mapping table 
+ *
+ * @param table The mapping table object to count mappings
+ * @param nth The position of the mapping object
+ * @return The nth mapping object from mapping table or NULL if nth position isn't available 
+ */ 
+OSYNC_TEST_EXPORT OSyncMapping *osync_mapping_table_nth_mapping(OSyncMappingTable *table, unsigned int nth);
+
 /*@}*/
 
-#endif /*OPENSYNC_MAPPING_TABLE_INTERNALS_H_*/
+#endif /* _OPENSYNC_MAPPING_TABLE_INTERNALS_H_ */

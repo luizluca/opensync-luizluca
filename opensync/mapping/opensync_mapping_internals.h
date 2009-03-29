@@ -18,8 +18,8 @@
  * 
  */
  
-#ifndef OPENSYNC_MAPPING_INTERNALS_H_
-#define OPENSYNC_MAPPING_INTERNALS_H_
+#ifndef _OPENSYNC_MAPPING_INTERNALS_H_
+#define _OPENSYNC_MAPPING_INTERNALS_H_
 
 /**
  * @defgroup OSyncMappingPrivate OpenSync Mapping Module Private
@@ -43,6 +43,22 @@ struct OSyncMapping {
 	OSyncList *entries;
 };
 
+/**
+ * @brief Get the number of entries in a mapping
+ * @param mapping Pointer to a mapping object
+ * @returns the number of entries in the mapping
+ */
+OSYNC_TEST_EXPORT unsigned int osync_mapping_num_entries(OSyncMapping *mapping);
+
+/**
+ * @brief Get the nth entry in a mapping
+ * @param mapping Pointer to a mapping object
+ * @param nth the index of the entry to get
+ * @returns the nth entry in the mapping or NULL in case of error
+ */
+OSYNC_TEST_EXPORT OSyncMappingEntry *osync_mapping_nth_entry(OSyncMapping *mapping, unsigned int nth);
+
+
 /*@}*/
 
-#endif /*OPENSYNC_MAPPING_INTERNALS_H_*/
+#endif /* _OPENSYNC_MAPPING_INTERNALS_H_*/

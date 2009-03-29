@@ -18,8 +18,8 @@
  * 
  */
  
-#ifndef OPENSYNC_MAPPING_H_
-#define OPENSYNC_MAPPING_H_
+#ifndef _OPENSYNC_MAPPING_H_
+#define _OPENSYNC_MAPPING_H_
 
 /**
  * @defgroup OSyncMapping OpenSync Mapping Module
@@ -71,22 +71,16 @@ OSYNC_EXPORT long long int osync_mapping_get_id(OSyncMapping *mapping);
  */
 OSYNC_EXPORT void osync_mapping_set_id(OSyncMapping *mapping, long long int id);
 
-
 /**
- * @brief Get the number of entries in a mapping
- * @param mapping Pointer to a mapping object
- * @returns the number of entries in the mapping
+ * @brief Returns a OSyncList that contains the OSyncMappingEntries of this mapping
+ * 
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
+ * 
+ * @param mapping A pointer to a OSyncMapping
+ * @return A shallow copy of the internal list of OSyncMappingEntries
  */
-OSYNC_EXPORT unsigned int osync_mapping_num_entries(OSyncMapping *mapping);
-
-/**
- * @brief Get the nth entry in a mapping
- * @param mapping Pointer to a mapping object
- * @param nth the index of the entry to get
- * @returns the nth entry in the mapping or NULL in case of error
- */
-OSYNC_EXPORT OSyncMappingEntry *osync_mapping_nth_entry(OSyncMapping *mapping, unsigned int nth);
-
+OSYNC_EXPORT OSyncList *osync_mapping_get_entries(OSyncMapping *mapping);
 
 /**
  * @brief Add an entry to a mapping
@@ -113,4 +107,4 @@ OSYNC_EXPORT OSyncMappingEntry *osync_mapping_find_entry_by_member_id(OSyncMappi
 
 /*@}*/
 
-#endif /*OPENSYNC_MAPPING_H_*/
+#endif /* _OPENSYNC_MAPPING_H_*/
