@@ -31,16 +31,38 @@
  * 
  */
 /*@{*/
-/*! @brief Represent a environment of groups that should be synchronized */
+/** @brief Represent a environment of groups that should be synchronized */
 struct OSyncGroupEnv {
 	/** list of groups */
-	GList *groups;
+	OSyncList *groups;
 	/** directory to store the groups */
 	char *groupsdir;
 	
 	/** reference counter */
 	int ref_count;
 };
+
+/** @brief Counts the groups in the environment
+ * 
+ * Returns the number of groups
+ * 
+ * @param env Pointer to a OSyncGroupEnv environment
+ * @returns Number of groups
+ * 
+ */
+OSYNC_TEST_EXPORT int osync_group_env_num_groups(OSyncGroupEnv *env);
+
+/** @brief Returns the nth group
+ * 
+ * Returns the nth groups from the environment
+ * 
+ * @param env Pointer to a OSyncGroupEnv environment
+ * @param nth Which group to return
+ * @returns Pointer to the group
+ * 
+ */
+OSYNC_TEST_EXPORT OSyncGroup *osync_group_env_nth_group(OSyncGroupEnv *env, int nth);
+
 
 /*@}*/
 

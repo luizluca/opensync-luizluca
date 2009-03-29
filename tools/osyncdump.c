@@ -88,25 +88,27 @@ static void dump_map(OSyncGroupEnv *env, const char *groupname)
 {
 
 	OSyncGroup *group = osync_group_env_find_group(env, groupname);
-	int i, num_objtypes;
+	int num_objtypes;
 	
 	if (!group) {
 		printf("Unable to find group with name \"%s\"\n", groupname);
 		return;
 	}
-
-	num_objtypes = osync_group_num_objtypes(group); 
+	
+	OSyncList *objtypes = osync_group_get_objtypes(group);
+	num_objtypes = osync_list_length(objtypes); 
 	if (num_objtypes == 0) { 
 		printf("Group has no objtypes. Have the objtypes already been discovered?\n"); 
 		return;
 	}
 
-	for (i = 0; i < num_objtypes; i++) {
-		const char *objtype = osync_group_nth_objtype(group, i);
+	OSyncList *o;
+	for (o = objtypes; o; o = o->next) {
+		const char *objtype = (char *) o->data;
 		printf("Mappings for objtype \"%s\":\n", objtype);
 		dump_map_objtype(env, objtype, groupname);
 	}
-
+	osync_list_free(objtypes);
 }
 
 #if 0

@@ -44,6 +44,8 @@
 #include "opensync_updater_private.h"
 #include "opensync_updater_internals.h"
 
+#include "opensync_group_internals.h"
+
 static void osync_updater_set_error(OSyncUpdater *updater, OSyncError *error)
 {
 	osync_assert(updater);

@@ -193,24 +193,16 @@ OSYNC_EXPORT osync_bool osync_member_delete(OSyncMember *member, OSyncError **er
  */
 OSYNC_EXPORT long long int osync_member_get_id(OSyncMember *member);
 
-
-/** @brief Get the number of supported object types of this member
+/**
+ * @brief Returns a OSyncList that contains the objtypes of this member
  * 
- * @param member The member pointer
- * @returns Number of supported object type of this member
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
  * 
+ * @param member A pointer to a OSyncMember
+ * @return A shallow copy of the internal list of objtypes (const char*)
  */
-OSYNC_EXPORT int osync_member_num_objtypes(OSyncMember *member);
-
-/** @brief Get the name of the nth supported object type of this member
- * 
- * @param member The member pointer
- * @param nth The nth position of the list of supported object types of this member
- * @returns Name of the nth supported object type
- * 
- */
-OSYNC_EXPORT const char *osync_member_nth_objtype(OSyncMember *member, int nth);
-
+OSYNC_EXPORT OSyncList *osync_member_get_objtypes(OSyncMember *member);
 
 /** @brief Add an OSyncObjTypeSink object to the member list of supported object types of this member
  * 

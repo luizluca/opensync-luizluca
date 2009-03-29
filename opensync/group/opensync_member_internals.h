@@ -120,6 +120,24 @@ OSYNC_TEST_EXPORT void osync_member_add_alternative_objtype(OSyncMember *member,
 OSYNC_TEST_EXPORT void osync_member_set_schemadir(OSyncMember *member, const char *schemadir);
 #endif
 
+/** @brief Get the number of supported object types of this member
+ * 
+ * @param member The member pointer
+ * @returns Number of supported object type of this member
+ * 
+ */
+OSYNC_TEST_EXPORT int osync_member_num_objtypes(OSyncMember *member);
+
+/** @brief Get the name of the nth supported object type of this member
+ * 
+ * @param member The member pointer
+ * @param nth The nth position of the list of supported object types of this member
+ * @returns Name of the nth supported object type
+ * 
+ */
+OSYNC_TEST_EXPORT const char *osync_member_nth_objtype(OSyncMember *member, int nth);
+
+
 /*@}*/
 
 #endif /* _OPENSYNC_MEMBER_INTERNALS_H_ */

@@ -106,26 +106,16 @@ OSYNC_EXPORT osync_bool osync_group_env_add_group(OSyncGroupEnv *env, OSyncGroup
  */
 OSYNC_EXPORT void osync_group_env_remove_group(OSyncGroupEnv *env, OSyncGroup *group);
 
-/** @brief Counts the groups in the environment
+/**
+ * @brief Returns a OSyncList that contains the OSyncGroups of this group env
  * 
- * Returns the number of groups
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
  * 
- * @param env Pointer to a OSyncGroupEnv environment
- * @returns Number of groups
- * 
+ * @param env A pointer to a OSyncGroupEnv environment
+ * @return A shallow copy of the internal list of OSyncGroups
  */
-OSYNC_EXPORT int osync_group_env_num_groups(OSyncGroupEnv *env);
-
-/** @brief Returns the nth group
- * 
- * Returns the nth groups from the environment
- * 
- * @param env Pointer to a OSyncGroupEnv environment
- * @param nth Which group to return
- * @returns Pointer to the group
- * 
- */
-OSYNC_EXPORT OSyncGroup *osync_group_env_nth_group(OSyncGroupEnv *env, int nth);
+OSYNC_EXPORT OSyncList *osync_group_env_get_groups(OSyncGroupEnv *env);
 
 /*@}*/
 

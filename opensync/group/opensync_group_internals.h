@@ -35,12 +35,12 @@
  */
 /*@{*/
 
-/*! @brief Represent a group of members that should be synchronized */
+/** @brief Represent a group of members that should be synchronized */
 struct OSyncGroup {
 	/** The name of the group */
 	char *name;
 	/** The members of the group */
-	GList *members;
+	OSyncList *members;
 	/** The path, where the configuration resides */
 	char *configdir;
 	/** The last time this group was synchronized successfully */
@@ -150,6 +150,45 @@ OSYNC_TEST_EXPORT OSyncList *osync_group_get_objformats(OSyncGroup *group);
  */
 OSYNC_TEST_EXPORT void osync_group_set_schemadir(OSyncGroup *group, const char *schemadir);
 #endif /* OPENSYNC_UNITTESTS*/
+
+/** @brief Returns the nth member of the group
+ * 
+ * Returns a pointer to the nth member of the group
+ * 
+ * @param group The group
+ * @param nth Which member to return
+ * @returns Pointer to the member
+ * 
+ */
+OSYNC_TEST_EXPORT OSyncMember *osync_group_nth_member(OSyncGroup *group, unsigned int nth);
+
+/** @brief Counts the members of the group
+ * 
+ * Returns the number of members in the group
+ * 
+ * @param group The group
+ * @returns Number of members
+ * 
+ */
+OSYNC_TEST_EXPORT unsigned int osync_group_num_members(OSyncGroup *group);
+
+/** @brief Gets the number of object types of the group
+ * 
+ * @param group The group
+ * @returns Number of object types of the group 
+ * 
+ */
+OSYNC_TEST_EXPORT unsigned int osync_group_num_objtypes(OSyncGroup *group);
+
+/** @brief Gets the nth object type of the group
+ * 
+ * @param group The group
+ * @param nth The nth position of the object type list
+ * @returns Name of the nth object type of the group
+ * 
+ */
+OSYNC_TEST_EXPORT const char *osync_group_nth_objtype(OSyncGroup *group, unsigned int nth);
+
 
 /*@}*/
 

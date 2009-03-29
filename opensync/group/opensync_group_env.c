@@ -80,7 +80,7 @@ void osync_group_env_unref(OSyncGroupEnv *env)
 		/* Free the groups */
 		while (env->groups) {
 			osync_group_unref(env->groups->data);
-			env->groups = g_list_remove(env->groups, env->groups->data);
+			env->groups = osync_list_remove(env->groups, env->groups->data);
 		}
 	
 		osync_free(env);
@@ -183,7 +183,7 @@ osync_bool osync_group_env_load_groups(OSyncGroupEnv *env, const char *path, OSy
 
 OSyncGroup *osync_group_env_find_group(OSyncGroupEnv *env, const char *name)
 {
-	GList *g = NULL;
+	OSyncList *g = NULL;
 	osync_assert(env);
 	osync_assert(name);
 	
@@ -222,7 +222,7 @@ osync_bool osync_group_env_add_group(OSyncGroupEnv *env, OSyncGroup *group, OSyn
 		osync_free(configdir);
 	}
 	
-	env->groups = g_list_append(env->groups, group);
+	env->groups = osync_list_append(env->groups, group);
 	osync_group_ref(group);
 
 	return TRUE;
@@ -233,18 +233,22 @@ void osync_group_env_remove_group(OSyncGroupEnv *env, OSyncGroup *group)
 	osync_assert(env);
 	osync_assert(group);
 	
-	env->groups = g_list_remove(env->groups, group);
+	env->groups = osync_list_remove(env->groups, group);
 	osync_group_unref(group);
 }
 
 int osync_group_env_num_groups(OSyncGroupEnv *env)
 {
 	osync_assert(env);
-	return g_list_length(env->groups);
+	return osync_list_length(env->groups);
 }
 
 OSyncGroup *osync_group_env_nth_group(OSyncGroupEnv *env, int nth)
 {
 	osync_assert(env);
-	return (OSyncGroup *)g_list_nth_data(env->groups, nth);
+	return (OSyncGroup *)osync_list_nth_data(env->groups, nth);
+}
+
+OSyncList *osync_group_env_get_groups(OSyncGroupEnv *env) {
+	return osync_list_copy(env->groups);
 }

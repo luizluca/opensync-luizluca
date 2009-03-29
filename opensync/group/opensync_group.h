@@ -194,27 +194,16 @@ OSYNC_EXPORT void osync_group_remove_member(OSyncGroup *group, OSyncMember *memb
  */
 OSYNC_EXPORT OSyncMember *osync_group_find_member(OSyncGroup *group, int id);
 
-/** @brief Returns the nth member of the group
+/**
+ * @brief Returns a OSyncList that contains the OSyncMembers of this group
  * 
- * Returns a pointer to the nth member of the group
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
  * 
- * @param group The group
- * @param nth Which member to return
- * @returns Pointer to the member
- * 
+ * @param group A pointer to a OSyncGroup
+ * @return A shallow copy of the internal list of OSyncMembers
  */
-OSYNC_EXPORT OSyncMember *osync_group_nth_member(OSyncGroup *group, unsigned int nth);
-
-/** @brief Counts the members of the group
- * 
- * Returns the number of members in the group
- * 
- * @param group The group
- * @returns Number of members
- * 
- */
-OSYNC_EXPORT unsigned int osync_group_num_members(OSyncGroup *group);
-
+OSYNC_EXPORT OSyncList *osync_group_get_members(OSyncGroup *group);
 
 /** @brief Returns the configdir for the group
  * 
@@ -235,23 +224,16 @@ OSYNC_EXPORT const char *osync_group_get_configdir(OSyncGroup *group);
  */
 OSYNC_EXPORT void osync_group_set_configdir(OSyncGroup *group, const char *directory);
 
-
-/** @brief Gets the number of object types of the group
+/**
+ * @brief Returns a OSyncList that contains the objtype of this group
  * 
- * @param group The group
- * @returns Number of object types of the group 
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
  * 
+ * @param group A pointer to a OSyncGroup
+ * @return A shallow copy of the internal list of objtypes (const char*)
  */
-OSYNC_EXPORT unsigned int osync_group_num_objtypes(OSyncGroup *group);
-
-/** @brief Gets the nth object type of the group
- * 
- * @param group The group
- * @param nth The nth position of the object type list
- * @returns Name of the nth object type of the group
- * 
- */
-OSYNC_EXPORT const char *osync_group_nth_objtype(OSyncGroup *group, unsigned int nth);
+OSYNC_EXPORT OSyncList *osync_group_get_objtypes(OSyncGroup *group);
 
 /** @brief Change the status of an object type in the group.
  * 

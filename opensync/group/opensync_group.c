@@ -167,7 +167,7 @@ static void osync_group_build_mixed_list(gpointer key, gpointer value, gpointer 
 
 static GList *osync_group_get_supported_objtypes(OSyncGroup *group)
 {
-	GList *m = NULL;
+	OSyncList *m = NULL;
 	GList *ret = NULL;
 	GHashTable *table = g_hash_table_new(g_str_hash, g_str_equal);
 		
@@ -197,7 +197,7 @@ static GList *osync_group_get_supported_objtypes(OSyncGroup *group)
 OSyncList *osync_group_get_supported_objtypes_mixed(OSyncGroup *group, OSyncFormatEnv *formatenv)
 {
 
-	GList *m;
+	OSyncList *m;
 	OSyncList *ret = NULL;
 	OSyncList *t, *targetformats = osync_group_get_objformats(group);
 
@@ -245,7 +245,7 @@ OSyncList *osync_group_get_supported_objtypes_mixed(OSyncGroup *group, OSyncForm
 
 OSyncList *osync_group_get_objformats(OSyncGroup *group)
 {
-	GList *m = NULL;
+	OSyncList *m = NULL;
 	OSyncList *list = NULL;
 
 	/* Loop over all members... */
@@ -572,7 +572,7 @@ osync_bool osync_group_delete(OSyncGroup *group, OSyncError **error)
 osync_bool osync_group_reset(OSyncGroup *group, OSyncError **error)
 {
 	OSyncDB *db = NULL;
-	GList *m = NULL;
+	OSyncList *m = NULL;
 	char *path = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, group, error);
 
@@ -769,7 +769,7 @@ osync_bool osync_group_load(OSyncGroup *group, const char *path, OSyncError **er
 
 void osync_group_add_member(OSyncGroup *group, OSyncMember *member)
 {
-	g_assert(group);
+	osync_assert(group);
 	
 	if (!osync_member_get_configdir(member)) {
 		char *configdir = osync_strdup_printf("%s%c%lli", group->configdir, G_DIR_SEPARATOR, osync_group_create_member_id(group));
@@ -777,20 +777,20 @@ void osync_group_add_member(OSyncGroup *group, OSyncMember *member)
 		osync_free(configdir);
 	}
 	
-	group->members = g_list_append(group->members, member);
+	group->members = osync_list_append(group->members, member);
 	osync_member_ref(member);
 }
 
 void osync_group_remove_member(OSyncGroup *group, OSyncMember *member)
 {
 	osync_assert(group);
-	group->members = g_list_remove(group->members, member);
+	group->members = osync_list_remove(group->members, member);
 	osync_member_unref(member);
 }
 
 OSyncMember *osync_group_find_member(OSyncGroup *group, int id)
 {
-	GList *m = NULL;
+	OSyncList *m = NULL;
 	for (m = group->members; m; m = m->next) {
 		OSyncMember *member = m->data;
 		if (osync_member_get_id(member) == id)
@@ -802,13 +802,17 @@ OSyncMember *osync_group_find_member(OSyncGroup *group, int id)
 OSyncMember *osync_group_nth_member(OSyncGroup *group, unsigned int nth)
 {
 	osync_assert(group);
-	return (OSyncMember *)g_list_nth_data(group->members, nth);
+	return (OSyncMember *)osync_list_nth_data(group->members, nth);
 }
 
 unsigned int osync_group_num_members(OSyncGroup *group)
 {
 	osync_assert(group);
-	return g_list_length(group->members);
+	return osync_list_length(group->members);
+}
+
+OSyncList *osync_group_get_members(OSyncGroup *group) {
+	return osync_list_copy(group->members);
 }
 
 const char *osync_group_get_configdir(OSyncGroup *group)
@@ -848,9 +852,34 @@ const char *osync_group_nth_objtype(OSyncGroup *group, unsigned int nth)
 	
 }
 
+OSyncList *osync_group_get_objtypes(OSyncGroup *group) {
+	GList *list = osync_group_get_supported_objtypes(group);
+	OSyncList *new_list = NULL;
+	
+	if (list) {
+		OSyncList *last;
+
+		new_list = osync_list_alloc();
+		new_list->data = list->data;
+		new_list->prev = NULL;
+		last = new_list;
+		list = list->next;
+		while (list) {
+			last->next = osync_list_alloc();
+			last->next->prev = last;
+			last = last->next;
+			last->data = list->data;
+			list = list->next;
+		}
+		last->next = NULL;
+	}
+
+	return new_list;
+}
+
 void osync_group_set_objtype_enabled(OSyncGroup *group, const char *objtype, osync_bool enabled)
 {
-	GList *m = NULL;
+	OSyncList *m = NULL;
 	osync_assert(group);
 	/* Loop over all members... */
 	for (m = group->members; m; m = m->next) {
@@ -861,7 +890,7 @@ void osync_group_set_objtype_enabled(OSyncGroup *group, const char *objtype, osy
 
 int osync_group_objtype_enabled(OSyncGroup *group, const char *objtype)
 {
-	GList *m = NULL;
+	OSyncList *m = NULL;
 	int enabled = -1;
 	
 	osync_assert(group);

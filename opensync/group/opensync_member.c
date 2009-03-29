@@ -785,6 +785,34 @@ const char *osync_member_nth_objtype(OSyncMember *member, int nth)
 	return osync_objtype_sink_get_name(sink);
 }
 
+OSyncList *osync_member_get_objtypes(OSyncMember *member) {
+	GList *list = member->objtypes;
+	OSyncList *new_list = NULL;
+	OSyncObjTypeSink *sink = NULL;
+	
+	if (list) {
+		OSyncList *last;
+
+		new_list = osync_list_alloc();
+		sink = (OSyncObjTypeSink*)list->data;
+		new_list->data = (char *)osync_objtype_sink_get_name(sink);
+		new_list->prev = NULL;
+		last = new_list;
+		list = list->next;
+		while (list) {
+			last->next = osync_list_alloc();
+			last->next->prev = last;
+			last = last->next;
+			sink = (OSyncObjTypeSink*)list->data;
+			last->data = (char *)osync_objtype_sink_get_name(sink);
+			list = list->next;
+		}
+		last->next = NULL;
+	}
+
+	return new_list;
+}
+
 osync_bool osync_member_objtype_enabled(OSyncMember *member, const char *objtype)
 {
 	OSyncObjTypeSink *sink = NULL;

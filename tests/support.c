@@ -5,6 +5,7 @@
 
 #include "opensync/engine/opensync_engine_internals.h"
 #include "opensync/archive/opensync_archive_internals.h"
+#include "opensync/group/opensync_group_internals.h"
 
 char *olddir = NULL;
 
