@@ -179,23 +179,16 @@ OSYNC_EXPORT const char *osync_objtype_sink_get_preferred_format(OSyncObjTypeSin
  */
 OSYNC_EXPORT void osync_objtype_sink_set_preferred_format(OSyncObjTypeSink *sink, const char *preferred_format);
 
-
-/** @brief Returns the number of object formats in the sink
+/**
+ * @brief Returns a OSyncList that contains the OSyncObjFormatSinks of this objtype sink
  * 
- * @param sink Pointer to the sink
- * @returns the number of object formats in the sink
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
  * 
+ * @param sink A pointer to a OSyncObjTypeSink
+ * @return A shallow copy of the internal list of OSyncObjFormatSinks
  */
-OSYNC_EXPORT unsigned int osync_objtype_sink_num_objformat_sinks(OSyncObjTypeSink *sink);
-
-/** @brief Returns the nth object format in the sink
- * 
- * @param sink Pointer to the sink
- * @param nth the index of the object format to return
- * @returns the name of the object format at the specified index
- * 
- */
-OSYNC_EXPORT OSyncObjFormatSink *osync_objtype_sink_nth_objformat_sink(OSyncObjTypeSink *sink, unsigned int nth);
+OSYNC_EXPORT OSyncList *osync_objtype_sink_get_objformat_sinks(OSyncObjTypeSink *sink);
 
 /** @brief Finds the objformat sink for the corresponding objformat 
  * 
@@ -205,14 +198,6 @@ OSYNC_EXPORT OSyncObjFormatSink *osync_objtype_sink_nth_objformat_sink(OSyncObjT
  * 
  */
 OSYNC_EXPORT OSyncObjFormatSink *osync_objtype_sink_find_objformat_sink(OSyncObjTypeSink *sink, OSyncObjFormat *objformat);
-
-/** @brief Get list of object format sinks 
- * 
- * @param sink Pointer to the sink
- * @returns List of object format sinks 
- * 
- */
-OSYNC_EXPORT OSyncList *osync_objtype_sink_get_objformat_sinks(OSyncObjTypeSink *sink);
 
 /** @brief Adds an object format sink to the sink
  * 

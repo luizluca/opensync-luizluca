@@ -684,12 +684,7 @@ OSyncList *osync_member_get_objformat_sinks_all(OSyncMember *member)
 		OSyncObjTypeSink *sink = o->data;
 		OSyncList *format_sinks = osync_objtype_sink_get_objformat_sinks(sink);
 
-		/* Use a copy of the list to allow full processing without impact
-		 * on the orignal ObjFormatSink list of OSyncObjTypeSink
-		 */
-		OSyncList *copy_format_sinks = osync_list_copy(format_sinks);
-
-		list = osync_list_concat(list, copy_format_sinks);
+		list = osync_list_concat(list, format_sinks);
 	}
 
 	return list;
@@ -702,8 +697,9 @@ OSyncObjFormat *osync_member_support_targetformat(OSyncMember *member, OSyncForm
 	for (o = member->objtypes; o; o = o->next) {
 		OSyncObjTypeSink *sink = o->data;
 		OSyncList *format_sinks = osync_objtype_sink_get_objformat_sinks(sink);
-		for (; format_sinks; format_sinks = format_sinks->next) {
-			OSyncObjFormatSink *format_sink = format_sinks->data;
+		OSyncList *fs = NULL;
+		for (fs = format_sinks; fs; fs = fs->next) {
+			OSyncObjFormatSink *format_sink = fs->data;
 			const char *objformat_name = osync_objformat_sink_get_objformat(format_sink);
 			OSyncObjFormat *sourceformat = osync_format_env_find_objformat(formatenv, objformat_name);
 

@@ -249,9 +249,12 @@ OSYNC_EXPORT void osync_member_set_objtype_enabled(OSyncMember *member, const ch
 
 /** @brief List of all available object formats for a specifc object type of this member 
  * 
+ * Please be aware that the returned list has to be freed with 
+ * osync_list_free. If it isn't freed there will be a memory leak.
+ * 
  * @param member The member pointer
  * @param objtype The searched object type 
- * @param error Pointer to a error
+ * @param error Pointer to an error
  * @return List of all object formats of a specific object type of the member
  * 
  */

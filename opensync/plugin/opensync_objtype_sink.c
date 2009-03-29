@@ -209,7 +209,7 @@ OSyncObjFormatSink *osync_objtype_sink_find_objformat_sink(OSyncObjTypeSink *sin
 OSyncList *osync_objtype_sink_get_objformat_sinks(OSyncObjTypeSink *sink)
 {
 	osync_assert(sink);
-	return sink->objformatsinks;
+	return osync_list_copy(sink->objformatsinks);
 }
 
 void osync_objtype_sink_add_objformat_sink(OSyncObjTypeSink *sink, OSyncObjFormatSink *objformatsink)

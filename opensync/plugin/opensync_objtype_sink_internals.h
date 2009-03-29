@@ -18,8 +18,8 @@
  * 
  */
 
-#ifndef OPENSYNC_OBJTYPE_SINK_INTERNALS_H_
-#define OPENSYNC_OBJTYPE_SINK_INTERNALS_H_
+#ifndef _OPENSYNC_OBJTYPE_SINK_INTERNALS_H_
+#define _OPENSYNC_OBJTYPE_SINK_INTERNALS_H_
 
 /**
  * @defgroup OSyncObjTypeSinkInternalAPI OpenSync Object Type Sink Internals
@@ -306,7 +306,25 @@ void *osync_objtype_sink_get_userdata(OSyncObjTypeSink *sink);
  */
 osync_bool osync_objtype_sink_get_slowsync(OSyncObjTypeSink *sink);
 
+/** @brief Returns the number of object formats in the sink
+ * 
+ * @param sink Pointer to the sink
+ * @returns the number of object formats in the sink
+ * 
+ */
+OSYNC_TEST_EXPORT unsigned int osync_objtype_sink_num_objformat_sinks(OSyncObjTypeSink *sink);
+
+/** @brief Returns the nth object format in the sink
+ * 
+ * @param sink Pointer to the sink
+ * @param nth the index of the object format to return
+ * @returns the name of the object format at the specified index
+ * 
+ */
+OSYNC_TEST_EXPORT OSyncObjFormatSink *osync_objtype_sink_nth_objformat_sink(OSyncObjTypeSink *sink, unsigned int nth);
+
+
 /*@}*/
 
-#endif /*OPENSYNC_SINK_INTERNALS_H_*/
+#endif /* _OPENSYNC_SINK_INTERNALS_H_*/
 

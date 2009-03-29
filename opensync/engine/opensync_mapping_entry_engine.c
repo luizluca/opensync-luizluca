@@ -244,7 +244,7 @@ osync_bool osync_entry_engine_convert(OSyncMappingEntryEngine *entry_engine, OSy
 		OSyncObjFormatSink *formatsink = osync_objtype_sink_find_objformat_sink(objtype_sink, format);
 		osync_converter_path_set_config(path, osync_objformat_sink_get_config(formatsink));
 	}
-
+	
 	if (!osync_format_env_convert(formatenv, path, osync_change_get_data(entry_engine->change), error)) {
 		goto error_free_path;
 	}
@@ -257,12 +257,14 @@ osync_bool osync_entry_engine_convert(OSyncMappingEntryEngine *entry_engine, OSy
 		
 	osync_change_set_objtype(change, objtype);
 	osync_free(objtype);
-
+	osync_list_free(format_sinks);
+	
 	return TRUE;
 
 error_free_path:
 	osync_converter_path_unref(path);
 error_free_objtype:
+	osync_list_free(format_sinks);
 	osync_free(objtype);
 /*error:*/
 	return FALSE;

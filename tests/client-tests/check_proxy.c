@@ -5,6 +5,7 @@
 #include <opensync/opensync-plugin.h>
 
 #include "opensync/client/opensync_client_proxy_internals.h"
+#include "opensync/plugin/opensync_objtype_sink_internals.h"
 
 START_TEST (proxy_new)
 {
