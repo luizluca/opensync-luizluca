@@ -96,14 +96,6 @@ typedef void (*OSyncHashtableForEach) (const char *uid, const char *hash, void *
 OSYNC_EXPORT osync_bool osync_hashtable_slowsync(OSyncHashTable *table, OSyncError **error);
 
 
-/** @brief Get the number of entries
- *
- * @param table The hashtable
- * @returns the number of entries in the hashtable
- *
- */
-OSYNC_EXPORT unsigned int osync_hashtable_num_entries(OSyncHashTable *table);
-
 /** @brief Call a function over all of the entries
  *
  * @param table The hashtable to operate on

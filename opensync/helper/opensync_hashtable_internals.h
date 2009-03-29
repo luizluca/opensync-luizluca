@@ -97,5 +97,13 @@ OSYNC_TEST_EXPORT osync_bool osync_hashtable_load(OSyncHashTable *table, OSyncEr
  */
 OSYNC_TEST_EXPORT osync_bool osync_hashtable_save(OSyncHashTable *table, OSyncError **error);
 
+/** @brief Get the number of entries
+ *
+ * @param table The hashtable
+ * @returns the number of entries in the hashtable
+ *
+ */
+OSYNC_TEST_EXPORT unsigned int osync_hashtable_num_entries(OSyncHashTable *table);
+
 #endif /*_OPENSYNC_HASHTABLE_INTERNALS_H_*/
 
