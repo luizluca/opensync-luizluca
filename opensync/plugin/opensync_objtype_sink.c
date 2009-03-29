@@ -232,22 +232,6 @@ void osync_objtype_sink_remove_objformat_sink(OSyncObjTypeSink *sink, OSyncObjFo
 	osync_objformat_sink_unref(objformatsink);
 }
 
-void osync_objtype_sink_set_functions(OSyncObjTypeSink *sink, OSyncObjTypeSinkFunctions functions, void *userdata)
-{
-	osync_assert(sink);
-	sink->functions = functions;
-	sink->userdata = userdata;
-
-	if (functions.read)
-		sink->func_read = TRUE;
-
-	if (functions.get_changes)
-		sink->func_getchanges = TRUE;
-
-	if (functions.write)
-		sink->func_write = TRUE;
-}
-
 osync_bool osync_objtype_sink_get_function_read(OSyncObjTypeSink *sink)
 {
 	osync_assert(sink);
@@ -831,5 +815,80 @@ osync_bool osync_objtype_sink_save_hashtable(OSyncObjTypeSink *sink, OSyncError 
 
 error:
 	return FALSE;
+}
+
+void osync_objtype_sink_set_userdata(OSyncObjTypeSink *sink, void *userdata)
+{
+	osync_return_if_fail(sink);
+	sink->userdata = userdata;
+}
+
+void osync_objtype_sink_set_connect_func(OSyncObjTypeSink *sink, OSyncSinkConnectFn connect_func)
+{
+	osync_return_if_fail(sink);
+	sink->functions.connect = connect_func;
+}
+
+void osync_objtype_sink_set_connect_done_func(OSyncObjTypeSink *sink, OSyncSinkConnectDoneFn connect_done_func)
+{
+	osync_return_if_fail(sink);
+	sink->functions.connect_done = connect_done_func;
+}
+
+void osync_objtype_sink_set_get_changes_func(OSyncObjTypeSink *sink, OSyncSinkGetChangesFn get_changes_func)
+{
+	osync_return_if_fail(sink);
+	sink->functions.get_changes = get_changes_func;
+
+	if (sink->functions.get_changes)
+		sink->func_getchanges = TRUE;
+}
+
+void osync_objtype_sink_set_commit_func(OSyncObjTypeSink *sink, OSyncSinkCommitFn commit_func)
+{
+	osync_return_if_fail(sink);
+	sink->functions.commit = commit_func;
+}
+
+void osync_objtype_sink_set_write_func(OSyncObjTypeSink *sink, OSyncSinkWriteFn write_func)
+{
+	osync_return_if_fail(sink);
+	sink->functions.write = write_func;
+
+	if (sink->functions.write)
+		sink->func_write = TRUE;
+}
+
+void osync_objtype_sink_set_committed_all_func(OSyncObjTypeSink *sink, OSyncSinkCommittedAllFn committed_all_func)
+{
+	osync_return_if_fail(sink);
+	sink->functions.committed_all = committed_all_func;
+}
+
+void osync_objtype_sink_set_read_func(OSyncObjTypeSink *sink, OSyncSinkReadFn read_func)
+{
+	osync_return_if_fail(sink);
+	sink->functions.read = read_func;
+
+	if (sink->functions.read)
+		sink->func_read = TRUE;
+}
+
+void osync_objtype_sink_set_batch_commit_func(OSyncObjTypeSink *sink, OSyncSinkBatchCommitFn batch_commit_func)
+{
+	osync_return_if_fail(sink);
+	sink->functions.batch_commit = batch_commit_func;
+}
+
+void osync_objtype_sink_set_sync_done_func(OSyncObjTypeSink *sink, OSyncSinkSyncDoneFn sync_done_func)
+{
+	osync_return_if_fail(sink);
+	sink->functions.sync_done = sync_done_func;
+}
+
+void osync_objtype_sink_set_disconnect_func(OSyncObjTypeSink *sink, OSyncSinkConnectFn disconnect_func)
+{
+	osync_return_if_fail(sink);
+	sink->functions.disconnect = disconnect_func;
 }
 

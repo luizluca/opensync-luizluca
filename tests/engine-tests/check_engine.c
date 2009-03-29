@@ -210,13 +210,13 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
 	
-	OSyncObjTypeSinkFunctions functions;
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect1;
-	functions.disconnect = disconnect;
-	functions.get_changes = get_changes;
-	
-	osync_objtype_sink_set_functions(sink, functions, env);
+	osync_objtype_sink_set_connect_func(sink, connect1);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes);
+
+	/* ObjTypeSink port - functions and userdata never got set! */
+	osync_objtype_sink_set_userdata(sink, env);
+
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 
@@ -504,13 +504,12 @@ static void *initialize_multi(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
 	
-	OSyncObjTypeSinkFunctions functions;
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect2;
-	functions.disconnect = disconnect2;
-	functions.get_changes = get_changes2;
+	osync_objtype_sink_set_connect_func(sink, connect2);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect2);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes2);
+
+	osync_objtype_sink_set_userdata(sink, env);
 	
-	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -521,13 +520,14 @@ static void *initialize_multi(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	format_sink = osync_objformat_sink_new("vcard", error);
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
+
+	osync_objtype_sink_set_connect_func(sink, connect2);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect2);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes2);
+
+	osync_objtype_sink_set_userdata(sink, env);
 	
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect2;
-	functions.disconnect = disconnect2;
-	functions.get_changes = get_changes2;
 	
-	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -539,12 +539,12 @@ static void *initialize_multi(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
 
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect2;
-	functions.disconnect = disconnect2;
-	functions.get_changes = get_changes2;
-	
-	osync_objtype_sink_set_functions(sink, functions, env);
+	osync_objtype_sink_set_connect_func(sink, connect2);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect2);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes2);
+
+	osync_objtype_sink_set_userdata(sink, env);
+
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -553,12 +553,12 @@ static void *initialize_multi(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	if (!sink)
 		goto error;
 	
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = main_connect2;
-	functions.disconnect = main_disconnect2;
-	functions.get_changes = main_get_changes2;
-	
-	osync_objtype_sink_set_functions(sink, functions, env);
+	osync_objtype_sink_set_connect_func(sink, main_connect2);
+	osync_objtype_sink_set_disconnect_func(sink, main_disconnect2);
+	osync_objtype_sink_set_get_changes_func(sink, main_get_changes2);
+
+	osync_objtype_sink_set_userdata(sink, env);
+
 	osync_plugin_info_set_main_sink(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -908,14 +908,13 @@ static void *initialize_order(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
 	
-	OSyncObjTypeSinkFunctions functions;
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect3;
-	functions.disconnect = disconnect3;
-	functions.get_changes = get_changes3;
-	functions.sync_done = sync_done3;
-	
-	osync_objtype_sink_set_functions(sink, functions, env);
+	osync_objtype_sink_set_connect_func(sink, connect3);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect3);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes3);
+	osync_objtype_sink_set_sync_done_func(sink, sync_done3);
+
+	osync_objtype_sink_set_userdata(sink, env);
+
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -926,14 +925,14 @@ static void *initialize_order(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	format_sink = osync_objformat_sink_new("vcard", error);
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
-	
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect3;
-	functions.disconnect = disconnect3;
-	functions.get_changes = get_changes3;
-	functions.sync_done = sync_done3;
-	
-	osync_objtype_sink_set_functions(sink, functions, env);
+
+	osync_objtype_sink_set_connect_func(sink, connect3);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect3);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes3);
+	osync_objtype_sink_set_sync_done_func(sink, sync_done3);
+
+	osync_objtype_sink_set_userdata(sink, env);
+
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -945,13 +944,13 @@ static void *initialize_order(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
 	
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect3;
-	functions.disconnect = disconnect3;
-	functions.get_changes = get_changes3;
-	functions.sync_done = sync_done3;
+	osync_objtype_sink_set_connect_func(sink, connect3);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect3);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes3);
+	osync_objtype_sink_set_sync_done_func(sink, sync_done3);
+
+	osync_objtype_sink_set_userdata(sink, env);
 	
-	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -960,13 +959,13 @@ static void *initialize_order(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	if (!sink)
 		goto error;
 	
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = main_connect3;
-	functions.disconnect = main_disconnect3;
-	functions.get_changes = main_get_changes3;
-	functions.sync_done = main_sync_done3;
-	
-	osync_objtype_sink_set_functions(sink, functions, env);
+	osync_objtype_sink_set_connect_func(sink, main_connect3);
+	osync_objtype_sink_set_disconnect_func(sink, main_disconnect3);
+	osync_objtype_sink_set_get_changes_func(sink, main_get_changes3);
+	osync_objtype_sink_set_sync_done_func(sink, main_sync_done3);
+
+	osync_objtype_sink_set_userdata(sink, env);
+
 	osync_plugin_info_set_main_sink(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1151,14 +1150,13 @@ static void *initialize_reuse(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
 	
-	OSyncObjTypeSinkFunctions functions;
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect3;
-	functions.disconnect = disconnect3;
-	functions.get_changes = get_changes3;
-	functions.sync_done = sync_done3;
+	osync_objtype_sink_set_connect_func(sink, connect3);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect3);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes3);
+	osync_objtype_sink_set_sync_done_func(sink, sync_done3);
+
+	osync_objtype_sink_set_userdata(sink, env);
 	
-	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1170,13 +1168,13 @@ static void *initialize_reuse(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
 	
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect3;
-	functions.disconnect = disconnect3;
-	functions.get_changes = get_changes3;
-	functions.sync_done = sync_done3;
+	osync_objtype_sink_set_connect_func(sink, connect3);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect3);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes3);
+	osync_objtype_sink_set_sync_done_func(sink, sync_done3);
+
+	osync_objtype_sink_set_userdata(sink, env);
 	
-	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1188,13 +1186,13 @@ static void *initialize_reuse(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
 	
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect3;
-	functions.disconnect = disconnect3;
-	functions.get_changes = get_changes3;
-	functions.sync_done = sync_done3;
-	
-	osync_objtype_sink_set_functions(sink, functions, env);
+	osync_objtype_sink_set_connect_func(sink, connect3);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect3);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes3);
+	osync_objtype_sink_set_sync_done_func(sink, sync_done3);
+
+	osync_objtype_sink_set_userdata(sink, env);
+
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1203,13 +1201,13 @@ static void *initialize_reuse(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	if (!sink)
 		goto error;
 	
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = main_connect3;
-	functions.disconnect = main_disconnect4;
-	functions.get_changes = main_get_changes3;
-	functions.sync_done = main_sync_done3;
+	osync_objtype_sink_set_connect_func(sink, main_connect3);
+	osync_objtype_sink_set_disconnect_func(sink, main_disconnect4);
+	osync_objtype_sink_set_get_changes_func(sink, main_get_changes3);
+	osync_objtype_sink_set_sync_done_func(sink, main_sync_done3);
+
+	osync_objtype_sink_set_userdata(sink, env);
 	
-	osync_objtype_sink_set_functions(sink, functions, env);
 	osync_plugin_info_set_main_sink(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1478,14 +1476,13 @@ static void *initialize5(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError 
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
 	
-	OSyncObjTypeSinkFunctions functions;
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect5;
-	functions.disconnect = disconnect5;
-	functions.get_changes = get_changes5;
-	functions.commit = commit_change5;
-	
-	osync_objtype_sink_set_functions(sink, functions, env);
+	osync_objtype_sink_set_connect_func(sink, connect5);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect5);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes5);
+	osync_objtype_sink_set_commit_func(sink, commit_change5);
+
+	osync_objtype_sink_set_userdata(sink, env);
+
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1684,14 +1681,13 @@ static void *initialize6(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError 
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
 	
-	OSyncObjTypeSinkFunctions functions;
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect5;
-	functions.disconnect = disconnect5;
-	functions.get_changes = get_changes6;
-	functions.commit = commit_change5;
-	
-	osync_objtype_sink_set_functions(sink, functions, env);
+	osync_objtype_sink_set_connect_func(sink, connect5);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect5);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes6);
+	osync_objtype_sink_set_commit_func(sink, commit_change5);
+
+	osync_objtype_sink_set_userdata(sink, env);
+
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	
@@ -1888,14 +1884,13 @@ static void *initialize7(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError 
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
 	
-	OSyncObjTypeSinkFunctions functions;
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect5;
-	functions.disconnect = disconnect5;
-	functions.get_changes = get_changes7;
-	functions.commit = commit_change5;
-	
-	osync_objtype_sink_set_functions(sink, functions, env);
+	osync_objtype_sink_set_connect_func(sink, connect5);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect5);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes7);
+	osync_objtype_sink_set_commit_func(sink, commit_change5);
+
+	osync_objtype_sink_set_userdata(sink, env);
+
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 	

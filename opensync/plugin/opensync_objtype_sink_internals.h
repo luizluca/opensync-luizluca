@@ -21,6 +21,8 @@
 #ifndef _OPENSYNC_OBJTYPE_SINK_INTERNALS_H_
 #define _OPENSYNC_OBJTYPE_SINK_INTERNALS_H_
 
+#include "opensync_objtype_sink.h"
+
 /**
  * @defgroup OSyncObjTypeSinkInternalAPI OpenSync Object Type Sink Internals
  * @ingroup OSyncPluginPrivate
@@ -30,6 +32,18 @@
 
 /*@{*/
 
+typedef struct OSyncObjTypeSinkFunctions {
+	OSyncSinkConnectFn connect;
+	OSyncSinkDisconnectFn disconnect;
+	OSyncSinkGetChangesFn get_changes;
+	OSyncSinkCommitFn commit;
+	OSyncSinkWriteFn write;
+	OSyncSinkCommittedAllFn committed_all;
+	OSyncSinkReadFn read;
+	OSyncSinkBatchCommitFn batch_commit;
+	OSyncSinkSyncDoneFn sync_done;
+	OSyncSinkConnectDoneFn connect_done;
+} OSyncObjTypeSinkFunctions;
 
 /** @brief Check if sink has an anchor request. 
  *

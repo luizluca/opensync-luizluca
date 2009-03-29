@@ -137,13 +137,13 @@ static void *initialize_connect_error(OSyncPlugin *plugin, OSyncPluginInfo *info
 	OSyncObjFormatSink *formatsink = osync_objformat_sink_new("mockformat1", error);
 	osync_objtype_sink_add_objformat_sink(sink, formatsink);
 	
-	OSyncObjTypeSinkFunctions functions;
-	memset(&functions, 0, sizeof(functions));
-	functions.connect = connect_error;
-	functions.disconnect = disconnect;
-	functions.get_changes = get_changes;
-	
-	osync_objtype_sink_set_functions(sink, functions, NULL);
+
+	osync_objtype_sink_set_connect_func(sink, connect_error);
+	osync_objtype_sink_set_disconnect_func(sink, disconnect);
+	osync_objtype_sink_set_get_changes_func(sink, get_changes);
+
+	/* No sink userdata */
+
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
 

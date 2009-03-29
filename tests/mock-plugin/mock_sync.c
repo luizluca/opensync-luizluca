@@ -602,13 +602,11 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 	if (mock_get_error(info->memberid, "MAINSINK_CONNECT")) {
 		env->mainsink = osync_objtype_main_sink_new(error);
 
-		OSyncObjTypeSinkFunctions functions;
-		memset(&functions, 0, sizeof(functions));
+		osync_objtype_sink_set_connect_func(env->mainsink, mock_connect);
+		osync_objtype_sink_set_disconnect_func(env->mainsink, mock_mainsink_disconnect);
 
-		functions.connect = mock_connect;
-		functions.disconnect = mock_mainsink_disconnect;
+		osync_objtype_sink_set_userdata(env->mainsink, env);
 
-		osync_objtype_sink_set_functions(env->mainsink, functions, env);
 		osync_plugin_info_set_main_sink(info, env->mainsink);
 	}
 	
@@ -653,33 +651,29 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 		/* Sanity check for connect_done */
 		dir->connect_done = TRUE;
 		
-		/* All sinks have the same functions of course */
-		OSyncObjTypeSinkFunctions functions;
-		memset(&functions, 0, sizeof(functions));
-
 		if (!mock_get_error(info->memberid, "MAINSINK_CONNECT")) {
-			functions.connect = mock_connect;
-			functions.connect_done = mock_connect_done;
-			functions.disconnect = mock_disconnect;
+			osync_objtype_sink_set_connect_func(sink, mock_connect);
+			osync_objtype_sink_set_connect_done_func(sink, mock_connect_done);
+			osync_objtype_sink_set_disconnect_func(sink, mock_disconnect);
 		}
 
-		functions.get_changes = mock_get_changes;
+		osync_objtype_sink_set_get_changes_func(sink, mock_get_changes);
 
 		//Rewrite the batch commit functions so we can enable them if necessary
 		if (mock_get_error(info->memberid, "BATCH_COMMIT")) {
 			osync_trace(TRACE_INTERNAL, "Enabling batch_commit on %p:%s", sink, osync_objtype_sink_get_name(sink) ? osync_objtype_sink_get_name(sink) : "None");
-			functions.batch_commit = mock_batch_commit; 
+			osync_objtype_sink_set_batch_commit_func(sink, mock_batch_commit);
 		} else {
-			functions.committed_all = mock_committed_all;
-			functions.commit = mock_commit_change;
+			osync_objtype_sink_set_committed_all_func(sink, mock_committed_all);
+			osync_objtype_sink_set_commit_func(sink, mock_commit_change);
 		}
-		functions.read = mock_read;
-		functions.write = mock_write;
-		functions.sync_done = mock_sync_done;
+		osync_objtype_sink_set_read_func(sink, mock_read);
+		osync_objtype_sink_set_write_func(sink, mock_write);
+		osync_objtype_sink_set_sync_done_func(sink, mock_sync_done);
 		
 		/* We pass the MockDir object to the sink, so we dont have to look it up
 		 * again once the functions are called */
-		osync_objtype_sink_set_functions(sink, functions, dir);
+		osync_objtype_sink_set_userdata(sink, dir);
 
 		/* Request an Anchor */
 		osync_objtype_sink_enable_anchor(sink, TRUE);

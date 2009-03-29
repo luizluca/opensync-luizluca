@@ -255,17 +255,18 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 		}	
 
 		/* Every sink can have different functions ... */
-		OSyncObjTypeSinkFunctions functions;
-		memset(&functions, 0, sizeof(functions));
-		functions.connect = connect;
-		functions.disconnect = disconnect;
-		functions.get_changes = get_changes;
-		functions.commit = commit_change;
-		functions.sync_done = sync_done;
+		osync_objtype_sink_set_connect_func(sink, connect);
+		osync_objtype_sink_set_disconnect_func(sink, disconnect);
+		osync_objtype_sink_set_get_changes_func(sink, get_changes);
+		osync_objtype_sink_set_commit_func(sink, commit_change);
+		osync_objtype_sink_set_sync_done_func(sink, sync_done);
 
-		/* We pass the OSyncFileDir object to the sink, so we dont have to look it up
-		 * again once the functions are called */
-		osync_objtype_sink_set_functions(sink, functions, NULL);
+		/*
+		 * If you need plugin specific userdata passed to this
+		 * plugin sink functions. You can set it with:
+		 *
+		 * osync_objtype_sink_set_userdata(sink, userdata_pointer);
+		 */
 	}
 
 	osync_list_free(list);

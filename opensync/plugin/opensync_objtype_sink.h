@@ -40,19 +40,6 @@ typedef void (* OSyncSinkBatchCommitFn) (OSyncObjTypeSink *sink, OSyncPluginInfo
 typedef void (* OSyncSinkSyncDoneFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data);
 typedef void (* OSyncSinkConnectDoneFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data);
 
-typedef struct OSyncObjTypeSinkFunctions {
-	OSyncSinkConnectFn connect;
-	OSyncSinkDisconnectFn disconnect;
-	OSyncSinkGetChangesFn get_changes;
-	OSyncSinkCommitFn commit;
-	OSyncSinkWriteFn write;
-	OSyncSinkCommittedAllFn committed_all;
-	OSyncSinkReadFn read;
-	OSyncSinkBatchCommitFn batch_commit;
-	OSyncSinkSyncDoneFn sync_done;
-	OSyncSinkConnectDoneFn connect_done;
-} OSyncObjTypeSinkFunctions;
-
 /** @brief Creates a new main sink
  *
  * Main sink is objtype neutral and should be used for object type
@@ -214,22 +201,6 @@ OSYNC_EXPORT void osync_objtype_sink_add_objformat_sink(OSyncObjTypeSink *sink, 
  * 
  */
 OSYNC_EXPORT void osync_objtype_sink_remove_objformat_sink(OSyncObjTypeSink *sink, OSyncObjFormatSink *objformatsink);
-
-
-/** @brief Sets the sink functions and user data
- * 
- * Sets the functions used by the sink, as well as a user data pointer that
- * you can retrieve within the functions. In most cases you will be able to
- * share the same functions between multiple sinks and just have different
- * user data for each one.
- *
- * @param sink Pointer to the sink
- * @param functions struct containing pointers to the sink functions
- * @param userdata user data pointer that is passed to all objtype sink functions like connect(), commit(), ...
- * 
- */
-OSYNC_EXPORT void osync_objtype_sink_set_functions(OSyncObjTypeSink *sink, OSyncObjTypeSinkFunctions functions, void *userdata);
-
 
 /** @brief Checks if a sink is enabled
  * 
@@ -547,6 +518,31 @@ OSYNC_EXPORT osync_bool osync_objtype_sink_load_hashtable(OSyncObjTypeSink *sink
  * 
  */
 OSYNC_EXPORT osync_bool osync_objtype_sink_save_hashtable(OSyncObjTypeSink *sink, OSyncError **error);
+
+
+OSYNC_EXPORT void osync_objtype_sink_set_userdata(OSyncObjTypeSink *sink, void *userdata);
+
+OSYNC_EXPORT void osync_objtype_sink_set_connect_func(OSyncObjTypeSink *sink, OSyncSinkConnectFn connect_func);
+
+OSYNC_EXPORT void osync_objtype_sink_set_connect_done_func(OSyncObjTypeSink *sink, OSyncSinkConnectDoneFn connect_done_func);
+
+OSYNC_EXPORT void osync_objtype_sink_set_get_changes_func(OSyncObjTypeSink *sink, OSyncSinkGetChangesFn get_changes_func);
+
+OSYNC_EXPORT void osync_objtype_sink_set_commit_func(OSyncObjTypeSink *sink, OSyncSinkCommitFn commit_func);
+
+OSYNC_EXPORT void osync_objtype_sink_set_write_func(OSyncObjTypeSink *sink, OSyncSinkWriteFn write_func);
+
+OSYNC_EXPORT void osync_objtype_sink_set_committed_all_func(OSyncObjTypeSink *sink, OSyncSinkCommittedAllFn committed_all_func);
+
+OSYNC_EXPORT void osync_objtype_sink_set_read_func(OSyncObjTypeSink *sink, OSyncSinkReadFn read_func);
+
+OSYNC_EXPORT void osync_objtype_sink_set_batch_commit_func(OSyncObjTypeSink *sink, OSyncSinkBatchCommitFn batch_commit_func);
+
+OSYNC_EXPORT void osync_objtype_sink_set_sync_done_func(OSyncObjTypeSink *sink, OSyncSinkSyncDoneFn sync_done_func);
+
+OSYNC_EXPORT void osync_objtype_sink_set_connect_done_func(OSyncObjTypeSink *sink, OSyncSinkConnectDoneFn connect_done_func);
+
+OSYNC_EXPORT void osync_objtype_sink_set_disconnect_func(OSyncObjTypeSink *sink, OSyncSinkConnectFn disconnect_func);
 
 /*@}*/
 
