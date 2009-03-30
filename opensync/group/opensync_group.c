@@ -974,21 +974,21 @@ time_t osync_group_get_last_synchronization(OSyncGroup *group)
 	return group->last_sync;
 }
 
-void osync_group_set_conflict_resolution(OSyncGroup *group, OSyncConflictResolution res, int num)
+void osync_group_set_conflict_resolution(OSyncGroup *group, OSyncConflictResolution res, long long int winner)
 {
 	osync_assert(group);
 	group->conflict_resolution = res;
-	group->conflict_winner = num;
+	group->conflict_winner = winner;
 }
 
-void osync_group_get_conflict_resolution(OSyncGroup *group, OSyncConflictResolution *res, int *num)
+void osync_group_get_conflict_resolution(OSyncGroup *group, OSyncConflictResolution *res, long long int *winner)
 {
 	osync_assert(group);
 	osync_assert(res);
-	osync_assert(num);
+	osync_assert(winner);
 	
 	*res = group->conflict_resolution;
-	*num = group->conflict_winner;
+	*winner = group->conflict_winner;
 }
 
 osync_bool osync_group_get_merger_enabled(OSyncGroup *group)

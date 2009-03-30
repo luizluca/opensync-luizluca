@@ -267,19 +267,19 @@ OSYNC_EXPORT time_t osync_group_get_last_synchronization(OSyncGroup *group);
  * 
  * @param group The group
  * @param res The conflict resolution
- * @param num The Member ID which solves the conflict (winner)
+ * @param winner The Member ID which solves the conflict (winner)
  * 
  */
-OSYNC_EXPORT void osync_group_set_conflict_resolution(OSyncGroup *group, OSyncConflictResolution res, int num);
+OSYNC_EXPORT void osync_group_set_conflict_resolution(OSyncGroup *group, OSyncConflictResolution res, long long int winner);
 
 /** @brief Get fixed conflict resolution for the group for all appearing conflicts 
  * 
  * @param group The group
  * @param res Pointer to set conflict resolution value
- * @param num Pointer to set Member ID value which solves the conflict (winner)
+ * @param winner Pointer to set Member ID value which solves the conflict (winner)
  * 
  */
-OSYNC_EXPORT void osync_group_get_conflict_resolution(OSyncGroup *group, OSyncConflictResolution *res, int *num);
+OSYNC_EXPORT void osync_group_get_conflict_resolution(OSyncGroup *group, OSyncConflictResolution *res, long long int *winner);
 
 /** @brief Get group configured status of merger use. 
  * 
