@@ -68,6 +68,13 @@ void osync_context_set_changes_callback(OSyncContext *context, OSyncContextChang
 	context->changes_function = changes;
 }
 
+void osync_context_set_slowsync_callback(OSyncContext *context, OSyncContextSlowSyncFn slowsync_func, void *userdata)
+{
+	osync_assert(context);
+	context->slowsync_function = slowsync_func;
+	context->slowsync_data = userdata;
+}
+
 void osync_context_set_warning_callback(OSyncContext *context, OSyncContextCallbackFn warning)
 {
 	osync_assert(context);
@@ -150,3 +157,14 @@ void osync_context_report_change(OSyncContext *context, OSyncChange *change)
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
+
+void osync_context_report_slowsync(OSyncContext *context)
+{
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, context);
+	osync_assert(context);
+
+	context->slowsync_function(context->slowsync_data);
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+

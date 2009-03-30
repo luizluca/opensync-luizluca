@@ -43,7 +43,7 @@ static void connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext 
 	
 	if (!anchormatch) {
 		/* request slow sync */
-		osync_objtype_sink_set_slowsync(sink, TRUE);
+		osync_context_report_slowsync(ctx);
 	}
 
 	osync_context_report_success(ctx);

@@ -301,32 +301,17 @@ OSYNC_EXPORT osync_bool osync_objtype_sink_get_read(OSyncObjTypeSink *sink);
  */
 OSYNC_EXPORT void osync_objtype_sink_set_read(OSyncObjTypeSink *sink, osync_bool read);
 
-/** @brief Sets the slow-sync state of a sink
- * 
- * When slow-sync is requested, OpenSync synchronizes all entries rather than
- * just the changes.
- *
- * Slow-sync should be requested if you know that your device's memory has
- * been erased. If it is appropriate for your device, you can use OpenSync's 
- * anchor system to determine if you should request slow-sync.
- *
- * @param sink Pointer to the sink
- * @param slowsync TRUE to request slow-sync, FALSE for normal sync
- * 
- */
-OSYNC_EXPORT void osync_objtype_sink_set_slowsync(OSyncObjTypeSink *sink, osync_bool slowsync);
-
-
 /** @brief Queries a sink for the changed objects since the last sync
  * 
  * Calls the get_changes function on a sink
  * 
  * @param sink Pointer to the sink
  * @param info Pointer to the plugin info object
+ * @param slow_sync Bool to request a Slow Sync if set TRUE
  * @param ctx The sync context
  * 
  */
-OSYNC_EXPORT void osync_objtype_sink_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx);
+OSYNC_EXPORT void osync_objtype_sink_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, osync_bool slow_sync, OSyncContext *ctx);
 
 /** @brief Reads a single object by its uid
  * 
@@ -532,7 +517,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_sync_done_func(OSyncObjTypeSink *sink, 
 
 OSYNC_EXPORT void osync_objtype_sink_set_connect_done_func(OSyncObjTypeSink *sink, OSyncSinkConnectDoneFn connect_done_func);
 
-OSYNC_EXPORT void osync_objtype_sink_set_disconnect_func(OSyncObjTypeSink *sink, OSyncSinkConnectFn disconnect_func);
+OSYNC_EXPORT void osync_objtype_sink_set_disconnect_func(OSyncObjTypeSink *sink, OSyncSinkDisconnectFn disconnect_func);
 
 /*@}*/
 

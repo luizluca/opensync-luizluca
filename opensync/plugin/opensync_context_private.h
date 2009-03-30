@@ -33,6 +33,8 @@ struct OSyncContext {
 	OSyncContextCallbackFn warning_function;
 	void *callback_data;
 	OSyncContextChangeFn changes_function;
+	OSyncContextSlowSyncFn slowsync_function;
+	void *slowsync_data;
 	void *plugindata;
 	int ref_count;
 };

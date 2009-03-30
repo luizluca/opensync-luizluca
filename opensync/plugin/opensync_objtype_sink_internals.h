@@ -287,6 +287,21 @@ void *osync_objtype_sink_get_userdata(OSyncObjTypeSink *sink);
  */
 osync_bool osync_objtype_sink_get_slowsync(OSyncObjTypeSink *sink);
 
+/** @brief Sets the slow-sync state of a sink
+ * 
+ * When slow-sync is requested, OpenSync synchronizes all entries rather than
+ * just the changes.
+ *
+ * Slow-sync should be requested if you know that your device's memory has
+ * been erased. If it is appropriate for your device, you can use OpenSync's 
+ * anchor system to determine if you should request slow-sync.
+ *
+ * @param sink Pointer to the sink
+ * @param slowsync TRUE to request slow-sync, FALSE for normal sync
+ * 
+ */
+void osync_objtype_sink_set_slowsync(OSyncObjTypeSink *sink, osync_bool slowsync);
+
 /** @brief Returns the number of object formats in the sink
  * 
  * @param sink Pointer to the sink

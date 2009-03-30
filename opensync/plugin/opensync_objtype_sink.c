@@ -268,7 +268,7 @@ void osync_objtype_sink_set_userdata(OSyncObjTypeSink *sink, void *userdata)
 	sink->userdata = userdata;
 }
 
-void osync_objtype_sink_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx)
+void osync_objtype_sink_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, osync_bool slow_sync, OSyncContext *ctx)
 {
 	OSyncObjTypeSinkFunctions functions;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, sink, info, ctx);
@@ -283,7 +283,7 @@ void osync_objtype_sink_get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *inf
 	} else if (!functions.get_changes) {
 		osync_context_report_success(ctx);
 	} else {
-		functions.get_changes(sink, info, ctx, osync_objtype_sink_get_slowsync(sink), osync_objtype_sink_get_userdata(sink));
+		functions.get_changes(sink, info, ctx, slow_sync, osync_objtype_sink_get_userdata(sink));
 	}
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
@@ -319,7 +319,7 @@ void osync_objtype_sink_connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, O
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, sink, info, ctx);
 	osync_assert(sink);
 	osync_assert(ctx);
-	
+
 	functions = sink->functions;
 	if (!functions.connect) {
 		osync_context_report_success(ctx);
@@ -847,7 +847,7 @@ void osync_objtype_sink_set_sync_done_func(OSyncObjTypeSink *sink, OSyncSinkSync
 	sink->functions.sync_done = sync_done_func;
 }
 
-void osync_objtype_sink_set_disconnect_func(OSyncObjTypeSink *sink, OSyncSinkConnectFn disconnect_func)
+void osync_objtype_sink_set_disconnect_func(OSyncObjTypeSink *sink, OSyncSinkDisconnectFn disconnect_func)
 {
 	osync_return_if_fail(sink);
 	sink->functions.disconnect = disconnect_func;

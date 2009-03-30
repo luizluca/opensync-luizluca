@@ -71,7 +71,7 @@ static void mock_connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCon
 	}
 
 	if (mock_get_error(info->memberid, "CONNECT_SLOWSYNC"))
-		osync_objtype_sink_set_slowsync(sink, TRUE);
+		osync_context_report_slowsync(ctx);
 
 	/* Skip Objtype related stuff like hashtable and anchor */
 	if (mock_get_error(info->memberid, "MAINSINK_CONNECT"))
@@ -90,7 +90,7 @@ static void mock_connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCon
 	osync_assert_msg(osync_anchor_compare(anchor, dir->path, &anchor_compare_match, NULL), "Not expected to fail");
 
 	if (!anchor_compare_match)
-		osync_objtype_sink_set_slowsync(sink, TRUE);
+		osync_context_report_slowsync(ctx);
 
 	osync_assert(g_file_test(dir->path, G_FILE_TEST_IS_DIR));
 
@@ -114,9 +114,6 @@ static void mock_connect_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSy
 	}
 	if (mock_get_error(info->memberid, "CONNECT_DONE_TIMEOUT"))
 		return;
-
-	if (mock_get_error(info->memberid, "LATE_SLOW_SYNC"))
-		osync_objtype_sink_set_slowsync(sink, TRUE);
 
 	/* Validate connect_done() call before get_changes(),
 	 * and after connect().

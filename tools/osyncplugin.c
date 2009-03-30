@@ -41,7 +41,8 @@ char *pluginname = NULL;
 char *configfile = NULL;
 char *configdir = NULL;
 char *syncgroup = NULL;
-osync_bool pluginlist= FALSE;
+osync_bool pluginlist = FALSE;
+osync_bool connect_requested_slowsync = FALSE;
 GList *sinks = NULL;
 GList *cmdlist = NULL;
 GList *changesList = NULL;
@@ -568,16 +569,19 @@ static void _osyncplugin_ctx_callback_getchanges(void *user_data, OSyncError *er
 static osync_bool get_changes_sink(Command *cmd, OSyncObjTypeSink *sink, SyncType type, OSyncError **error)
 {
 	OSyncContext *context = NULL;
+	osync_bool slowsync = FALSE;
+
 	assert(sink);
 
 	switch (type) {
 	case SYNCTYPE_NORMAL:
+		slowsync = connect_requested_slowsync;
 		break;
 	case SYNCTYPE_FORCE_FASTSYNC:
-		osync_objtype_sink_set_slowsync(sink, FALSE);
+		slowsync = FALSE;
 		break;
 	case SYNCTYPE_FORCE_SLOWSYNC:
-		osync_objtype_sink_set_slowsync(sink, TRUE);
+		slowsync = TRUE;
 		break;
 	}
 
@@ -590,7 +594,7 @@ static osync_bool get_changes_sink(Command *cmd, OSyncObjTypeSink *sink, SyncTyp
 
 	osync_plugin_info_set_sink(plugin_info, sink);
 
-	osync_objtype_sink_get_changes(sink, plugin_info, context);
+	osync_objtype_sink_get_changes(sink, plugin_info, slowsync, context);
 
 	osync_context_unref(context);
 
@@ -644,6 +648,20 @@ static osync_bool get_changes(Command *cmd, SyncType type, OSyncError **error)
 	return FALSE;
 }
 
+static void _osyncplugin_ctx_callback_slowsync(void *user_data)
+{
+
+	OSyncObjTypeSink *sink = (OSyncObjTypeSink *) user_data;
+
+	printf("SlowSync got requested by CONNECT function");
+	if (osync_objtype_sink_get_name(sink))
+		printf(" for ObjType: \"%s\"", osync_objtype_sink_get_name(sink));
+
+	connect_requested_slowsync = TRUE;
+
+	printf(".\n");
+}
+
 static void _osyncplugin_ctx_callback_connect(void *user_data, OSyncError *error)
 {
 	OSyncError *locerror = NULL;
@@ -659,16 +677,6 @@ static void _osyncplugin_ctx_callback_connect(void *user_data, OSyncError *error
 		osync_error_set_from_error(&locerror, &error);
 		goto error;
 	}
-
-	/*
-	if (osync_objtype_sink_get_slowsync(sink)) {
-		printf("SlowSync got requested by CONNECT function");
-		if (osync_objtype_sink_get_name(sink))
-			printf(" for ObjType: \"%s\"", osync_objtype_sink_get_name(sink));
-
-		printf(".\n");
-	}
-	*/
 
 	g_mutex_lock(cmd->mutex);
 	g_cond_signal(cmd->cond);
@@ -693,8 +701,12 @@ static osync_bool connect_sink(Command *cmd, OSyncObjTypeSink *sink, OSyncError 
 	cmd->sink = sink;
 
 	osync_context_set_callback(context, _osyncplugin_ctx_callback_connect, cmd);
+	osync_context_set_slowsync_callback(context, _osyncplugin_ctx_callback_slowsync, sink);
 
 	osync_plugin_info_set_sink(plugin_info, sink);
+
+	/* Reset slow-sync state */
+	connect_requested_slowsync = FALSE;
 
 	osync_objtype_sink_connect(sink, plugin_info, context);
 

@@ -75,7 +75,7 @@ static OSyncContext *_create_context(OSyncClient *client, OSyncMessage *message,
 	baton->change = change;
 	if (baton->change)
 		osync_change_ref(baton->change);
-		
+	
 	osync_context_set_callback(context, callback, baton);
 	return context;
 	
@@ -96,6 +96,13 @@ static void _free_baton(callContext *baton)
 	osync_free(baton);
 }
 
+static void _osync_client_slowsync_callback(void *data)
+{
+	OSyncObjTypeSink *sink = (OSyncObjTypeSink *) data;
+	osync_objtype_sink_set_slowsync(sink, TRUE);
+}
+
+
 static void _osync_client_connect_callback(void *data, OSyncError *error)
 {
 	OSyncError *locerror = NULL;
@@ -104,7 +111,7 @@ static void _osync_client_connect_callback(void *data, OSyncError *error)
 	OSyncClient *client = NULL;
 	char *objtype = NULL;
 	OSyncObjTypeSink *sink = NULL;
-	int slowsync = 0;
+	osync_bool slowsync = FALSE;
 	OSyncMessage *reply = NULL;
 
 	baton = data;
@@ -982,6 +989,8 @@ static osync_bool _osync_client_handle_connect(OSyncClient *client, OSyncMessage
 		if (!context)
 			goto error;
 
+		osync_context_set_slowsync_callback(context, _osync_client_slowsync_callback, sink);
+
 		osync_plugin_info_set_sink(client->plugin_info, sink);
 		osync_objtype_sink_connect(sink, client->plugin_info, context);
 
@@ -1152,13 +1161,6 @@ static osync_bool _osync_client_handle_get_changes(OSyncClient *client, OSyncMes
 		
 		osync_message_unref(reply);
 	} else {
-		/* set slowsync (again) if the slow-sync got requested during the connect() call
-			 of a member - and not during frontend/engine itself (e.g. anchor mismatch). */
-		if (slowsync)
-			osync_objtype_sink_set_slowsync(sink, TRUE);
-		else
-			osync_objtype_sink_set_slowsync(sink, FALSE);
-
 		context = _create_context(client, message, _osync_client_get_changes_callback, NULL, error);
 		if (!context)
 			goto error;
@@ -1166,7 +1168,7 @@ static osync_bool _osync_client_handle_get_changes(OSyncClient *client, OSyncMes
 		
 		osync_plugin_info_set_sink(client->plugin_info, sink);
 
-		osync_objtype_sink_get_changes(sink, client->plugin_info, context);
+		osync_objtype_sink_get_changes(sink, client->plugin_info, slowsync, context);
 	
 		osync_context_unref(context);
 	}

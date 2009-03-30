@@ -33,6 +33,7 @@ OPENSYNC_BEGIN_DECLS
 
 typedef void (* OSyncContextCallbackFn)(void *, OSyncError *);
 typedef void (* OSyncContextChangeFn) (OSyncChange *, void *);
+typedef void (* OSyncContextSlowSyncFn) (void *);
 
 OSYNC_EXPORT OSyncContext *osync_context_new(OSyncError **error);
 OSYNC_EXPORT OSyncContext *osync_context_ref(OSyncContext *context);
@@ -40,6 +41,7 @@ OSYNC_EXPORT void osync_context_unref(OSyncContext *context);
 
 OSYNC_EXPORT void osync_context_set_callback(OSyncContext *context, OSyncContextCallbackFn callback, void *userdata);
 OSYNC_EXPORT void osync_context_set_changes_callback(OSyncContext *context, OSyncContextChangeFn changes);
+OSYNC_EXPORT void osync_context_set_slowsync_callback(OSyncContext *context, OSyncContextSlowSyncFn slowsync_func, void *userdata);
 OSYNC_EXPORT void osync_context_set_warning_callback(OSyncContext *context, OSyncContextCallbackFn warning);
 
 OSYNC_EXPORT void osync_context_report_error(OSyncContext *context, OSyncErrorType type, const char *format, ...);
@@ -48,6 +50,7 @@ OSYNC_EXPORT void osync_context_report_osyncerror(OSyncContext *context, OSyncEr
 
 OSYNC_EXPORT void osync_context_report_osyncwarning(OSyncContext *context, OSyncError *error);
 OSYNC_EXPORT void osync_context_report_change(OSyncContext *context, OSyncChange *change);
+OSYNC_EXPORT void osync_context_report_slowsync(OSyncContext *contextr);
 
 /*@}*/
 
