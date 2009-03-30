@@ -41,7 +41,7 @@ static void connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext 
 	OSyncAnchor *anchor = osync_objtype_sink_get_anchor(sink);
 	osync_bool anchormatch;
 	
-	if (!osync_anchor_compare(anchor, "lanchor", &anchormatch, &error)) {
+	if (!osync_anchor_compare(anchor, "anchor_key", "dynamic_anchor_value", &anchormatch, &error)) {
 		/* anchor couldn't be compared */
 		goto error;
 	}
@@ -236,7 +236,7 @@ static void sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContex
 	//If we use anchors we have to update it now.
 	//Now you get/calculate the current anchor of the device
 	OSyncAnchor *anchor = osync_objtype_sink_get_anchor(sink);
-	if (!osync_anchor_update(anchor, "lanchor", &error)) {
+	if (!osync_anchor_update(anchor, "anchor_key", "dynamic_anchor_value", &error)) {
 		goto error;
 	}
 	

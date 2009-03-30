@@ -87,7 +87,7 @@ static void mock_connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCon
 	 */
 	dir->connect_done = FALSE;
 
-	osync_assert_msg(osync_anchor_compare(anchor, dir->path, &anchor_compare_match, NULL), "Not expected to fail");
+	osync_assert_msg(osync_anchor_compare(anchor, "path", dir->path, &anchor_compare_match, NULL), "Not expected to fail");
 
 	if (!anchor_compare_match)
 		osync_context_report_slowsync(ctx);
@@ -563,7 +563,7 @@ static void mock_sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncC
 	if (mock_get_error(info->memberid, "SYNC_DONE_TIMEOUT"))
 		return;
 	
-	osync_assert_msg(osync_anchor_update(anchor, dir->path, NULL), "Not expected to fail!");
+	osync_assert_msg(osync_anchor_update(anchor, "path", dir->path, NULL), "Not expected to fail!");
 	
 	osync_context_report_success(ctx);
 	

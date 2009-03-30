@@ -32,7 +32,8 @@ osync_bool osync_anchor_create(OSyncAnchor *anchor, OSyncError **error)
 	char *query = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, anchor, error);
 
-	query = osync_strdup("CREATE TABLE tbl_anchor (id INTEGER PRIMARY KEY, anchor VARCHAR, objtype VARCHAR UNIQUE)");
+	/* TODO: How portable to other databes is UNIQUE? */
+	query = osync_strdup("CREATE TABLE tbl_anchor (id INTEGER PRIMARY KEY, key VARCHAR UNIQUE, value VARCHAR, objtype VARCHAR)");
 
 	if (!osync_db_query(anchor->db, query, error)) {
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
@@ -125,15 +126,19 @@ void osync_anchor_unref(OSyncAnchor *anchor)
 	}
 }
 
-char *osync_anchor_retrieve(OSyncAnchor *anchor, OSyncError **error)
+char *osync_anchor_retrieve(OSyncAnchor *anchor, const char *key, OSyncError **error)
 {
 	char *retanchor = NULL;
-	char *query = NULL;
+	char *query = NULL, *escaped_key;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, anchor, error);
 	osync_assert(anchor);
 	osync_assert(anchor->db);
+	osync_assert(key);
 
-	query = osync_strdup_printf("SELECT anchor FROM tbl_anchor WHERE objtype='%s'", anchor->objtype ? anchor->objtype : "");
+	escaped_key = osync_db_sql_escape(key);
+	query = osync_strdup_printf("SELECT value FROM tbl_anchor WHERE key='%s' AND objtype='%s'",
+			escaped_key, anchor->objtype ? anchor->objtype : "");
+	osync_free(escaped_key);
 	retanchor = osync_db_query_single_string(anchor->db, query, error);
 	osync_free(query);
 
@@ -151,19 +156,22 @@ error:
 	return NULL;
 }
 
-osync_bool osync_anchor_update(OSyncAnchor *anchor, const char *value, OSyncError **error)
+osync_bool osync_anchor_update(OSyncAnchor *anchor, const char *key, const char *value, OSyncError **error)
 {
-	char *escaped_value = NULL;
+	char *escaped_value = NULL, *escaped_key = NULL;
 	char *query = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p)", __func__, anchor, __NULLSTR(value), error);
 	osync_assert(anchor);
 	osync_assert(anchor->db);
+	osync_assert(key);
 	osync_assert(value);
 
+	escaped_key = osync_db_sql_escape(key);
 	escaped_value = osync_db_sql_escape(value);
-	query = osync_strdup_printf("REPLACE INTO tbl_anchor (objtype, anchor) VALUES('%s', '%s')",
-			anchor->objtype ? anchor->objtype : "", escaped_value);
+	query = osync_strdup_printf("REPLACE INTO tbl_anchor (objtype, key, value) VALUES('%s', '%s', '%s')",
+			anchor->objtype ? anchor->objtype : "", escaped_key, escaped_value);
 	osync_free(escaped_value);
+	osync_free(escaped_key);
 
 	if (!osync_db_query(anchor->db, query, error))
 		goto error;
@@ -178,23 +186,25 @@ error:
 	return FALSE;
 }
 
-osync_bool osync_anchor_compare(OSyncAnchor *anchor, const char *new_anchor, osync_bool *same, OSyncError **error)
+osync_bool osync_anchor_compare(OSyncAnchor *anchor, const char *key, const char *value, osync_bool *same, OSyncError **error)
 {
-	char *old_anchor = NULL;
+	char *old_value = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p, %p)", __func__, anchor, __NULLSTR(new_anchor), same, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %s, %p, %p)", __func__, anchor, __NULLSTR(key), __NULLSTR(value), same, error);
 	osync_assert(anchor);
+	osync_assert(key);
+	osync_assert(value);
 
-	old_anchor = osync_anchor_retrieve(anchor, error);
-	if (!old_anchor)
+	old_value = osync_anchor_retrieve(anchor, key, error);
+	if (!old_value)
 		goto error;
 
-	if (!strcmp(old_anchor, new_anchor))
+	if (!strcmp(old_value, value))
 		*same = TRUE;
 	else
 		*same = FALSE;
 
-	osync_free(old_anchor);
+	osync_free(old_value);
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
