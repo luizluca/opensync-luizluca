@@ -192,7 +192,7 @@ OSYNC_EXPORT void osync_group_remove_member(OSyncGroup *group, OSyncMember *memb
  * @returns The member, or NULL if not found
  * 
  */
-OSYNC_EXPORT OSyncMember *osync_group_find_member(OSyncGroup *group, int id);
+OSYNC_EXPORT OSyncMember *osync_group_find_member(OSyncGroup *group, long long int id);
 
 /**
  * @brief Returns a OSyncList that contains the OSyncMembers of this group

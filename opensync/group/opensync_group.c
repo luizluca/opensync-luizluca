@@ -788,7 +788,7 @@ void osync_group_remove_member(OSyncGroup *group, OSyncMember *member)
 	osync_member_unref(member);
 }
 
-OSyncMember *osync_group_find_member(OSyncGroup *group, int id)
+OSyncMember *osync_group_find_member(OSyncGroup *group, long long int id)
 {
 	OSyncList *m = NULL;
 	for (m = group->members; m; m = m->next) {
