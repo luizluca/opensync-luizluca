@@ -127,7 +127,7 @@ OSYNC_EXPORT void osync_marshal_write_string(OSyncMarshal *marshal, const char *
  * @param value The data to append
  * @param size Size of corresponding data parameter
  */
-OSYNC_EXPORT void osync_marshal_write_data(OSyncMarshal *marshal, const void *value, int size);
+OSYNC_EXPORT void osync_marshal_write_data(OSyncMarshal *marshal, const void *value, unsigned int size);
 
 /** @brief Appends data with a specific length to the serialized buffer,
  * plus the length of the data to determine the end.
@@ -136,7 +136,7 @@ OSYNC_EXPORT void osync_marshal_write_data(OSyncMarshal *marshal, const void *va
  * @param value The data to append
  * @param size Size of corresponding data parameter
  */
-OSYNC_EXPORT void osync_marshal_write_buffer(OSyncMarshal *marshal, const void *value, int size);
+OSYNC_EXPORT void osync_marshal_write_buffer(OSyncMarshal *marshal, const void *value, unsigned int size);
 
 /** @brief Read serialized integer from marshal buffer. This increments the read
  * position of the marshal buffer.
@@ -179,7 +179,7 @@ OSYNC_EXPORT void osync_marshal_read_string(OSyncMarshal *marshal, char **value)
  * @param value Reference to store the pointer to the newly allocated data 
  * @param size Size of data
  */
-OSYNC_EXPORT void osync_marshal_read_data(OSyncMarshal *marshal, void *value, int size);
+OSYNC_EXPORT void osync_marshal_read_data(OSyncMarshal *marshal, void *value, unsigned int size);
 
 /** @brief Read serialized const data from marshal buffer. This increments the read
  * position of the marshal buffer.
@@ -188,7 +188,7 @@ OSYNC_EXPORT void osync_marshal_read_data(OSyncMarshal *marshal, void *value, in
  * @param value Reference to store the data pointer 
  * @param size The size of data
  */
-OSYNC_EXPORT void osync_marshal_read_const_data(OSyncMarshal *marshal, void **value, int size);
+OSYNC_EXPORT void osync_marshal_read_const_data(OSyncMarshal *marshal, void **value, unsigned int size);
 
 /** @brief Read serialized const string from marshal buffer. This increments the read
  * position of the marshal buffer.
@@ -206,7 +206,7 @@ OSYNC_EXPORT void osync_marshal_read_const_string(OSyncMarshal *marshal, const c
  * @param value Reference to store the pointer to the newly allocated data 
  * @param size Size of data
  */
-OSYNC_EXPORT void osync_marshal_read_buffer(OSyncMarshal *marshal, void **value, int *size);
+OSYNC_EXPORT void osync_marshal_read_buffer(OSyncMarshal *marshal, void **value, unsigned int *size);
 
 /*@}*/
 

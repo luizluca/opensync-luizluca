@@ -104,28 +104,28 @@ void osync_marshal_write_long_long_int(OSyncMarshal *marshal, long long int valu
 
 void osync_marshal_write_string(OSyncMarshal *marshal, const char *value)
 {
-	int length = 0;
+	unsigned int length = 0;
 	if (value == NULL) {
 		length = -1;
-		g_byte_array_append( marshal->buffer, (unsigned char*)&length, sizeof( int ) );
+		g_byte_array_append( marshal->buffer, (unsigned char*)&length, sizeof( unsigned int ) );
 	} else {
-		int length = strlen( value ) + 1;
-		g_byte_array_append( marshal->buffer, (unsigned char*)&length, sizeof( int ) );
+		length = strlen( value ) + 1;
+		g_byte_array_append( marshal->buffer, (unsigned char*)&length, sizeof( unsigned int ) );
 		g_byte_array_append( marshal->buffer, (unsigned char*)value, length );
 	}
 }
 
-void osync_marshal_write_data(OSyncMarshal *marshal, const void *value, int size)
+void osync_marshal_write_data(OSyncMarshal *marshal, const void *value, unsigned int size)
 {
 	/* TODO move this to PRIVATE API */
 	g_byte_array_append( marshal->buffer, value, size );
 }
 
-void osync_marshal_write_buffer(OSyncMarshal *marshal, const void *value, int size)
+void osync_marshal_write_buffer(OSyncMarshal *marshal, const void *value, unsigned int size)
 {
 	/* serialize the length of the data to make it possible to determine the end
 	   of this data blob in the serialized blob. This makes demarshaling possible! */
-	osync_marshal_write_int(marshal, size);
+	osync_marshal_write_uint(marshal, size);
 	if (size > 0)
 		osync_marshal_write_data(marshal, value, size);
 }
@@ -171,8 +171,8 @@ void osync_marshal_read_const_string(OSyncMarshal *marshal, const char **value)
 
 void osync_marshal_read_string(OSyncMarshal *marshal, char **value)
 {
-	int length = 0;
-	osync_marshal_read_int(marshal, &length);
+	unsigned int length = 0;
+	osync_marshal_read_uint(marshal, &length);
 
 	if (length == -1) {
 		*value = NULL;
@@ -190,7 +190,7 @@ void osync_marshal_read_string(OSyncMarshal *marshal, char **value)
 	marshal->buffer_read_pos += length;
 }
 
-void osync_marshal_read_const_data(OSyncMarshal *marshal, void **value, int size)
+void osync_marshal_read_const_data(OSyncMarshal *marshal, void **value, unsigned int size)
 {
 	osync_assert(marshal->buffer->len >= marshal->buffer_read_pos + size);
 	
@@ -198,7 +198,7 @@ void osync_marshal_read_const_data(OSyncMarshal *marshal, void **value, int size
 	marshal->buffer_read_pos += size;
 }
 
-void osync_marshal_read_data(OSyncMarshal *marshal, void *value, int size)
+void osync_marshal_read_data(OSyncMarshal *marshal, void *value, unsigned int size)
 {
 	osync_assert(marshal->buffer->len >= marshal->buffer_read_pos + size);
 	
@@ -206,10 +206,10 @@ void osync_marshal_read_data(OSyncMarshal *marshal, void *value, int size)
 	marshal->buffer_read_pos += size;
 }
 
-void osync_marshal_read_buffer(OSyncMarshal *marshal, void **value, int *size)
+void osync_marshal_read_buffer(OSyncMarshal *marshal, void **value, unsigned int *size)
 {
 	/* Now, read the data from the marshal */
-	osync_marshal_read_int(marshal, size);
+	osync_marshal_read_uint(marshal, size);
 	
 	if (*size > 0) {
 		*value = g_malloc0(*size);

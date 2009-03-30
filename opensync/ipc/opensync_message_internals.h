@@ -309,7 +309,7 @@ OSYNC_TEST_EXPORT void osync_message_write_string(OSyncMessage *message, const c
  * @param value The data to append
  * @param size Size of corresponding data parameter
  */
-OSYNC_TEST_EXPORT void osync_message_write_data(OSyncMessage *message, const void *value, int size);
+OSYNC_TEST_EXPORT void osync_message_write_data(OSyncMessage *message, const void *value, unsigned int size);
 
 /** @brief Appends data with a specific length to the serialized message buffer,
  * plus the length of the data to determine the end.
@@ -318,7 +318,7 @@ OSYNC_TEST_EXPORT void osync_message_write_data(OSyncMessage *message, const voi
  * @param value The data to append
  * @param size Size of corresponding data parameter
  */
-OSYNC_TEST_EXPORT void osync_message_write_buffer(OSyncMessage *message, const void *value, int size);
+OSYNC_TEST_EXPORT void osync_message_write_buffer(OSyncMessage *message, const void *value, unsigned int size);
 
 /** @brief Read serialized integer from message buffer. This increments the read
  * position of the message buffer.
@@ -361,7 +361,7 @@ OSYNC_TEST_EXPORT void osync_message_read_string(OSyncMessage *message, char **v
  * @param value Reference to store the pointer to the newly allocated data 
  * @param size Size of data
  */
-OSYNC_TEST_EXPORT void osync_message_read_data(OSyncMessage *message, void *value, int size);
+OSYNC_TEST_EXPORT void osync_message_read_data(OSyncMessage *message, void *value, unsigned int size);
 
 /** @brief Read serialized const data from message buffer. This increments the read
  * position of the message buffer.
@@ -370,7 +370,7 @@ OSYNC_TEST_EXPORT void osync_message_read_data(OSyncMessage *message, void *valu
  * @param value Reference to store the data pointer 
  * @param size The size of data
  */
-OSYNC_TEST_EXPORT void osync_message_read_const_data(OSyncMessage *message, void **value, int size);
+OSYNC_TEST_EXPORT void osync_message_read_const_data(OSyncMessage *message, void **value, unsigned int size);
 
 /** @brief Read serialized const string from message buffer. This increments the read
  * position of the message buffer.
@@ -388,7 +388,7 @@ OSYNC_TEST_EXPORT void osync_message_read_const_string(OSyncMessage *message, co
  * @param value Reference to store the pointer to the newly allocated data 
  * @param size Size of data
  */
-OSYNC_TEST_EXPORT void osync_message_read_buffer(OSyncMessage *message, void **value, int *size);
+OSYNC_TEST_EXPORT void osync_message_read_buffer(OSyncMessage *message, void **value, unsigned int *size);
 
 /*@}*/
 

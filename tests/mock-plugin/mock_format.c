@@ -218,7 +218,7 @@ static osync_bool demarshal_file(OSyncMarshal *marshal, char **output, unsigned 
 	osync_assert(file);
 	
 	osync_marshal_read_string(marshal, &(file->path));
-	osync_marshal_read_buffer(marshal, (void *)&(file->data), (int *)&(file->size));
+	osync_marshal_read_buffer(marshal, (void *)&(file->data), &(file->size));
 	
 	*output = (char *)file;
 	*outpsize = sizeof(OSyncFileFormat);

@@ -124,7 +124,7 @@ osync_bool osync_demarshal_data(OSyncMessage *message, OSyncData **data, OSyncFo
 			if (!osync_objformat_demarshal(format, marshal, &input_data, &input_size, error))
 				goto error;
 		} else {
-			osync_message_read_buffer(message, (void *)&input_data, (int *)&input_size);
+			osync_message_read_buffer(message, (void *)&input_data, &input_size);
 
 			/* If the format is a plain, then we have to remove
 			 * one from the input_size, since once one was added by 

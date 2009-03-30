@@ -55,7 +55,7 @@ osync_bool marshal_format(const char *input, unsigned int inpsize, OSyncMarshal 
 
 osync_bool demarshal_format(OSyncMarshal *marshal, char **output, unsigned int *outsize, void *user_data, OSyncError **error)
 {
-	osync_marshal_read_buffer(marshal, (void *)output, (int *)outsize);
+	osync_marshal_read_buffer(marshal, (void *)output, outsize);
 	return TRUE;
 }
 
