@@ -118,10 +118,6 @@ OSYNC_EXPORT void osync_hashtable_foreach(OSyncHashTable *table, OSyncHashtableF
  */
 OSYNC_EXPORT void osync_hashtable_update_change(OSyncHashTable *table, OSyncChange *change);
 
-//OSYNC_EXPORT void osync_hashtable_report(OSyncHashTable *table, OSyncChange *change);
-//OSYNC_EXPORT void osync_hashtable_reset_reports(OSyncHashTable *table);
-
-
 /** @brief Get a list of uids which are marked as deleted
  *
  * @param table The hashtable
