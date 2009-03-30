@@ -105,14 +105,14 @@ void osync_marshal_write_long_long_int(OSyncMarshal *marshal, long long int valu
 void osync_marshal_write_string(OSyncMarshal *marshal, const char *value)
 {
 	unsigned int length = 0;
-	if (value == NULL) {
-		length = -1;
-		g_byte_array_append( marshal->buffer, (unsigned char*)&length, sizeof( unsigned int ) );
-	} else {
-		length = strlen( value ) + 1;
-		g_byte_array_append( marshal->buffer, (unsigned char*)&length, sizeof( unsigned int ) );
+
+	if (value)
+		length = strlen(value) + 1;
+
+	g_byte_array_append( marshal->buffer, (unsigned char*)&length, sizeof( unsigned int ) );
+
+	if (value)
 		g_byte_array_append( marshal->buffer, (unsigned char*)value, length );
-	}
 }
 
 void osync_marshal_write_data(OSyncMarshal *marshal, const void *value, unsigned int size)
@@ -174,7 +174,7 @@ void osync_marshal_read_string(OSyncMarshal *marshal, char **value)
 	unsigned int length = 0;
 	osync_marshal_read_uint(marshal, &length);
 
-	if (length == -1) {
+	if (!length) {
 		*value = NULL;
 		return;
 	}
