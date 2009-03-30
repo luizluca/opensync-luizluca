@@ -560,7 +560,7 @@ OSyncChange *osync_mapping_engine_nth_change(OSyncMappingEngine *engine, unsigne
 	return NULL;
 }
 
-OSyncChange *osync_mapping_engine_member_change(OSyncMappingEngine *engine, int memberid)
+OSyncChange *osync_mapping_engine_member_change(OSyncMappingEngine *engine, long long int memberid)
 {
 	OSyncList *e = NULL;
 	osync_assert(engine);
