@@ -251,7 +251,7 @@ OSYNC_EXPORT void osync_group_set_objtype_enabled(OSyncGroup *group, const char 
  * @returns TRUE if object type is enabled in this group, otherwise FALSE
  * 
  */
-OSYNC_EXPORT int osync_group_objtype_enabled(OSyncGroup *group, const char *objtype);
+OSYNC_EXPORT osync_bool osync_group_objtype_enabled(OSyncGroup *group, const char *objtype);
 
 
 /** @brief Gets the last synchronization date from this group

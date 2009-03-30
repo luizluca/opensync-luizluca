@@ -888,7 +888,7 @@ void osync_group_set_objtype_enabled(OSyncGroup *group, const char *objtype, osy
 	}
 }
 
-int osync_group_objtype_enabled(OSyncGroup *group, const char *objtype)
+osync_bool osync_group_objtype_enabled(OSyncGroup *group, const char *objtype)
 {
 	OSyncList *m = NULL;
 	int enabled = -1;
@@ -929,7 +929,7 @@ int osync_group_objtype_enabled(OSyncGroup *group, const char *objtype)
 			break;
 		}
 	}
-	return enabled;
+	return (enabled > 0) ? TRUE : FALSE;
 }
 
 void osync_group_add_filter(OSyncGroup *group, OSyncFilter *filter)
