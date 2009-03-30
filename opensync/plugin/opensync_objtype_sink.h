@@ -501,8 +501,6 @@ OSYNC_EXPORT void osync_objtype_sink_set_userdata(OSyncObjTypeSink *sink, void *
 
 OSYNC_EXPORT void osync_objtype_sink_set_connect_func(OSyncObjTypeSink *sink, OSyncSinkConnectFn connect_func);
 
-OSYNC_EXPORT void osync_objtype_sink_set_connect_done_func(OSyncObjTypeSink *sink, OSyncSinkConnectDoneFn connect_done_func);
-
 OSYNC_EXPORT void osync_objtype_sink_set_get_changes_func(OSyncObjTypeSink *sink, OSyncSinkGetChangesFn get_changes_func);
 
 OSYNC_EXPORT void osync_objtype_sink_set_commit_func(OSyncObjTypeSink *sink, OSyncSinkCommitFn commit_func);
