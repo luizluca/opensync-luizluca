@@ -318,10 +318,8 @@ typedef struct {} ObjTypeSink;
 
 		/* set userdata pointer to supplied python wrapper object */
 		if (callback_obj) {
-			OSyncObjTypeSinkFunctions functions;
 			Py_INCREF(callback_obj);
-			memset(&functions, 0, sizeof(functions));
-			osync_objtype_sink_set_functions(sink, functions, callback_obj);
+			osync_objtype_sink_set_userdata(sink, callback_obj);
 		}
 
 		return sink;
@@ -359,8 +357,8 @@ typedef struct {} ObjTypeSink;
 		osync_objtype_sink_remove_objformat_sink(self, format_sink);
 	}
 
-        OSyncAnchor *get_anchor() {
-                return osync_objtype_sink_get_anchor(self);
+        OSyncSinkStateDB *get_state_db() {
+                return osync_objtype_sink_get_state_db(self);
         }
 
         OSyncHashTable *get_hashtable() {

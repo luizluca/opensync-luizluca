@@ -179,8 +179,8 @@ typedef struct {} Group;
 
 	%apply ConflictResolution *OUTPUT { ConflictResolution *res, int *num };
 	%apply int *OUTPUT { ConflictResolution *res, int *num };
-	void get_conflict_resolution(ConflictResolution *res, int *num) {
-		osync_group_get_conflict_resolution(self, res, num);
+	void get_conflict_resolution(ConflictResolution *res, long long int *winner) {
+		osync_group_get_conflict_resolution(self, res, winner);
 	}
 
 	bool get_merger_enabled() {

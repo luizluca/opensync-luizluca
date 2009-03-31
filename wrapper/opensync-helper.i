@@ -1,9 +1,9 @@
 %inline %{
-	static bool anchor_compare(OSyncAnchor *anchor, const char *new_anchor) {
+	static bool sink_state_equal(OSyncSinkStateDB *state_db, const char *key, const char *value) {
 		Error *err = NULL;
-                bool ret;
+                osync_bool ret;
 
-		osync_anchor_compare(anchor, new_anchor, &ret, &err);
+		osync_sink_state_equal(state_db, key, value, &ret, &err);
 
                 if (raise_exception_on_error(err))
                         return FALSE;
@@ -11,19 +11,19 @@
                 return ret;
 	}
 
-	static bool anchor_update(OSyncAnchor *anchor, const char *new_anchor) {
+	static bool sink_state_set(OSyncSinkStateDB *state_db, const char *key, const char *value) {
 		Error *err = NULL;
-		osync_anchor_update(anchor, new_anchor, &err);
+		osync_sink_state_set(state_db, key, value, &err);
                 if (raise_exception_on_error(err))
                         return FALSE;
 
                 return TRUE;
 	}
 
-	static char *anchor_retrieve(OSyncAnchor *anchor) {
+	static char *sink_state_get(OSyncSinkStateDB *state_db, const char *key) {
                 Error *err = NULL;
                 char *ret;
-		ret = osync_anchor_retrieve(anchor, &err);
+		ret = osync_sink_state_get(state_db, key, &err);
 
                 if (raise_exception_on_error(err))
                         return NULL;
