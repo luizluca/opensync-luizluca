@@ -79,17 +79,6 @@ typedef struct {} FormatConverterPath;
 		osync_converter_path_add_edge(self, edge);
 	}
 
-	int num_edges() {
-		return osync_converter_path_num_edges(self);
-	}
-
-	FormatConverter *nth_edge(unsigned int nth) {
-		FormatConverter *ret = osync_converter_path_nth_edge(self, nth);
-		if (ret)
-			osync_converter_ref(ret);
-		return ret;
-	}
-
 	const char *get_config() {
 		return osync_converter_path_get_config(self);
 	}
@@ -105,7 +94,6 @@ typedef struct {} FormatConverterPath;
 	__oldinit = __init__
 	def __init__(self, *args):
 		self.__oldinit(*args)
-		self.edges = _ListWrapper(self.num_edges, self.nth_edge)
 %}
 }
 
@@ -188,34 +176,12 @@ typedef struct {} FormatEnv;
 		return ret;
 	}
 
-	int num_objformats() {
-		return osync_format_env_num_objformats(self);
-	}
-
-	ObjFormat *nth_objformat(int nth) {
-		ObjFormat *ret = osync_format_env_nth_objformat(self, nth);
-		if (ret)
-			osync_objformat_ref(ret);
-		return ret;
-	}
-
 	void register_converter(FormatConverter *converter) {
 		osync_format_env_register_converter(self, converter);
 	}
 
 	FormatConverter *find_converter(ObjFormat *sourceformat, ObjFormat *targetformat) {
 		FormatConverter *ret = osync_format_env_find_converter(self, sourceformat, targetformat);
-		if (ret)
-			osync_converter_ref(ret);
-		return ret;
-	}
-
-	int num_converters() {
-		return osync_format_env_num_converters(self);
-	}
-
-	FormatConverter *nth_converter(int nth) {
-		FormatConverter *ret = osync_format_env_nth_converter(self, nth);
 		if (ret)
 			osync_converter_ref(ret);
 		return ret;
@@ -306,8 +272,6 @@ typedef struct {} FormatEnv;
 	__oldinit = __init__
 	def __init__(self, *args):
 		self.__oldinit(*args)
-		self.objformats = _ListWrapper(self.num_objformats, self.nth_objformat)
-		self.converters = _ListWrapper(self.num_converters, self.nth_converter)
                 /*
 		self.filters = _ListWrapper(self.num_filters, self.nth_filter)
                 */

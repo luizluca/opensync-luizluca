@@ -345,14 +345,6 @@ typedef struct {} ObjTypeSink;
 		osync_objtype_sink_set_name(self, name);
 	}
 
-	unsigned int num_objformats() {
-		return osync_objtype_sink_num_objformat_sinks(self);
-	}
-
-	ObjFormatSink *nth_objformat(int nth) {
-		return osync_objtype_sink_nth_objformat_sink(self, nth);
-	}
-
 	ObjFormatSink *find_objformat(ObjFormat *objformat) {
 		return osync_objtype_sink_find_objformat_sink(self, objformat);
 	}

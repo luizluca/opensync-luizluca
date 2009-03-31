@@ -38,23 +38,11 @@ typedef struct {} GroupEnv;
 		osync_group_env_remove_group(self, group);
 	}
 
-	int num_groups() {
-		return osync_group_env_num_groups(self);
-	}
-
-	Group *nth_group(int nth) {
-		Group *group = osync_group_env_nth_group(self, nth);
-		if (group)
-			osync_group_ref(group);
-		return group;
-	}
-
 %pythoncode %{
 	# extend the SWIG-generated constructor, so that we can setup our list-wrapper classes
 	__oldinit = __init__
 	def __init__(self, *args):
 		self.__oldinit(*args)
-		self.groups = _ListWrapper(self.num_groups, self.nth_group)
 %}
 }
 
@@ -144,31 +132,12 @@ typedef struct {} Group;
         return member;
 	}
 
-	Member *nth_member(int nth) {
-		Member *member = osync_group_nth_member(self, nth);
-		if (member)
-			osync_member_ref(member);
-        return member;
-	}
-
-	int num_members() {
-		return osync_group_num_members(self);
-	}
-
 	const char *get_configdir() {
 		return osync_group_get_configdir(self);
 	}
 
 	void set_configdir(const char *directory) {
 		osync_group_set_configdir(self, directory);
-	}
-
-	int num_objtypes() {
-		return osync_group_num_objtypes(self);
-	}
-
-	const char *nth_objtype(int nth) {
-		return osync_group_nth_objtype(self, nth);
 	}
 
 	void set_objtype_enabled(const char *objtype, bool enabled) {
@@ -241,8 +210,6 @@ typedef struct {} Group;
 	__oldinit = __init__
 	def __init__(self, *args):
 		self.__oldinit(*args)
-		self.members = _ListWrapper(self.num_members, self.nth_member)
-		self.objtypes = _ListWrapper(self.num_objtypes, self.nth_objtype)
                 /*
 		self.filters = _ListWrapper(self.num_filters, self.nth_filter)
                 */
@@ -366,14 +333,6 @@ typedef struct {} Member;
 		osync_member_add_objtype_sink(self, sink);
 	}
 
-	int num_objtypes() {
-		return osync_member_num_objtypes(self);
-	}
-
-	const char *nth_objtype(int nth) {
-		return osync_member_nth_objtype(self, nth);
-	}
-
 	bool objtype_enabled(const char *objtype) {
 		return osync_member_objtype_enabled(self, objtype);
 	}
@@ -412,6 +371,5 @@ typedef struct {} Member;
 	__oldinit = __init__
 	def __init__(self, *args):
 		self.__oldinit(*args)
-		self.objtypes = _ListWrapper(self.num_objtypes, self.nth_objtype)
 %}
 }

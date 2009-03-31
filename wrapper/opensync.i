@@ -44,7 +44,6 @@ typedef OSyncLockState LockState;
 typedef OSyncMember Member;
 typedef OSyncObjFormat ObjFormat;
 typedef OSyncObjFormatSink ObjFormatSink;
-typedef OSyncObjTypeSinkFunctions ObjTypeSinkFunctions;
 typedef OSyncObjTypeSink ObjTypeSink;
 typedef OSyncPluginConfig PluginConfig;
 typedef OSyncPluginEnv PluginEnv;

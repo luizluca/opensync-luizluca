@@ -43,10 +43,6 @@
                 return TRUE;
         }
 
-	static int hashtable_num_entries(OSyncHashTable *hashtable) {
-		return osync_hashtable_num_entries(hashtable);
-	}
-
 	void hashtable_update_change(OSyncHashTable *hashtable, Change *change) {
 		osync_hashtable_update_change(hashtable, change);
 	}
