@@ -112,8 +112,8 @@ IF ( BUILD_DOCUMENTATION )
 	IF ( DOXYGEN_DOT_EXECUTABLE )
 		SET( HAVE_DOT "YES" )
 	ENDIF ( DOXYGEN_DOT_EXECUTABLE )
-	CONFIGURE_FILE( "Doxyfile.in" "Doxyfile" )
-	CONFIGURE_FILE( "misc/doxygen.css" "misc/doxygen.css" )
+	CONFIGURE_FILE( "Doxyfile.in" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" )
+	CONFIGURE_FILE( "misc/doxygen.css" "${CMAKE_CURRENT_BINARY_DIR}/misc/doxygen.css" )
 	ADD_CUSTOM_TARGET( DoxygenDoc ${DOXYGEN_EXECUTABLE} )
 ENDIF ( BUILD_DOCUMENTATION )
 
@@ -134,7 +134,7 @@ CONFIGURE_FILE(	"${CMAKE_SOURCE_DIR}/cmake/modules/cmake_uninstall.cmake.in" "${
 
 ADD_CUSTOM_TARGET(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
-CONFIGURE_FILE( "config.h.cmake" "config.h" )
+CONFIGURE_FILE( "config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/config.h" )
 CONFIGURE_FILE( "libopensync.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/libopensync.pc" )
 
 ########## INSTALL ##############################
