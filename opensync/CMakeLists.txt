@@ -38,7 +38,7 @@ SET( libopensync_LIB_SRCS
    group/opensync_group_env.c
    group/opensync_member.c
    group/opensync_updater.c
-   helper/opensync_anchor.c
+   helper/opensync_sink_state_db.c
    helper/opensync_hashtable.c
    ipc/opensync_message.c
    ipc/opensync_queue.c
