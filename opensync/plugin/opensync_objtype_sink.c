@@ -25,7 +25,7 @@
 #include "opensync-helper.h"
 #include "opensync-plugin.h"
 
-#include "opensync/helper/opensync_anchor_internals.h"
+#include "opensync/helper/opensync_sink_state_db_internals.h"
 #include "opensync/helper/opensync_hashtable_internals.h"
 
 #include "opensync_plugin_info_internals.h" /* due to osync_plugin_info_get_configdir() */

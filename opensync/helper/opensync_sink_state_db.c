@@ -24,8 +24,8 @@
 #include "opensync-helper.h"
 #include "db/opensync_db_internals.h"
 
-#include "opensync_anchor_internals.h"
-#include "opensync_anchor_private.h"
+#include "opensync_sink_state_db_internals.h"
+#include "opensync_sink_state_db_private.h"
 
 osync_bool osync_anchor_create(OSyncAnchor *anchor, OSyncError **error)
 {

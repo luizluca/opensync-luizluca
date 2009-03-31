@@ -23,7 +23,7 @@
 
 OPENSYNC_BEGIN_DECLS
 
-#include "helper/opensync_anchor.h"
+#include "helper/opensync_sink_state_db.h"
 #include "helper/opensync_hashtable.h"
 
 OPENSYNC_END_DECLS
