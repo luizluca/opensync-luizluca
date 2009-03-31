@@ -381,6 +381,7 @@ typedef struct {} ObjTypeSink;
 	void *get_userdata() {
 		return osync_objtype_sink_get_userdata(self);
 	}
+        */
 	
 
 	/* as above, but return it as a PyObject * for python code */
@@ -390,6 +391,7 @@ typedef struct {} ObjTypeSink;
 	}
 	*/
 
+        /*
 	void get_changes(PluginInfo *info, Context *ctx) {
 		osync_objtype_sink_get_changes(self, info, ctx);
 	}
@@ -453,6 +455,7 @@ typedef struct {} ObjTypeSink;
 	void set_slowsync(bool slowsync) {
 		osync_objtype_sink_set_slowsync(self, slowsync);
 	}
+        */
 
 	/* returns a list of strings */
 /*
