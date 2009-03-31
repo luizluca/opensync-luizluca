@@ -18,23 +18,23 @@
  *
  */
 
-#ifndef OPENSYNC_ANCHOR_PRIVATE_H_
-#define OPENSYNC_ANCHOR_PRIVATE_H_
+#ifndef OPENSYNC_SINK_STATE_DB_PRIVATE_H_
+#define OPENSYNC_SINK_STATE_DB_PRIVATE_H_
 
 /**
  * @defgroup OSyncHelperPrivate OpenSync Helper Module Private
  * @ingroup OSyncPrivate
- * @defgroup OSyncAnchorPrivateAPI OpenSync Anchor Private
+ * @defgroup OSyncSinkStateDatabasePrivateAPI OpenSync Sink State Database Private
  * @ingroup OSyncHelperPrivate
- * @brief Internal functions to deal with anchors
+ * @brief Internal functions to deal with anchors and other sink related state informations
  */
 
 /*@{*/
 
 /**
- * @brief OSyncAnchor struct
+ * @brief OSyncSinkStateDB struct
  */
-struct OSyncAnchor {
+struct OSyncSinkStateDB {
 	/* Reference counting */
 	int ref_count;
 	/* Pointer to the OSyncDatabase */
@@ -45,4 +45,4 @@ struct OSyncAnchor {
 
 /*@}*/
 
-#endif /* OPENSYNC_ANCHOR_PRIVATE_H_ */
+#endif /* OPENSYNC_SINK_STATE_DB_PRIVATE_H_ */

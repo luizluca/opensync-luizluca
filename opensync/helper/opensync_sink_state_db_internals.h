@@ -18,52 +18,45 @@
  *
  */
 
-#ifndef OPENSYNC_ANCHOR_INTERNALS_H_
-#define OPENSYNC_ANCHOR_INTERNALS_H_
+#ifndef OPENSYNC_SINK_STATE_DB_INTERNALS_H_
+#define OPENSYNC_SINK_STATE_DB_INTERNALS_H_
 
 /**
- * @defgroup OSyncAnchorInternalAPI OpenSync Anchor Internals
+ * @defgroup OSyncSinkStateDatabaseInternalAPI OpenSync Sink State Database Internals
  * @ingroup OSyncHelperPrivate
- * @brief Internal functions to deal with anchors
+ * @brief Internal functions to deal with anchors and other sink related state informations
  */
 
 /**
- * @brief Create the anchor table in the specified database
- *
- * @param anchor Pointer to the anchor
- * @param error Pointer to an error struct
- * @returns TRUE if the table was created successfully, FALSE otherwise
- *
- */
-osync_bool osync_anchor_create(OSyncAnchor *anchor, OSyncError **error);
-
-/**
- * @brief Create an anchor database
+ * @brief Create an sink state database
  *
  * @param filename the full path to the database file to create
- * @param objtype Object Type to assoicate this anchor, NULL for main-sink. 
+ * @param objtype Object Type to associate this anchor or state, NULL for main-sink. 
  * @param error Pointer to an error struct
  * @returns a pointer to the new database, NULL on error
  *
  */
-OSyncAnchor *osync_anchor_new(const char *filename, const char *objtype, OSyncError **error);
+OSyncSinkStateDB *osync_sink_state_db_new(
+			const char *filename,
+			const char *objtype,
+			OSyncError **error);
 
 /**
- * @brief Increase the reference count on an anchor 
+ * @brief Increase the reference count on a database 
  *
- * @param anchor Pointer to the anchor
+ * @param sinkStateDB Pointer to the database
  *
  */
-OSyncAnchor *osync_anchor_ref(OSyncAnchor *anchor);
+OSyncSinkStateDB *osync_sink_state_db_ref(OSyncSinkStateDB *sinkStateDB);
 
 /**
- * @brief Decrease the reference count on an anchor 
+ * @brief Decrease the reference count on a database 
  *
- * @param anchor Pointer to the anchor
+ * @param sinkStateDB Pointer to the database
  *
  */
-void osync_anchor_unref(OSyncAnchor *anchor);
+void osync_sink_state_db_unref(OSyncSinkStateDB *sinkStateDB);
 
 /*@}*/
 
-#endif /* OPENSYNC_ANCHOR_INTERNALS_H_ */
+#endif /* OPENSYNC_SINK_STATE_DB_INTERNALS_H_ */

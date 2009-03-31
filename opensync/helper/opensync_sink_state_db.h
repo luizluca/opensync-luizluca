@@ -18,18 +18,18 @@
  *
  */
 
-#ifndef OPENSYNC_ANCHOR_H_
-#define OPENSYNC_ANCHOR_H_
+#ifndef OPENSYNC_SINK_STATE_DB_H_
+#define OPENSYNC_SINK_STATE_DB_H_
 
 /**
  * @defgroup OSyncHelper OpenSync Helper Module
  * @ingroup OSyncPublic
- * @defgroup OSyncAnchorAPI OpenSync Anchor
+ * @defgroup OSyncSinkStateDatabaseAPI OpenSync Sink State Database
  * @ingroup OSyncHelper
  * @brief Functions to deal with anchors
  *
  * The Anchor module stores anchors and peer states from the Member in a
- * persistent database (which can be flushed by the Engien anytime!).
+ * persistent database (which can be flushed by the Engine anytime!).
  * This "anchor" shoudl get updated once on each sync.
  *
  * Example:
@@ -49,41 +49,54 @@
  */
 /*@{*/
 
-/** @brief Compares the anchor value of key with the supplied value
+/** @brief Compares the anchor/state value of key with the supplied value
  *
- * @param anchor Pointer to the anchor object
+ * @param sinkStateDB Pointer to the sink state database object
  * @param key the key of the value to compare
- * @param value the value to compare with the stored anchor value
+ * @param value the value to compare with the stored anchor/state value
  * @param issame Pointer to osync_bool to determine the comaprsion result
  * @param error Pointer to error struct, which get set on any error
- * @returns TRUE if the anchor compare completed successful, FALSE on error. Not the return value of the comparsion!
+ * @returns TRUE if the anchor/state compare completed successful, FALSE on error. Not the return value of the comparsion!
  *
  */
-OSYNC_EXPORT osync_bool osync_anchor_compare(OSyncAnchor *anchor, const char *key, const char *value, osync_bool *issame, OSyncError **error);
+OSYNC_EXPORT osync_bool osync_sink_state_equal(
+				OSyncSinkStateDB *sinkStateDB,
+				const char *key,
+				const char *value,
+				osync_bool *issame,
+				OSyncError **error);
 
-/** @brief Updates the anchor value of the key
+/** @brief Sets the anchor/state value of the key
  *
- * @param anchor Pointer to the anchor object
+ * @param sinkStateDB Pointer to the sink state database object
  * @param key the key of the value to set
  * @param value the new value to set
  * @param error Pointer to error struct, which get set on any error
- * @returns TRUE if anchor update completed successful, FALSE on error.
+ * @returns TRUE if anchor/state update completed successful, FALSE on error.
  *
  */
-OSYNC_EXPORT osync_bool osync_anchor_update(OSyncAnchor *anchor, const char *key, const char *value, OSyncError **error);
+OSYNC_EXPORT osync_bool osync_sink_state_set(
+				OSyncSinkStateDB *sinkStateDB,
+				const char *key,
+				const char *value,
+				OSyncError **error);
 
-/** @brief Retrieves the anchor value of the supplied key
+/** @brief Gets the anchor/state value of the supplied key
  *
- * @param anchor Pointer to the anchor object
- * @param key The key as string of the anchor value to retrieve
+ * @param sinkStateDB Pointer to the sink state database object
+ * @param key The key as string of the anchor/state value to retrieve
  * @param error Pointer to error struct, which get set on any error
- * @returns the value of the anchor if it was found, otherwise an empty string get retruned.
+ * @returns the value of the anchor/state if it was found,
+ *          otherwise an empty string get returned.
  *          Caller is responsible for freeing the return value with osync_free().
- *          NULL on error of retrieving the anchor information.
+ *          NULL on error of retrieving the anchor/state information.
  *
  */
-OSYNC_EXPORT char *osync_anchor_retrieve(OSyncAnchor *anchor, const char *key, OSyncError **error);
+OSYNC_EXPORT char *osync_sink_state_get(
+				OSyncSinkStateDB *sinkStateDB,
+				const char *key,
+				OSyncError **error);
 
 /*@}*/
 
-#endif /* OPENSYNC_ANCHOR_H_ */
+#endif /* OPENSYNC_SINK_STATE_DB_H_ */

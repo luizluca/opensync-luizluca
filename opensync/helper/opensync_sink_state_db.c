@@ -27,15 +27,17 @@
 #include "opensync_sink_state_db_internals.h"
 #include "opensync_sink_state_db_private.h"
 
-osync_bool osync_anchor_create(OSyncAnchor *anchor, OSyncError **error)
+static osync_bool osync_sink_states_table_create(
+			OSyncSinkStateDB *sinkStateDB,
+			OSyncError **error)
 {
 	char *query = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, anchor, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, sinkStateDB, error);
 
 	/* TODO: How portable to other databes is UNIQUE? */
-	query = osync_strdup("CREATE TABLE tbl_anchor (id INTEGER PRIMARY KEY, key VARCHAR UNIQUE, value VARCHAR, objtype VARCHAR)");
+	query = osync_strdup("CREATE TABLE tbl_sink_states (id INTEGER PRIMARY KEY, key VARCHAR UNIQUE, value VARCHAR, objtype VARCHAR)");
 
-	if (!osync_db_query(anchor->db, query, error)) {
+	if (!osync_db_query(sinkStateDB->db, query, error)) {
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 		osync_free(query);
 		return FALSE;
@@ -47,133 +49,143 @@ osync_bool osync_anchor_create(OSyncAnchor *anchor, OSyncError **error)
 	return TRUE;
 }
 
-OSyncAnchor *osync_anchor_new(const char *filename, const char *objtype, OSyncError **error)
+OSyncSinkStateDB *osync_sink_state_db_new(
+			const char *filename,
+			const char *objtype,
+			OSyncError **error)
 {
-	OSyncAnchor *anchor = NULL;
+	OSyncSinkStateDB *sinkStateDB = NULL;
 	int ret = 0;
 	osync_trace(TRACE_ENTRY, "%s(%s, %s, %p)", __func__, __NULLSTR(filename), __NULLSTR(objtype), error);
 
-	anchor = osync_try_malloc0(sizeof(OSyncAnchor), error);
-	if (!anchor)
+	sinkStateDB = osync_try_malloc0(sizeof(OSyncSinkStateDB), error);
+	if (!sinkStateDB)
 		goto error;
 
-	anchor->ref_count = 1;
+	sinkStateDB->ref_count = 1;
 
 	/* Could be NULL, which means object type neutral
 	 * or data for the main-sink.
 	 */
 	if (objtype)
-		anchor->objtype = osync_strdup(objtype);
+		sinkStateDB->objtype = osync_strdup(objtype);
 
-	anchor->db = osync_db_new(error);
-	if (!anchor->db)
-		goto error_free_anchor;
+	sinkStateDB->db = osync_db_new(error);
+	if (!sinkStateDB->db)
+		goto error;
 
-	if (!osync_db_open(anchor->db, filename, error)) {
+	if (!osync_db_open(sinkStateDB->db, filename, error)) {
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-		goto error_free_db;
+		goto error;
 	}
 
-	ret = osync_db_table_exists(anchor->db, "tbl_anchor", error);
+	ret = osync_db_table_exists(sinkStateDB->db, "tbl_sink_states", error);
 	if (ret > 0) {
-		osync_trace(TRACE_EXIT, "%s: %p", __func__, anchor->db);
-		return anchor;
+		osync_trace(TRACE_EXIT, "%s: %p", __func__, sinkStateDB->db);
+		return sinkStateDB;
 		/* error if ret == -1 */
 	} else if (ret < 0) {
-		goto error_free_db;
+		goto error;
 	}
 
 	/* ret equal 0 means table does not exist yet. continue and create one. */
-	if (!osync_anchor_create(anchor, error))
-		goto error_free_db;
+	if (!osync_sink_states_table_create(sinkStateDB, error))
+		goto error;
 
-	osync_trace(TRACE_EXIT, "%s: %p", __func__, anchor);
-	return anchor;
+	osync_trace(TRACE_EXIT, "%s: %p", __func__, sinkStateDB);
+	return sinkStateDB;
 
- error_free_db:
-	osync_free(anchor->db);
- error_free_anchor:
-	osync_anchor_unref(anchor);
  error:
+	if (sinkStateDB && sinkStateDB->db)
+		osync_free(sinkStateDB->db);
+	if (sinkStateDB)
+		osync_sink_state_db_unref(sinkStateDB);
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return NULL;
 }
 
-OSyncAnchor *osync_anchor_ref(OSyncAnchor *anchor)
+OSyncSinkStateDB *osync_sink_state_db_ref(OSyncSinkStateDB *sinkStateDB)
 {
-	osync_return_val_if_fail(anchor, NULL);
+	osync_return_val_if_fail(sinkStateDB, NULL);
 	
-	g_atomic_int_inc(&(anchor->ref_count));
+	g_atomic_int_inc(&(sinkStateDB->ref_count));
 
-	return anchor;
+	return sinkStateDB;
 }
 
-void osync_anchor_unref(OSyncAnchor *anchor)
+void osync_sink_state_db_unref(OSyncSinkStateDB *sinkStateDB)
 {
-	osync_return_if_fail(anchor);
+	osync_return_if_fail(sinkStateDB);
 	
-	if (g_atomic_int_dec_and_test(&(anchor->ref_count))) {
+	if (g_atomic_int_dec_and_test(&(sinkStateDB->ref_count))) {
 
-		if (!osync_db_close(anchor->db, NULL))
+		if (!osync_db_close(sinkStateDB->db, NULL))
 			osync_trace(TRACE_INTERNAL, "Can't close database");
 
-		if (anchor->objtype)
-			osync_free(anchor->objtype);
+		if (sinkStateDB->objtype)
+			osync_free(sinkStateDB->objtype);
 
-		osync_free(anchor->db);
+		osync_free(sinkStateDB->db);
 
-		osync_free(anchor);
+		osync_free(sinkStateDB);
 	}
 }
 
-char *osync_anchor_retrieve(OSyncAnchor *anchor, const char *key, OSyncError **error)
+char *osync_sink_state_get(
+		OSyncSinkStateDB *sinkStateDB,
+		const char *key,
+		OSyncError **error)
 {
-	char *retanchor = NULL;
+	char *value = NULL;
 	char *query = NULL, *escaped_key;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, anchor, error);
-	osync_assert(anchor);
-	osync_assert(anchor->db);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, sinkStateDB, error);
+	osync_assert(sinkStateDB);
+	osync_assert(sinkStateDB->db);
 	osync_assert(key);
 
 	escaped_key = osync_db_sql_escape(key);
-	query = osync_strdup_printf("SELECT value FROM tbl_anchor WHERE key='%s' AND objtype='%s'",
-			escaped_key, anchor->objtype ? anchor->objtype : "");
+	query = osync_strdup_printf("SELECT value FROM tbl_sink_states WHERE key='%s' AND objtype='%s'",
+			escaped_key, sinkStateDB->objtype ? sinkStateDB->objtype : "");
 	osync_free(escaped_key);
-	retanchor = osync_db_query_single_string(anchor->db, query, error);
+	value = osync_db_query_single_string(sinkStateDB->db, query, error);
 	osync_free(query);
 
 	if (osync_error_is_set(error))
 		goto error;
 
-	if (!retanchor)
-		retanchor = osync_strdup("");
+	if (!value)
+		value = osync_strdup("");
 
-	osync_trace(TRACE_EXIT, "%s: %s", __func__, retanchor);
-	return retanchor;
+	osync_trace(TRACE_EXIT, "%s: %s", __func__, value);
+	return value;
 
 error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return NULL;
 }
 
-osync_bool osync_anchor_update(OSyncAnchor *anchor, const char *key, const char *value, OSyncError **error)
+osync_bool osync_sink_state_set(
+		OSyncSinkStateDB *sinkStateDB,
+		const char *key,
+		const char *value,
+		OSyncError **error)
 {
 	char *escaped_value = NULL, *escaped_key = NULL;
 	char *query = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p)", __func__, anchor, __NULLSTR(value), error);
-	osync_assert(anchor);
-	osync_assert(anchor->db);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p)", __func__, sinkStateDB, __NULLSTR(value), error);
+	osync_assert(sinkStateDB);
+	osync_assert(sinkStateDB->db);
 	osync_assert(key);
 	osync_assert(value);
 
 	escaped_key = osync_db_sql_escape(key);
 	escaped_value = osync_db_sql_escape(value);
-	query = osync_strdup_printf("REPLACE INTO tbl_anchor (objtype, key, value) VALUES('%s', '%s', '%s')",
-			anchor->objtype ? anchor->objtype : "", escaped_key, escaped_value);
+	query = osync_strdup_printf("REPLACE INTO tbl_sink_states (objtype, key, value) VALUES('%s', '%s', '%s')",
+			sinkStateDB->objtype ? sinkStateDB->objtype : "", escaped_key, escaped_value);
 	osync_free(escaped_value);
 	osync_free(escaped_key);
 
-	if (!osync_db_query(anchor->db, query, error))
+	if (!osync_db_query(sinkStateDB->db, query, error))
 		goto error;
 
 	osync_free(query);
@@ -186,16 +198,21 @@ error:
 	return FALSE;
 }
 
-osync_bool osync_anchor_compare(OSyncAnchor *anchor, const char *key, const char *value, osync_bool *same, OSyncError **error)
+osync_bool osync_sink_state_equal(
+		OSyncSinkStateDB *sinkStateDB,
+		const char *key,
+		const char *value,
+		osync_bool *same,
+		OSyncError **error)
 {
 	char *old_value = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %s, %s, %p, %p)", __func__, anchor, __NULLSTR(key), __NULLSTR(value), same, error);
-	osync_assert(anchor);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %s, %p, %p)", __func__, sinkStateDB, __NULLSTR(key), __NULLSTR(value), same, error);
+	osync_assert(sinkStateDB);
 	osync_assert(key);
 	osync_assert(value);
 
-	old_value = osync_anchor_retrieve(anchor, key, error);
+	old_value = osync_sink_state_get(sinkStateDB, key, error);
 	if (!old_value)
 		goto error;
 
