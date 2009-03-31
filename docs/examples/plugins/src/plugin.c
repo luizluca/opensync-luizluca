@@ -38,10 +38,10 @@ static void connect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext 
 	//you can also use the anchor system to detect a device reset
 	//or some parameter change here. Check the docs to see how it works
 	//Now you get the last stored anchor from the device
-	OSyncAnchor *anchor = osync_objtype_sink_get_anchor(sink);
+	OSyncSinkStateDB *state_db = osync_objtype_sink_get_state_db(sink);
 	osync_bool anchormatch;
 	
-	if (!osync_anchor_compare(anchor, "anchor_key", "dynamic_anchor_value", &anchormatch, &error)) {
+	if (!osync_sink_state_equal(state_db, "anchor_key", "dynamic_anchor_value", &anchormatch, &error)) {
 		/* anchor couldn't be compared */
 		goto error;
 	}
@@ -235,8 +235,8 @@ static void sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContex
 	
 	//If we use anchors we have to update it now.
 	//Now you get/calculate the current anchor of the device
-	OSyncAnchor *anchor = osync_objtype_sink_get_anchor(sink);
-	if (!osync_anchor_update(anchor, "anchor_key", "dynamic_anchor_value", &error)) {
+	OSyncSinkStateDB *state_db = osync_objtype_sink_get_state_db(sink);
+	if (!osync_sink_state_set(state_db, "anchor_key", "dynamic_anchor_value", &error)) {
 		goto error;
 	}
 	

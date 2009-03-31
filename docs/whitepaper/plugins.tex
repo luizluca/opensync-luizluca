@@ -150,7 +150,7 @@ problems with shared access to an interface, since a connect function would
 otherwise be called for each Object Type for the same interface.
 
 It is usual at this stage to compare the stored anchor with that from the peer
-using \verb|osync_anchor_compare|.  If the anchor has changed then the need for
+using \verb|osync_sink_state_equal|.  If the anchor has changed then the need for
 a slow sync should be set using \verb|osync_objtype_sink_set_slowsync|
 
 This function MUST only establish a connection to the device or resource. After
