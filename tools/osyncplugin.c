@@ -457,7 +457,7 @@ static void *plugin_initialize(OSyncError **error)
 	list = objtypesinks;
 	while(list) {
 		OSyncObjTypeSink *sink = (OSyncObjTypeSink*)list->data;
-		if (!osync_objtype_sink_load_anchor(sink, plugin_info, error)) 
+		if (!osync_objtype_sink_open_state_db(sink, plugin_info, error)) 
 			goto error;
 
 		if (!osync_objtype_sink_load_hashtable(sink, plugin_info, error))
