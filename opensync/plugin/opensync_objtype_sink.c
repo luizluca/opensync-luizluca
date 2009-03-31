@@ -80,8 +80,8 @@ void osync_objtype_sink_unref(OSyncObjTypeSink *sink)
 			sink->objformatsinks = osync_list_remove(sink->objformatsinks, sink->objformatsinks->data);
 		}
 
-		if (sink->anchor)
-			osync_anchor_unref(sink->anchor);
+		if (sink->state_db)
+			osync_sink_state_db_unref(sink->state_db);
 
 		if (sink->hashtable)
 			osync_hashtable_unref(sink->hashtable);
@@ -96,31 +96,31 @@ void osync_objtype_sink_unref(OSyncObjTypeSink *sink)
 	}
 }
 
-void osync_objtype_sink_enable_anchor(OSyncObjTypeSink *sink, osync_bool enable)
+void osync_objtype_sink_enable_state_db(OSyncObjTypeSink *sink, osync_bool enable)
 {
 	osync_return_if_fail(sink);
-	sink->anchor_requested = enable;
+	sink->state_db_requested = enable;
 }
 
-osync_bool osync_objtype_sink_has_anchor(OSyncObjTypeSink *sink)
+osync_bool osync_objtype_sink_has_state_db(OSyncObjTypeSink *sink)
 {
 	osync_return_val_if_fail(sink, FALSE);
-	return sink->anchor_requested; 
+	return sink->state_db_requested; 
 }
 
-OSyncAnchor *osync_objtype_sink_get_anchor(OSyncObjTypeSink *sink)
+OSyncSinkStateDB *osync_objtype_sink_get_state_db(OSyncObjTypeSink *sink)
 {
 	osync_return_val_if_fail(sink, NULL);
-	return sink->anchor;
+	return sink->state_db;
 }
 
-void osync_objtype_sink_set_anchor(OSyncObjTypeSink *sink, OSyncAnchor *anchor)
+void osync_objtype_sink_set_state_db(OSyncObjTypeSink *sink, OSyncSinkStateDB *state_db)
 {
 	osync_return_if_fail(sink);
-	if (sink->anchor)
-		osync_anchor_unref(sink->anchor);
+	if (sink->state_db)
+		osync_sink_state_db_unref(sink->state_db);
 
-	sink->anchor = osync_anchor_ref(anchor);
+	sink->state_db = osync_sink_state_db_ref(state_db);
 }
 
 void osync_objtype_sink_enable_hashtable(OSyncObjTypeSink *sink, osync_bool enable)
@@ -708,32 +708,32 @@ unsigned int osync_objtype_sink_get_read_timeout(OSyncObjTypeSink *sink)
 	return sink->timeout.read;
 }
 
-osync_bool osync_objtype_sink_load_anchor(OSyncObjTypeSink *sink, OSyncPluginInfo *plugin_info, OSyncError **error)
+osync_bool osync_objtype_sink_open_state_db(OSyncObjTypeSink *sink, OSyncPluginInfo *plugin_info, OSyncError **error)
 {
-	char *anchorpath;
+	char *filename;
 
 	osync_assert(sink);
 
-	if (!osync_objtype_sink_has_anchor(sink))
+	if (!osync_objtype_sink_has_state_db(sink))
 		return TRUE;
 	
-	/* FIXME: Get rid of file lcoation!
-	 * Later with fruther OSyncDB modifications this should be file-hiarchy indepdendent.
+	/* FIXME: Get rid of file location!
+	 * Later with further OSyncDB modifications this should be file-hierarchy indepdendent.
 	 * And The first arg should just consists of the Member ID
 	 */
-	anchorpath = osync_strdup_printf("%s%canchor.db",
+	filename = osync_strdup_printf("%s%canchor.db",
 			osync_plugin_info_get_configdir(plugin_info),
 			G_DIR_SEPARATOR);
 
-	sink->anchor = osync_anchor_new(anchorpath, sink->objtype, error);
-	if (!sink->anchor)
+	sink->state_db = osync_sink_state_db_new(filename, sink->objtype, error);
+	if (!sink->state_db)
 		goto error;
 
-	osync_free(anchorpath);
+	osync_free(filename);
 
 	return TRUE;
 error:
-	osync_free(anchorpath);
+	osync_free(filename);
 	return FALSE;
 }
 

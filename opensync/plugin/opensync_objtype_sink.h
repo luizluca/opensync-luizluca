@@ -77,33 +77,35 @@ OSYNC_EXPORT OSyncObjTypeSink *osync_objtype_sink_ref(OSyncObjTypeSink *sink);
  */
 OSYNC_EXPORT void osync_objtype_sink_unref(OSyncObjTypeSink *sink);
 
-/** @brief Request an anchor for this Sink 
+/** @brief Request a state database for this Sink 
  *
- * If for this sink an anchor is required, this needs to be requested by this
- * function. If anchor gets enabled/requested inside the plugin, the framework
- * will take care about preparing the anchor. The created anchor can be accessed
- * by using the function osync_objtype_sink_get_anchor()
+ * If for this sink an anchor/state is required, this needs to be requested by this
+ * function. If anchor/state gets enabled/requested inside the plugin, the framework
+ * will take care about preparing the anchor/state.
+ * The created anchor/state can be accessed
+ * by using the function osync_objtype_sink_get_state_db()
  *
  * By default no anchor is requested/enabled.
  *
  * @param sink Pointer to the sink
- * @param enable Flag to enable, disbable anchor.
+ * @param enable Flag to enable, disable state database.
  * 
  */
-OSYNC_EXPORT void osync_objtype_sink_enable_anchor(OSyncObjTypeSink *sink, osync_bool enable);
+OSYNC_EXPORT void osync_objtype_sink_enable_state_db(OSyncObjTypeSink *sink, osync_bool enable);
 
-/** @brief Get the pointer to the sink OSyncAnchor
+/** @brief Get the pointer to the sink OSyncSinkStateDB
  *
- * This Anchor is sink specific and can store persistent, sink specific data.
+ * This state database is sink specific and can store persistent, sink specific states.
  * Originally designed to detect if a certain value changed since last
  * synchronization on the peer. E.g. to decided if a slow-sync is requried
  * or not.
  * 
  * @param sink Pointer to the sink
- * @returns Pointer to the requested OSyncAnchor, or NULL if no anchor is requested
+ * @returns Pointer to the requested OSyncSinkStateDB,
+ *          or NULL if no state datbase is requested
  * 
  */
-OSYNC_EXPORT OSyncAnchor *osync_objtype_sink_get_anchor(OSyncObjTypeSink *sink);
+OSYNC_EXPORT OSyncSinkStateDB *osync_objtype_sink_get_state_db(OSyncObjTypeSink *sink);
 
 /** @brief Request a hashtable for this Sink 
  *
@@ -458,7 +460,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_syncdone_timeout(OSyncObjTypeSink *sink
  */
 OSYNC_EXPORT void osync_objtype_sink_set_read_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
 
-/*! @brief Load the Anchor for a specific Sink if requested 
+/*! @brief Open the state database for a specific Sink if requested 
  * 
  * Load (i.e. connects) to the Anchor. If no Anchor is requested for this sink
  * this functions just returns TRUE.
@@ -469,7 +471,7 @@ OSYNC_EXPORT void osync_objtype_sink_set_read_timeout(OSyncObjTypeSink *sink, un
  * @returns TRUE on success, FALSE on any error
  * 
  */
-OSYNC_EXPORT osync_bool osync_objtype_sink_load_anchor(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncError **error);
+OSYNC_EXPORT osync_bool osync_objtype_sink_open_state_db(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncError **error);
 
 /*! @brief Load the Hashtable for a specific Sink if requested 
  * 

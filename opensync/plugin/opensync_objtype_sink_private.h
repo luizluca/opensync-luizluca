@@ -74,10 +74,10 @@ typedef struct OSyncObjTypeSinkFunctionTimeouts {
 
 struct OSyncObjTypeSink {
 	/** The sink anchor if requested by the plugin */
-	OSyncAnchor *anchor;
+	OSyncSinkStateDB *state_db;
 
 	/** Flag if anchor is requested by plugin */
-	osync_bool anchor_requested;
+	osync_bool state_db_requested;
 
 	/** The sink hashtable if requested by the plugin */
 	OSyncHashTable *hashtable;

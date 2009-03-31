@@ -44,25 +44,27 @@ typedef struct OSyncObjTypeSinkFunctions {
 	OSyncSinkConnectDoneFn connect_done;
 } OSyncObjTypeSinkFunctions;
 
-/** @brief Check if sink has an anchor request. 
+/** @brief Check if sink has a state database request. 
  *
  * @param sink Pointer to the sink
- * @returns TRUE if the sink has an anchor request, FALSE otherwise
+ * @returns TRUE if the sink has a state database request, FALSE otherwise
  */
-osync_bool osync_objtype_sink_has_anchor(OSyncObjTypeSink *sink);
+osync_bool osync_objtype_sink_has_state_db(OSyncObjTypeSink *sink);
 
-/** @brief Set the OSyncAnchor for this sink
+/** @brief Set the OSyncSinkStateDB for this sink
  *
- * This Anchor is sink specific and can store persistent, sink specific data.
+ * This state database is sink specific and can store persistent, sink specific states.
  * Originally designed to detect if a certain value changed since last
  * synchronization on the peer. E.g. to decided if a slow-sync is requried
  * or not.
  * 
  * @param sink Pointer to the sink
- * @param anchor Pointer to the Anchor object
+ * @param state_db Pointer to the state database object
  * 
  */
-void osync_objtype_sink_set_anchor(OSyncObjTypeSink *sink, OSyncAnchor *anchor);
+void osync_objtype_sink_set_state_db(
+		OSyncObjTypeSink *sink,
+		OSyncSinkStateDB *state_db);
 
 /** @brief Check if sink has a hashtable request. 
  *

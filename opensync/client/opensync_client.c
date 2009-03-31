@@ -708,7 +708,7 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 	list = objtypesinks;
 	while (list) {
 		sink = (OSyncObjTypeSink*)list->data;
-		if (!osync_objtype_sink_load_anchor(sink, client->plugin_info, error)) {
+		if (!osync_objtype_sink_open_state_db(sink, client->plugin_info, error)) {
 			goto error_finalize;
 		}
 
@@ -721,7 +721,7 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 
 	main_sink = osync_plugin_info_get_main_sink(client->plugin_info);
 	if (main_sink) {
-		if (!osync_objtype_sink_load_anchor(main_sink,
+		if (!osync_objtype_sink_open_state_db(main_sink,
 					client->plugin_info, error))
 			goto error_finalize;
 
