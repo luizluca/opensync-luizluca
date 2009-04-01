@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 		usage(0);
 	client = osync_client_new(&error);
 	if (!client)
-		goto error;
+		goto done;
 	
 	if (!strcmp (argv[1], "-f")) {
 		usePipes = TRUE;
@@ -128,6 +128,7 @@ int main(int argc, char **argv)
  error:
 	osync_client_unref(client);
 	
+ done:	
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&error));
 	fprintf(stderr, "Unable to initialize environment: %s\n", osync_error_print(&error));
 	osync_error_unref(&error);
