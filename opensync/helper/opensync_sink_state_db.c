@@ -35,7 +35,7 @@ static osync_bool osync_sink_states_table_create(
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, sinkStateDB, error);
 
 	/* TODO: How portable to other databes is UNIQUE? */
-	query = osync_strdup("CREATE TABLE tbl_sink_states (id INTEGER PRIMARY KEY, key VARCHAR UNIQUE, value VARCHAR, objtype VARCHAR)");
+	query = osync_strdup("CREATE TABLE tbl_sink_states (objtype VARCHAR, key VARCHAR, value VARCHAR, PRIMARY KEY (objtype, key) )");
 
 	if (!osync_db_query(sinkStateDB->db, query, error)) {
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
