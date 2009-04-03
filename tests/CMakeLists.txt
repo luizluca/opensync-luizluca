@@ -301,6 +301,8 @@ OSYNC_TESTCASE( multisync multisync_conflict_hybrid_choose)
 OSYNC_TESTCASE( multisync multisync_conflict_hybrid_choose2)
 OSYNC_TESTCASE( multisync multisync_conflict_data_duplicate)
 OSYNC_TESTCASE( multisync multisync_conflict_data_duplicate2)
+OSYNC_TESTCASE( multisync multisync_conflict_hybrid_duplicate)
+OSYNC_TESTCASE( multisync multisync_multi_conflict)
 
 BUILD_CHECK_TEST( sync sync-tests/check_sync.c ${TEST_TARGET_LIBRARIES} )
 OSYNC_TESTCASE( sync sync_setup_connect)
