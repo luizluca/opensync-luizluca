@@ -406,13 +406,7 @@ void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *i
 void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx)
 {
 	OSyncObjTypeSinkFunctions functions;
-	int i = 0;
-	OSyncList *o = NULL;
-	OSyncList *c = NULL;
-	OSyncError *error = NULL;
-	OSyncChange *change = NULL;
-	OSyncContext *context = NULL;
-	
+
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, sink,  info, ctx);
 	osync_assert(sink);
 	osync_assert(ctx);
@@ -426,10 +420,6 @@ void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, OSyncPluginInfo *i
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return;
- error:
-	osync_context_report_osyncerror(ctx, error);
-	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&error));
-	osync_error_unref(&error);
 }
 
 osync_bool osync_objtype_sink_is_enabled(OSyncObjTypeSink *sink)
