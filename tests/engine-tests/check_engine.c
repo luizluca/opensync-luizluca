@@ -2032,7 +2032,6 @@ OSYNC_TESTCASE_ADD(engine_sync_read_write)
 OSYNC_TESTCASE_ADD(engine_sync_read_write_stress)
 OSYNC_TESTCASE_ADD(engine_sync_read_write_stress2)
 
-//batch commit
 //connect problem
 //get_changes problem
 

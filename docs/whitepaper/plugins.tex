@@ -131,7 +131,7 @@ Functions required:
 Connect & Optional \\
 Connect Done & Optional \\
 Get Changes & Required \\ 
-Commit / Batch Commit & Required (only Commit \textbf{or} Batch Commit) \\ 
+Commit & Required \\ 
 Committed All & Optional (only available in combination with Commit)\\ 
 Synchronization Done & Optional \\ 
 Disconnect & Optional
@@ -183,14 +183,9 @@ replied with \verb|osync_context_report_error()|. On success the context get
 replied with \verb|osync_context_success()|. If Hashtable is already involved in
 the Get Changes functions, then the Commit function should update the Hashtable
 for the entries which get committed.
-\subsection{Batch Commit}
-The batch commit function is intended for protocols, device or application which
-only allow batch committing (sending all changes at once). This function gets
-called with an array of changes to be committed.
 \subsection{Committed All}
 This function is called after all entries have committed, even if error appeared
-while committing. This function is not called if a Batch Commit function is
-registered for this Sink.
+while committing.
 \subsection{Synchronization Done}
 This function is called only after a successful synchronization.  When using a
 Hashtable \verb|osync_hashtable_save()| should be called to store the Hashtable
