@@ -260,8 +260,7 @@ OSYNC_EXPORT osync_bool osync_engine_discover_and_block(OSyncEngine *engine, OSy
  * osync_error_has_error() will return TRUE once the abort got requested.
  *
  * FIXME: Currently aborting of the current synchronization is not yet perfect! It
- *        will not preempt already running commands. For example the batch_commit
- *        will not be preempted and the engine will abort after the batch_commit is done.
+ *        will not preempt already running commands.
  *
  * TODO: Review XMPM Benq patches for abort hander. Is sigaction really sane way
  *       to abort? It's very important that the plugins get called with the disconnect

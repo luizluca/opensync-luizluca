@@ -36,7 +36,6 @@ typedef void (* OSyncSinkCommitFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *inf
 typedef osync_bool (* OSyncSinkWriteFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data);
 typedef void (* OSyncSinkCommittedAllFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data);
 typedef osync_bool (* OSyncSinkReadFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data);
-typedef void (* OSyncSinkBatchCommitFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncContext **, OSyncChange **changes, void *data);
 typedef void (* OSyncSinkSyncDoneFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data);
 typedef void (* OSyncSinkConnectDoneFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data);
 
@@ -385,8 +384,7 @@ OSYNC_EXPORT void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, OSync
 
 /** @brief Tells the sink that all changes have been committed
  * 
- * Calls the committed_all function on a sink or the batch_commit function
- * depending on which function the sink wants to use.
+ * Calls the committed_all function on a sink.
  * 
  * @param sink Pointer to the sink
  * @param info Pointer to the plugin info object
@@ -427,14 +425,6 @@ OSYNC_EXPORT void osync_objtype_sink_set_getchanges_timeout(OSyncObjTypeSink *si
  * 
  */
 OSYNC_EXPORT void osync_objtype_sink_set_commit_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
-
-/** @brief Sets the batchcommit timeout in seconds for the OSyncObjTypeSink 
- * 
- * @param sink Pointer to the sink
- * @param timeout The timeout in seconds 
- * 
- */
-OSYNC_EXPORT void osync_objtype_sink_set_batchcommit_timeout(OSyncObjTypeSink *sink, unsigned int timeout);
 
 /** @brief Sets the committedall timeout in seconds for the OSyncObjTypeSink 
  * 
@@ -510,8 +500,6 @@ OSYNC_EXPORT void osync_objtype_sink_set_commit_func(OSyncObjTypeSink *sink, OSy
 OSYNC_EXPORT void osync_objtype_sink_set_committed_all_func(OSyncObjTypeSink *sink, OSyncSinkCommittedAllFn committed_all_func);
 
 OSYNC_EXPORT void osync_objtype_sink_set_read_func(OSyncObjTypeSink *sink, OSyncSinkReadFn read_func);
-
-OSYNC_EXPORT void osync_objtype_sink_set_batch_commit_func(OSyncObjTypeSink *sink, OSyncSinkBatchCommitFn batch_commit_func);
 
 OSYNC_EXPORT void osync_objtype_sink_set_sync_done_func(OSyncObjTypeSink *sink, OSyncSinkSyncDoneFn sync_done_func);
 

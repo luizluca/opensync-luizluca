@@ -62,7 +62,6 @@ typedef enum {
 	CMD_SLOWSYNC,
 	CMD_FASTSYNC,
 	CMD_COMMIT,
-	CMD_BATCHCOMMIT,
 	CMD_COMMITTEDALL,
 	CMD_READ,
 	CMD_WRITE,
@@ -152,7 +151,6 @@ static void usage(const char *name)
 	fprintf (stderr, "[--syncdone] \t\n");
 	fprintf (stderr, "[--committedall] \t\n");
 	fprintf (stderr, "[--commit] \t\n");
-	fprintf (stderr, "[--batchcommit] \t\n");
 	fprintf (stderr, "[--write] \t\n");
 	fprintf (stderr, "[--read] \t\n");
 	fprintf (stderr, "[--empty] \t\n");
@@ -269,13 +267,6 @@ static void parse_args(int argc, char **argv) {
 				new_command(CMD_COMMIT, NULL);
 			else
 				new_command(CMD_COMMIT, argv[++i]);
-
-			continue;
-		} else if (!strcmp(arg, "--batchcommit")) {
-			if (!argv[i+1] || *argv[i+1] == '-')
-				new_command(CMD_BATCHCOMMIT, NULL);
-			else
-				new_command(CMD_BATCHCOMMIT, argv[++i]);
 
 			continue;
 		} else if (!strcmp(arg, "--write")) {
@@ -1212,9 +1203,6 @@ static osync_bool run_command(Command *cmd, void **plugin_data, OSyncError **err
 	case CMD_COMMIT:
 		fprintf(stderr, "COMMIT not yet implemented\n");
 		break;
-	case CMD_BATCHCOMMIT:
-		fprintf(stderr, "BATCHCOMMIT not yet implemented\n");
-		break;
 	case CMD_COMMITTEDALL:
 		if (!committedall(cmd, error))
 			goto error;
@@ -1249,7 +1237,6 @@ static osync_bool run_command(Command *cmd, void **plugin_data, OSyncError **err
 	case CMD_FASTSYNC:
 	case CMD_SYNC:
 	case CMD_COMMIT:
-	case CMD_BATCHCOMMIT:
 	case CMD_COMMITTEDALL:
 	case CMD_READ:
 	case CMD_WRITE:

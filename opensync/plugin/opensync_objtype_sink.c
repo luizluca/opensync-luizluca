@@ -389,28 +389,15 @@ void osync_objtype_sink_commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *i
 
 	functions = sink->functions;
 
-	if (functions.batch_commit) {
-		//Append to the stored changes
-		sink->commit_changes = osync_list_append(sink->commit_changes, change);
-
-		/* Increment refcounting for batch_commit to avoid too early freeing of the context.
-			 Otherwise the context would get freed after this function call. But the batch_commit
-			 is collecting every contexts and changes and finally commits everything at once. */
-		osync_context_ref(ctx);
-		sink->commit_contexts = osync_list_append(sink->commit_contexts, ctx);
-		osync_trace(TRACE_EXIT, "%s: Waiting for batch processing", __func__);
+	// Send the change
+	if (sink->objtype && !functions.commit) {
+		osync_context_report_error(ctx, OSYNC_ERROR_GENERIC, "No commit_change function was given");
+		osync_trace(TRACE_EXIT_ERROR, "%s: No commit_change function was given", __func__);
 		return;
+	} else if (!functions.commit) {
+		osync_context_report_success(ctx);
 	} else {
-		// Send the change
-		if (sink->objtype && !functions.commit) {
-			osync_context_report_error(ctx, OSYNC_ERROR_GENERIC, "No commit_change function was given");
-			osync_trace(TRACE_EXIT_ERROR, "%s: No commit_change function was given", __func__);
-			return;
-		} else if (!functions.commit) {
-			osync_context_report_success(ctx);
-		} else {
-			functions.commit(sink, info, ctx, change, osync_objtype_sink_get_userdata(sink));
-		}
+		functions.commit(sink, info, ctx, change, osync_objtype_sink_get_userdata(sink));
 	}
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
@@ -431,35 +418,7 @@ void osync_objtype_sink_committed_all(OSyncObjTypeSink *sink, OSyncPluginInfo *i
 	osync_assert(ctx);
 	
 	functions = sink->functions;
-	if (functions.batch_commit) {
-		OSyncChange **changes = osync_try_malloc0(sizeof(OSyncChange *) * (osync_list_length(sink->commit_changes) + 1), &error);
-		if (!changes)
-			goto error;
-		OSyncContext **contexts = osync_try_malloc0(sizeof(OSyncContext *) * (osync_list_length(sink->commit_contexts) + 1), &error);
-		if (!contexts)
-			goto error;
-		
-		o = sink->commit_contexts;
-		c = NULL;
-		for (c = sink->commit_changes; c && o; c = c->next) {
-			change = c->data;
-			context = o->data;
-			
-			changes[i] = change;
-			contexts[i] = context;
-			
-			i++;
-			o = o->next;
-		}
-		
-		osync_list_free(sink->commit_changes);
-		osync_list_free(sink->commit_contexts);
-		
-		functions.batch_commit(sink, info, ctx, contexts, changes, osync_objtype_sink_get_userdata(sink));
-		
-		osync_free(changes);
-		osync_free(contexts);
-	} else if (functions.committed_all) {
+	if (functions.committed_all) {
 		functions.committed_all(sink, info, ctx, osync_objtype_sink_get_userdata(sink));
 	} else {
 		osync_context_report_success(ctx);
@@ -616,24 +575,6 @@ unsigned int osync_objtype_sink_get_commit_timeout(OSyncObjTypeSink *sink)
 {
 	osync_assert(sink);
 	return sink->timeout.commit;
-}
-
-void osync_objtype_sink_set_batchcommit_timeout(OSyncObjTypeSink *sink, unsigned int timeout)
-{
-	osync_assert(sink);
-	sink->timeout.batch_commit = timeout;
-}
-
-unsigned int osync_objtype_sink_get_batchcommit_timeout_or_default(OSyncObjTypeSink *sink)
-{
-	osync_assert(sink);
-	return sink->timeout.batch_commit ? sink->timeout.batch_commit : OSYNC_SINK_TIMEOUT_BATCHCOMMIT;
-}
-
-unsigned int osync_objtype_sink_get_batchcommit_timeout(OSyncObjTypeSink *sink)
-{
-	osync_assert(sink);
-	return sink->timeout.batch_commit;
 }
 
 void osync_objtype_sink_set_committedall_timeout(OSyncObjTypeSink *sink, unsigned int timeout)
@@ -833,12 +774,6 @@ void osync_objtype_sink_set_read_func(OSyncObjTypeSink *sink, OSyncSinkReadFn re
 
 	if (sink->functions.read)
 		sink->func_read = TRUE;
-}
-
-void osync_objtype_sink_set_batch_commit_func(OSyncObjTypeSink *sink, OSyncSinkBatchCommitFn batch_commit_func)
-{
-	osync_return_if_fail(sink);
-	sink->functions.batch_commit = batch_commit_func;
 }
 
 void osync_objtype_sink_set_sync_done_func(OSyncObjTypeSink *sink, OSyncSinkSyncDoneFn sync_done_func)

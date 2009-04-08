@@ -72,7 +72,6 @@ static void reset_env(void)
 	g_unsetenv("SYNC_DONE_TIMEOUT");
 	g_unsetenv("DISCONNECT_ERROR");
 	g_unsetenv("DISCONNECT_TIMEOUT");
-	g_unsetenv("BATCH_COMMIT");
 	g_unsetenv("COMMITTED_ALL_ERROR");
 	g_unsetenv("NO_COMMITTED_ALL_CHECK");
 	g_unsetenv("MAINSINK_CONNECT");

@@ -55,7 +55,6 @@
 #define OSYNC_SINK_TIMEOUT_DISCONNECT 	OSYNC_SINK_TIMEOUT_TRANSPORT 
 #define OSYNC_SINK_TIMEOUT_GETCHANGES	OSYNC_SINK_TIMEOUT_BATCHIO
 #define OSYNC_SINK_TIMEOUT_COMMIT	OSYNC_SINK_TIMEOUT_BATCHIO /* FIXME */
-#define OSYNC_SINK_TIMEOUT_BATCHCOMMIT	OSYNC_SINK_TIMEOUT_BATCHIO
 #define OSYNC_SINK_TIMEOUT_COMMITTEDALL	OSYNC_SINK_TIMEOUT_SINGLEIO
 #define OSYNC_SINK_TIMEOUT_SYNCDONE	OSYNC_SINK_TIMEOUT_SINGLEIO
 #define OSYNC_SINK_TIMEOUT_READ		OSYNC_SINK_TIMEOUT_BATCHIO /* FIXME */
@@ -66,7 +65,6 @@ typedef struct OSyncObjTypeSinkFunctionTimeouts {
 	unsigned int disconnect;
 	unsigned int get_changes;
 	unsigned int commit;
-	unsigned int batch_commit;
 	unsigned int committed_all;
 	unsigned int sync_done;
 	unsigned int read;
@@ -122,9 +120,6 @@ struct OSyncObjTypeSink {
 	/** Referce counting */
 	int ref_count;
 
-	/** List to pile up changes for batch commit */
-	OSyncList *commit_changes;
-	OSyncList *commit_contexts;
 	osync_bool available;
 };
 

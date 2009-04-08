@@ -488,49 +488,6 @@ static void mock_commit_change(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OS
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void mock_batch_commit(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *context, OSyncContext **contexts, OSyncChange **changes, void *data)
-{
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %p, %p)", __func__, sink, info, context, contexts, changes, data);
-	MockDir *dir = data;
-	OSyncHashTable *hashtable = osync_objtype_sink_get_hashtable(sink);
-
-	osync_assert(dir->committed_all == FALSE);
-	dir->committed_all = TRUE;
-
-	int i; 
-	for (i = 0; contexts[i]; i++) {
-		if (mock_write(sink, info, contexts[i], changes[i], data)) {
-			char *filename = g_strdup_printf ("%s/%s", dir->path, osync_change_get_uid(changes[i]));
-			char *hash = NULL;
-	
-			if (osync_change_get_changetype(changes[i]) != OSYNC_CHANGE_TYPE_DELETED) {
-				struct stat buf;
-				stat(filename, &buf);
-				hash = mock_generate_hash(&buf);
-				osync_change_set_hash(changes[i], hash);
-			}
-			g_free(filename);
-
-			osync_hashtable_update_change(hashtable, changes[i]);
-			osync_context_report_success(contexts[i]);
-		}
-	}
-
-	if (g_getenv("NUM_BATCH_COMMITS")) {
-		int req = atoi(g_getenv("NUM_BATCH_COMMITS"));
-		osync_assert(req == i);
-	}
-
-	if (mock_get_error(info->memberid, "COMMITTED_ALL_ERROR")) {
-		osync_context_report_error(context, OSYNC_ERROR_EXPECTED, "Triggering COMMITTED_ALL_ERROR error");
-		return;
-	}
-
-	osync_context_report_success(context);
-
-	osync_trace(TRACE_EXIT, "%s", __func__);
-}
-
 static void mock_committed_all(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *context, void *data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, sink, info, context, data);
@@ -656,14 +613,8 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 
 		osync_objtype_sink_set_get_changes_func(sink, mock_get_changes);
 
-		//Rewrite the batch commit functions so we can enable them if necessary
-		if (mock_get_error(info->memberid, "BATCH_COMMIT")) {
-			osync_trace(TRACE_INTERNAL, "Enabling batch_commit on %p:%s", sink, osync_objtype_sink_get_name(sink) ? osync_objtype_sink_get_name(sink) : "None");
-			osync_objtype_sink_set_batch_commit_func(sink, mock_batch_commit);
-		} else {
-			osync_objtype_sink_set_committed_all_func(sink, mock_committed_all);
-			osync_objtype_sink_set_commit_func(sink, mock_commit_change);
-		}
+		osync_objtype_sink_set_committed_all_func(sink, mock_committed_all);
+		osync_objtype_sink_set_commit_func(sink, mock_commit_change);
 		osync_objtype_sink_set_read_func(sink, mock_read);
 		osync_objtype_sink_set_sync_done_func(sink, mock_sync_done);
 		
@@ -682,7 +633,6 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 		osync_objtype_sink_set_getchanges_timeout(sink, 2);
 		osync_objtype_sink_set_commit_timeout(sink, 4);
 		osync_objtype_sink_set_committedall_timeout(sink, 4);
-		osync_objtype_sink_set_batchcommit_timeout(sink, 4);
 		osync_objtype_sink_set_syncdone_timeout(sink, 2);
 		osync_objtype_sink_set_disconnect_timeout(sink, 2);
 
@@ -706,7 +656,6 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 			osync_objtype_sink_set_getchanges_timeout(sink, 0);
 			osync_objtype_sink_set_commit_timeout(sink, 0);
 			osync_objtype_sink_set_committedall_timeout(sink, 0);
-			osync_objtype_sink_set_batchcommit_timeout(sink, 0);
 			osync_objtype_sink_set_syncdone_timeout(sink, 0);
 			osync_objtype_sink_set_disconnect_timeout(sink, 0);
 

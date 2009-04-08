@@ -39,7 +39,6 @@ typedef struct OSyncObjTypeSinkFunctions {
 	OSyncSinkCommitFn commit;
 	OSyncSinkCommittedAllFn committed_all;
 	OSyncSinkReadFn read;
-	OSyncSinkBatchCommitFn batch_commit;
 	OSyncSinkSyncDoneFn sync_done;
 	OSyncSinkConnectDoneFn connect_done;
 } OSyncObjTypeSinkFunctions;
@@ -178,24 +177,6 @@ unsigned int osync_objtype_sink_get_commit_timeout_or_default(OSyncObjTypeSink *
  * 
  */
 unsigned int osync_objtype_sink_get_commit_timeout(OSyncObjTypeSink *sink);
-
-
-/** @brief Get the current or default batchcommit timeout in seconds 
- * 
- * @param sink Pointer to the sink
- * @return The timeout in seconds 
- * 
- */
-unsigned int osync_objtype_sink_get_batchcommit_timeout_or_default(OSyncObjTypeSink *sink);
-
-/** @brief Get the current batchcommit timeout in seconds 
- * 
- * @param sink Pointer to the sink
- * @return The timeout in seconds 
- * 
- */
-unsigned int osync_objtype_sink_get_batchcommit_timeout(OSyncObjTypeSink *sink);
-
 
 /** @brief Get the current or default committedall timeout in seconds 
  * 

@@ -594,7 +594,7 @@ osync_bool osync_group_reset(OSyncGroup *group, OSyncError **error)
 
 		osync_free(path);
 
-		/* flush anchor db */ 
+		/* flush state db */ 
 		path = osync_strdup_printf("%s%canchor.db", osync_member_get_configdir(member), G_DIR_SEPARATOR);
 		if (!(db = osync_db_new(error)))
 			goto error_and_free;

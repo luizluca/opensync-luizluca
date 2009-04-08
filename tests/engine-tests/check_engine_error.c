@@ -2117,6 +2117,8 @@ START_TEST (engine_error_committed_all_error)
 }
 END_TEST
 
+/* batch_commit no longer exists
+
 START_TEST (engine_error_committed_all_batch_error)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
@@ -2178,6 +2180,7 @@ START_TEST (engine_error_committed_all_batch_error)
 	destroy_testbed(testbed);
 }
 END_TEST
+*/
 
 START_TEST (engine_error_single_sync_done_error)
 {
@@ -3097,7 +3100,6 @@ OSYNC_TESTCASE_ADD(engine_error_commit_error_modify)
 OSYNC_TESTCASE_ADD(engine_error_commit_error_delete)
 
 OSYNC_TESTCASE_ADD(engine_error_committed_all_error)
-OSYNC_TESTCASE_ADD(engine_error_committed_all_batch_error)
 
 OSYNC_TESTCASE_ADD(engine_error_single_sync_done_error)
 OSYNC_TESTCASE_ADD(engine_error_dual_sync_done_error)

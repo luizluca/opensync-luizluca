@@ -296,7 +296,6 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 	 * timeout disconnect (int)
 	 * timeout get_changes (int)
 	 * timeout commit (int)
-	 * timeout batch_commit (int)
 	 * timeout committed_all (int)
 	 * timeout sync_done (int)
 	 * timeout read (int)
@@ -327,7 +326,6 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 
 	osync_message_write_int(message, osync_objtype_sink_get_getchanges_timeout(sink));
 	osync_message_write_int(message, osync_objtype_sink_get_commit_timeout(sink));
-	osync_message_write_int(message, osync_objtype_sink_get_batchcommit_timeout(sink));
 	osync_message_write_int(message, osync_objtype_sink_get_committedall_timeout(sink));
 	osync_message_write_int(message, osync_objtype_sink_get_syncdone_timeout(sink));
 
@@ -364,7 +362,6 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	 * timeout disconnect (int)
 	 * timeout get_changes (int)
 	 * timeout commit (int)
-	 * timeout batch_commit (int)
 	 * timeout committed_all (int)
 	 * timeout sync_done (int)
 	 * timeout read (int)
@@ -415,9 +412,6 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 
 	osync_message_read_int(message, &timeout);
 	osync_objtype_sink_set_commit_timeout(*sink, timeout);
-
-	osync_message_read_int(message, &timeout);
-	osync_objtype_sink_set_batchcommit_timeout(*sink, timeout);
 
 	osync_message_read_int(message, &timeout);
 	osync_objtype_sink_set_committedall_timeout(*sink, timeout);

@@ -49,8 +49,6 @@ void osync_member_parse_timeout(xmlNode *cur, OSyncObjTypeSink *sink)
 				osync_objtype_sink_set_getchanges_timeout(sink, atoi(str));
 			} else if (!xmlStrcmp(cur->name, (const xmlChar *)"commit")) {
 				osync_objtype_sink_set_commit_timeout(sink, atoi(str));
-			} else if (!xmlStrcmp(cur->name, (const xmlChar *)"batch_commit")) {
-				osync_objtype_sink_set_batchcommit_timeout(sink, atoi(str));
 			} else if (!xmlStrcmp(cur->name, (const xmlChar *)"committed_all")) {
 				osync_objtype_sink_set_committedall_timeout(sink, atoi(str));
 			} else if (!xmlStrcmp(cur->name, (const xmlChar *)"sync_done")) {
@@ -454,7 +452,6 @@ static osync_bool _osync_member_save_sink_timeout(xmlNode *cur, OSyncObjTypeSink
 	_osync_member_save_sink_add_timeout(node, "disconnect", osync_objtype_sink_get_disconnect_timeout(sink), error);
 	_osync_member_save_sink_add_timeout(node, "get_changes", osync_objtype_sink_get_getchanges_timeout(sink), error);
 	_osync_member_save_sink_add_timeout(node, "commit", osync_objtype_sink_get_commit_timeout(sink), error);
-	_osync_member_save_sink_add_timeout(node, "batch_commit", osync_objtype_sink_get_batchcommit_timeout(sink), error);
 	_osync_member_save_sink_add_timeout(node, "committed_all", osync_objtype_sink_get_committedall_timeout(sink), error);
 	_osync_member_save_sink_add_timeout(node, "sync_done", osync_objtype_sink_get_syncdone_timeout(sink), error);
 	_osync_member_save_sink_add_timeout(node, "read", osync_objtype_sink_get_read_timeout(sink), error);

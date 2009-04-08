@@ -1942,6 +1942,8 @@ START_TEST (multisync_conflict_ignore2)
 }
 END_TEST
 
+/* batch_commit is no longer supported
+
 START_TEST(multisync_easy_new_b)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
@@ -1950,6 +1952,9 @@ START_TEST(multisync_easy_new_b)
 	destroy_testbed(testbed);
 }
 END_TEST
+*/
+
+/* batch_commit is no longer supported
 
 START_TEST(multisync_triple_del_b)
 {
@@ -1959,6 +1964,9 @@ START_TEST(multisync_triple_del_b)
 	destroy_testbed(testbed);
 }
 END_TEST
+*/
+
+/* batch_commit is no longer supported
 
 START_TEST(multisync_conflict_hybrid_choose2_b)
 {
@@ -1968,6 +1976,9 @@ START_TEST(multisync_conflict_hybrid_choose2_b)
 	destroy_testbed(testbed);
 }
 END_TEST
+*/
+
+/* batch_commit is no longer supported
 
 START_TEST(multisync_delayed_conflict_handler_b)
 {
@@ -1977,6 +1988,9 @@ START_TEST(multisync_delayed_conflict_handler_b)
 	destroy_testbed(testbed);
 }
 END_TEST
+*/
+
+/* batch_commit is no longer supported
 
 START_TEST(multisync_delayed_slow_b)
 {
@@ -1986,6 +2000,10 @@ START_TEST(multisync_delayed_slow_b)
 	destroy_testbed(testbed);
 }
 END_TEST
+*/
+
+/* batch_commit is no longer supported
+
 #if 0
 START_TEST(multisync_conflict_ignore_b)
 {
@@ -2013,14 +2031,13 @@ START_TEST(multisync_conflict_hybrid_duplicate_b)
 }
 END_TEST
 
-START_TEST(multisync_multi_conflict_b)
+/* batch_commit is no longer supported
 {
 	setenv("BATCH_COMMIT", "7", TRUE);
 	multisync_multi_conflict();
 	unsetenv("BATCH_COMMIT");
 }
 END_TEST
-
 
 START_TEST(multisync_zero_changes_b)
 {
@@ -2138,6 +2155,7 @@ START_TEST(multisync_multi_conflict_b2)
 }
 END_TEST
 #endif
+*/
 
 OSYNC_TESTCASE_START("multisync")
 OSYNC_TESTCASE_ADD(multisync_easy_new)
@@ -2181,6 +2199,8 @@ OSYNC_TESTCASE_ADD(multisync_delayed_slow)
 OSYNC_TESTCASE_ADD(multisync_conflict_ignore)
 OSYNC_TESTCASE_ADD(multisync_conflict_ignore2)
 
+/* batch_commit is no longer supported
+
 OSYNC_TESTCASE_ADD(multisync_easy_new_b)
 OSYNC_TESTCASE_ADD(multisync_triple_del_b)
 OSYNC_TESTCASE_ADD(multisync_conflict_hybrid_choose2_b)
@@ -2198,6 +2218,7 @@ OSYNC_TESTCASE_ADD(multisync_delayed_conflict_handler_b2)
 OSYNC_TESTCASE_ADD(multisync_conflict_ignore_b2)
 OSYNC_TESTCASE_ADD(multisync_multi_conflict_b2)
 #endif
+*/
 
 OSYNC_TESTCASE_END
 
