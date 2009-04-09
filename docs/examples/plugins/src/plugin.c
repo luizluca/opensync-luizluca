@@ -76,7 +76,7 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 	if (slow_sync) {
 		osync_trace(TRACE_INTERNAL, "Slow sync requested");
 
-		if (osync_hashtable_slowsync(hashtable, &error)) {
+		if (!osync_hashtable_slowsync(hashtable, &error)) {
 			osync_context_report_osyncerror(ctx, error);
 			osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&error));
 			osync_error_unref(&error);
