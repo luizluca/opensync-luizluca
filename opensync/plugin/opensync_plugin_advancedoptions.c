@@ -271,7 +271,7 @@ void osync_plugin_advancedoption_set_type(OSyncPluginAdvancedOption *option, OSy
 OSyncList *osync_plugin_advancedoption_get_valenums(OSyncPluginAdvancedOption *option)
 {
 	osync_assert(option);
-	return option->valenum;
+	return osync_list_copy(option->valenum);
 }
 
 void osync_plugin_advancedoption_add_valenum(OSyncPluginAdvancedOption *option, const char *value)

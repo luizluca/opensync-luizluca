@@ -797,11 +797,10 @@ osync_bool osync_marshal_pluginadvancedoption(OSyncMessage *message, OSyncPlugin
 	unsigned int type = 0;
 	const char *value = NULL;
 	unsigned int num_parameters = 0;
-	OSyncList *parameters;
+	OSyncList *parameters = NULL, *p = NULL;
 	const char *param = NULL;
 	unsigned int num_valenum = 0;
-	unsigned int i;
-	OSyncList *valenum = NULL;
+	OSyncList *valenum = NULL, *v = NULL;
 
 	osync_assert(message);
 	osync_assert(opt);
@@ -858,20 +857,22 @@ osync_bool osync_marshal_pluginadvancedoption(OSyncMessage *message, OSyncPlugin
 	num_parameters = osync_list_length(parameters);
 	osync_message_write_uint(message, num_parameters);
 
-	for (i=0; i < num_parameters; i++) {
-		param = osync_list_nth_data(parameters, i);
+	for ( p = parameters; p; p = p->next) {
+		param = p->data;
 		osync_message_write_string(message, param);
 	}
-
+	osync_list_free(parameters);
+	
 	valenum = osync_plugin_advancedoption_get_valenums(opt);
 	num_valenum = osync_list_length(valenum);
 	osync_message_write_uint(message, num_valenum);
 
-	for (i=0; i < num_valenum; i++) {
-		value = osync_list_nth_data(valenum, i);
+	for (v = valenum; v; v=v->next) {
+		value = v->data;
 		osync_message_write_string(message, value);
 	}
-
+	osync_list_free(valenum);
+	
 	return TRUE;
 }
 

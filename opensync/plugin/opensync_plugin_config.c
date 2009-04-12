@@ -1205,11 +1205,13 @@ static osync_bool _osync_plugin_config_assemble_advancedoption(xmlNode *cur, OSy
 	xmlNewChild(node, NULL, BAD_CAST "Type", BAD_CAST osync_plugin_advancedoption_get_type_string(option));
 
 	/* ValEnum */
-	for (v = osync_plugin_advancedoption_get_valenums(option); v; v = v->next) {
+	OSyncList *valenums = osync_plugin_advancedoption_get_valenums(option);
+	for (v = valenums; v; v = v->next) {
 		char *valenum = v->data;
 		xmlNewChild(node, NULL, BAD_CAST "ValEnum", BAD_CAST valenum);
 	}
-
+	osync_list_free(valenums);
+	
 	/* Value */
 	if (!osync_plugin_advancedoption_get_value(option)) {
 		osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "Value for advanced option not set.");
