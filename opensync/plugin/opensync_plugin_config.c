@@ -1186,12 +1186,16 @@ static osync_bool _osync_plugin_config_assemble_advancedoption(xmlNode *cur, OSy
 	xmlNewChild(node, NULL, BAD_CAST "Name", BAD_CAST osync_plugin_advancedoption_get_name(option));
 
 	/* Parameters */
-	for (p = osync_plugin_advancedoption_get_parameters(option); p; p = p->next) {
+	OSyncList *parameters = osync_plugin_advancedoption_get_parameters(option);
+	for (p = parameters; p; p = p->next) {
 		OSyncPluginAdvancedOptionParameter *param = p->data;
-		if (!_osync_plugin_config_assemble_advancedoption_param(node, param, error))
+		if (!_osync_plugin_config_assemble_advancedoption_param(node, param, error)) {
+			osync_list_free(parameters);
 			goto error;
+		}
 	}
-
+	osync_list_free(parameters);
+	
 	/* Type */
 	if (!osync_plugin_advancedoption_get_type(option)) {
 		osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "Type for advanced option not set.");

@@ -159,7 +159,7 @@ void osync_plugin_advancedoption_unref(OSyncPluginAdvancedOption *option)
 OSyncList *osync_plugin_advancedoption_get_parameters(OSyncPluginAdvancedOption *option)
 {
 	osync_assert(option);
-	return option->parameters;
+	return osync_list_copy(option->parameters);
 }
 
 void osync_plugin_advancedoption_add_parameter(OSyncPluginAdvancedOption *option, OSyncPluginAdvancedOptionParameter *param)

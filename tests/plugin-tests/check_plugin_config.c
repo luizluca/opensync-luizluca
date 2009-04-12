@@ -937,7 +937,7 @@ START_TEST (plugin_config_save_and_load)
 			fail_unless(!strcmp(osync_plugin_advancedoption_param_get_value(p->data), "BAR1"));
 
 		}
-
+		osync_list_free(reloaded_advancedoption_parameters);
 
 	}
 

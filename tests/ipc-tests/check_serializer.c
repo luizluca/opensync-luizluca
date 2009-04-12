@@ -243,9 +243,14 @@ static osync_bool _compare_pluginconfig_advancedoption(const void *a, const void
 	OSyncList *param_list1 = osync_plugin_advancedoption_get_parameters(opt1);
 	OSyncList *param_list2 = osync_plugin_advancedoption_get_parameters(opt2);
 
-	if (!_compare_list(param_list1, param_list2, _compare_pluginconfig_advacedoption_parameters))
+	if (!_compare_list(param_list1, param_list2, _compare_pluginconfig_advacedoption_parameters)) {
+		osync_list_free(param_list1);
+		osync_list_free(param_list2);
 		return FALSE;
-
+	}
+	osync_list_free(param_list1);
+	osync_list_free(param_list2);
+	
 	const char *displayname1 = osync_plugin_advancedoption_get_displayname(opt1);
 	const char *displayname2 = osync_plugin_advancedoption_get_displayname(opt2);
 
