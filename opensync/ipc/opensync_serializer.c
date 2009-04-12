@@ -1219,7 +1219,7 @@ osync_bool osync_marshal_pluginresource(OSyncMessage *message, OSyncPluginResour
 	const char *url = NULL;
 	OSyncList *sinks = NULL;
 	unsigned int num_sinks = 0;
-	OSyncList *s = NULL;;
+	OSyncList *s = NULL;
 
 	osync_assert(message);
 	osync_assert(res);
@@ -1259,11 +1259,12 @@ osync_bool osync_marshal_pluginresource(OSyncMessage *message, OSyncPluginResour
 	osync_message_write_uint(message, num_sinks);
 
 	/* format sinks */
-	for (s = osync_plugin_resource_get_objformat_sinks(res); s; s = s->next) {
+	for (s = sinks; s; s = s->next) {
 		OSyncObjFormatSink *sink = s->data;
 		if (!osync_marshal_objformatsink(message, sink, error))
 			goto error;
 	}
+	osync_list_free(sinks);
 
 	/** optional fields */
 

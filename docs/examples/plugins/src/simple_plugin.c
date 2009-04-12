@@ -246,14 +246,15 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 		OSyncPluginResource *res = osync_plugin_config_find_active_resource(config, objtype);
 		
 		/* get objformat sinks */
-		OSyncList *s = osync_plugin_resource_get_objformat_sinks(res);
-		for (; s; s = s->next) {
+		OSyncList *s = NULL;
+		OSyncList *objformats = osync_plugin_resource_get_objformat_sinks(res);
+		for (s = objformats; s; s = s->next) {
 			OSyncObjFormatSink *fsink = s->data; // there could be only one sink
 			const char *objformat = osync_objformat_sink_get_objformat(fsink);
 			osync_assert(objformat);
 			osync_trace(TRACE_INTERNAL, "objtype %s has objformat %s", objtype, objformat);
 		}	
-
+		osync_list_free(objformats);
 		/* Every sink can have different functions ... */
 		osync_objtype_sink_set_connect_func(sink, connect);
 		osync_objtype_sink_set_disconnect_func(sink, disconnect);

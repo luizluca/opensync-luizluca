@@ -8,8 +8,10 @@
 static const char *_format_sink_get_objformat(OSyncPluginResource *res) {
 
 	OSyncObjFormatSink *format_sink;
-	format_sink = (OSyncObjFormatSink *) osync_list_nth_data(osync_plugin_resource_get_objformat_sinks(res), 0);
+	OSyncList *objformats = osync_plugin_resource_get_objformat_sinks(res);
+	format_sink = (OSyncObjFormatSink *) osync_list_nth_data(objformats, 0);
 	fail_unless(!!format_sink, NULL);
+	osync_list_free(objformats);
 	return osync_objformat_sink_get_objformat(format_sink);
 }
 
@@ -675,15 +677,20 @@ START_TEST (plugin_config_resources)
 	fail_unless(!strcmp(_format_sink_get_objformat(resource), "barfoo"), NULL);
 
 	/* Check for correct number objformat sinks: 2 sinks! */
-	fail_unless(osync_list_length(osync_plugin_resource_get_objformat_sinks(resource)) == 2, NULL);
-
+	OSyncList *objformats = osync_plugin_resource_get_objformat_sinks(resource);
+	fail_unless(osync_list_length(objformats) == 2, NULL);
+	osync_list_free(objformats);
 	/* Check if removing of an objformat sink work at all.. */
 	/** reference format_sink2, otherwise refcount gets 0 */
 	osync_objformat_sink_ref(format_sink2);
 	osync_plugin_resource_remove_objformat_sink(resource, format_sink2);
-	fail_unless(osync_list_length(osync_plugin_resource_get_objformat_sinks(resource)) == 1, NULL);
+	objformats = osync_plugin_resource_get_objformat_sinks(resource);
+	fail_unless(osync_list_length(objformats) == 1, NULL);
+	osync_list_free(objformats);
 	osync_plugin_resource_add_objformat_sink(resource, format_sink2);
-	fail_unless(osync_list_length(osync_plugin_resource_get_objformat_sinks(resource)) == 2, NULL);
+	objformats = osync_plugin_resource_get_objformat_sinks(resource);
+	fail_unless(osync_list_length(objformats) == 2, NULL);
+	osync_list_free(objformats);
 	osync_objformat_sink_unref(format_sink2);
 
 	/* ObjType */

@@ -1122,20 +1122,23 @@ osync_bool osync_client_proxy_shutdown(OSyncClientProxy *proxy, OSyncError **err
 static osync_bool osync_client_proxy_check_resource(OSyncClientProxy *proxy, OSyncPluginResource *resource, OSyncError **error)
 {
 	OSyncList *format_sinks = osync_plugin_resource_get_objformat_sinks(resource);
-
+	OSyncList *o = NULL;
+	
 	/* OSyncPluginConfig should fail on validiation if format sinks are missing for any resource */
 	osync_assert(format_sinks);
 
-	for (; format_sinks; format_sinks = format_sinks->next) {
-		OSyncObjFormatSink *format_sink = format_sinks->data;	
+	for (o = format_sinks; o; o = o->next) {
+		OSyncObjFormatSink *format_sink = o->data;	
 		const char *objformat_name = osync_objformat_sink_get_objformat(format_sink);
 
 		if (!osync_format_env_find_objformat(proxy->formatenv, objformat_name)) {
 			osync_error_set(error, OSYNC_ERROR_PLUGIN_NOT_FOUND, "Plugin for format \"%s\" not found.", objformat_name);
+			osync_list_free(format_sinks);
 			return FALSE;
 		}
 	}
 
+	osync_list_free(format_sinks);
 	return TRUE;
 }
 

@@ -391,12 +391,12 @@ static osync_bool init(OSyncError **error) {
 
 				osync_plugin_info_add_objtype(plugin_info, sink);
 			}
-
-			o = osync_plugin_resource_get_objformat_sinks(res);
-			for (; o; o = o->next) {
+			OSyncList *objformats = osync_plugin_resource_get_objformat_sinks(res);
+			for ( o = objformats; o; o = o->next) {
 				OSyncObjFormatSink *format_sink = (OSyncObjFormatSink *) o->data; 
 				osync_objtype_sink_add_objformat_sink(sink, format_sink);
 			}
+			osync_list_free(objformats);
 		}
 
 		osync_plugin_config_unref(config);

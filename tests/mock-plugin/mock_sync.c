@@ -568,8 +568,8 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 	 * synchronize any objtype we configure it to sync and where a conversion
 	 * path to the file format can be found */
 	OSyncList *objtypesinks = osync_plugin_info_get_objtype_sinks(info);
-	OSyncList *list = objtypesinks;
-	while(list) {
+	OSyncList *list = NULL;
+	for (list = objtypesinks;list; list = list->next) {
 		MockDir *dir = osync_try_malloc0(sizeof(MockDir), error);
 		osync_assert(dir);
 
@@ -577,7 +577,6 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 
 		OSyncObjTypeSink *sink = (OSyncObjTypeSink*)list->data;
 		osync_assert(sink);
-		list = list->next;
 
 		const char *objtype = osync_objtype_sink_get_name(sink);
 		dir->res = osync_plugin_config_find_active_resource(config, objtype);
@@ -593,6 +592,7 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 		osync_assert(dir->objformat);
 		osync_objformat_ref(dir->objformat);
 
+		osync_list_free(format_sinks);
 		/*
 		const char *objformat = osync_objformat_get_name(dir->objformat); 
 		OSyncObjFormatSink *format_sink = osync_objformat_sink_new(objformat, error);

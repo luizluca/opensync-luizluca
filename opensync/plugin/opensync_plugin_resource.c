@@ -149,7 +149,7 @@ void osync_plugin_resource_set_preferred_format(OSyncPluginResource *resource, c
 OSyncList *osync_plugin_resource_get_objformat_sinks(OSyncPluginResource *resource)
 {
 	osync_assert(resource);
-	return resource->objformatsinks;
+	return osync_list_copy(resource->objformatsinks);
 }
 
 void osync_plugin_resource_add_objformat_sink(OSyncPluginResource *resource, OSyncObjFormatSink *formatsink)

@@ -1007,7 +1007,7 @@ static osync_bool _osync_plugin_config_assemble_resource_format(xmlNode *cur, OS
 
 static osync_bool _osync_plugin_config_assemble_resource(xmlNode *cur, OSyncPluginResource *res, OSyncError **error)
 {
-	OSyncList *o;
+	OSyncList *o = NULL, *objformats = NULL;
 	const char *preferred_format, *name, *mime, *objtype, *path, *url;
 	xmlNode *next, *node = NULL;
 	osync_bool res_enabled;
@@ -1024,11 +1024,14 @@ static osync_bool _osync_plugin_config_assemble_resource(xmlNode *cur, OSyncPlug
 	xmlNewChild(node, NULL, (xmlChar*)"Enabled", res_enabled ? (xmlChar*) "1" : (xmlChar*) "0");
 
 	next = xmlNewChild(node, NULL, (xmlChar*)"Formats", NULL);
-	for (o = osync_plugin_resource_get_objformat_sinks(res); o; o = o->next) {
+	objformats = osync_plugin_resource_get_objformat_sinks(res);
+	for (o = objformats; o; o = o->next) {
 		OSyncObjFormatSink *format_sink = o->data;
 		if (!_osync_plugin_config_assemble_resource_format(next, format_sink, error))
 			goto error;
 	}
+	osync_list_free(objformats);
+	
 	if ((preferred_format = osync_plugin_resource_get_preferred_format(res)))
 		xmlNewChild(next, NULL, (xmlChar*)"Preferred", (xmlChar*)preferred_format);
 

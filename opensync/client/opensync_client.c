@@ -581,6 +581,7 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 	const char *preferred_format = NULL;
 	OSyncList *o = NULL;
 	OSyncList *objtypesinks = NULL;
+	OSyncList *objformats = NULL;
 	OSyncList *list;
 	OSyncObjFormatSink *format_sink = NULL;
 	osync_bool couldinit;
@@ -690,11 +691,12 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 
 		preferred_format = osync_plugin_resource_get_preferred_format(res);
 		osync_objtype_sink_set_preferred_format(sink, preferred_format); 
-		o = osync_plugin_resource_get_objformat_sinks(res);
-		for (; o; o = o->next) {
+		objformats = osync_plugin_resource_get_objformat_sinks(res);
+		for (o = objformats; o; o = o->next) {
 			format_sink = (OSyncObjFormatSink *) o->data; 
 			osync_objtype_sink_add_objformat_sink(sink, format_sink);
 		}
+		osync_list_free(objformats);
 	}
 	
 	couldinit = osync_plugin_initialize(client->plugin, &(client->plugin_data), client->plugin_info, error);
