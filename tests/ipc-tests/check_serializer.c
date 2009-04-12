@@ -329,7 +329,9 @@ static osync_bool _compare_pluginconfig(OSyncPluginConfig *config1, OSyncPluginC
 	OSyncList *advancedopts1 = osync_plugin_config_get_advancedoptions(config1);
 	OSyncList *advancedopts2 = osync_plugin_config_get_advancedoptions(config2);
 	fail_unless(_compare_list(advancedopts1, advancedopts2, _compare_pluginconfig_advancedoption), NULL);
-
+	
+	osync_list_free(advancedopts1);
+	osync_list_free(advancedopts2);
 
 	return TRUE;
 }

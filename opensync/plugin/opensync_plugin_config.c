@@ -1338,7 +1338,8 @@ osync_bool osync_plugin_config_file_save(OSyncPluginConfig *config, const char *
 
 	/** Assemble... */
 	/* Advanced Options */
-	if ((options = osync_plugin_config_get_advancedoptions(config)))
+	options = config->advancedoptions;
+	if (options)
 		if (!_osync_plugin_config_assemble_advancedoptions(doc->children, options, error))
 			goto error_and_free;
 
@@ -1396,7 +1397,7 @@ void osync_plugin_config_set_supported(OSyncPluginConfig *config, OSyncPluginCon
 OSyncList *osync_plugin_config_get_advancedoptions(OSyncPluginConfig *config)
 {
 	osync_assert(config);
-	return config->advancedoptions;
+	return osync_list_copy(config->advancedoptions);
 }
 
 const char *osync_plugin_config_get_advancedoption_value_by_name(OSyncPluginConfig *config, const char *name)

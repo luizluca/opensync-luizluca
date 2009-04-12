@@ -1408,6 +1408,7 @@ osync_bool osync_marshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig *
 	OSyncPluginLocalization *local = NULL;
 	OSyncList *r = NULL;
 	OSyncList *aos = NULL;
+	OSyncList *options = NULL;
 
 	osync_assert(message);
 	osync_assert(config);
@@ -1458,14 +1459,17 @@ osync_bool osync_marshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig *
 			goto error;
 	}
 
-	aos = osync_plugin_config_get_advancedoptions(config);
+	options = osync_plugin_config_get_advancedoptions(config);
 	osync_message_write_uint(message, osync_list_length(aos));
 
-	for (; aos; aos = aos->next) {
+	for (aos = options; aos; aos = aos->next) {
 		OSyncPluginAdvancedOption *opt = aos->data;
-		if (!osync_marshal_pluginadvancedoption(message, opt, error))
+		if (!osync_marshal_pluginadvancedoption(message, opt, error)) {
+			osync_list_free(options);
 			goto error;
+		}
 	}
+	osync_list_free(options);
 	
 	return TRUE;
 

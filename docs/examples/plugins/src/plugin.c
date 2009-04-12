@@ -291,8 +291,9 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 	 * Process plugin specific advanced options 
 	 */
 	OSyncList *optslist = osync_plugin_config_get_advancedoptions(config);
-	for (; optslist; optslist = optslist->next) {
-		OSyncPluginAdvancedOption *option = optslist->data;
+	OSyncList *o;
+	for (o = optslist; o; o = o->next) {
+		OSyncPluginAdvancedOption *option = o->data;
 
 		const char *val = osync_plugin_advancedoption_get_value(option);
 		const char *name = osync_plugin_advancedoption_get_name(option);
@@ -305,6 +306,8 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 			}
 		}
 	}
+	osync_list_free(optslist);
+	
 	/*
 	 * Process Ressource options
 	 */

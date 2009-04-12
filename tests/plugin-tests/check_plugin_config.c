@@ -285,6 +285,7 @@ START_TEST (plugin_config_advancedoption_set_get)
 	advanced_options = osync_plugin_config_get_advancedoptions(config);
 	fail_unless(osync_list_length(advanced_options) == 1, NULL);
 	fail_unless(advanced_options->data == option, NULL);
+	osync_list_free(advanced_options);
 
 	const char *test_option = NULL;
 	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "foo");
@@ -298,6 +299,7 @@ START_TEST (plugin_config_advancedoption_set_get)
 	advanced_options = osync_plugin_config_get_advancedoptions(config);
 	fail_unless(osync_list_length(advanced_options) == 1, NULL);
 	fail_unless(advanced_options->data == option, NULL);
+	osync_list_free(advanced_options);
 
 	OSyncPluginAdvancedOption *option2 = osync_plugin_advancedoption_new(&error);
 	fail_unless(error == NULL, NULL);
@@ -308,7 +310,8 @@ START_TEST (plugin_config_advancedoption_set_get)
 
 	advanced_options = osync_plugin_config_get_advancedoptions(config);
 	fail_unless(osync_list_length(advanced_options) == 2, NULL);
-
+	osync_list_free(advanced_options);
+	
 	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "foo");
 	fail_unless(test_option == osync_plugin_advancedoption_get_value(option));
 
@@ -324,6 +327,7 @@ START_TEST (plugin_config_advancedoption_set_get)
 	osync_plugin_config_remove_advancedoption(config, option3);
 	advanced_options = osync_plugin_config_get_advancedoptions(config);
 	fail_unless(osync_list_length(advanced_options) == 2, NULL);
+	osync_list_free(advanced_options);
 
 	osync_plugin_config_remove_advancedoption(config, option);
 	advanced_options = osync_plugin_config_get_advancedoptions(config);
@@ -333,6 +337,7 @@ START_TEST (plugin_config_advancedoption_set_get)
 	fail_unless(test_option == NULL);
 	test_option = osync_plugin_config_get_advancedoption_value_by_name(config, "bar");
 	fail_unless(test_option == osync_plugin_advancedoption_get_value(option2));
+	osync_list_free(advanced_options);
 
 	osync_plugin_config_remove_advancedoption(config, option2);
 	fail_unless(osync_plugin_config_get_advancedoptions(config) == NULL, NULL);
@@ -954,7 +959,9 @@ START_TEST (plugin_config_save_and_load)
 
 	}
 
-
+	osync_list_free(reloaded_resources);
+	osync_list_free(reloaded_advancedoptions);
+	
 	osync_plugin_config_unref(config);
 	osync_plugin_config_unref(reloaded_config);
 
