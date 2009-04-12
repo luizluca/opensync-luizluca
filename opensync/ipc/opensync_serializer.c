@@ -736,8 +736,7 @@ osync_bool osync_marshal_pluginadvancedoption_param(OSyncMessage *message, OSync
 	unsigned int type = 0;
 	const char *value = NULL;
 	unsigned int num_valenum = 0;
-	unsigned int i;
-	OSyncList *valenum = NULL;
+	OSyncList *valenum = NULL, *v = NULL;
 
 	osync_assert(message);
 	osync_assert(param);
@@ -775,10 +774,11 @@ osync_bool osync_marshal_pluginadvancedoption_param(OSyncMessage *message, OSync
 	num_valenum = osync_list_length(valenum);
 	osync_message_write_uint(message, num_valenum);
 
-	for (i=0; i < num_valenum; i++) {
-		value = osync_list_nth_data(valenum, i);
+	for (v = valenum; v; v = v->next) {
+		value = v->data;
 		osync_message_write_string(message, value);
 	}
+	osync_list_free(valenum);
 	
 	return TRUE;
 }

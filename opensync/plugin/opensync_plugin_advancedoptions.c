@@ -419,7 +419,7 @@ void osync_plugin_advancedoption_param_set_type(OSyncPluginAdvancedOptionParamet
 OSyncList *osync_plugin_advancedoption_param_get_valenums(OSyncPluginAdvancedOptionParameter *param)
 {
 	osync_return_val_if_fail(param, NULL);
-	return param->valenum;
+	return osync_list_copy(param->valenum);
 }
 
 void osync_plugin_advancedoption_param_add_valenum(OSyncPluginAdvancedOptionParameter *param, const char *value)

@@ -350,6 +350,7 @@ START_TEST (plugin_config_advancedoption_param)
 	char *testbed = setup_testbed(NULL);
 
 	OSyncError *error = NULL;
+	OSyncList *valenums = NULL;
 	OSyncPluginConfig *config = osync_plugin_config_new(&error);
 	fail_unless(error == NULL, NULL);
 	fail_unless(config != NULL, NULL);
@@ -370,11 +371,13 @@ START_TEST (plugin_config_advancedoption_param)
 	osync_plugin_advancedoption_param_add_valenum(param, "foo");
 
 	/* Expected result: 2 - 1x foo, 1x bar */
-	fail_unless(osync_list_length(osync_plugin_advancedoption_param_get_valenums(param)) == 2, NULL);
+	valenums = osync_plugin_advancedoption_param_get_valenums(param);
+	fail_unless(osync_list_length(valenums) == 2, NULL);
 
 	/* Expected resut: 1 - 1x bar */
 	osync_plugin_advancedoption_param_remove_valenum(param, "bar");
-	fail_unless(osync_list_length(osync_plugin_advancedoption_param_get_valenums(param)) == 1, NULL);
+	valenums = osync_plugin_advancedoption_param_get_valenums(param);
+	fail_unless(osync_list_length(valenums) == 1, NULL);
 
 	/*****/
 
@@ -751,6 +754,7 @@ START_TEST (plugin_config_save_and_load)
 
 	OSyncError *error = NULL;
 	OSyncList *valenums = NULL;
+	OSyncList *paramvalenums = NULL;
 	OSyncPluginConfig *config = osync_plugin_config_new(&error);
 	OSyncPluginConfig *reloaded_config = osync_plugin_config_new(&error); 
 	fail_unless(error == NULL, NULL);
@@ -788,7 +792,9 @@ START_TEST (plugin_config_save_and_load)
 
 	osync_plugin_advancedoption_param_add_valenum(param, "BAR1");
 	osync_plugin_advancedoption_param_add_valenum(param, "BAR2");
-	fail_unless(osync_list_length(osync_plugin_advancedoption_param_get_valenums(param)) == 2, NULL);
+	paramvalenums = osync_plugin_advancedoption_param_get_valenums(param);
+	fail_unless(osync_list_length(paramvalenums) == 2, NULL);
+	osync_list_free(paramvalenums);
 	osync_plugin_advancedoption_add_parameter(option, param);
 	osync_plugin_advancedoption_param_unref(param);
 
@@ -939,6 +945,7 @@ START_TEST (plugin_config_save_and_load)
 				g_free(value);
 
 			}
+			osync_list_free(reloaded_advancedoption_param_valenums);
 
 			fail_unless(!strcmp(osync_plugin_advancedoption_param_get_value(p->data), "BAR1"));
 

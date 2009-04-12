@@ -1117,10 +1117,12 @@ static osync_bool _osync_plugin_config_assemble_advancedoption_param(xmlNode *cu
 	xmlNewChild(node, NULL, BAD_CAST "Type", BAD_CAST osync_plugin_advancedoption_param_get_type_string(param));
 
 	/* ValEnum */
-	for (v = osync_plugin_advancedoption_param_get_valenums(param); v; v = v->next) {
+	OSyncList *valenums = osync_plugin_advancedoption_param_get_valenums(param);
+	for (v = valenums; v; v = v->next) {
 		char *valenum = v->data;
 		xmlNewChild(node, NULL, BAD_CAST "ValEnum", BAD_CAST valenum);
 	}
+	osync_list_free(valenums);
 
 	/* Value */
 	if (!osync_plugin_advancedoption_param_get_value(param)) {

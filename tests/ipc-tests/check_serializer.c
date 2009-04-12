@@ -221,8 +221,13 @@ static osync_bool _compare_pluginconfig_advacedoption_parameters(const void *a, 
 	OSyncList *valenums1 = osync_plugin_advancedoption_param_get_valenums(param1); 
 	OSyncList *valenums2 = osync_plugin_advancedoption_param_get_valenums(param2); 
 
-	if (!_compare_list(valenums1, valenums2, _compare_string))
+	if (!_compare_list(valenums1, valenums2, _compare_string)) {
+		osync_list_free(valenums1);
+		osync_list_free(valenums2);
 		return FALSE;
+	}
+	osync_list_free(valenums1);
+	osync_list_free(valenums2);
 
 	const char *value1 = osync_plugin_advancedoption_param_get_value(param1);
 	const char *value2 = osync_plugin_advancedoption_param_get_value(param2);
