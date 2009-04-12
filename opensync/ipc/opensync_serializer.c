@@ -1460,7 +1460,7 @@ osync_bool osync_marshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig *
 	}
 
 	options = osync_plugin_config_get_advancedoptions(config);
-	osync_message_write_uint(message, osync_list_length(aos));
+	osync_message_write_uint(message, osync_list_length(options));
 
 	for (aos = options; aos; aos = aos->next) {
 		OSyncPluginAdvancedOption *opt = aos->data;
