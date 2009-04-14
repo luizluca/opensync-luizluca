@@ -105,7 +105,9 @@ typedef void (* OSyncSinkCommitFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *inf
  * @brief Callback function to which got called after all changes got committed
  * 
  * This function is optional and set through osync_objtype_sink_set_comittedall_func.
- * It is called after all changes got committed even if an error appeared while committing.
+ * It is called after all changes got committed to the sink even if an error appeared while
+ * committing. If a function is required that is called after all changes to all members/peers
+ * are committed please use OSyncSinkSyncDoneFn
  * 
  * @param sink Pointer to the Sink which corresponds to the functions
  * @param info PluginInfo pointer e.g. to get all formats
