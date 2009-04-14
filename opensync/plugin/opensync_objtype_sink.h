@@ -121,7 +121,7 @@ typedef void (* OSyncSinkCommittedAllFn) (OSyncObjTypeSink *sink, OSyncPluginInf
  * 
  * The read sink function is used to support the "ignore" conflict resolution.
  * The read() function requires that the protocol/interface is able to query the native datastore for single entries.
- * This plugin funciton is optional.
+ * This function is optional set through osync_objtype_sink_set_read_func.
  * 
  * @param sink Pointer to the Sink which corresponds to the functions
  * @param info PluginInfo pointer e.g. to get all formats
@@ -134,7 +134,8 @@ typedef void (* OSyncSinkReadFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info,
 /**
  * @brief Callback function to which got called after sync is finished by all members/peers
  * 
- * This function could be used to store or clean up plugin specific data after a sync process
+ * This function could be used to store or clean up plugin specific data after a sync process.
+ * It is optional and set through osync_objtype_sink_set_sync_done_func.
  * 
  * @param sink Pointer to the Sink which corresponds to the functions
  * @param info PluginInfo pointer e.g. to get all formats
@@ -147,8 +148,9 @@ typedef void (* OSyncSinkSyncDoneFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *i
  * @brief Callback function which got called after all members are connected
  * 
  * Called after all peers have connected.  At this point the slow sync status of
- * all peers is known.  If your plugin must connect differently depending on the
+ * all peers is known. If your plugin must connect differently depending on the
  * slow sync status of the group (e.g. syncml) then you may perform that connection here.
+ * This function is optional and set through osync_objtype_sink_set_connect_done_func.
  * 
  * @param sink Pointer to the Sink which corresponds to the functions
  * @param info PluginInfo pointer e.g. to get all formats
