@@ -184,7 +184,7 @@ static void mock_disconnect(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSync
 //typedef void (* OSyncSinkCommittedAllFn) (void *data, OSyncPluginInfo *info, OSyncContext *ctx);
 
 
-static osync_bool mock_read(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data)
+static void mock_read(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p, %p)", __func__, sink, info, ctx, change, data);
 	MockDir *dir = data;
@@ -219,7 +219,7 @@ static osync_bool mock_read(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSync
 	g_free(filename);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
-	return TRUE;
+	return;
 }
 
 static osync_bool mock_write(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data)

@@ -29,14 +29,131 @@
  */
 /*@{*/
 
+/**
+ * @brief Callback function to connect a sink
+ * 
+ * This function is optional and set through osync_objtype_sink_set_connect_func.
+ * Use this function to set up a connection to your device, protocol, ...
+ * It could be used to establish Object Type specific connection. If the connection establishment 
+ * is an Object Type  neutral task (e.g. Bluetooth, USB, ...) and needs to be done only once,
+ * then the Main Sink should be given a connect function.
+ * Often this function is also used to determine if a slow-sync is necessary
+ * 
+ * @param sink Pointer to the Sink which corresponds to the functions
+ * @param info PluginInfo pointer e.g. to get all formats
+ * @param ctx Context to report success or failure
+ * @param data Pointer to the data which is passed in osync_objtype_sink_set_userdata
+ */
 typedef void (* OSyncSinkConnectFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data);
+
+/**
+ * @brief Callback function to disconnect a sink
+ * 
+ * This function is optional and set through osync_objtype_sink_set_disconnect_func.
+ * Use this function to tear down an established connection
+ * 
+ * @param sink Pointer to the Sink which corresponds to the functions
+ * @param info PluginInfo pointer e.g. to get all formats
+ * @param ctx Context to report success or failure
+ * @param data Pointer to the data which is passed in osync_objtype_sink_set_userdata
+ */
 typedef void (* OSyncSinkDisconnectFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data);
+
+/**
+ * @brief Callback function to read all changes from a sink
+ * 
+ * This function is required and set through osync_objtype_sink_set_get_changes_func.
+ * Use this function to read all changes from your device/plugin.
+ * The Get Changes function gets called by the OpenSync Framework to request changes
+ * since last synchronization or all entries of the Object Type specific resource.
+ * The later case MUST be performed when a Slow Sync got requested by the OpenSync
+ * Synchronization framework.On a Slow Sync the changetype (for all changes) is 
+ * OSYNC_CHANGE_TYPE_ADDED. On a regular (fast sync) synchronization it's up to the
+ * Get Changes function to determine the changetype. Every change has to be reported
+ * with osync_context_report_change(). If an error occurs the function must reply on the
+ * context with osync_context_report_error() and stop/leave this function ASAP. If the
+ * protocol, application or device isn't able to report changed entries since last sync,
+ * the OpenSync Helper Hashtable should be used to determine the Changetype of the entry.
+ * 
+ * @param sink Pointer to the Sink which corresponds to the functions
+ * @param info PluginInfo pointer e.g. to get all formats
+ * @param ctx Context to report success or failure and all changes
+ * @param slow_sync TRUE if a slow sync is requested
+ * @param data Pointer to the data which is passed in osync_objtype_sink_set_userdata
+ */
 typedef void (* OSyncSinkGetChangesFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data);
+
+/**
+ * @brief Callback function to commit a change to a sink
+ * 
+ * This function is required and set through osync_objtype_sink_set_commit_func.
+ * It gets called with a single OSyncChange object, which MUST be committed
+ * to the application or device. If the commit failed the context MUST be replied with
+ * osync_context_report_error(). On success the context get replied with osync_context_success().
+ * If a hashtable is already involved in the get_changes function, then the Commit function
+ * should also update the hashtable for the entries which get committed.
+ * 
+ * @param sink Pointer to the Sink which corresponds to the functions
+ * @param info PluginInfo pointer e.g. to get all formats
+ * @param ctx Context to report success or failure
+ * @param change Entry to commit
+ * @param data Pointer to the data which is passed in osync_objtype_sink_set_userdata
+ */
 typedef void (* OSyncSinkCommitFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data);
-typedef osync_bool (* OSyncSinkWriteFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data);
+
+/**
+ * @brief Callback function to which got called after all changes got committed
+ * 
+ * This function is optional and set through osync_objtype_sink_set_comittedall_func.
+ * It is called after all changes got committed even if an error appeared while committing.
+ * 
+ * @param sink Pointer to the Sink which corresponds to the functions
+ * @param info PluginInfo pointer e.g. to get all formats
+ * @param ctx Context to report success or failure
+ * @param data Pointer to the data which is passed in osync_objtype_sink_set_userdata
+ */
 typedef void (* OSyncSinkCommittedAllFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data);
-typedef osync_bool (* OSyncSinkReadFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data);
+
+/**
+ * @brief Callback function to read the data of a change
+ * 
+ * The read sink function is used to support the "ignore" conflict resolution.
+ * The read() function requires that the protocol/interface is able to query the native datastore for single entries.
+ * This plugin funciton is optional.
+ * 
+ * @param sink Pointer to the Sink which corresponds to the functions
+ * @param info PluginInfo pointer e.g. to get all formats
+ * @param ctx Context to report success or failure and the change
+ * @param change Change that should be read again
+ * @param data Pointer to the data which is passed in osync_objtype_sink_set_userdata
+ */
+typedef void (* OSyncSinkReadFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, OSyncChange *change, void *data);
+
+/**
+ * @brief Callback function to which got called after sync is finished by all members/peers
+ * 
+ * This function could be used to store or clean up plugin specific data after a sync process
+ * 
+ * @param sink Pointer to the Sink which corresponds to the functions
+ * @param info PluginInfo pointer e.g. to get all formats
+ * @param ctx Context to report success or failure
+ * @param data Pointer to the data which is passed in osync_objtype_sink_set_userdata
+ */
 typedef void (* OSyncSinkSyncDoneFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, void *data);
+
+/**
+ * @brief Callback function which got called after all members are connected
+ * 
+ * Called after all peers have connected.  At this point the slow sync status of
+ * all peers is known.  If your plugin must connect differently depending on the
+ * slow sync status of the group (e.g. syncml) then you may perform that connection here.
+ * 
+ * @param sink Pointer to the Sink which corresponds to the functions
+ * @param info PluginInfo pointer e.g. to get all formats
+ * @param ctx Context to report success or failure
+ * @param slow_sync TRUE if a slow sync is requested
+ * @param data Pointer to the data which is passed in osync_objtype_sink_set_userdata
+ */
 typedef void (* OSyncSinkConnectDoneFn) (OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext *ctx, osync_bool slow_sync, void *data);
 
 /** @brief Creates a new main sink
