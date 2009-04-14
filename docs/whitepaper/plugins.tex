@@ -60,7 +60,8 @@ The passed OSyncPluginInfo contains a list of OSyncObjTypeSink.  Each of these
 represents an objtype (e.g. contact, event) that the engine is capable of
 syncing.  For each of these the plugin must:
 
-Register Sink functions using \verb|osync_objtype_sink_set_functions|
+Register Sink functions using \verb|osync_objtype_sink_set_xyz_func 
+i.e. osync_objtype_sink_set_connect_func|
 
 If a MainSink is needed (e.g. to connect to an interface that is shared between
 several objtype sinks) it can be created and registered using:
@@ -138,8 +139,7 @@ Disconnect & Optional
 \end{tabular}
 \end{center}
 
-The sink for which the sink function has been called may be found using
-\verb|osync_plugin_info_get_sink|
+The sink for which the sink function has been called is passed as the first parameter
 
 \subsection{Connect}
 The Connect function is available for all Object Type Sinks and could be used to
@@ -151,7 +151,7 @@ otherwise be called for each Object Type for the same interface.
 
 It is usual at this stage to compare the stored anchor with that from the peer
 using \verb|osync_sink_state_equal|.  If the anchor has changed then the need for
-a slow sync should be set using \verb|osync_objtype_sink_set_slowsync|
+a slow sync should be set using \verb|osync_context_report_slowsync|
 
 This function MUST only establish a connection to the device or resource. After
 the connection has been successfully established successful the plugin MUST
@@ -166,8 +166,8 @@ group slow sync status then you may perform that connection here.
 The Get Changes function gets called by the OpenSync Framework to request changes
 since last synchronization or all entries of the Object Type specific resource.
 The later case MUST be performed when a Slow Sync got requested by the OpenSync
-Synchronization framework. The Slow Sync status of this Sink MUST be
-checked with \verb|osync_objtype_sink_get_slowsync()|. On a Slow Sync the 
+Synchronization framework. The Slow Sync status of this Sink is passed as a osync_bool
+slow_sync parameter. On a Slow Sync the 
 Changetype (for all changes) is \verb|OSYNC_CHANGE_TYPE_ADDED|. On a regular 
 (fast sync) synchronization it's up to the Get Changes function to determine 
 the Changetype. Every change has to be reported with 
