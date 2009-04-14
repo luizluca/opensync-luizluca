@@ -1299,7 +1299,7 @@ static osync_bool _osync_client_handle_committed_all(OSyncClient *client, OSyncM
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
 
 	osync_message_read_string(message, &objtype);
-	osync_trace(TRACE_INTERNAL, "Searching sink for %s", objtype);
+	osync_trace(TRACE_INTERNAL, "Searching sink for %s", objtype ? objtype : "(MainSink)");
 
 	if (objtype) {
 		sink = osync_plugin_info_find_objtype(client->plugin_info, objtype);
