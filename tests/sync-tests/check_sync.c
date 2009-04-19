@@ -139,7 +139,7 @@ START_TEST (sync_easy_new)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -207,7 +207,7 @@ START_TEST (sync_easy_new_del)
 	fail_unless(osync_engine_synchronize_and_block(engine, &error), NULL);
 	fail_unless(error == NULL, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -275,7 +275,7 @@ START_TEST (sync_easy_new_del)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	maptable = mappingtable_load(path, "mockobjtype1", 0);
@@ -381,9 +381,9 @@ START_TEST (sync_easy_conflict)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 1, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1/testdata comp_data)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data2/testdata comp_data)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
+	fail_unless(osync_testing_diff("data1/testdata", "comp_data"));
+	fail_unless(osync_testing_diff("data2/testdata", "comp_data"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -487,7 +487,7 @@ START_TEST (sync_easy_new_mapping)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -555,7 +555,7 @@ START_TEST (sync_easy_new_mapping)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	maptable = mappingtable_load(path, "mockobjtype1", 0);
@@ -655,7 +655,7 @@ START_TEST (sync_easy_conflict_duplicate)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 1, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 2);
@@ -681,7 +681,7 @@ START_TEST (sync_easy_conflict_duplicate)
 	check_hash(table, "testdata-dupe");
 	osync_hashtable_unref(table);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	osync_testing_system_abort("rm -f data1/testdata-dupe");
 	
 	reset_counters();
@@ -728,8 +728,7 @@ START_TEST (sync_easy_conflict_duplicate)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
-
+	fail_unless(osync_testing_diff("data1", "data2"));
 
 	path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -842,7 +841,7 @@ START_TEST (sync_easy_conflict_abort)
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
 	/* Still conflicts! */
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 0);
@@ -871,7 +870,7 @@ START_TEST (sync_easy_conflict_abort)
 	  osync_hashtable_unref(table);
 	*/
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
+	fail_unless(!osync_testing_diff("data1", "data2"));
 //	osync_testing_system_abort("rm -f data1/testdata-dupe");
 	
 	fail_unless(!synchronize_once(engine, &error), NULL);
@@ -919,8 +918,7 @@ START_TEST (sync_easy_conflict_abort)
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
 	/* Still different */
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" != \"x\""), NULL);
-
+	fail_unless(!osync_testing_diff("data1", "data2"));
 
 	path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	maptable = mappingtable_load(path, "mockobjtype1", 0);
@@ -973,7 +971,7 @@ START_TEST (sync_conflict_duplicate)
 	synchronize_once(engine, NULL);
 	
 	osync_testing_system_abort("diff -x \".*\" data1 data2");
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	OSyncMappingTable *maptable = mappingtable_load(group, 3, 0);
 	check_mapping(maptable, 1, -1, 2, "testdata");
@@ -997,11 +995,12 @@ START_TEST (sync_conflict_duplicate)
 	osync_hashtable_close(table);
 	
 	fail_unless(!system("rm -f data1/testdata-dupe data2/testdata-dupe-dupe"), NULL);
+
 	
 	synchronize_once(engine, NULL);
 	osengine_finalize(engine);
 	osengine_free(engine);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(num_conflicts == 0, NULL);
 	
 	maptable = mappingtable_load(group, 1, 0);
@@ -1101,7 +1100,7 @@ START_TEST (sync_conflict_duplicate2)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 1, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 2);
@@ -1178,8 +1177,8 @@ START_TEST (sync_conflict_duplicate2)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 1, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(diff -x \".*\" data1/testdata comp_data)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
+	fail_unless(osync_testing_diff("data1/testdata", "comp_data"));
 	
 	path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -1288,7 +1287,7 @@ START_TEST (sync_conflict_delay)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 3, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 3);
@@ -1366,7 +1365,7 @@ START_TEST (sync_conflict_delay)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	maptable = mappingtable_load(path, "mockobjtype1", 0);
@@ -1430,7 +1429,7 @@ START_TEST (sync_conflict_deldel)
 	fail_unless(osync_engine_synchronize_and_block(engine, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	reset_counters();
 	osync_testing_system_abort("rm data1/testdata");
@@ -1478,7 +1477,7 @@ START_TEST (sync_conflict_deldel)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 0);
@@ -1542,7 +1541,8 @@ START_TEST (sync_moddel)
 	fail_unless(osync_engine_synchronize_and_block(engine, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
+
 	fail_unless(num_mapping_conflicts == 0, NULL);
 	reset_counters();
 	
@@ -1587,7 +1587,7 @@ START_TEST (sync_moddel)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 1, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -1655,7 +1655,7 @@ START_TEST (sync_moddel)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	maptable = mappingtable_load(path, "mockobjtype1", 0);
@@ -1719,7 +1719,8 @@ START_TEST (sync_conflict_moddel)
 	fail_unless(osync_engine_synchronize_and_block(engine, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
+
 	fail_unless(num_mapping_conflicts == 0, NULL);
 	reset_counters();
 	
@@ -1769,7 +1770,7 @@ START_TEST (sync_conflict_moddel)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 1, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 0);
@@ -1787,8 +1788,8 @@ START_TEST (sync_conflict_moddel)
 	g_free(path);
 	osync_hashtable_unref(table);
 	
-	fail_unless(!system("test \"x$(ls data1)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_directory_is_empty("data1"));
+	fail_unless(osync_testing_directory_is_empty("data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -1871,7 +1872,7 @@ START_TEST (sync_easy_dualdel)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 2);
@@ -1947,7 +1948,7 @@ START_TEST (sync_easy_dualdel)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	maptable = mappingtable_load(path, "mockobjtype1", 0);
@@ -1965,8 +1966,8 @@ START_TEST (sync_easy_dualdel)
 	g_free(path);
 	osync_hashtable_unref(table);
 	
-	fail_unless(!system("test \"x$(ls data1)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_directory_is_empty("data1"));
+	fail_unless(osync_testing_directory_is_empty("data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -2062,7 +2063,7 @@ START_TEST (sync_large)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 2, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 10);
@@ -2195,7 +2196,7 @@ START_TEST (sync_large)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 4, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	maptable = mappingtable_load(path, "mockobjtype1", 10);
@@ -2314,9 +2315,8 @@ START_TEST (sync_large)
 	fail_unless(num_mapping_solved == 10, NULL);
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
-	
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	maptable = mappingtable_load(path, "mockobjtype1", 0);
@@ -2334,8 +2334,8 @@ START_TEST (sync_large)
 	g_free(path);
 	osync_hashtable_unref(table);
 	
-	fail_unless(!system("test \"x$(ls data1)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_directory_is_empty("data1"));
+	fail_unless(osync_testing_directory_is_empty("data2"));
 
 	g_free(formatdir);
 	g_free(plugindir);
@@ -2534,7 +2534,7 @@ START_TEST (sync_detect_obj)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" file-1 file-2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("file-1", "file-2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -2764,7 +2764,7 @@ START_TEST (sync_detect_obj2)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 	
-	fail_unless(!system("test \"x$(diff -x \".*\" file-1 file-2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("file-1", "file-2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -2875,7 +2875,7 @@ START_TEST (sync_slowsync_connect)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -2973,7 +2973,7 @@ START_TEST (sync_slowsync_connect)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data3 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data3", "data2"));
 	
 	path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -3087,7 +3087,7 @@ START_TEST (sync_slowsync_mainsink_connect)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -3184,7 +3184,7 @@ START_TEST (sync_slowsync_mainsink_connect)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -3337,7 +3337,7 @@ START_TEST (sync_initial_slow_sync)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -3449,7 +3449,7 @@ START_TEST (sync_mixed_objtype)
 	fail_unless(num_mapping_errors == 0, NULL);
 	fail_unless(num_mapping_conflicts == 0, NULL);
 
-	fail_unless(!system("test \"x$(diff -x \".*\" data1 data2)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("data1", "data2"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
