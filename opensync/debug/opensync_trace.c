@@ -143,16 +143,13 @@ void osync_trace(OSyncTraceType type, const char *message, ...)
 		tabs = GPOINTER_TO_INT(g_private_get(current_tabs));
 	
 #ifdef _WIN32
-	if (!thread_id)
-		thread_id = g_private_new (NULL);
-	id = GPOINTER_TO_INT(thread_id);
 	pid = _getpid();
 	endline = "\r\n";
 #else
-	id = (unsigned long int)pthread_self();
 	pid = getpid();
 	endline = "\n";
 #endif
+	id = (unsigned long int)g_thread_self();
 	logfile = g_strdup_printf("%s%cThread%lu-%i.log", trace, G_DIR_SEPARATOR, id, pid);
 	
 	va_start(arglist, message);
