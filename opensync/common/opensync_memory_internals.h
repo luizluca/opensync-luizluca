@@ -21,6 +21,15 @@
 #ifndef _OPENSYNC_MEMORY_INTERNALS_H
 #define _OPENSYNC_MEMORY_INTERNALS_H
 
+/** @brief Bit counting
+ * 
+ * MIT HAKMEM Count, Bit counting in constant time and memory. 
+ * 
+ * result can't be greater than 32 on 32 Bit systems or 64 on 64 Bit systems
+ * @param u unsigned integer value to count bits
+ * @returns The bit counting result 
+ * 
+ */
 unsigned char osync_bitcount(unsigned int u);
 
 #endif /* _OPENSYNC_MEMORY_INTERNALS_H */

@@ -50,15 +50,6 @@ void osync_free(void *ptr)
 	g_free(ptr);
 }
 
-/*! @brief Bit counting
- * 
- * MIT HAKMEM Count, Bit counting in constant time and memory. 
- * 
- * result can't be greater than 32 on 32 Bit systems or 64 on 64 Bit systems
- * @param u unsigned integer value to count bits
- * @returns The bit counting result 
- * 
- */
 unsigned char osync_bitcount(unsigned int u)
 {
 	unsigned int uCount = u - ((u >> 1) & 033333333333) - ((u >> 2) & 011111111111);
