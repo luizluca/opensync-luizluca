@@ -458,9 +458,9 @@ void check_empty(const char *testbed)
 	}
 
 	/* make sure the data directories are empty */
- 	fail_unless(!system("test \"x$(ls data1)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data2)\" = \"x\""), NULL);
-	fail_unless(!system("test \"x$(ls data3)\" = \"x\""), NULL);
+ 	fail_unless(osync_testing_directory_is_empty("data1"), NULL);
+ 	fail_unless(osync_testing_directory_is_empty("data2"), NULL);
+ 	fail_unless(osync_testing_directory_is_empty("data3"), NULL);
 }
 
 void destroy_engine(OSyncEngine *engine)
@@ -1030,7 +1030,7 @@ START_TEST (multisync_conflict_hybrid_choose)
 
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
-	fail_unless(!system("test \"x$(diff newdata2 data2/testdata)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("newdata2", "data2/testdata"));
 	
 	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
 	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", 1);
@@ -1315,7 +1315,7 @@ START_TEST (multisync_conflict_changetype_duplicate)
 
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
-	fail_unless(!system("test \"x$(diff newdata data1/testdata)\" = \"x\""), NULL);
+	fail_unless(osync_testing_diff("newdata", "data1/testdata"));
 
 	const char *uids[] = {"testdata"};
 	validate_mapping_table(testbed, 3, uids, 1);
@@ -1379,8 +1379,7 @@ START_TEST (multisync_conflict_changetype_duplicate2)
 
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
-	fail_unless(!system("test \"x$(diff newdata2 data1/testdata)\" = \"x\""), NULL);
-
+	fail_unless(osync_testing_diff("newdata2", "data1/testdata"));
 	
 	const char *uids[] = {"testdata"};
 	validate_mapping_table(testbed, 3, uids, 1);
