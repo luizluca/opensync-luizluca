@@ -427,12 +427,12 @@ void hashtable_simple_load_and_check(const char *testbed, int group)
 	osync_hashtable_unref(table);
 }
 
-void hashtable_load_and_check(const char *testbed, int group, const char *uids[], uint num_uids)
+void hashtable_load_and_check(const char *testbed, int group, const char *uids[], unsigned int num_uids)
 {
 	char *path = g_strdup_printf("%s/configs/group/%d/hashtable.db", testbed, group);
 	OSyncHashTable *table = hashtable_load(path, "mockobjtype1", num_uids);
 	g_free(path);
-	uint i;
+	unsigned int i;
 	for (i = 0; i < num_uids; i++) {
 		check_hash(table, uids[i]);
 	}
@@ -492,7 +492,7 @@ START_TEST (multisync_easy_mod)
 	fail_unless(num_change_read == 1, NULL);
 	fail_unless(num_engine_end_conflicts = 1, NULL);
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	osync_testing_system_abort("cp newdata data3/testdata");
 	
 	synchronize_once(engine, NULL);
@@ -549,7 +549,7 @@ START_TEST (multisync_dual_mod)
 	fail_unless(num_change_read == 1, NULL);
 	fail_unless(num_engine_end_conflicts == 1, NULL);
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	osync_testing_system_abort("cp newdata data1/testdata");
 	osync_testing_system_abort("cp newdata data3/testdata");
 	
@@ -611,7 +611,7 @@ START_TEST (multisync_triple_mod)
 	fail_unless(num_change_read == 1, NULL);
 	fail_unless(num_engine_end_conflicts == 1, NULL);
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	osync_testing_system_abort("cp newdata data1/testdata");
 	osync_testing_system_abort("cp newdata data2/testdata");
 	osync_testing_system_abort("cp newdata data3/testdata");
@@ -898,7 +898,7 @@ START_TEST (multisync_conflict_changetype_choose)
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	osync_testing_system_abort("rm -f data1/testdata");
 	osync_testing_system_abort("cp newdata data3/testdata");
@@ -965,7 +965,7 @@ START_TEST (multisync_conflict_changetype_choose2)
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	osync_testing_system_abort("rm -f data1/testdata");
 	osync_testing_system_abort("cp newdata data3/testdata");
@@ -1010,9 +1010,9 @@ START_TEST (multisync_conflict_hybrid_choose)
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	osync_testing_system_abort("rm -f data1/testdata");
 	osync_testing_system_abort("cp newdata data3/testdata");
@@ -1078,7 +1078,7 @@ void multisync_conflict_hybrid_choose2_inner(const char *testbed)
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	osync_testing_system_abort("rm -f data1/testdata");
 	osync_testing_system_abort("cp newdata data3/testdata");
@@ -1298,7 +1298,7 @@ START_TEST (multisync_conflict_changetype_duplicate)
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	osync_testing_system_abort("rm -f data1/testdata");
 	osync_testing_system_abort("cp newdata data3/testdata");
@@ -1361,7 +1361,7 @@ START_TEST (multisync_conflict_changetype_duplicate2)
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	osync_testing_system_abort("rm -f data2/testdata");
 	osync_testing_system_abort("rm -f data3/testdata");
@@ -1419,7 +1419,7 @@ START_TEST (multisync_conflict_hybrid_duplicate)
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	osync_testing_system_abort("rm -f data2/testdata");
 	osync_testing_system_abort("cp newdata data3/testdata");
@@ -1521,7 +1521,7 @@ START_TEST (multisync_multi_conflict)
 	
 
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	/* Should end up with 
 	   testdata(newdata) - 2 writes
@@ -1619,7 +1619,7 @@ void multisync_delayed_conflict_handler_inner(const char *testbed)
 	fail_unless(num_change_written == 6, NULL);
 	fail_unless(num_engine_end_conflicts == 1, NULL);
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	osync_testing_system_abort("rm -f data2/testdata");
 	osync_testing_system_abort("cp newdata data3/testdata");
@@ -1673,7 +1673,7 @@ void multisync_delayed_slow_inner(const char *testbed)
 	fail_unless(error == NULL, NULL);
 	
 	osync_testing_system_abort("cp newdata data3/testdata1");
-	setenv("SLOW_REPORT", "2", TRUE);
+	g_setenv("SLOW_REPORT", "2", TRUE);
 	
 	synchronize_once(engine, NULL);
 
@@ -1694,7 +1694,7 @@ void multisync_delayed_slow_inner(const char *testbed)
 	fail_unless(num_change_written == 4, NULL);
 	fail_unless(num_engine_end_conflicts == 1, NULL);
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	osync_testing_system_abort("cp newdata data3/testdata");
 
@@ -1730,7 +1730,7 @@ void multisync_delayed_slow_inner(const char *testbed)
 	
 	check_empty(testbed);
 	
-	unsetenv("SLOW_REPORT");
+	g_unsetenv("SLOW_REPORT");
 }
 
 START_TEST (multisync_delayed_slow)
@@ -1777,7 +1777,7 @@ START_TEST (multisync_conflict_ignore)
 	fail_unless(osync_testing_diff("data1", "data2"));
 	fail_unless(osync_testing_diff("data1", "data3"));
 	
-	sleep(2);
+	g_usleep(2*G_USEC_PER_SEC);
 	
 	/* create some conflicts and ignore them twice */
 
