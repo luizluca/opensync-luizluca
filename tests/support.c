@@ -275,6 +275,27 @@ out:
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
+void validate_mapping_table(const char *testbed, unsigned int num_members, const char *uids[], unsigned int num_uids)
+{
+	unsigned int member;
+	unsigned int uid;
+	osync_trace(TRACE_ENTRY, "%s(%s, %i, %p, %i)", __func__, testbed, num_members, uids, num_uids);
+
+	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
+	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", num_uids);
+	g_free(path);
+
+	/* check we have num_members mapping entries for each uid */
+	for (uid = 0; uid < num_uids; uid++) {
+		for (member = 1; member <= num_members; member++) {
+			check_mapping(maptable, member, -1, num_members, uids[uid]);
+		}
+	}
+	osync_mapping_table_close(maptable);
+	osync_mapping_table_unref(maptable);
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
 OSyncHashTable *hashtable_load(const char *path, const char *objtype, unsigned int entries)
 {
 	OSyncError *error = NULL;

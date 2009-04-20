@@ -100,6 +100,15 @@ void mappingtable_close(OSyncMappingTable *maptable);
 OSyncHashTable *hashtable_load(const char *path, const char *objtype, unsigned int entries);
 void check_hash(OSyncHashTable *table, const char *cmpuid);
 void check_mapping(OSyncMappingTable *table, int memberid, int mappingid, unsigned int numentries, const char *uid);
+/** @brief Confirms a mapping table is complete after a sync
+     Does not work if conflicts have been ignored
+
+    @param testbed path to the testbed
+    @param num_members number of members the sync was performed between
+    @param uids array of uids that should be in the mapping table
+    @param num_uids number of uids in the uids array
+*/
+void validate_mapping_table(const char *testbed, unsigned int num_members, const char *uids[], unsigned int num_uids);
 
 void create_random_file(const char *path);
 

@@ -988,6 +988,53 @@ START_TEST (multisync_conflict_changetype_choose2)
 }
 END_TEST
 
+/* Delete twice and make a change forcing a conflict */
+START_TEST (multisync_conflict_dual_delete)
+{
+	char *testbed = setup_testbed("multisync_easy_new");
+	OSyncError *error = NULL;
+	OSyncEngine *engine = setup_engine(testbed);
+	osync_engine_set_conflict_callback(engine, conflict_handler_choose_first, GINT_TO_POINTER(3));
+	fail_unless(osync_engine_initialize(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);	
+
+	mark_point();
+
+	synchronize_once(engine, NULL);
+
+	hashtable_simple_load_and_check(testbed, 1);
+	hashtable_simple_load_and_check(testbed, 2);
+	hashtable_simple_load_and_check(testbed, 3);
+	const char *uids[] = {"testdata"};
+	unsigned int num_uids = 1;
+	validate_mapping_table(testbed, 3, uids, num_uids);
+
+	fail_unless(osync_testing_diff("data1", "data2"));
+	fail_unless(osync_testing_diff("data1", "data3"));
+
+
+	g_usleep(2*G_USEC_PER_SEC);
+	osync_testing_system_abort("rm -f data1/testdata");
+	osync_testing_system_abort("cp newdata data2/testdata");
+	osync_testing_system_abort("rm -f data3/testdata");
+
+	synchronize_once(engine, NULL);
+	destroy_engine(engine);
+
+	fail_unless(num_engine_connected == 1, NULL);
+	fail_unless(num_engine_read == 1, NULL);
+	fail_unless(num_engine_written == 1, NULL);
+	fail_unless(num_engine_disconnected == 1, NULL);
+	fail_unless(num_change_read == 3, NULL);
+	fail_unless(num_mapping_conflicts == 1, NULL);
+	fail_unless(num_change_written == 1, NULL);
+
+	check_empty(testbed);
+
+	destroy_testbed(testbed);
+}
+END_TEST
+
 /* Sync from data1/testdata to all
  * remove data1 and change data2 to newdata2 and data3 to newdata
  * conflict_handler_choose_modified picks the first modified so should get newdata2
@@ -1186,29 +1233,6 @@ START_TEST (multisync_conflict_data_duplicate)
 	destroy_testbed(testbed);
 }
 END_TEST
-
-/* Given a number of members and a set of uids we check
- * the number of mappings == num_uids
- * there are num_member connections in each map for all the given uids
- */
-void validate_mapping_table(const char *testbed, unsigned int num_members, const char *uids[], unsigned int num_uids)
-{
-	unsigned int member;
-	unsigned int uid;
-
-	char *path = g_strdup_printf("%s/configs/group/archive.db", testbed);
-	OSyncMappingTable *maptable = mappingtable_load(path, "mockobjtype1", num_uids);
-	g_free(path);
-
-	/* check we have num_members mapping entries for each uid */
-	for (uid = 0; uid < num_uids; uid++) {
-		for (member = 1; member <= num_members; member++) {
-			check_mapping(maptable, member, -1, num_members, uids[uid]);
-		}
-	}
-	osync_mapping_table_close(maptable);
-	osync_mapping_table_unref(maptable);
-}
 
 /* As above but with 3 conflicts, one from each data member
  * should get 3+3+2 writes
@@ -1591,8 +1615,6 @@ void multisync_delayed_conflict_handler_inner(const char *testbed)
 	fail_unless(osync_engine_initialize(engine, &error), NULL);
 	fail_unless(error == NULL, NULL);	
 
-	mark_point();
-	
 	osync_testing_system_abort("cp newdata data3/testdata1");
 	osync_testing_system_abort("cp newdata1 data2/testdata2");
 	
@@ -1617,9 +1639,9 @@ void multisync_delayed_conflict_handler_inner(const char *testbed)
 	fail_unless(num_mapping_conflicts == 0, NULL);
 	fail_unless(num_change_written == 6, NULL);
 	fail_unless(num_engine_end_conflicts == 1, NULL);
-	
+
 	g_usleep(2*G_USEC_PER_SEC);
-	
+
 	osync_testing_system_abort("rm -f data2/testdata");
 	osync_testing_system_abort("cp newdata data3/testdata");
 
@@ -1959,6 +1981,8 @@ OSYNC_TESTCASE_ADD(multisync_conflict_data_choose2)
 
 OSYNC_TESTCASE_ADD(multisync_conflict_changetype_choose)
 OSYNC_TESTCASE_ADD(multisync_conflict_changetype_choose2)
+
+OSYNC_TESTCASE_ADD(multisync_conflict_dual_delete)
 
 OSYNC_TESTCASE_ADD(multisync_conflict_hybrid_choose)
 OSYNC_TESTCASE_ADD(multisync_conflict_hybrid_choose2)
