@@ -87,7 +87,13 @@
   <xsd:complexType name="Formats">
     <xsd:sequence>
       <xsd:element maxOccurs="unbounded" minOccurs="1" name="Format" type="Format" />
-      <xsd:element maxOccurs="0" minOccurs="0" name="Preferred" type="xsd:string" />
+      <!-- The preferred format is a hint for the converter.
+           If you like to get vCards and you do not support vCards directly
+           (e.g. the file plugin only supports raw data)
+           but you have only a source which supports only XML format
+           then you can specify vcard30 and you will get vCard 3.0.
+        -->
+      <xsd:element maxOccurs="1" minOccurs="0" name="Preferred" type="xsd:string" />
     </xsd:sequence>
   </xsd:complexType>
 
