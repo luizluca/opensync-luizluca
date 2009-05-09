@@ -518,7 +518,10 @@ osync_bool osync_member_save(OSyncMember *member, OSyncError **error)
 	osync_assert(member->configdir);
 	
 	if (!g_file_test(member->configdir, G_FILE_TEST_IS_DIR)) {
-		if (g_mkdir(member->configdir, 0700)) {
+		/* g_mkdir -> g_mkdir_with_parent: Regression testcase:
+		 * member_configdir_deep_path
+		 */
+		if (g_mkdir_with_parents(member->configdir, 0700)) {
 			osync_error_set(error, OSYNC_ERROR_IO_ERROR, "Unable to create directory for member %li\n", member->id);
 			goto error;
 		}

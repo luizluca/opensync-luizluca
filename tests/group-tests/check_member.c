@@ -182,7 +182,6 @@ START_TEST (member_configdir)
 }
 END_TEST
 
-/** TODO: are non-existant paths more than one directory deep acceptable? */
 START_TEST (member_configdir_deep_path)
 {
 	char *testbed = setup_testbed("filter_save_and_load");
