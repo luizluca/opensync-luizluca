@@ -2,7 +2,7 @@
  * libopensync - A synchronization framework
  * Copyright (C) 2006  Armin Bauer <armin.bauer@opensync.org>
  * Copyright (C) 2006  NetNix Finland Ltd <netnix@netnix.fi>
- * Copyright (C) 2008  Daniel Gollub <dgollub@suse.de>
+ * Copyright (C) 2008  Daniel Gollub <gollub@b1-systems.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

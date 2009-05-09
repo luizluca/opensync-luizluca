@@ -1,6 +1,6 @@
 /*
  * libopensync - A synchronization framework
- * Copyright (C) 2007  Daniel Gollub <dgollub@suse.de>
+ * Copyright (C) 2007  Daniel Gollub <gollub@b1-systems.de>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

@@ -167,7 +167,7 @@
 	Avoid use of g_hash_table_get_keys so code can be built using glib 2.12.
 	Uses g_hash_table_foreach with a callback routine instead.
 
-2008-04-12  Daniel Gollub <dgollub@suse.de>
+2008-04-12  Daniel Gollub <gollub@b1-systems.de>
 
 	* tools/osyncplugin.c:
 	  Full rewrite of osyncplugin to work with OpenSync 0.30 API

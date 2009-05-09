@@ -1,4 +1,4 @@
-# Copyright (c) 2007 Daniel Gollub <dgollub@suse.de>
+# Copyright (c) 2007 Daniel Gollub <gollub@b1-systems.de>
 
 CONFIGURE_FILE( "${CMAKE_CURRENT_SOURCE_DIR}/OpenSyncInternal.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/OpenSyncInternal.cmake" @ONLY )
 

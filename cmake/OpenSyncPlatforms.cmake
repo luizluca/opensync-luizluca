@@ -1,4 +1,4 @@
-# Copyright (c) 2007 Daniel Gollub <dgollub@suse.de>
+# Copyright (c) 2007 Daniel Gollub <gollub@b1-systems.de>
 
 # OpenSync platform macros:
 

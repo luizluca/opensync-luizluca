@@ -17,7 +17,7 @@
 #  OPENSYNC_DEBUG_MODULES       True if modules shouldn't get unloaded by OpenSync, to keep symbols of plugins
 #  OPENSYNC_UNITTESTS           True if unit tests should be build
 #
-# Copyright (c) 2007-2008 Daniel Gollub <dgollub@suse.de>
+# Copyright (c) 2007-2008 Daniel Gollub <gollub@b1-systems.de>
 #
 
 INCLUDE( OpenSyncPlatforms )
