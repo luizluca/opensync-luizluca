@@ -284,6 +284,7 @@ static void mock_report_dir(MockDir *directory, const char *subdir, OSyncContext
 	char *path = NULL;
 	GDir *dir = NULL;
 	OSyncError *error = NULL;
+	OSyncList *sorted_dir_list = NULL;
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p, %p)", __func__, directory, subdir, ctx, sink);
 
@@ -297,14 +298,24 @@ static void mock_report_dir(MockDir *directory, const char *subdir, OSyncContext
 	dir = g_dir_open(path, 0, &gerror);
 	osync_assert(dir);
 
-	while ((de = g_dir_read_name(dir))) {
+	while((de = g_dir_read_name(dir))) {
+		sorted_dir_list = osync_list_insert_sorted(sorted_dir_list,
+			g_strdup(de), (OSyncCompareFunc)g_strcmp0);
+	}
+
+	g_dir_close(dir);
+
+	while(sorted_dir_list) {
+		de = sorted_dir_list->data;
 		char *filename = g_build_filename(path, de, NULL);
 		char *relative_filename = NULL;
 		if (!subdir)
 			relative_filename = g_strdup(de);
 		else
 			relative_filename = g_build_filename(subdir, de, NULL);
-			
+		g_free(sorted_dir_list->data);
+		sorted_dir_list = osync_list_remove(sorted_dir_list, sorted_dir_list->data);
+
 		osync_trace(TRACE_INTERNAL, "path2 %s %s", filename, relative_filename);
 		
 		if (g_file_test(filename, G_FILE_TEST_IS_REGULAR)) {
@@ -367,8 +378,6 @@ static void mock_report_dir(MockDir *directory, const char *subdir, OSyncContext
 		g_free(relative_filename);
 
 	}
-
-	g_dir_close(dir);
 
 	g_free(path);
 	osync_trace(TRACE_EXIT, "%s", __func__);

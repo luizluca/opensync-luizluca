@@ -269,6 +269,7 @@ OSYNC_TESTCASE(mapping mapping_compare)
 
 BUILD_CHECK_TEST( mapping_engine engine-tests/check_mapping_engine.c ${TEST_TARGET_LIBRARIES} )
 OSYNC_TESTCASE(mapping_engine mapping_engine_same_similar_conflict)
+OSYNC_TESTCASE(mapping_engine mapping_engine_same_similar_conflict2)
 OSYNC_TESTCASE(mapping_engine mapping_engine_same_similar_conflict_multi)
 
 BUILD_CHECK_TEST( member group-tests/check_member.c ${TEST_TARGET_LIBRARIES} )

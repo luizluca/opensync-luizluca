@@ -208,47 +208,44 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 	osync_bool found_similar = FALSE;
 	OSyncConvCmpResult result = OSYNC_CONV_DATA_MISMATCH;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, mapping_engines, change, sinkengine, mapping_engine);
-	
-	for (m = mapping_engines; m; m = m->next) {
-		*mapping_engine = m->data;
-		
+
+	for (m=mapping_engines; m && (result != OSYNC_CONV_DATA_SAME); m=m->next) {
+		OSyncMappingEngine *tmp_mapping_engine = m->data;
+
 		/* Go through the already existing mapping entries. We only consider mappings
 		 * which dont have a entry on our side and where the data comparsion does not
 		 * return MISMATCH */
-		for (e = (*mapping_engine)->entries; e; e = e->next) {
+		for (e = tmp_mapping_engine->entries; e; e = e->next) {
 			OSyncMappingEntryEngine *entry_engine = e->data;
 			OSyncChange *mapping_change = NULL;
-			/* if the mapping already has a entry on our side, its not worth looking */
-			if (entry_engine->sink_engine == sinkengine) {
-				if (!found_similar)
-					*mapping_engine = NULL;
+			OSyncConvCmpResult tmp_result;
 
-				break;
-			}
-			
+			/* if the mapping already has a entry on our side, its not worth looking */
+			if (entry_engine->sink_engine == sinkengine)
+				continue;
+
 			mapping_change = osync_entry_engine_get_change(entry_engine);
 			if (!mapping_change)
 				continue;
-			
-			result = osync_change_compare(mapping_change, change);
-			if (result == OSYNC_CONV_DATA_MISMATCH) {
-				if (!found_similar)
-					*mapping_engine = NULL;
-			} else if (result == OSYNC_CONV_DATA_SAME) {
+
+			tmp_result = osync_change_compare(mapping_change, change);
+			if(tmp_result == OSYNC_CONV_DATA_SAME) {
+				/* SAME is the best we can get */
+				result = OSYNC_CONV_DATA_SAME;
+				*mapping_engine = tmp_mapping_engine;
 				break;
-			} else if (result == OSYNC_CONV_DATA_SIMILAR) {
-				found_similar = TRUE;
+			} else if((tmp_result == OSYNC_CONV_DATA_SIMILAR) &&
+				(result == OSYNC_CONV_DATA_MISMATCH))
+			{
+				/* SIMILAR is better than MISMATCH */
+				result = OSYNC_CONV_DATA_SIMILAR;
+				*mapping_engine = tmp_mapping_engine;
 			}
 		}
-		
-		if (*mapping_engine) {
-			osync_trace(TRACE_EXIT, "%s: Found %p", __func__, *mapping_engine);
-			return result;
-		}
 	}
-	
-	osync_trace(TRACE_EXIT, "%s: Mismatch", __func__);
-	return OSYNC_CONV_DATA_MISMATCH;
+
+	osync_trace(TRACE_EXIT, "%s: %d, %p", __func__, (int)result, *mapping_engine);
+	return result;
 }
 
 osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **error)
