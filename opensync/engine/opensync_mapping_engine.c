@@ -75,7 +75,7 @@ OSyncMappingEngine *osync_mapping_engine_new(OSyncObjEngine *parent, OSyncMappin
 			osync_error_set(error, OSYNC_ERROR_GENERIC, "Inconsistency in Mapping Table "
 					"for Object Type \"%s\" detected.",
 					osync_obj_engine_get_objtype(engine->parent));
-			goto error;
+			goto error_free_engine;
 		}
 		
 		entry_engine = osync_entry_engine_new(mapping_entry, engine, sink_engine, parent, error);
