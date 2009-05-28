@@ -2964,7 +2964,9 @@ START_TEST (engine_error_discover_error)
 	osync_group_load(group, "configs/group", &error); 
 	fail_unless(error == NULL, NULL);
 
-	OSyncMember *member = osync_group_nth_member(group, 1);
+	/* _find_member not _nth_member - see #1121 */
+	OSyncMember *member = osync_group_find_member(group, 1);
+	fail_unless(member != NULL, NULL);
 		
 	OSyncEngine *engine = osync_engine_new(group, &error);
 	fail_unless(engine != NULL, NULL);
