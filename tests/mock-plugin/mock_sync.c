@@ -300,7 +300,7 @@ static void mock_report_dir(MockDir *directory, const char *subdir, OSyncContext
 
 	while((de = g_dir_read_name(dir))) {
 		sorted_dir_list = osync_list_insert_sorted(sorted_dir_list,
-			g_strdup(de), (OSyncCompareFunc)g_strcmp0);
+			g_strdup(de), (OSyncCompareFunc)strcmp);
 	}
 
 	g_dir_close(dir);
