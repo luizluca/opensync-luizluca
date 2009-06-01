@@ -161,6 +161,7 @@ Always:
     * Use const;
     * Use static for internal functions;
     * Use safe glib functions where possible;
+    * Use glib functions which are part of at least glib2 version 2.12
     * Check validity of all received parameters;
     * Use osync_assert() while developing;
     * Do not use alloca() or other non-recommended functions;
