@@ -59,6 +59,11 @@ INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/op
 
 ###############################################
 
+# Minimum Requirment for glib2 to be compatible with
+# various distros: RHEL5, maemo, ...
+# http://thread.gmane.org/gmane.comp.misc.opensync.devel/3901/focus=3902
+SET ( GLIB2_MIN_VERSION "2.12" )
+
 FIND_PACKAGE( GLIB2 REQUIRED )
 FIND_PACKAGE( GTHREAD2 REQUIRED )
 FIND_PACKAGE( GMODULE2 REQUIRED )
