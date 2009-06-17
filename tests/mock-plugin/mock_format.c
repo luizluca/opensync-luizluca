@@ -291,13 +291,13 @@ osync_bool get_conversion_info(OSyncFormatEnv *env, OSyncError **error)
 	conv = osync_converter_new(OSYNC_CONVERTER_ENCAP, mockformat1, mockformat2, conv_mockformat1_to_mockformat2, error);
 	osync_assert(conv);
 	
-	osync_format_env_register_converter(env, conv);
+	osync_format_env_register_converter(env, conv, error);
 	osync_converter_unref(conv);
 	
 	conv = osync_converter_new(OSYNC_CONVERTER_DECAP, mockformat2, mockformat1, conv_mockformat2_to_mockformat1, error);
 	osync_assert(conv);
 	
-	osync_format_env_register_converter(env, conv);
+	osync_format_env_register_converter(env, conv, error);
 	osync_converter_unref(conv);
 
 

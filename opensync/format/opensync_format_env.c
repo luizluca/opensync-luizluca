@@ -853,7 +853,7 @@ OSyncList *osync_format_env_get_objformats(OSyncFormatEnv *env) {
 	return osync_list_copy(env->objformats);
 }
 
-void osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConverter *converter)
+void osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConverter *converter, OSyncError **error)
 {
 	osync_assert(env);
 	osync_assert(converter);
@@ -862,7 +862,7 @@ void osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConvert
 	 * of a detector can always be used */
 	if (osync_converter_get_type(converter) == OSYNC_CONVERTER_DETECTOR) {
 		
-		OSyncFormatConverter *conv = osync_converter_new_detector(osync_converter_get_targetformat(converter), osync_converter_get_sourceformat(converter), NULL, NULL);
+		OSyncFormatConverter *conv = osync_converter_new_detector(osync_converter_get_targetformat(converter), osync_converter_get_sourceformat(converter), NULL, error);
 		if (!conv)
 			return;
 	

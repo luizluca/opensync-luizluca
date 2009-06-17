@@ -115,8 +115,9 @@ OSYNC_EXPORT OSyncList *osync_format_env_get_objformats(OSyncFormatEnv *env);
  * 
  * @param env The format environment
  * @param converter Pointer of the Format Converter or Detector
+ * @param error An OSyncError
  */
-OSYNC_EXPORT void osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConverter *converter);
+OSYNC_EXPORT void osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConverter *converter, OSyncError **error);
 
 /** @brief Finds first converter with the given source and target format
  * 

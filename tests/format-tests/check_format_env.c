@@ -147,7 +147,7 @@ START_TEST (format_env_register_converter)
 	fail_unless(converter != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_format_env_register_converter(env, converter);
+	osync_format_env_register_converter(env, converter, &error);
 
 	osync_converter_unref(converter);
 	
@@ -185,7 +185,7 @@ START_TEST (format_env_register_converter_count)
 	
 	fail_unless(osync_format_env_num_converters(env) == 0, NULL);
 	
-	osync_format_env_register_converter(env, converter);
+	osync_format_env_register_converter(env, converter, &error);
 
 	fail_unless(osync_format_env_num_converters(env) == 1, NULL);
 	fail_unless(osync_format_env_nth_converter(env, 0) == converter, NULL);
@@ -224,7 +224,7 @@ START_TEST (format_env_converter_find)
 	fail_unless(converter != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_format_env_register_converter(env, converter);
+	osync_format_env_register_converter(env, converter, &error);
 	osync_converter_unref(converter);
 
 	fail_unless(osync_format_env_find_converter(env, format1, format2) == converter, NULL);
@@ -266,7 +266,7 @@ START_TEST (format_env_converter_find_false)
 	fail_unless(converter != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_format_env_register_converter(env, converter);
+	osync_format_env_register_converter(env, converter, &error);
 	osync_converter_unref(converter);
 
 	fail_unless(osync_format_env_find_converter(env, format1, format3) == NULL, NULL);

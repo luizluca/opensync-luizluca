@@ -24,7 +24,7 @@ START_TEST (detect_smart)
 	OSyncFormatConverter *conv = osync_converter_new_detector(format2, format1, detect, &error);
 	fail_unless(error == NULL);
 
-	osync_format_env_register_converter(env, conv);
+	osync_format_env_register_converter(env, conv, &error);
 
 	mark_point();
 
@@ -55,7 +55,7 @@ START_TEST (detect_different_objtype)
 	OSyncFormatConverter *conv = osync_converter_new_detector(format2, format1, detect, &error);
 	fail_unless(error == NULL);
 
-	osync_format_env_register_converter(env, conv);
+	osync_format_env_register_converter(env, conv, &error);
 
 	mark_point();
 
@@ -86,7 +86,7 @@ START_TEST (detect_smart_no)
 	OSyncFormatConverter *conv = osync_converter_new_detector(format2, format1, detect_false, &error);
 	fail_unless(error == NULL);
 
-	osync_format_env_register_converter(env, conv);
+	osync_format_env_register_converter(env, conv, &error);
 
 	mark_point();
 
