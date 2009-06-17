@@ -632,27 +632,38 @@ OSyncObjTypeSink *osync_member_find_objtype_sink(OSyncMember *member, const char
 	return NULL;
 }
 
-void osync_member_add_objformat(OSyncMember *member, const char *objtype, const char *format)
+void osync_member_add_objformat(OSyncMember *member, const char *objtype, const char *format, OSyncError **error)
 {
 	OSyncObjTypeSink *sink = osync_member_find_objtype_sink(member, objtype);
 	OSyncObjFormatSink *format_sink = NULL;
-	if (!sink)
+	if (!sink) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to find objtype %s", objtype);
 		return;
+	}
 	
-	/* TODO: handle error */
-	format_sink = osync_objformat_sink_new(format, NULL);
+	format_sink = osync_objformat_sink_new(format, error);
+	if (!format_sink) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to create sink for format %s", format);
+		return;
+	}
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);
 }
 
-void osync_member_add_objformat_with_config(OSyncMember *member, const char *objtype, const char *format, const char *format_config)
+void osync_member_add_objformat_with_config(OSyncMember *member, const char *objtype, const char *format, const char *format_config, OSyncError **error)
 {
 	OSyncObjTypeSink *sink = osync_member_find_objtype_sink(member, objtype);
 	OSyncObjFormatSink *format_sink = NULL;
-	if (!sink)
+	if (!sink) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to find objtype %s", objtype);
 		return;
+	}
 	
-	format_sink = osync_objformat_sink_new(format, NULL);
+	format_sink = osync_objformat_sink_new(format, error);
+	if (!format_sink) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to create sink for format %s", format);
+		return;
+	}
 	osync_objformat_sink_set_config(format_sink, format_config);
 	osync_objtype_sink_add_objformat_sink(sink, format_sink);
 	osync_objformat_sink_unref(format_sink);

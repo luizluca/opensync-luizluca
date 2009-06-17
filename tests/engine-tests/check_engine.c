@@ -19,17 +19,18 @@
 
 static void _member_add_format(OSyncMember *member, const char *objtype, const char *objformat)
 {
-       OSyncObjTypeSink *sink = NULL;
-       osync_assert(member);
-       osync_assert(objtype);
+	OSyncObjTypeSink *sink = NULL;
+	OSyncError *error = NULL;
+	osync_assert(member);
+	osync_assert(objtype);
 
-       if (!osync_member_find_objtype_sink(member, objtype)) {
-               sink = osync_objtype_sink_new(objtype, NULL);
-	       osync_member_add_objtype_sink(member, sink);
-	       osync_objtype_sink_unref(sink);
-       }
+	if (!osync_member_find_objtype_sink(member, objtype)) {
+		sink = osync_objtype_sink_new(objtype, &error);
+		osync_member_add_objtype_sink(member, sink);
+		osync_objtype_sink_unref(sink);
+	}
 
-       osync_member_add_objformat(member, objtype, objformat);
+	osync_member_add_objformat(member, objtype, objformat, &error);
 }
 
 START_TEST (engine_new)

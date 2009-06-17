@@ -264,10 +264,11 @@ OSYNC_EXPORT const OSyncList *osync_member_get_objformats(OSyncMember *member, c
  * 
  * @param member The member pointer
  * @param objtype The searched object type 
- * @param format The name of the Object Format 
+ * @param format The name of the Object Format
+ * @param error An OSyncError struct 
  * 
  */
-OSYNC_EXPORT void osync_member_add_objformat(OSyncMember *member, const char *objtype, const char *format);
+OSYNC_EXPORT void osync_member_add_objformat(OSyncMember *member, const char *objtype, const char *format, OSyncError **error);
 
 /** @brief Add a specifc Object Format with a conversion path config to member 
  * 
@@ -275,9 +276,10 @@ OSYNC_EXPORT void osync_member_add_objformat(OSyncMember *member, const char *ob
  * @param objtype The searched object type 
  * @param format The name of the Object Format 
  * @param format_config The Object Format specific configuration
+ * @param error An OSyncError struct
  * 
  */
-OSYNC_EXPORT void osync_member_add_objformat_with_config(OSyncMember *member, const char *objtype, const char *format, const char *format_config);
+OSYNC_EXPORT void osync_member_add_objformat_with_config(OSyncMember *member, const char *objtype, const char *format, const char *format_config, OSyncError **error);
 
 
 /** @brief Get the capabilities of the member 

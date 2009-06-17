@@ -205,7 +205,7 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 {	
 	OSyncList *m = NULL;
 	OSyncList *e = NULL;
-	osync_bool found_similar = FALSE;
+	/*osync_bool found_similar = FALSE;*/
 	OSyncConvCmpResult result = OSYNC_CONV_DATA_MISMATCH;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, mapping_engines, change, sinkengine, mapping_engine);
 
