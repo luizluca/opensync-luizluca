@@ -332,7 +332,7 @@ void osync_group_unref(OSyncGroup *group)
 	}
 }
 
-OSyncLockState osync_group_lock(OSyncGroup *group)
+OSyncLockState osync_group_lock(OSyncGroup *group, OSyncError **error)
 {
 	char *lockfile = NULL;
 	osync_bool exists = FALSE;
@@ -361,8 +361,8 @@ OSyncLockState osync_group_lock(OSyncGroup *group)
 	if ((group->lock_fd = g_open(lockfile, O_CREAT | O_WRONLY, 00700)) == -1) {
 		group->lock_fd = 0;
 		osync_free(lockfile);
-		osync_trace(TRACE_EXIT, "%s: Unable to open: %s", __func__, g_strerror(errno));
-		return OSYNC_LOCK_STALE;
+		osync_error_set(error, OSYNC_ERROR_IO_ERROR, "Unable to open: %s", g_strerror(errno) );
+		goto error;
 	} else {
 #ifndef _WIN32
 		/* Set FD_CLOEXEC flags for the lock file descriptor. We don't want the
@@ -370,13 +370,13 @@ OSyncLockState osync_group_lock(OSyncGroup *group)
 		 */
 		int oldflags = fcntl(group->lock_fd, F_GETFD);
 		if (oldflags == -1) {
-			osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, "Unable to get fd flags");
-			return OSYNC_LOCK_STALE;
+			osync_error_set(error, OSYNC_ERROR_IO_ERROR, "Unable to get fd flags");
+			goto error;
 		}
 
 		if (fcntl(group->lock_fd, F_SETFD, oldflags|FD_CLOEXEC) == -1) {
-			osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, "Unable to set fd flags");
-			return OSYNC_LOCK_STALE;
+			osync_error_set(error, OSYNC_ERROR_IO_ERROR, "Unable to set fd flags");
+			goto error;
 		}
 
 		if (flock(group->lock_fd, LOCK_EX | LOCK_NB) == -1) {
@@ -385,8 +385,10 @@ OSyncLockState osync_group_lock(OSyncGroup *group)
 				locked = TRUE;
 				close(group->lock_fd);
 				group->lock_fd = 0;
-			} else
-				osync_trace(TRACE_INTERNAL, "error setting lock: %s", g_strerror(errno));
+			} else {
+				osync_error_set(error, OSYNC_ERROR_IO_ERROR, "error setting lock: %s", g_strerror(errno));
+				osync_trace(TRACE_INTERNAL, osync_error_print(error));
+			}
 		} else
 #else /* _WIN32 */
 			/* Windows cannot delete files which are open. When doing the backup, the lock file */
@@ -410,6 +412,9 @@ OSyncLockState osync_group_lock(OSyncGroup *group)
 	
 	osync_trace(TRACE_EXIT, "%s: OSYNC_LOCK_OK", __func__);
 	return OSYNC_LOCK_OK;
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__,  osync_error_print(error));
+	return OSYNC_LOCK_STALE;
 }
 
 void osync_group_unlock(OSyncGroup *group)

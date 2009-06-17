@@ -13,11 +13,12 @@ START_TEST (lock_simple_lock)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
-	OSyncGroup *group = osync_group_new(NULL);
+	OSyncError *error = NULL;
+	OSyncGroup *group = osync_group_new(&error);
 	osync_group_set_schemadir(group, testbed);
-	osync_group_load(group, "configs/group", NULL);
+	osync_group_load(group, "configs/group", &error);
 	
-	fail_unless(osync_group_lock(group) == OSYNC_LOCK_OK, NULL);
+	fail_unless(osync_group_lock(group, &error) == OSYNC_LOCK_OK, NULL);
 	osync_group_unlock(group);
 	osync_group_unref(group);
 
@@ -31,14 +32,15 @@ START_TEST (lock_simple_seq_lock)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
-	OSyncGroup *group = osync_group_new(NULL);
+	OSyncError *error = NULL;
+	OSyncGroup *group = osync_group_new(&error);
 	osync_group_set_schemadir(group, testbed);
-	osync_group_load(group, "configs/group", NULL);
+	osync_group_load(group, "configs/group", &error);
 	
-	fail_unless(osync_group_lock(group) == OSYNC_LOCK_OK, NULL);
+	fail_unless(osync_group_lock(group, &error) == OSYNC_LOCK_OK, NULL);
 	osync_group_unlock(group);
 	
-	fail_unless(osync_group_lock(group) == OSYNC_LOCK_OK, NULL);
+	fail_unless(osync_group_lock(group, &error) == OSYNC_LOCK_OK, NULL);
 	osync_group_unlock(group);
 	osync_group_unref(group);
 
@@ -52,12 +54,13 @@ START_TEST (lock_dual_lock)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
-	OSyncGroup *group = osync_group_new(NULL);
+	OSyncError *error = NULL;
+	OSyncGroup *group = osync_group_new(&error);
 	osync_group_set_schemadir(group, testbed);
-	osync_group_load(group, "configs/group", NULL);
+	osync_group_load(group, "configs/group", &error);
 	
-	fail_unless(osync_group_lock(group) == OSYNC_LOCK_OK, NULL);
-	fail_unless(osync_group_lock(group) == OSYNC_LOCKED, NULL);
+	fail_unless(osync_group_lock(group, &error) == OSYNC_LOCK_OK, NULL);
+	fail_unless(osync_group_lock(group, &error) == OSYNC_LOCKED, NULL);
 	
 	osync_group_unlock(group);
 	osync_group_unref(group);
@@ -70,15 +73,16 @@ START_TEST (lock_dual_lock2)
 {
 	char *testbed = setup_testbed("multisync_easy_new");
 	
-	OSyncGroup *group = osync_group_new(NULL);
+	OSyncError *error = NULL;
+	OSyncGroup *group = osync_group_new(&error);
 	osync_group_set_schemadir(group, testbed);
-	osync_group_load(group, "configs/group", NULL);
+	osync_group_load(group, "configs/group", &error);
 	OSyncGroup *group2 = osync_group_new(NULL);
 	osync_group_set_schemadir(group, testbed);
-	osync_group_load(group2, "configs/group", NULL);
+	osync_group_load(group2, "configs/group", &error);
 	
-	fail_unless(osync_group_lock(group) == OSYNC_LOCK_OK, NULL);
-	fail_unless(osync_group_lock(group2) == OSYNC_LOCKED, NULL);
+	fail_unless(osync_group_lock(group, &error) == OSYNC_LOCK_OK, NULL);
+	fail_unless(osync_group_lock(group2, &error) == OSYNC_LOCKED, NULL);
 	
 	osync_group_unlock(group);
 	osync_group_unref(group);

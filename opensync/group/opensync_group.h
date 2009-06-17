@@ -89,10 +89,11 @@ OSYNC_EXPORT void osync_group_unref(OSyncGroup *group);
  * If the group is locked, OSYNC_LOCKED is returned
  * 
  * @param group The group
+ * @param error Pointer to an OSyncError struct
  * @returns if the lockfile was acquired
  * 
  */
-OSYNC_EXPORT OSyncLockState osync_group_lock(OSyncGroup *group);
+OSYNC_EXPORT OSyncLockState osync_group_lock(OSyncGroup *group, OSyncError **error);
 
 /** @brief Unlocks a group
  * 

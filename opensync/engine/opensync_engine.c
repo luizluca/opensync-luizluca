@@ -1635,7 +1635,7 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 		first_sync = TRUE;
 	}
 	
-	switch (osync_group_lock(group)) {
+	switch (osync_group_lock(group, error)) {
 	case OSYNC_LOCKED:
 		osync_error_set(error, OSYNC_ERROR_LOCKED, "Group is locked");
 		goto error;

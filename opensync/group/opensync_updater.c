@@ -595,7 +595,7 @@ static void *osync_updater_run(void *userdata)
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, userdata);
 
 	/* #1 Lock group */
-	if (osync_group_lock(updater->group) == OSYNC_LOCKED) {
+	if (osync_group_lock(updater->group, &error) == OSYNC_LOCKED) {
 		osync_error_set(&error, OSYNC_ERROR_GENERIC, "Group is locked. Can not process update on this group.");
 		goto error;
 	}
