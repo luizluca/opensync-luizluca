@@ -177,7 +177,9 @@ typedef struct {} FormatEnv;
 	}
 
 	void register_converter(FormatConverter *converter) {
-		osync_format_env_register_converter(self, converter);
+		Error *err = NULL;
+		osync_format_env_register_converter(self, converter, &err);
+		raise_exception_on_error(err);
 	}
 
 	FormatConverter *find_converter(ObjFormat *sourceformat, ObjFormat *targetformat) {

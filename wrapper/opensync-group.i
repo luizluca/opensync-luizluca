@@ -74,7 +74,10 @@ typedef struct {} Group;
 	}
 
 	LockState lock() {
-		return osync_group_lock(self);
+		Error *err = NULL;
+		LockState lockState = osync_group_lock(self, &err);
+		raise_exception_on_error(err);
+		return lockState;
 	}
 
 	void unlock() {
@@ -316,7 +319,9 @@ typedef struct {} Member;
 	}
 
 	void add_objformat(const char *objtype, const char *format) {
-		osync_member_add_objformat(self, objtype, format);
+		Error *err = NULL;
+		osync_member_add_objformat(self, objtype, format, &err);
+		raise_exception_on_error(err);
 	}
 
 	/* returns a list of strings */
