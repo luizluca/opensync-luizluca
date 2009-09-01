@@ -150,8 +150,10 @@ osync_bool osync_sink_engine_demerge(OSyncSinkEngine *engine, OSyncArchive *arch
 		if (osync_change_get_changetype(entry_engine->change) == OSYNC_CHANGE_TYPE_DELETED)
 			continue;
 
+		/*
 		if (!osync_objformat_has_merger(osync_change_get_objformat(entry_engine->change)))
 			continue;
+			*/
 
 		if (!osync_entry_engine_demerge(entry_engine, archive, caps, error))
 			goto error;

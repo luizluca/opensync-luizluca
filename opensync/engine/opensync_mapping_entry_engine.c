@@ -187,8 +187,9 @@ osync_bool osync_entry_engine_demerge(OSyncMappingEntryEngine *entry_engine, OSy
 		goto error_free_marshal;
 	}
 
+	/* FIXME
 	if (!osync_objformat_demerge(objformat, &buffer, &size, caps, error))
-		goto error_free_marshal;
+		goto error_free_marshal; */
 
 	osync_trace(TRACE_SENSITIVE, "Post Demerge:\n%s\n",
 			osync_objformat_print(objformat, buffer, size));

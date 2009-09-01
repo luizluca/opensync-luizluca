@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<capabilities>
-          <!-- Contacts for the brand new Foo 2000 -->
-	<contact>
-		<Name>
-			<LastName />
-		</Name>
-		<Telephone />
-		<Categories />
-		<Address>
-			<Street />
-			<City />
-			<Region />
-		</Address>
-	</contact>
-</capabilities>
+<Capabilities CapsFormat="evo2-Caps" Version="0">
+        <ObjType Name="contact">
+                <Cap><Name>address</Name></Cap>
+                <Cap><Name>address_label_home</Name></Cap>
+                <Cap><Name>address_label_other</Name></Cap>
+                <Cap><Name>address_label_work</Name></Cap>
+                <Cap><Name>email</Name></Cap>
+                <Cap><Name>full_name</Name></Cap>
+                <Cap><Name>im_jabber</Name></Cap>
+                <Cap><MaxOccurs>1</MaxOccurs><Name>name</Name></Cap>
+                <Cap><Name>nickname</Name></Cap>
+        </ObjType>
+</Capabilities>
+

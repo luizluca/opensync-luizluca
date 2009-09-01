@@ -87,6 +87,8 @@ OPENSYNC_BEGIN_DECLS
 #define OSYNC_PLUGIN_MAJOR_VERSION 1
 #define OSYNC_PLUGIN_MINOR_VERSION 0
 
+#define OSYNC_CAPS_MAJOR_VERSION 1
+#define OSYNC_CAPS_MINOR_VERSION 0
 
 /**************************************************************
  * Defines
@@ -195,6 +197,7 @@ typedef struct OSyncObjFormat OSyncObjFormat;
 typedef struct OSyncFormatConverterPath OSyncFormatConverterPath;
 typedef struct OSyncFormatConverter OSyncFormatConverter;
 typedef struct OSyncObjFormatSink OSyncObjFormatSink;
+typedef struct OSyncMerger OSyncMerger;
 
 /* Plugin component */
 typedef struct OSyncContext OSyncContext;
@@ -247,9 +250,11 @@ typedef struct OSyncGroup OSyncGroup;
 typedef struct OSyncGroupEnv OSyncGroupEnv;
 typedef struct OSyncMember OSyncMember;
 
-/* Merger component */
+/* Capabilities component */
 typedef struct OSyncCapabilities OSyncCapabilities;
 typedef struct OSyncCapability OSyncCapability;
+typedef struct OSyncCapabilityParameter OSyncCapabilityParameter;
+typedef struct OSyncCapabilitiesObjType OSyncCapabilitiesObjType;
 
 /* XMLFormat component */
 typedef struct OSyncXMLFormat OSyncXMLFormat;

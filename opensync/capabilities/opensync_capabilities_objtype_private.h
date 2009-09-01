@@ -19,65 +19,33 @@
  * Author: Daniel Friedrich <daniel.friedrich@opensync.org>
  * 
  */
- 
-#ifndef OPENSYNC_CAPABILITY_PRIVATE_H_
-#define OPENSYNC_CAPABILITY_PRIVATE_H_
+
+#ifndef OPENSYNC_CAPABILITIES_OBJTYPE_PRIVATE_H_
+#define OPENSYNC_CAPABILITIES_OBJTYPE_PRIVATE_H_
 
 /**
- * @defgroup OSyncCapabilityPrivateAPI OpenSync Capability Private
+ * @defgroup OSyncCapabilitiesPrivate OpenSync Capabilities Module Private
+ * @ingroup OSyncPrivate
+ * @defgroup OSyncCapabilitiesPrivateAPI OpenSync Capabilities Private
  * @ingroup OSyncCapabilitiesPrivate
- * @brief Private part of OpenSync Capability
+ * @brief Private part of OpenSync Capabilities
  */
 
 /*@{*/
 
 /**
- * @brief Represents a Capability object
+ * @brief Represent a CapabilitiesObjType object
  */
-struct OSyncCapability {
-	/** CapabilityObjType parent object */
-	OSyncCapabilitiesObjType *capobjtype;
-	/** DisplayName */
-	char *displayname;
-	/** MaxOccurs */
-	unsigned int maxoccurs;
-	/** Max */
-	unsigned int max;
-	/** Min */
-	unsigned int min;
-	/** Name */
-	char *name;
-	/** Parameter */
-	OSyncCapabilityParameter *parameter;
-	/** Type */
-	OSyncCapabilityType type;
-	/** ValEnum */
-	OSyncList *valenum; /* char* */
-	/** Value */
-	char *value;
-
-	/** Reference counting */
+struct OSyncCapabilitiesObjType {
+	/** The reference counter for this object */
 	int ref_count;
-};
-
-struct OSyncCapabilityParameter {
-	/** DisplayName */
-	char *displayname;
-	/** Name */
+	/** Name of ObjType */
 	char *name;
-	/** Type */
-	OSyncCapabilityType type;
-	/** ValEnum */
-	OSyncList *valenum; /* char* */
-	/** Value */
-	char *value;
+	/** Capability List */
+	OSyncList *capabilities; /* OSyncCapapbility */
 
-	/** Reference counting */
-	int ref_count;
 };
-
 
 /*@}*/
 
-#endif /* OPENSYNC_CAPABILITY_PRIVATE_H_ */
-
+#endif /*OPENSYNC_CAPABILITIES_OBJTYPE_PRIVATE_H_*/

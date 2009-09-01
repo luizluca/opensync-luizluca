@@ -23,7 +23,6 @@
 #ifndef OPENSYNC_CAPABILITIES_INTERNALS_H_
 #define OPENSYNC_CAPABILITIES_INTERNALS_H_
 
-typedef struct OSyncCapabilitiesObjType OSyncCapabilitiesObjType;
 
 /**
  * @defgroup OSyncCapabilitiesInternalAPI OpenSync Capabilities Internals
@@ -40,47 +39,61 @@ typedef struct OSyncCapabilitiesObjType OSyncCapabilitiesObjType;
  */
 OSYNC_TEST_EXPORT void osync_capabilities_sort(OSyncCapabilities *capabilities);
 
+/**
+ * @brief Save a capabilities object in a file 
+ * @param capabilities The pointer to a capabilities object
+ * @param file The name of the file
+ * @param error The error which will hold the info in case of an error
+ * @return TRUE on success, FALSE otherwise 
+ */
+OSYNC_TEST_EXPORT osync_bool osync_capabilities_save(OSyncCapabilities *capabilities, const char *file, OSyncError **error);
 
 /**
- * @brief Load a capabilities object from a prepackaged file 
+ * @brief Load a capabilities object from a file 
  * @param file The name of the file
  * @param error The error which will hold the info in case of an error
  * @return The pointer to the newly allocated capabilities object or NULL in case of error
  */
-OSyncCapabilities *osync_capabilities_load(const char *file, OSyncError **error);
+OSYNC_TEST_EXPORT OSyncCapabilities *osync_capabilities_load(const char *file, OSyncError **error);
 
 /**
- * @brief Checks if the capabilities are already cached 
- * @param member The member which should be tested for cached capabilities
- * @return TRUE if the capabilities for this member are cached otherwise FALSE
- */
-osync_bool osync_capabilities_member_has_capabilities(OSyncMember *member);
-
-/**
- * @brief Get the cached capabilities of a member. The cache capabilities is stored as
- *        "capabilities.xml" in the member directory. This function should be only used
- *        internal. To get the current capabilities of a member please use:
- *        osync_member_get_capabilities()
+ * @brief Load a capabilities object from a prepackaged file 
  *
- * @param member The pointer to a member object
+ *  The location of the prepackaged file is: OPENSYNC_CAPABILITIESDIR/$file
+ *
+ * @param file The name of the file
  * @param error The error which will hold the info in case of an error
- * @return The objtype of the xmlformat
+ * @return The pointer to the newly allocated capabilities object or NULL in case of error
  */
-OSyncCapabilities* osync_capabilities_member_get_capabilities(OSyncMember *member, OSyncError** error);
+OSYNC_TEST_EXPORT OSyncCapabilities *osync_capabilities_load_identifier(const char *file, OSyncError **error);
 
 /**
- * @brief Set the capabilities of a member. The capabilities get cached in the member directory
- *        as "capabilities.xml". This function should be only used internal. To set member
- *        capabilities, please use:
- *        osync_member_set_capabilities()
- *
- * @param member The pointer to a member object
- * @param capabilities The pointer to a capabilities object
+ * @brief Dump the capabilities into memory.
+ * @param capabilities The pointer to a capabilities object 
  * @param error The error which will hold the info in case of an error
- * @return TRUE on success otherwise FALSE
+ * @return The xml document and the size of it. It's up to the caller to free
+ *  the buffer. Always it return TRUE.
  */
-osync_bool osync_capabilities_member_set_capabilities(OSyncMember *member, OSyncCapabilities* capabilities, OSyncError** error);
+OSYNC_TEST_EXPORT osync_bool osync_capabilities_assemble(OSyncCapabilities *capabilities, char **buffer, unsigned int *size, OSyncError **error);
+
+/**
+ * @brief Creates a new capabilities object from an xml document. 
+ * @param buffer The pointer to the xml document
+ * @param size The size of the xml document
+ * @param error The error which will hold the info in case of an error
+ * @return The pointer to the newly allocated capabilities object or NULL in case of error
+ */
+OSYNC_TEST_EXPORT OSyncCapabilities *osync_capabilities_parse(const char *buffer, unsigned int size, OSyncError **error);
 
 /*@}*/
+
+
+OSYNC_TEST_EXPORT void osync_capabilities_add_objtype(OSyncCapabilities *capabilities, OSyncCapabilitiesObjType *capsobjtype);
+
+OSYNC_TEST_EXPORT void osync_capabilities_set_format(OSyncCapabilities *capabilities, const char *capsformat);
+
+OSYNC_TEST_EXPORT OSyncCapabilityParameter *osync_capability_parameter_new(OSyncError **error);
+OSYNC_TEST_EXPORT OSyncCapabilityParameter *osync_capability_parameter_ref(OSyncCapabilityParameter *capparam);
+OSYNC_TEST_EXPORT void osync_capability_parameter_unref(OSyncCapabilityParameter *capparam);
 
 #endif /*OPENSYNC_CAPABILITIES_INTERNAL_H_*/

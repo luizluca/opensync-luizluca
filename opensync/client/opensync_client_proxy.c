@@ -30,6 +30,8 @@
 #include "plugin/opensync_objtype_sink_internals.h"
 
 #include "opensync-capabilities.h"
+#include "capabilities/opensync_capabilities_internals.h"
+
 #include "opensync-group.h"
 #include "opensync-plugin.h"
 #include "opensync-format.h"

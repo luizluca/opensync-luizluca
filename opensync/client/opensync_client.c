@@ -37,6 +37,7 @@
 #include "opensync-format.h"
 
 #include "opensync-capabilities.h"
+#include "capabilities/opensync_capabilities_internals.h"
 #include "opensync-version.h"
 #include "version/opensync_version_internals.h"
 
@@ -833,7 +834,7 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	OSyncVersion *version = NULL;
 	OSyncCapabilities *capabilities = NULL;
 	char* buffer = NULL;
-	int size = 0;
+	unsigned int size = 0;
 	unsigned int num_res = 0;
 	OSyncPluginResource *resource = NULL;
 	OSyncList *objtypesinks = NULL;
@@ -897,7 +898,7 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	capabilities = osync_plugin_info_get_capabilities(client->plugin_info);
 	if (capabilities) {
 		osync_message_write_int(reply, 1);
-		if(!osync_capabilities_assemble(capabilities, &buffer, &size))
+		if (!osync_capabilities_assemble(capabilities, &buffer, &size, error))
 			goto error_free_message;
 		osync_message_write_string(reply, buffer);
 		g_free(buffer);

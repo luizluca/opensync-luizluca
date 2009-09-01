@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="1.0">
+
+  <xsd:element name="Caps">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element maxOccurs="unbounded" minOccurs="1" name="ObjType" type="ObjType"/>
+      </xsd:sequence>
+      <xsd:attribute name="CapsFormat" type="xsd:string"/>
+      <xsd:attribute name="Version" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="ObjType">
+      <xsd:sequence>
+        <xsd:element maxOccurs="unbounded" minOccurs="0" name="Cap" type="Cap"/>
+      </xsd:sequence>
+      <xsd:attribute name="Name" type="xsd:string"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Cap">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="0" name="DisplayName" type="xsd:string" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="MaxOccurs" type="xsd:integer" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="Max" type="xsd:integer" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="Min" type="xsd:integer" />
+      <xsd:element maxOccurs="1" minOccurs="1" name="Name" type="xsd:string" />
+      <xsd:element maxOccurs="unbounded" minOccurs="0" name="Parameter" type="AdvancedParameter" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="Type" type="AdvancedType" />
+      <xsd:element maxOccurs="unbounded" minOccurs="0" name="ValEnum" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+   <!-- Begin of external include. TODO split: plugin_config.xsd -->
+  
+  <xsd:complexType name="AdvancedParameter">
+    <xsd:sequence>
+      <xsd:element maxOccurs="1" minOccurs="0" name="DisplayName" type="xsd:string" />
+      <xsd:element maxOccurs="1" minOccurs="1" name="Name" type="xsd:string" />
+      <xsd:element maxOccurs="1" minOccurs="0" name="Type" type="AdvancedType" />
+      <xsd:element maxOccurs="unbounded" minOccurs="0" name="ValEnum" type="xsd:string" />
+      <xsd:element maxOccurs="1" minOccurs="1" name="Value" type="xsd:string" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="AdvancedType">
+    <xsd:restriction base="xsd:string">
+      <!-- bool is 1/0  -->
+      <xsd:enumeration value="bool"/>
+      <!-- single character -->
+      <xsd:enumeration value="char"/>
+      <xsd:enumeration value="double"/>
+      <xsd:enumeration value="int"/>
+      <xsd:enumeration value="long"/>
+      <xsd:enumeration value="longlong"/>
+      <xsd:enumeration value="string" />
+      <xsd:enumeration value="uint"/>
+      <xsd:enumeration value="ulong"/>
+      <xsd:enumeration value="ulonglong"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+

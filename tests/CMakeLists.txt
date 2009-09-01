@@ -53,7 +53,6 @@ BUILD_CHECK_TEST(capabilities capabilities-tests/check_capabilities.c ${TEST_TAR
 OSYNC_TESTCASE(capabilities capabilities_new)
 OSYNC_TESTCASE(capabilities capability_new)
 OSYNC_TESTCASE(capabilities capabilities_parse)
-OSYNC_TESTCASE(capabilities capabilities_sort)
 
 BUILD_CHECK_TEST(client client-tests/check_client.c ${TEST_TARGET_LIBRARIES} )
 OSYNC_TESTCASE(client client_new)

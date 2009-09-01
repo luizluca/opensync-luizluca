@@ -1,6 +1,6 @@
 /*
  * libopensync - A synchronization framework
- * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
+ * Copyright (C) 2009  Bjoern Ricks <bjoern.ricks@googlemail.com>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,16 +18,26 @@
  * 
  */
 
-#ifndef OPENSYNC_CAPABILITIES_H_COLLECT
-#define OPENSYNC_CAPABILITIES_H_COLLECT
+#ifndef OPENSYNC_MERGER_PRIVATE_H_
+#define OPENSYNC_MERGER_PRIVATE_H_
 
-OPENSYNC_BEGIN_DECLS
+/**
+ * @defgroup OSyncMergerrPrivateAPI OpenSync Merger Private
+ * @ingroup OSyncFormatPrivate
+ * @brief Private part for merging formats
+ * 
+ */
+/*@{*/
 
-#include "capabilities/opensync_capabilities.h"
-#include "capabilities/opensync_capabilities_objtype.h"
-#include "capabilities/opensync_capability.h"
+struct OSyncMerger {
+	char *objformat;
+	char *capsformat;
+	int ref_count;
+	OSyncMergerInitializeFunc initialize_func;
+	OSyncMergerFinalizeFunc finalize_func;
+	void *user_data;
+};
 
-OPENSYNC_END_DECLS
+/*@}*/
 
-#endif /* OPENSYNC_CAPABILITIES_H_COLLECT */
-
+#endif /* OPENSYNC_MERGER_PRIVATE_H_ */

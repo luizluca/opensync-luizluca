@@ -258,9 +258,11 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 	/* Merger - Merge lost information to the change (don't merger anything when changetype is DELETED.) */
 	if( osync_group_get_merger_enabled(engine->group) &&
 			osync_group_get_converter_enabled(engine->group) &&	
-			(osync_change_get_changetype(change) != OSYNC_CHANGE_TYPE_DELETED) &&
-			/* only use the merger if the objformat has merger registered. */
-			osync_objformat_has_merger(osync_change_get_objformat(change)) )
+			(osync_change_get_changetype(change) != OSYNC_CHANGE_TYPE_DELETED)
+			/* FIXME &&
+			  only use the merger if the objformat has merger registered.
+			osync_objformat_has_merger(osync_change_get_objformat(change)) */ 
+			)
 
 		{
 			OSyncCapabilities *caps;
@@ -299,12 +301,13 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 					
 					osync_data_get_data(osync_change_get_data(change), &buffer, &size);
 
+					/* FIXME
 					ret = osync_objformat_merge(objformat, &buffer, &size, entirebuf, entsize, caps, &error);
-					osync_free(entirebuf);
+					osync_free(entirebuf); 
 
 					if (ret != TRUE)
 						goto error;
-
+					*/
 					osync_trace(TRACE_SENSITIVE, "Merge result:\n%s\n",
 						osync_objformat_print(objformat, buffer, size));
 				}

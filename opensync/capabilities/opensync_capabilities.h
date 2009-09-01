@@ -36,19 +36,11 @@
 
 /**
  * @brief Creates a new capabilities object
+ * @param capsformat Name of the used capabilities format
  * @param error The error which will hold the info in case of an error
  * @return The pointer to the newly allocated capabilities object or NULL in case of error
  */
-OSYNC_EXPORT OSyncCapabilities *osync_capabilities_new(OSyncError **error);
-
-/**
- * @brief Creates a new capabilities object from an xml document. 
- * @param buffer The pointer to the xml document
- * @param size The size of the xml document
- * @param error The error which will hold the info in case of an error
- * @return The pointer to the newly allocated capabilities object or NULL in case of error
- */
-OSYNC_EXPORT OSyncCapabilities *osync_capabilities_parse(const char *buffer, unsigned int size, OSyncError **error);
+OSYNC_EXPORT OSyncCapabilities *osync_capabilities_new(const char *capsformat, OSyncError **error);
 
 /**
  * @brief Increments the reference counter
@@ -63,24 +55,15 @@ OSYNC_EXPORT OSyncCapabilities *osync_capabilities_ref(OSyncCapabilities *capabi
  */
 OSYNC_EXPORT void osync_capabilities_unref(OSyncCapabilities *capabilities);
 
-
 /**
- * @brief Get the first capability for a given objtype from the capabilities
+ * @brief Get the first capabilitiesobjtype for a given objtype from the capabilities
  * @param capabilities The pointer to a capabilities object
  * @param objtype The name of the objtype (e.g.: contact)
- * @return The first capability for a given objtype from the capabilities
+ * @return The capabilitiesobjtype for a given objtype from the capabilities
  */
-OSYNC_EXPORT OSyncCapability *osync_capabilities_get_first(OSyncCapabilities *capabilities, const char *objtype);
+OSYNC_EXPORT OSyncCapabilitiesObjType *osync_capabilities_get_objtype(OSyncCapabilities *capabilities, const char *objtype);
 
-/**
- * @brief Dump the capabilities into memory.
- * @param capabilities The pointer to a capabilities object 
- * @param buffer The pointer to the buffer which will hold the xml document
- * @param size The pointer to the buffer which will hold the size of the xml document
- * @return The xml document and the size of it. It's up to the caller to free
- *  the buffer. Always it return TRUE.
- */
-OSYNC_EXPORT osync_bool osync_capabilities_assemble(OSyncCapabilities *capabilities, char **buffer, int *size);
+OSYNC_EXPORT const char *osync_capabilities_get_format(OSyncCapabilities *capabilities);
 
 /*@}*/
 

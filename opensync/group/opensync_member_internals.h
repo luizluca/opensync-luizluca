@@ -137,6 +137,37 @@ OSYNC_TEST_EXPORT int osync_member_num_objtypes(OSyncMember *member);
  */
 OSYNC_TEST_EXPORT const char *osync_member_nth_objtype(OSyncMember *member, int nth);
 
+/**
+ * @brief Checks if the capabilities are already cached 
+ * @param member The member which should be tested for cached capabilities
+ * @return TRUE if the capabilities for this member are cached otherwise FALSE
+ */
+OSYNC_TEST_EXPORT osync_bool osync_member_has_capabilities(OSyncMember *member);
+
+/**
+ * @brief Load the cached capabilities of a member. The cache capabilities is stored as
+ *        "capabilities.xml" in the member directory. This function should be only used
+ *        internal. To get the current capabilities of a member please use:
+ *        osync_member_get_capabilities()
+ *
+ * @param member The pointer to a member object
+ * @param error The error which will hold the info in case of an error
+ * @return The objtype of the xmlformat
+ */
+OSYNC_TEST_EXPORT OSyncCapabilities* osync_member_load_capabilities(OSyncMember *member, OSyncError** error);
+
+/**
+ * @brief Save the capabilities of a member. The capabilities get cached in the member directory
+ *        as "capabilities.xml". This function should be only used internal. To set member
+ *        capabilities, please use:
+ *        osync_member_set_capabilities()
+ *
+ * @param member The pointer to a member object
+ * @param capabilities The pointer to a capabilities object
+ * @param error The error which will hold the info in case of an error
+ * @return TRUE on success otherwise FALSE
+ */
+OSYNC_TEST_EXPORT osync_bool osync_member_save_capabilities(OSyncMember *member, OSyncCapabilities* capabilities, OSyncError** error);
 
 /*@}*/
 

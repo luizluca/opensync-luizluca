@@ -44,8 +44,7 @@ typedef osync_bool (* OSyncFormatMarshalFunc) (const char *input, unsigned int i
 typedef osync_bool (* OSyncFormatDemarshalFunc) (OSyncMarshal *marshal, char **output, unsigned int *outpsize, void *user_data, OSyncError **error);
 typedef osync_bool (* OSyncFormatValidateFunc) (const char *data, unsigned int size, void *user_data, OSyncError **error);
 
-typedef osync_bool (* OSyncFormatMergeFunc) (char **data, unsigned int *size, const char *entire, unsigned int entsize, OSyncCapabilities *caps, void *user_data, OSyncError **error);
-typedef osync_bool (* OSyncFormatDemergeFunc) (char **data, unsigned int *size, OSyncCapabilities *caps, void *user_data, OSyncError **error);
+typedef osync_bool (* OSyncFormatCapsConverterFunc) (OSyncCapabilities *oldcaps, OSyncCapabilities **newcaps, OSyncError **error);
 
 /**
  * @brief Creates a new object format
@@ -225,26 +224,10 @@ OSYNC_EXPORT void osync_objformat_set_demarshal_func(OSyncObjFormat *format, OSy
 OSYNC_EXPORT void osync_objformat_set_validate_func(OSyncObjFormat *format, OSyncFormatValidateFunc validate_func);
 
 /**
- * @brief Sets the optional merge function for an object format
- *
- * The merge function can be used to merge data for the specific
- * format. This is optional.
- *
  * @param format Pointer to the object format
- * @param merge_func The merge function to use
+ * @param capsconverter_func The function to convert capabilities
  */
-OSYNC_EXPORT void osync_objformat_set_merge_func(OSyncObjFormat *format, OSyncFormatMergeFunc merge_func);
-
-/**
- * @brief Sets the optional demerge function for an object format
- *
- * The demerge function can be used to demerge data for the specific
- * format. This is optional.
- *
- * @param format Pointer to the object format
- * @param demerge_func The demerge function to use
- */
-OSYNC_EXPORT void osync_objformat_set_demerge_func(OSyncObjFormat *format, OSyncFormatDemergeFunc demerge_func);
+OSYNC_EXPORT void osync_objformat_set_capsconverter_func(OSyncObjFormat *format, OSyncFormatCapsConverterFunc capsconverter_func);
 
 /**
  * @brief Prints the specified object

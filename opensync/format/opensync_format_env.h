@@ -246,6 +246,13 @@ OSYNC_EXPORT OSyncFormatConverterPath *osync_format_env_find_path_with_detectors
  */
 OSYNC_EXPORT OSyncFormatConverterPath *osync_format_env_find_path_formats_with_detectors(OSyncFormatEnv *env, OSyncData *sourcedata, OSyncList *targets, const char *preferred_format, OSyncError **error);
 
+/** @brief Registers Merger to Format Environment
+ * 
+ * @param env The format environment
+ * @param merger Pointer of the merger
+ */
+OSYNC_EXPORT void osync_format_env_register_merger(OSyncFormatEnv *env, OSyncMerger *merger); 
+
 /*@}*/
 
 #endif /* _OPENSYNC_FORMAT_ENV_H_ */

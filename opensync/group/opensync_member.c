@@ -410,15 +410,14 @@ osync_bool osync_member_load(OSyncMember *member, const char *path, OSyncError *
 	}
 	osync_xml_free_doc(doc);
 
-	if(osync_capabilities_member_has_capabilities(member))
-		{
-			OSyncCapabilities* capabilities = osync_capabilities_member_get_capabilities(member, error);
-			if(!capabilities)
-				goto error;
-			if(!osync_member_set_capabilities(member, capabilities, error))
-				goto error;
-			osync_capabilities_unref(capabilities);
-		}
+	if (osync_member_has_capabilities(member)) {
+		OSyncCapabilities* capabilities = osync_member_load_capabilities(member, error);
+		if (!capabilities)
+			goto error;
+		if (!osync_member_set_capabilities(member, capabilities, error))
+			goto error;
+		osync_capabilities_unref(capabilities);
+	}
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
@@ -578,8 +577,8 @@ osync_bool osync_member_save(OSyncMember *member, OSyncError **error)
 	}
 	
 	capabilities = osync_member_get_capabilities(member);
-	if(capabilities) {
-		if(!osync_capabilities_member_set_capabilities(member, capabilities, error)) {
+	if (capabilities) {
+		if (!osync_member_save_capabilities(member, capabilities, error)) {
 			goto error;
 		}
 	}
@@ -978,3 +977,66 @@ osync_bool osync_member_plugin_is_uptodate(OSyncMember *member)
 	osync_trace(TRACE_EXIT, "%s(%p)", __func__, member);
 	return uptodate;
 }
+
+osync_bool osync_member_has_capabilities(OSyncMember *member)
+{
+	char *filename = NULL;
+	gboolean res = FALSE;
+
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, member);
+	osync_assert(member);
+	
+	filename = osync_strdup_printf("%s%ccapabilities.xml", osync_member_get_configdir(member), G_DIR_SEPARATOR);
+	res = g_file_test(filename, G_FILE_TEST_IS_REGULAR);
+	osync_free(filename);
+	
+	osync_trace(TRACE_EXIT, "%s: %i", __func__, res);
+	return res;
+}
+
+OSyncCapabilities* osync_member_load_capabilities(OSyncMember *member, OSyncError** error)
+{
+	char *filename;
+	OSyncCapabilities *capabilities;
+
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, member, error);
+	osync_assert(member);
+	
+	filename = osync_strdup_printf("%s%ccapabilities.xml", osync_member_get_configdir(member), G_DIR_SEPARATOR);
+	capabilities = osync_capabilities_load(filename, error);
+	osync_free(filename);
+
+	if (!capabilities)
+		goto error;
+
+	osync_trace(TRACE_EXIT, "%s: %p", __func__, capabilities);
+	return capabilities;
+
+error:	
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
+	return NULL;
+}
+
+osync_bool osync_member_save_capabilities(OSyncMember *member, OSyncCapabilities* capabilities, OSyncError** error)
+{
+	char *filename;
+	osync_bool res;
+
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, member, capabilities, error);
+	osync_assert(member);
+	osync_assert(capabilities);
+	
+
+	filename = osync_strdup_printf("%s%ccapabilities.xml", osync_member_get_configdir(member), G_DIR_SEPARATOR);
+	res = osync_capabilities_save(capabilities, filename, error);
+	osync_free(filename);
+	if (!res)
+		goto error;
+	osync_trace(TRACE_EXIT, "%s: %i", __func__, res);
+	return res;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
+	return FALSE;
+}
+

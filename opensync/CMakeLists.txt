@@ -6,6 +6,7 @@ INCLUDE( Compiler )
 SET( libopensync_LIB_SRCS
    archive/opensync_archive.c
    capabilities/opensync_capabilities.c
+   capabilities/opensync_capabilities_objtype.c
    capabilities/opensync_capability.c
    client/opensync_client.c
    client/opensync_client_proxy.c
@@ -34,6 +35,7 @@ SET( libopensync_LIB_SRCS
    format/opensync_objformat.c
    format/opensync_objformat_sink.c
    format/opensync_time.c
+   format/opensync_merger.c
    group/opensync_group.c
    group/opensync_group_env.c
    group/opensync_member.c

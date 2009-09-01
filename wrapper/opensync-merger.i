@@ -1,8 +1,8 @@
 typedef struct {} Capability;
 %extend Capability {
-	Capability(Capabilities *capabilities, const char *objtype, const char *name) {
+	Capability(OSyncCapabilitiesObjType *capobjtype) {
 		Error *err = NULL;
-		Capability *cap = osync_capability_new(capabilities, objtype, name, &err);
+		Capability *cap = osync_capability_new(capobjtype, &err);
 		if (raise_exception_on_error(err))
 			return NULL;
 		else
@@ -17,26 +17,6 @@ typedef struct {} Capability;
 		return osync_capability_get_name(self);
 	}
 
-	Capability *get_next() {
-		return osync_capability_get_next(self);
-	}
-
-	bool has_key() {
-		return osync_capability_has_key(self);
-	}
-
-	int get_key_count() {
-		return osync_capability_get_key_count(self);
-	}
-
-	const char *get_nth_key(int nth) {
-		return osync_capability_get_nth_key(self, nth);
-	}
-
-	void add_key(const char *name) {
-		osync_capability_add_key(self, name);
-	}
-
 %pythoncode %{
 	name = property(get_name)
 
@@ -44,16 +24,14 @@ typedef struct {} Capability;
 	__oldinit = __init__
 	def __init__(self, *args):
 		self.__oldinit(*args)
-		self.keys = _ListWrapper(self.get_key_count, self.get_nth_key)
 %}
 }
 
-
 typedef struct {} Capabilities;
 %extend Capabilities {
-	Capabilities() {
+	Capabilities(const char *capsformat) {
 		Error *err = NULL;
-		Capabilities *caps = osync_capabilities_new(&err);
+		Capabilities *caps = osync_capabilities_new(capsformat, &err);
 		if (raise_exception_on_error(err))
 			return NULL;
 		else
@@ -62,20 +40,6 @@ typedef struct {} Capabilities;
 
 	~Capabilities() {
 		osync_capabilities_unref(self);
-	}
-
-	/* returns a python string object */
-	PyObject *assemble() {
-		char *buf;
-		int size;
-		osync_bool ret = osync_capabilities_assemble(self, &buf, &size);
-		if (!ret) {
-			wrapper_exception("osync_capabilities_assemble failed\n");
-			return NULL;
-		}
-		PyObject *obj = PyString_FromStringAndSize(buf, size);
-		free(buf);
-		return obj;
 	}
 }
 
@@ -87,18 +51,6 @@ typedef struct {} Capabilities;
 		%argument_fail(res, "(char *buf, size_t size)", $symname, $argnum);
 	}
 }
-
- %inline %{
-	static Capabilities *capabilities_parse(const char *buffer, size_t size) {
-		Error *err = NULL;
-		Capabilities *caps = osync_capabilities_parse(buffer, (unsigned int)size, &err);
-		if (raise_exception_on_error(err))
-			return NULL;
-		else
-			return caps; /* new object, no need to inc ref */
-	}
-%}
-
 
 %{
 /* convert an XMLFieldList to a python list */

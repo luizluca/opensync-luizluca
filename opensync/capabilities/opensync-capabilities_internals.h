@@ -24,6 +24,7 @@
 #define OPENSYNC_CAPABILITIES_INTERNALS_H_COLLECT
 
 #include "opensync_capabilities_internals.h"
+#include "opensync_capabilities_objtype_internals.h"
 #include "opensync_capability_internals.h"
 
 #endif /* OPENSYNC_CAPABILITIES_INTERNALS_H_COLLECT */

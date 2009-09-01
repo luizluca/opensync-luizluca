@@ -178,50 +178,6 @@ osync_bool osync_objformat_validate(OSyncObjFormat *format, const char *data, un
  */
 osync_bool osync_objformat_must_validate(OSyncObjFormat *format);
 
-/**
- * @brief Merge supplied data in format specific way
- *
- * @param format Pointer to the object format
- * @param data Reference of buffer which stores data to merge
- * @param size Reference of size in bytes of the buffer specified by the data paramter
- * @param entire
- * @param entsize Size in bytes of the base data buffer specified by the entire parameter
- * @param caps The capabilities list which describes what must get merged: entire -> input
- * @param error Pointer to an error struct
- * @returns TRUE if data got merged successfully, otherwise FALSE
- */
-OSYNC_TEST_EXPORT osync_bool osync_objformat_merge(OSyncObjFormat *format,
-		char **data, unsigned int *size,
-		const char *entire, unsigned int entsize,
-		OSyncCapabilities *caps, OSyncError **error);
-
-/**
- * @brief Demerge supplied data in format specific way
- *
- * @param format Pointer to the object format
- * @param data Pointer to the buffer which should get demerged 
- * @param size Reference of size in bytes of the buffer specified by the data parameter
- * @param caps The capabilities list which describes what must get demerged
- * @param error Pointer to an error struct
- * @returns TRUE if data got demerged successfully, otherwise FALSE
- */
-OSYNC_TEST_EXPORT osync_bool osync_objformat_demerge(OSyncObjFormat *format,
-		char **data, unsigned int *size,
-		OSyncCapabilities *caps, OSyncError **error);
-
-/**
- * @brief Check if specific format is able to merge/demerge 
- *
- * If merge and demerge function are set for the specific format then merger
- * and demerger get invoked. Merger/Demerge still can be disabled in group
- * configuration, by disabling the merger, or not providing capabilities for
- * the member.
- *
- * @param format Pointer to the object format
- * @returns TRUE if merge and demerge is support for this format, otherwise FALSE
- */
-osync_bool osync_objformat_has_merger(OSyncObjFormat *format);
-
 /*@}*/
 
 #endif /* _OPENSYNC_OBJFORMAT_INTERNALS_H_ */
