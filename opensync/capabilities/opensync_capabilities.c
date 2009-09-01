@@ -44,9 +44,6 @@ OSyncCapabilities *osync_capabilities_new(const char *capsformat, OSyncError **e
 	}
 	
 	capabilities->ref_count = 1;
-	capabilities->doc = xmlNewDoc(BAD_CAST "1.0");
-	capabilities->doc->children = xmlNewDocNode(capabilities->doc, NULL, (xmlChar *)"Caps", NULL);
-	capabilities->doc->_private = capabilities;
 
 	osync_capabilities_set_format(capabilities, capsformat);
 	
@@ -72,6 +69,7 @@ void osync_capabilities_unref(OSyncCapabilities *capabilities)
 		for (l = capabilities->objtypes; l; l = l->next) {
 			OSyncCapabilitiesObjType *objtype;
 			objtype = (OSyncCapabilitiesObjType *) l->data;
+			capabilities->objtypes = osync_list_remove(capabilities->objtypes, objtype);
 			osync_capabilities_objtype_unref(objtype);
 			/* TODO unlink from list */
 		}
@@ -148,7 +146,12 @@ osync_bool osync_capabilities_assemble(OSyncCapabilities *capabilities, char **b
 		goto error;
 	}
 
-	doc = capabilities->doc;
+	if (capabilities->doc)
+		osync_xml_free_doc(capabilities->doc);
+
+	capabilities->doc = doc = xmlNewDoc(BAD_CAST "1.0");
+	capabilities->doc->children = xmlNewDocNode(capabilities->doc, NULL, (xmlChar *)"Caps", NULL);
+	capabilities->doc->_private = capabilities;
 
         /* Set version for capabilities configuration */
         version_str = osync_strdup_printf("%u.%u", OSYNC_CAPS_MAJOR_VERSION, OSYNC_CAPS_MINOR_VERSION);
