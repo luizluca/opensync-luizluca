@@ -99,38 +99,47 @@ osync_bool osync_capability_assemble(OSyncCapability *cap, xmlNodePtr node, OSyn
 		goto error_oom;
 
 	/* DisplayName */
-	if (!xmlNewChild(cur, NULL, (xmlChar*)"DisplayName",
+	if (osync_capability_get_displayname(cap))
+		if (!xmlNewChild(cur, NULL, (xmlChar*)"DisplayName",
 				(xmlChar*)osync_capability_get_displayname(cap)))
 		goto error_oom;
 
 	/* MaxOccurs */
-	tmp = osync_strdup_printf("%u", osync_capability_get_maxoccurs(cap));
-	if (!tmp)
-		goto error_oom;
+	if (osync_capability_get_maxoccurs(cap) > 0) {
+		tmp = osync_strdup_printf("%u", osync_capability_get_maxoccurs(cap));
+		if (!tmp)
+			goto error_oom;
 
-	if (!xmlNewChild(cur, NULL, (xmlChar*)"MaxOccurs", (xmlChar*)tmp))
-		goto error_oom;
+		if (!xmlNewChild(cur, NULL, (xmlChar*)"MaxOccurs", (xmlChar*)tmp))
+			goto error_oom;
+	}
 
 	/* Max */
-	tmp = osync_strdup_printf("%u", osync_capability_get_max(cap));
-	if (!tmp)
-		goto error_oom;
+	if (osync_capability_get_max(cap) > 0) {
+		tmp = osync_strdup_printf("%u", osync_capability_get_max(cap));
+		if (!tmp)
+			goto error_oom;
 
-	if (!xmlNewChild(cur, NULL, (xmlChar*)"Max", (xmlChar*)tmp))
-		goto error_oom;
+		if (!xmlNewChild(cur, NULL, (xmlChar*)"Max", (xmlChar*)tmp))
+			goto error_oom;
+	}
 
 	/* Min */
-	tmp = osync_strdup_printf("%u", osync_capability_get_min(cap));
-	if (!tmp)
-		goto error_oom;
+	if (osync_capability_get_min(cap) > 0) {
+		tmp = osync_strdup_printf("%u", osync_capability_get_min(cap));
+		if (!tmp)
+			goto error_oom;
 
-	if (!xmlNewChild(cur, NULL, (xmlChar*)"Min", (xmlChar*)tmp))
-		goto error_oom;
+		if (!xmlNewChild(cur, NULL, (xmlChar*)"Min", (xmlChar*)tmp))
+			goto error_oom;
+	}
 
 	/* Name */
-	if (!xmlNewChild(cur, NULL, (xmlChar*)"Name",
-				(xmlChar*)osync_capability_get_name(cap)))
-		goto error_oom;
+	if (osync_capability_get_name(cap)) {
+		if (!xmlNewChild(cur, NULL, (xmlChar*)"Name",
+					(xmlChar*)osync_capability_get_name(cap)))
+			goto error_oom;
+	}
 
 	/* Parameter TODO */
 	/* Type TODO */
