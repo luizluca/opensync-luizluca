@@ -53,7 +53,11 @@ struct OSyncMember {
 	OSyncCapabilities *capabilities;
 
 #ifdef OPENSYNC_UNITTESTS
+	/** Modify schema directory for unittesting */
 	char *schemadir;
+
+	/** Modify default configuration direcotry for unittesting */
+	char *default_configdir;
 #endif /* OPENSYNC_UNITTESTS */
 };
 
@@ -118,6 +122,17 @@ OSYNC_TEST_EXPORT void osync_member_add_alternative_objtype(OSyncMember *member,
  * 
  */
 OSYNC_TEST_EXPORT void osync_member_set_schemadir(OSyncMember *member, const char *schemadir);
+
+
+/** @brief Set the default configdir to a custom directory.
+ *  This is actually only inteded for UNITTESTS to run tests without
+ *  having OpenSync installed.
+ *
+ * @param group Pointer to group
+ * @param schemadir Custom "default" configdir path
+ *
+ */
+OSYNC_TEST_EXPORT void osync_member_set_default_configdir(OSyncMember *member, const char *default_configdir);
 #endif
 
 /** @brief Get the number of supported object types of this member

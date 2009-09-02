@@ -59,6 +59,7 @@ struct OSyncGroup {
 	osync_bool converter_enabled;
 
 #ifdef OPENSYNC_UNITTESTS
+	/** Modify schema directory for unittesting */
 	char *schemadir;
 #endif /* OPENSYNC_UNITTESTS*/
 	int ref_count;

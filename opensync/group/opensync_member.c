@@ -189,6 +189,9 @@ void osync_member_unref(OSyncMember *member)
 #ifdef OPENSYNC_UNITTESTS
 		if (member->schemadir)
 			osync_free(member->schemadir);
+
+		if (member->default_configdir)
+			osync_free(member->default_configdir);
 #endif /* OPENSYNC_UNITTESTS */
 
 
@@ -238,6 +241,17 @@ void osync_member_set_configdir(OSyncMember *member, const char *configdir)
 	member->configdir = osync_strdup(configdir);
 }
 
+
+#ifdef OPENSYNC_UNITTESTS
+void osync_member_set_default_configdir(OSyncMember *member, const char *default_configdir)
+{
+	osync_assert(member);
+	if (member->default_configdir)
+		osync_free(member->default_configdir);
+	member->default_configdir = osync_strdup(default_configdir);
+}
+#endif
+
 OSyncPluginConfig *osync_member_get_config_or_default(OSyncMember *member, OSyncError **error)
 {
 	char *filename = NULL;
@@ -261,7 +275,13 @@ OSyncPluginConfig *osync_member_get_config_or_default(OSyncMember *member, OSync
 	osync_trace(TRACE_INTERNAL, "Reading %s", filename);
 	if (!g_file_test(filename, G_FILE_TEST_IS_REGULAR)) {
 		osync_free(filename);
+#ifdef OPENSYNC_UNITTESTS
+		filename = osync_strdup_printf("%s"G_DIR_SEPARATOR_S"%s",
+				member->default_configdir ? member->default_configdir : OPENSYNC_CONFIGDIR,
+				member->pluginname);
+#else
 		filename = osync_strdup_printf(OPENSYNC_CONFIGDIR G_DIR_SEPARATOR_S"%s", member->pluginname);
+#endif		
 		osync_trace(TRACE_INTERNAL, "Reading default %s", filename);
 	}
 

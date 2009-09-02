@@ -258,7 +258,7 @@ END_TEST
 */
 START_TEST (member_get_config_or_default)
 {	
-	char *testbed = setup_testbed("filter_save_and_load");
+	char *testbed = setup_testbed("plugin_no_config");
 	OSyncError *error = NULL;
 	OSyncMember *member = NULL;
 	OSyncPluginConfig *config = NULL;
@@ -267,6 +267,8 @@ START_TEST (member_get_config_or_default)
 
 	fail_unless(osync_member_load(member, "configs/group/1", &error), NULL);
 	fail_unless(error == NULL, NULL);
+
+	osync_member_set_default_configdir(member, "defaults");
 
 	config = osync_member_get_config_or_default(member, &error);
 	fail_unless(config != NULL, NULL);
