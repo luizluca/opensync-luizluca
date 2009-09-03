@@ -259,6 +259,47 @@ static void _osync_client_disconnect_callback(void *data, OSyncError *error)
 	return;
 }
 
+static osync_bool _osync_client_handle_capabilities_message(OSyncClient *client, OSyncMessage *reply, OSyncError **error)
+{
+
+	OSyncVersion *version = NULL;
+	OSyncCapabilities *capabilities = NULL;
+	char* buffer = NULL;
+	unsigned int size = 0;
+
+	version = osync_plugin_info_get_version(client->plugin_info);
+	if (version) {
+		osync_message_write_int(reply, 1);
+		osync_message_write_string(reply, osync_version_get_plugin(version));
+		osync_message_write_string(reply, osync_version_get_priority(version));
+		osync_message_write_string(reply, osync_version_get_vendor(version));
+		osync_message_write_string(reply, osync_version_get_modelversion(version));
+		osync_message_write_string(reply, osync_version_get_firmwareversion(version));
+		osync_message_write_string(reply, osync_version_get_softwareversion(version));
+		osync_message_write_string(reply, osync_version_get_hardwareversion(version));
+		osync_message_write_string(reply, osync_version_get_identifier(version));
+	} else {
+		osync_message_write_int(reply, 0);
+	}
+	
+	/* Report detected capabilities */
+	capabilities = osync_plugin_info_get_capabilities(client->plugin_info);
+	if (capabilities) {
+		osync_message_write_int(reply, 1);
+		if (!osync_capabilities_assemble(capabilities, &buffer, &size, error))
+			goto error;
+		osync_message_write_string(reply, buffer);
+		g_free(buffer);
+	} else {
+		osync_message_write_int(reply, 0);
+	}
+
+	return TRUE;
+
+error:
+	return FALSE;
+}
+
 static void _osync_client_get_changes_callback(void *data, OSyncError *error)
 {
 	OSyncError *locerror = NULL;
@@ -281,6 +322,11 @@ static void _osync_client_get_changes_callback(void *data, OSyncError *error)
 	if (!reply)
 		goto error;
 	osync_trace(TRACE_INTERNAL, "Reply id %lli", osync_message_get_id(reply));
+
+
+	/* Handle capabilities if those got discovered during the sync .... */
+	if (!_osync_client_handle_capabilities_message(client, reply, &locerror))
+		goto error_free_message;
 
 	_free_baton(baton);
 	
@@ -824,6 +870,7 @@ static osync_bool _osync_client_handle_finalize(OSyncClient *client, OSyncMessag
 	return FALSE;
 }
 
+
 static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessage *message, OSyncError **error)
 {
 	OSyncMessage *reply = NULL;
@@ -831,10 +878,6 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	OSyncList *res = NULL;
 	unsigned int avail = 0;
 	OSyncObjTypeSink *sink = NULL;
-	OSyncVersion *version = NULL;
-	OSyncCapabilities *capabilities = NULL;
-	char* buffer = NULL;
-	unsigned int size = 0;
 	unsigned int num_res = 0;
 	OSyncPluginResource *resource = NULL;
 	OSyncList *objtypesinks = NULL;
@@ -879,31 +922,9 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 		list = list->next;
 	}
 	osync_list_free(objtypesinks);
-	
-	version = osync_plugin_info_get_version(client->plugin_info);
-	if (version) {
-		osync_message_write_int(reply, 1);
-		osync_message_write_string(reply, osync_version_get_plugin(version));
-		osync_message_write_string(reply, osync_version_get_priority(version));
-		osync_message_write_string(reply, osync_version_get_vendor(version));
-		osync_message_write_string(reply, osync_version_get_modelversion(version));
-		osync_message_write_string(reply, osync_version_get_firmwareversion(version));
-		osync_message_write_string(reply, osync_version_get_softwareversion(version));
-		osync_message_write_string(reply, osync_version_get_hardwareversion(version));
-		osync_message_write_string(reply, osync_version_get_identifier(version));
-	}else
-		osync_message_write_int(reply, 0);
-	
-	/* Report detected capabilities */
-	capabilities = osync_plugin_info_get_capabilities(client->plugin_info);
-	if (capabilities) {
-		osync_message_write_int(reply, 1);
-		if (!osync_capabilities_assemble(capabilities, &buffer, &size, error))
-			goto error_free_message;
-		osync_message_write_string(reply, buffer);
-		g_free(buffer);
-	}else
-		osync_message_write_int(reply, 0);
+
+	if (!_osync_client_handle_capabilities_message(client, reply, error))
+		goto error_free_message;
 
 	/* Report, detected Resources */
 	res = osync_plugin_config_get_resources(config);

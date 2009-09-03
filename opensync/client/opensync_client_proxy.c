@@ -314,22 +314,112 @@ static void _osync_client_proxy_fin_handler(OSyncMessage *message, void *user_da
 	return;
 }
 
+static osync_bool _osync_client_proxy_read_discover_message(OSyncClientProxy *proxy, OSyncMessage *message, OSyncError **error)
+{
+	
+	char* str = NULL;
+	int sent_version = 0;
+	int sent_capabilities = 0;
+	OSyncVersion *version = NULL;
+	OSyncCapabilities *capabilities = NULL;
+	OSyncCapabilities *version_cap = NULL; 
+	OSyncMember *member = osync_client_proxy_get_member(proxy);
+
+
+	/* Merger - Set the capabilities */
+	osync_message_read_int(message, &sent_version);
+	if (sent_version) {
+		version = osync_version_new(error);
+		if (!version)
+			goto error;
+		
+		osync_message_read_string(message, &str);
+		osync_version_set_plugin(version, str);
+		osync_free(str);
+		osync_message_read_string(message, &str);
+		osync_version_set_priority(version, str);
+		osync_free(str);
+		osync_message_read_string(message, &str);
+		osync_version_set_vendor(version, str);
+		osync_free(str);
+		osync_message_read_string(message, &str);
+		osync_version_set_modelversion(version, str);
+		osync_free(str);
+		osync_message_read_string(message, &str);
+		osync_version_set_firmwareversion(version, str);
+		osync_free(str);
+		osync_message_read_string(message, &str);
+		osync_version_set_softwareversion(version, str);
+		osync_free(str);
+		osync_message_read_string(message, &str);
+		osync_version_set_hardwareversion(version, str);
+		osync_free(str);
+		osync_message_read_string(message, &str);
+		osync_version_set_identifier(version, str);
+		osync_free(str);	
+	}
+			
+	osync_message_read_int(message, &sent_capabilities);
+	if (sent_capabilities) {
+		osync_message_read_string(message, &str);
+		capabilities = osync_capabilities_parse(str, strlen(str), error);
+		osync_free(str);
+		if (!capabilities)
+			goto error_free_version;
+	}
+	
+	/* we set the capabilities for the member only if they are not set yet */
+	if (member && osync_member_get_capabilities(member) == NULL) {
+		osync_trace(TRACE_INTERNAL, "No capabilities set for the member right now. version: %p capabilities: %p\n", version, capabilities);
+
+		/* we take our own capabilities rather then from the client */ 
+		if (version)
+			version_cap = osync_version_find_capabilities(version, error);
+
+		if (*error)
+			goto error_free_capabilities;
+
+		if (version_cap) {
+			if (capabilities)
+				osync_capabilities_unref(capabilities);
+			capabilities = version_cap;
+		}
+
+		if (capabilities) {
+			if (!osync_member_set_capabilities(member, capabilities, error))
+				goto error_free_capabilities; 
+
+			osync_capabilities_unref(capabilities);
+		}
+	}
+
+	if (version)
+		osync_version_unref(version);
+
+	return TRUE;
+
+error_free_capabilities:
+	if (capabilities)
+		osync_capabilities_unref(capabilities);
+error_free_version:
+	if (version)
+		osync_version_unref(version);
+
+error:	
+
+	return FALSE;
+}
+
 static void _osync_client_proxy_discover_handler(OSyncMessage *message, void *user_data)
 {
 	callContext *ctx = user_data;
 	OSyncClientProxy *proxy = ctx->proxy;
 	OSyncError *error = NULL;
 	OSyncError *locerror = NULL;
-	OSyncVersion *version = NULL;
-	OSyncCapabilities *capabilities = NULL;
 	unsigned int num_sinks = 0;
 	unsigned int i = 0;
 	OSyncObjTypeSink *sink = NULL;
-	int sent_version = 0;
-	char* str = NULL;
-	int sent_capabilities = 0;
-	OSyncMember *member = NULL;
-	OSyncCapabilities *version_cap = NULL; 
+	OSyncMember *member = osync_client_proxy_get_member(proxy);
 	unsigned int num_res = 0;
 	OSyncPluginConfig *config = NULL;
 	OSyncPluginResource *resource = NULL;
@@ -353,82 +443,10 @@ static void _osync_client_proxy_discover_handler(OSyncMessage *message, void *us
 			if (proxy->member)
 				osync_member_add_objtype_sink(proxy->member, sink);
 		}
-		
-		/* Merger - Set the capabilities */
-		osync_message_read_int(message, &sent_version);
-		if (sent_version) {
-			version = osync_version_new(&locerror);
-			if(!version) {
-				goto error;
-			}
-			
-			osync_message_read_string(message, &str);
-			osync_version_set_plugin(version, str);
-			osync_free(str);
-			osync_message_read_string(message, &str);
-			osync_version_set_priority(version, str);
-			osync_free(str);
-			osync_message_read_string(message, &str);
-			osync_version_set_vendor(version, str);
-			osync_free(str);
-			osync_message_read_string(message, &str);
-			osync_version_set_modelversion(version, str);
-			osync_free(str);
-			osync_message_read_string(message, &str);
-			osync_version_set_firmwareversion(version, str);
-			osync_free(str);
-			osync_message_read_string(message, &str);
-			osync_version_set_softwareversion(version, str);
-			osync_free(str);
-			osync_message_read_string(message, &str);
-			osync_version_set_hardwareversion(version, str);
-			osync_free(str);
-			osync_message_read_string(message, &str);
-			osync_version_set_identifier(version, str);
-			osync_free(str);	
-		}
-				
-		osync_message_read_int(message, &sent_capabilities);
-		if (sent_capabilities) {
-			osync_message_read_string(message, &str);
-			capabilities = osync_capabilities_parse(str, strlen(str), &locerror);
-			osync_free(str);
-			if(!capabilities) {
-				goto error_free_version;
-			}
-		}
-		
-		/* we set the capabilities for the member only if they are not set yet */
-		member = osync_client_proxy_get_member(proxy);
-		if (member && osync_member_get_capabilities(member) == NULL)
-			{
-				osync_trace(TRACE_INTERNAL, "No capabilities set for the member right now. version: %p capabilities: %p\n", version, capabilities);
 
-				/* we take our own capabilities rather then from the client */ 
-				if (version)
-					version_cap = osync_version_find_capabilities(version, &locerror);
-
-				if (locerror)
-					goto error_free_capabilities;
-
-				if (version_cap) {
-					if (capabilities)
-						osync_capabilities_unref(capabilities);
-					capabilities = version_cap;
-				}
-
-				if (capabilities) {
-					if (!osync_member_set_capabilities(member, capabilities, &locerror))
-						goto error_free_capabilities; 
-
-					osync_capabilities_unref(capabilities);
-				}
-			}
-
-		if (version)
-			osync_version_unref(version);
-
- 
+		if (!_osync_client_proxy_read_discover_message(proxy, message, &locerror))
+			goto error;
+	 
 		/* Store stuff in member configuration */
 		if (member) {
 
@@ -466,12 +484,6 @@ static void _osync_client_proxy_discover_handler(OSyncMessage *message, void *us
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return;
 
- error_free_capabilities:
-	if (capabilities)
-		osync_capabilities_unref(capabilities);
- error_free_version:
-	if (version)
-		osync_version_unref(version);
  error:
 	ctx->discover_callback(proxy, ctx->discover_callback_data, locerror);
 	osync_free(ctx);
@@ -625,6 +637,12 @@ static void _osync_client_proxy_get_changes_handler(OSyncMessage *message, void 
 	
 	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
 		ctx->get_changes_callback(proxy, ctx->get_changes_callback_data, NULL);
+
+		if (osync_message_get_message_size(message)) {
+			if (!_osync_client_proxy_read_discover_message(proxy, message, &locerror))
+				goto error;
+		}
+
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
 		osync_demarshal_error(message, &error);
 		ctx->get_changes_callback(proxy, ctx->get_changes_callback_data, error);
