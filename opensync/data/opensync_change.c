@@ -249,3 +249,4 @@ osync_bool osync_change_duplicate(OSyncChange *change, osync_bool *dirty, OSyncE
 	return TRUE;
 }
 
+

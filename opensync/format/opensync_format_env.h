@@ -253,6 +253,8 @@ OSYNC_EXPORT OSyncFormatConverterPath *osync_format_env_find_path_formats_with_d
  */
 OSYNC_EXPORT void osync_format_env_register_merger(OSyncFormatEnv *env, OSyncMerger *merger); 
 
+OSYNC_EXPORT OSyncMerger *osync_format_env_find_merger(OSyncFormatEnv *env, const char *objformat, const char *capsformat);
+
 /*@}*/
 
 #endif /* _OPENSYNC_FORMAT_ENV_H_ */

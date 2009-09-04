@@ -21,6 +21,8 @@
 #include "opensync.h"
 #include "opensync_internals.h"
 
+#include "opensync-data.h"
+
 #include "opensync_merger.h"
 #include "opensync_merger_private.h"
 
@@ -91,3 +93,35 @@ void osync_merger_set_demerge_func(OSyncMerger *merger, OSyncMergerDemergeFunc d
 	osync_return_if_fail(merger);
 	merger->demerge_func = demerge_func;
 }
+
+const char *osync_merger_get_objformat(OSyncMerger *merger)
+{
+	osync_return_val_if_fail(merger, NULL);
+	return merger->objformat;
+}
+
+const char *osync_merger_get_capsformat(OSyncMerger *merger)
+{
+	osync_return_val_if_fail(merger, NULL);
+	return merger->capsformat;
+}
+
+osync_bool osync_merger_demerge(OSyncMerger *merger, OSyncChange *change, OSyncCapabilities *caps, OSyncError **error)
+{
+
+	char *buffer;
+	unsigned int size;
+
+	OSyncData *data = osync_change_get_data(change);
+
+	osync_data_get_data(data, &buffer, &size);
+
+	if (!merger->demerge_func(&buffer, &size, caps, NULL /*userdata!*/, error))
+		goto error;
+
+	return TRUE;
+
+error:	
+	return FALSE;
+}
+

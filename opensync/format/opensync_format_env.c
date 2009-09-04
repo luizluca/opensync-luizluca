@@ -33,6 +33,7 @@
 #include "opensync_format_env_private.h"
 
 #include "opensync_converter_internals.h"
+#include "opensync_merger_internals.h"
 
 static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char *path, osync_bool must_exist, OSyncError **error)
 {
@@ -961,6 +962,29 @@ void osync_format_env_register_merger(OSyncFormatEnv *env, OSyncMerger *merger)
 	
 	env->mergers = osync_list_append(env->mergers, merger);
 	osync_merger_ref(merger);
+}
+
+
+OSyncMerger *osync_format_env_find_merger(OSyncFormatEnv *env, const char *objformat, const char *capsformat)
+{
+	OSyncList *m;
+	osync_assert(env);
+	osync_assert(objformat);
+	osync_assert(capsformat);
+
+	
+	for (m = env->mergers; m; m = m->next) {
+		OSyncMerger *merger = m->data;
+		if (strcmp(objformat, osync_merger_get_objformat(merger)))
+			continue;
+			
+		if (strcmp(capsformat, osync_merger_get_capsformat(merger)))
+			continue;
+		
+		return merger;
+	}
+
+	return NULL;
 }
 
 OSyncObjFormat *osync_format_env_detect_objformat(OSyncFormatEnv *env, OSyncData *data)
