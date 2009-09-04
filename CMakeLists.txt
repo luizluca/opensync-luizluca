@@ -54,6 +54,7 @@ ENDIF(COMMAND cmake_policy)
 INCLUDE( Documentation )
 INCLUDE( OpenSyncDefaults )
 INCLUDE( OpenSyncPackaging )
+INCLUDE( OpenSyncPlugin )
 
 INCLUDE_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/opensync" ${CMAKE_CURRENT_SOURCE_DIR} )
 
@@ -91,7 +92,12 @@ ADD_SUBDIRECTORY( tools )
 ADD_SUBDIRECTORY( misc )
 ADD_SUBDIRECTORY( cmake )
 
-#ADD_SUBDIRECTORY( docs/example-plugin/src/ ) 
+OPTION( OPENSYNC_API_EXAMPLE "enable build of OpenSync API examples" OFF )
+IF ( OPENSYNC_API_EXAMPLE )
+	SET( OPENSYNC_LIBRARIES opensync )
+	ADD_SUBDIRECTORY( docs/examples/plugins/src/ ) 
+	ADD_SUBDIRECTORY( docs/examples/applications/src/ ) 
+ENDIF ( OPENSYNC_API_EXAMPLE )
 
 OPTION( ENABLE_WRAPPER "enable wrapper" OFF )
 IF ( SWIG_FOUND )
