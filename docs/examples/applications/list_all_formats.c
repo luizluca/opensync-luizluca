@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
 	
 	osync_bool couldloadformats;
 	
-	int numformats = 0;
+	OSyncList *f, *formats;
 	int i = 0;
 	
 	env = osync_format_env_new (NULL);
@@ -19,13 +19,16 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 	
-	numformats = osync_format_env_num_objformats(env);
-	printf("found %i formats\n", numformats);
+	formats = osync_format_env_get_objformats(env);
+	printf("found %i formats\n", osync_list_length(formats));
 	
-	for( i = 0; i < numformats; i++ ) {
-		format = osync_format_env_nth_objformat(env, i);
+	for (f = formats; f; f = f->next) {
+		format = (OSyncObjFormat *) f->data;
 		printf("format nr. %i is %s\n", i+1, osync_objformat_get_name(format));
 	}
+
+	/* Free the list */
+	osync_list_free(formats);
 	
 	osync_format_env_unref(env);
 	
