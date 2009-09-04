@@ -165,7 +165,7 @@ error:
 OSyncCapability *osync_capability_new(OSyncCapabilitiesObjType *capobjtype, OSyncError **error)
 {
 	OSyncCapability *capability = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p)", __func__, capobjtype, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, capobjtype, error);
 	osync_assert(capobjtype);
 	
 	capability = osync_try_malloc0(sizeof(OSyncCapability), error);
