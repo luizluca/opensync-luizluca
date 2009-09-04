@@ -34,8 +34,6 @@
 
 #include "opensync_converter_internals.h"
 
-
-
 static osync_bool osync_format_env_load_modules(OSyncFormatEnv *env, const char *path, osync_bool must_exist, OSyncError **error)
 {
 	GDir *dir = NULL;
@@ -953,6 +951,16 @@ OSyncCustomFilter *osync_format_env_nth_filter(OSyncFormatEnv *env, unsigned int
 {
 	osync_assert(env);
 	return osync_list_nth_data(env->custom_filters, nth);
+}
+
+
+void osync_format_env_register_merger(OSyncFormatEnv *env, OSyncMerger *merger)
+{
+	osync_assert(env);
+	osync_assert(merger);
+	
+	env->mergers = osync_list_append(env->mergers, merger);
+	osync_merger_ref(merger);
 }
 
 OSyncObjFormat *osync_format_env_detect_objformat(OSyncFormatEnv *env, OSyncData *data)

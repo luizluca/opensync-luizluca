@@ -35,6 +35,8 @@ struct OSyncMerger {
 	int ref_count;
 	OSyncMergerInitializeFunc initialize_func;
 	OSyncMergerFinalizeFunc finalize_func;
+	OSyncMergerMergeFunc merge_func;
+	OSyncMergerDemergeFunc demerge_func;
 	void *user_data;
 };
 

@@ -85,6 +85,13 @@ START_TEST (capabilities_parse)
 
 	osync_capability_set_name(capability, "capmock3");
 
+	/** capmock4 as child */
+	capability = osync_capability_new_child(capability, &error);
+	fail_unless(capability != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+
+	osync_capability_set_name(capability, "capmock4");
+
 	fail_unless(osync_capabilities_save(capabilities, dummy_caps_file, &error) != FALSE, NULL);
 	fail_unless(error == NULL, NULL);
 
@@ -115,6 +122,12 @@ START_TEST (capabilities_parse)
 	cap = osync_list_nth_data(c, 2);
 	fail_unless(cap != NULL, NULL);
 	fail_unless(!strcmp(osync_capability_get_name(cap), "capmock3"), NULL);
+
+	/** capmock4, as child */
+	cap = osync_list_nth_data(osync_capability_get_childs(cap), 0);
+	fail_unless(cap != NULL, NULL);
+	fail_unless(!strcmp(osync_capability_get_name(cap), "capmock4"), NULL);
+
 	
 	osync_capabilities_unref(capabilities);
 

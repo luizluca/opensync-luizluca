@@ -32,15 +32,19 @@
 typedef void * (* OSyncMergerInitializeFunc) (OSyncError **error);
 typedef void (* OSyncMergerFinalizeFunc) (void *user_data);
 
+typedef osync_bool (* OSyncMergerMergeFunc) (char **buf, unsigned int *size, const char *entirebuf, unsigned int entiresize, OSyncCapabilities *caps, void *userdata, OSyncError **error);
+typedef osync_bool (* OSyncMergerDemergeFunc) (char **buf, unsigned int *size, OSyncCapabilities *caps, void *userdata, OSyncError **error);
+
 OSYNC_EXPORT OSyncMerger *osync_merger_new(const char *objformat, const char *capsformat, OSyncError **error);
 
 OSYNC_EXPORT OSyncMerger *osync_merger_ref(OSyncMerger *merger);
-
 OSYNC_EXPORT void osync_merger_unref(OSyncMerger *merger);
 
 OSYNC_EXPORT void osync_merger_set_initialize_func(OSyncMerger *merger, OSyncMergerInitializeFunc initialize_func);
-
 OSYNC_EXPORT void osync_merger_set_finalize_func(OSyncMerger *merger, OSyncMergerFinalizeFunc finalize_func);
+
+OSYNC_EXPORT void osync_merger_set_merge_func(OSyncMerger *merger, OSyncMergerMergeFunc merge_func);
+OSYNC_EXPORT void osync_merger_set_demerge_func(OSyncMerger *merger, OSyncMergerDemergeFunc demerge_func);
 
 /*@}*/
 

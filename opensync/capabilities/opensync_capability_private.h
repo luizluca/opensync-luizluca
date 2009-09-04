@@ -56,6 +56,10 @@ struct OSyncCapability {
 	/** Value */
 	char *value;
 
+	/** Childs */
+	OSyncList *childs; /* OSYncCapability * list */
+
+
 	/** Reference counting */
 	int ref_count;
 };

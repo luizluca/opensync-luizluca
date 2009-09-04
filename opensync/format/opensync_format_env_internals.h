@@ -46,6 +46,8 @@ struct OSyncFormatEnv {
 	OSyncList *converters;
 	/** A list of filter functions */
 	OSyncList *custom_filters;
+	/** A list of mergers (OSyncMergers *) */
+	OSyncList *mergers;
 	
 	OSyncList *modules;
 	GModule *current_module;

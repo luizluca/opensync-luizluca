@@ -27,6 +27,7 @@ OPENSYNC_BEGIN_DECLS
 #include "format/opensync_format_env.h"
 #include "format/opensync_objformat.h"
 #include "format/opensync_objformat_sink.h"
+#include "format/opensync_merger.h"
 
 OPENSYNC_END_DECLS
 

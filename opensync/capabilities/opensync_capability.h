@@ -179,6 +179,11 @@ OSYNC_EXPORT void osync_capability_set_type(OSyncCapability *capability, OSyncCa
  */
 OSYNC_EXPORT OSyncList *osync_capability_get_valenums(OSyncCapability *capability); /* const char* list */
 
+/** TODO Doxygen */
+OSYNC_EXPORT OSyncList *osync_capability_get_childs(OSyncCapability *capability); /* OSyncCapability* list */
+OSYNC_EXPORT void osync_capability_add_child(OSyncCapability *capability, OSyncCapability *child);
+OSYNC_EXPORT OSyncCapability *osync_capability_new_child(OSyncCapability *parent, OSyncError **error);
+
 /*@}*/
 
 #endif /*OPENSYNC_CAPABILITY_H_*/

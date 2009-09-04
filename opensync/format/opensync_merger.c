@@ -79,3 +79,15 @@ void osync_merger_set_finalize_func(OSyncMerger *merger, OSyncMergerFinalizeFunc
 	osync_return_if_fail(merger);
 	merger->finalize_func = finalize_func;
 }
+
+void osync_merger_set_merge_func(OSyncMerger *merger, OSyncMergerMergeFunc merge_func)
+{
+	osync_return_if_fail(merger);
+	merger->merge_func = merge_func;
+}
+
+void osync_merger_set_demerge_func(OSyncMerger *merger, OSyncMergerDemergeFunc demerge_func)
+{
+	osync_return_if_fail(merger);
+	merger->demerge_func = demerge_func;
+}

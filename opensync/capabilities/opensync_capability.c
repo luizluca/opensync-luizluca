@@ -35,25 +35,42 @@ int osync_capability_compare_stdlib(const void *capability1, const void *capabil
 	return strcmp(osync_capability_get_name(*(OSyncCapability **)capability1), osync_capability_get_name(*(OSyncCapability **)capability2));
 }
 
-OSyncCapability *osync_capability_parse(OSyncCapabilitiesObjType *capabilitiesobjtype, xmlNodePtr node, OSyncError **error)
+
+OSyncCapability *osync_capability_parse_child(OSyncCapability *cap, xmlNodePtr node, OSyncError **error)
 {
 	xmlNode *cur;
-	OSyncCapability *cap = NULL;
-	osync_assert(capabilitiesobjtype);
+	osync_assert(cap);
 	osync_assert(node);
 
 	cur = node;
 
-	cap = osync_capability_new(capabilitiesobjtype, error);
-	if (!cap)
-		goto error;
+	if (cur)
+		printf("%s: %s\n", __func__, cur->name);
+	else
+		printf("%s:\n", __func__);
 
 	cur = cur->children;
         for (; cur != NULL; cur = cur->next) {
                 char *str = NULL;
 
+		if (cur->name)
+			printf("-> %s\n", cur->name);
+		else
+			printf("-> NIX\n");
+
                 if (cur->type != XML_ELEMENT_NODE)
                         continue;
+
+		if (!xmlStrcmp(cur->name, BAD_CAST "Cap")) {
+			OSyncCapability *child = osync_capability_new_child(cap, error);
+			if (!child)
+				goto error;
+
+			osync_capability_parse_child(child, cur, error);
+
+			continue;
+		}
+
 
                 str = (char*)xmlNodeGetContent(cur);
                 if (!str)
@@ -76,6 +93,7 @@ OSyncCapability *osync_capability_parse(OSyncCapabilitiesObjType *capabilitiesob
 		else if (!xmlStrcmp(cur->name, BAD_CAST "ValEnum"))
 			osync_list_prepend(cap->valenum, osync_strdup(str));
 
+
 		osync_xml_free(str);
 	}
 	
@@ -83,6 +101,26 @@ OSyncCapability *osync_capability_parse(OSyncCapabilitiesObjType *capabilitiesob
 
 error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
+	return NULL;
+}
+
+
+OSyncCapability *osync_capability_parse(OSyncCapabilitiesObjType *capabilitiesobjtype, xmlNodePtr node, OSyncError **error)
+{
+	OSyncCapability *cap = NULL;
+	osync_assert(capabilitiesobjtype);
+	osync_assert(node);
+
+	cap = osync_capability_new(capabilitiesobjtype, error);
+	if (!cap)
+		goto error;
+
+	if (!osync_capability_parse_child(cap, node, error))
+		goto error;
+
+	return cap;
+
+error:
 	return NULL;
 }
 
@@ -151,28 +189,72 @@ osync_bool osync_capability_assemble(OSyncCapability *cap, xmlNodePtr node, OSyn
 			goto error_oom;
 	}
 
+	/* Cap */
+	for (l = cap->childs; l; l = l->next) {
+		if (!osync_capability_assemble(l->data, cur, error))
+			goto error;
+
+	}
+
 	return TRUE;
 
 error_oom:	
 	osync_error_set(error, OSYNC_ERROR_GENERIC, "No memory left to assemble capability.");
-/*	
+
 error:
-*/
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
 	return FALSE;
+}
+
+OSyncCapability *osync_capability_new_internal(OSyncError **error)
+{
+	OSyncCapability *capability = NULL;
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, error);
+	
+	capability = osync_try_malloc0(sizeof(OSyncCapability), error);
+	if(!capability)
+		goto error;
+
+	osync_trace(TRACE_EXIT, "%s: %p", __func__, capability);
+	return capability;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
+	return NULL;
+
 }
 
 OSyncCapability *osync_capability_new(OSyncCapabilitiesObjType *capobjtype, OSyncError **error)
 {
 	OSyncCapability *capability = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, capobjtype, error);
-	osync_assert(capobjtype);
-	
-	capability = osync_try_malloc0(sizeof(OSyncCapability), error);
-	if(!capability)
+
+	capability = osync_capability_new_internal(error);
+	if (!capability)
 		goto error;
 
 	osync_capabilities_objtype_add_capability(capobjtype, capability);
+	
+	osync_trace(TRACE_EXIT, "%s: %p", __func__, capability);
+	return capability;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
+	return NULL;
+
+}
+
+OSyncCapability *osync_capability_new_child(OSyncCapability *parent, OSyncError **error)
+{
+	OSyncCapability *capability = NULL;
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, parent, error);
+	osync_assert(parent);
+	
+	capability = osync_capability_new_internal(error);
+	if(!capability)
+		goto error;
+
+	osync_capability_add_child(parent, capability);
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, capability);
 	return capability;
@@ -318,6 +400,21 @@ OSyncList *osync_capability_get_valenums(OSyncCapability *capability)
 	osync_assert(capability);
 
 	return capability->valenum;
+}
+
+OSyncList *osync_capability_get_childs(OSyncCapability *capability)
+{
+	osync_assert(capability);
+
+	return capability->childs;
+}
+
+void osync_capability_add_child(OSyncCapability *capability, OSyncCapability *child)
+{
+	osync_assert(capability);
+	osync_assert(child);
+
+	capability->childs = osync_list_append(capability->childs, child);
 }
 
 OSyncCapabilityParameter *osync_capability_parameter_new(OSyncError **error)

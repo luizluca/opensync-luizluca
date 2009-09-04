@@ -20,6 +20,7 @@
 
   <xsd:complexType name="Cap">
     <xsd:sequence>
+      <xsd:element maxOccurs="unbounded" minOccurs="0" name="Cap" type="Cap" />
       <xsd:element maxOccurs="1" minOccurs="0" name="DisplayName" type="xsd:string" />
       <xsd:element maxOccurs="1" minOccurs="0" name="MaxOccurs" type="xsd:integer" />
       <xsd:element maxOccurs="1" minOccurs="0" name="Max" type="xsd:integer" />

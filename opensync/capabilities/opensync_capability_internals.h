@@ -44,6 +44,7 @@ OSyncCapability *osync_capability_parse(OSyncCapabilitiesObjType *objtype, xmlNo
 
 /* TODO - Doxygen */
 osync_bool osync_capability_assemble(OSyncCapability *cap, xmlNodePtr node, OSyncError **error);
+OSyncCapability *osync_capability_parse_child(OSyncCapability *cap, xmlNodePtr node, OSyncError **error);
 
 /**
  * @brief Frees a capability object 
@@ -57,6 +58,8 @@ void osync_capability_free(OSyncCapability *capability);
  * @param capability2 The pointer to a capability object
  */
 int osync_capability_compare_stdlib(const void *capability1, const void *capability2);
+
+
 
 /*@}*/
 
