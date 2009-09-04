@@ -28,6 +28,9 @@ int main(int argc, char *argv[]) {
 		group = (OSyncGroup *) g->data;
 		printf("group nr. %i is %s\n", i+1, osync_group_get_name(group));
 	}
+
+	/* Free the list */
+	osync_list_free(groups);
 	
 	/* free env */
 	osync_group_env_unref(groupenv);
