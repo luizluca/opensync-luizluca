@@ -7,6 +7,8 @@ osync_capabilities_objtype_ref
 osync_capabilities_objtype_unref
 osync_capabilities_ref
 osync_capabilities_unref
+osync_capability_add_child
+osync_capability_get_childs
 osync_capability_get_displayname
 osync_capability_get_max
 osync_capability_get_maxoccurs
@@ -16,6 +18,7 @@ osync_capability_get_parameter
 osync_capability_get_type
 osync_capability_get_valenums
 osync_capability_new
+osync_capability_new_child
 osync_capability_ref
 osync_capability_set_displayname
 osync_capability_set_max
@@ -164,6 +167,7 @@ osync_format_env_load_plugins
 osync_format_env_new
 osync_format_env_ref
 osync_format_env_register_converter
+osync_format_env_register_merger
 osync_format_env_register_objformat
 osync_format_env_unref
 osync_free
@@ -332,8 +336,10 @@ osync_member_set_pluginname
 osync_member_unref
 osync_merger_new
 osync_merger_ref
+osync_merger_set_demerge_func
 osync_merger_set_finalize_func
 osync_merger_set_initialize_func
+osync_merger_set_merge_func
 osync_merger_unref
 osync_obj_engine_command
 osync_obj_engine_event
