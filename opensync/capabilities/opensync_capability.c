@@ -44,19 +44,9 @@ OSyncCapability *osync_capability_parse_child(OSyncCapability *cap, xmlNodePtr n
 
 	cur = node;
 
-	if (cur)
-		printf("%s: %s\n", __func__, cur->name);
-	else
-		printf("%s:\n", __func__);
-
 	cur = cur->children;
         for (; cur != NULL; cur = cur->next) {
                 char *str = NULL;
-
-		if (cur->name)
-			printf("-> %s\n", cur->name);
-		else
-			printf("-> NIX\n");
 
                 if (cur->type != XML_ELEMENT_NODE)
                         continue;
