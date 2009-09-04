@@ -222,7 +222,7 @@ osync_bool get_conversion_info(OSyncFormatEnv *env, OSyncError **error)
 	osync_converter_set_initialize_func(conv, initialize_converter);
 	osync_converter_set_finalize_func(conv, finalize_converter);
 	/* register converter */
-	osync_format_env_register_converter(env, conv);
+	osync_format_env_register_converter(env, conv, error);
 	osync_converter_unref(conv);
 
 	conv = osync_converter_new(OSYNC_CONVERTER_CONV, format2, format1, conv_format2_to_format1, error);
@@ -230,7 +230,7 @@ osync_bool get_conversion_info(OSyncFormatEnv *env, OSyncError **error)
 		return FALSE;
 	/* e.g. this converter doesn't need init and finalize functions therefore don't set them */
 	/* register converter */
-	osync_format_env_register_converter(env, conv);
+	osync_format_env_register_converter(env, conv, error);
 	osync_converter_unref(conv);
 	return TRUE;
 }
