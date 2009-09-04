@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[]) {
 	
-	int numgroups = 0;
+	OSyncList *groups, *g;
 	int i = 0;
 	
 	osync_bool couldloadgroups;
@@ -21,11 +21,11 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 	
-	numgroups = osync_group_env_num_groups(groupenv);
-	printf("found %i groups\n", numgroups);
+	groups = osync_group_env_get_groups(groupenv);
+	printf("found %i groups\n", osync_list_length(groups));
 	
-	for( i = 0; i < numgroups; i++ ) {
-		group = osync_group_env_nth_group(groupenv, i);
+	for (g = groups; g; g = g->next) {
+		group = (OSyncGroup *) g->data;
 		printf("group nr. %i is %s\n", i+1, osync_group_get_name(group));
 	}
 	
