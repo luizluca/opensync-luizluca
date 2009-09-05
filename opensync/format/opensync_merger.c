@@ -112,6 +112,10 @@ osync_bool osync_merger_demerge(OSyncMerger *merger, OSyncChange *change, OSyncC
 	char *buffer;
 	unsigned int size;
 
+	osync_assert(merger);
+	osync_assert(change);
+	osync_return_val_if_fail(caps, TRUE);
+
 	OSyncData *data = osync_change_get_data(change);
 
 	osync_data_get_data(data, &buffer, &size);

@@ -22,6 +22,7 @@
 #include "opensync_internals.h"
 
 #include "opensync-group.h"
+#include "opensync-capabilities.h"
 #include "opensync-engine.h"
 #include "opensync-client.h"
 #include "opensync-data.h"
@@ -46,6 +47,8 @@
 #include "client/opensync_client_proxy_internals.h"
 #include "group/opensync_member_internals.h"
 #include "format/opensync_objformat_internals.h"
+#include "format/opensync_merger_internals.h"
+#include "mapping/opensync_mapping_table_internals.h"
 #include "mapping/opensync_mapping_table_internals.h"
 
 OSyncMappingEngine *_osync_obj_engine_create_mapping_engine(OSyncObjEngine *engine, OSyncError **error)
@@ -197,15 +200,37 @@ static void _osync_obj_engine_disconnect_callback(OSyncClientProxy *proxy, void 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
+
+static OSyncChange *_osync_obj_engine_clone_and_demerge_change(OSyncObjEngine *engine, OSyncCapabilities *caps, OSyncChange *change, OSyncError **error)
+{
+
+	OSyncFormatEnv *formatenv = engine->formatenv;
+	OSyncChange *clone_change = osync_change_clone(change, error);
+	if (!clone_change)
+		goto error;
+	OSyncMerger *merger = osync_format_env_find_merger(formatenv,
+			osync_objformat_get_name(osync_change_get_objformat(clone_change)),
+			osync_capabilities_get_format(caps));
+
+	if (merger && caps &&!osync_merger_demerge(merger, clone_change, caps, error))
+		goto error;
+
+	return clone_change;
+
+error:
+	return NULL; 
+}
+
 /* Finds the mapping to which the entry should belong. The
  * return value is MISMATCH if no mapping could be found,
  * SIMILAR if a mapping has been found but its not completely the same
  * SAME if a mapping has been found and is the same */
-static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engines, OSyncChange *change, OSyncSinkEngine *sinkengine, OSyncMappingEngine **mapping_engine)
+static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engines, OSyncChange *change, OSyncSinkEngine *sinkengine, OSyncMappingEngine **mapping_engine, OSyncError **error)
 {	
 	OSyncList *m = NULL;
 	OSyncList *e = NULL;
 	OSyncConvCmpResult result = OSYNC_CONV_DATA_MISMATCH;
+
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, mapping_engines, change, sinkengine, mapping_engine);
 
 	for (m=mapping_engines; m && (result != OSYNC_CONV_DATA_SAME); m=m->next) {
@@ -227,7 +252,41 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 			if (!mapping_change)
 				continue;
 
-			tmp_result = osync_change_compare(mapping_change, change);
+			OSyncMember *member1 = osync_client_proxy_get_member(sinkengine->proxy);
+			OSyncMember *member2 = osync_client_proxy_get_member(entry_engine->sink_engine->proxy);
+
+
+			OSyncCapabilities *caps1 = osync_member_get_capabilities(member1);
+			OSyncCapabilities *caps2 = osync_member_get_capabilities(member2);
+
+			OSyncChange *clone_change1, *clone_change2;
+			OSyncChange *change1 = change;
+			OSyncChange *change2 = mapping_change;
+
+			if (caps1) {
+				clone_change1 = _osync_obj_engine_clone_and_demerge_change(sinkengine->engine, caps1, change, error);
+				if (!clone_change1)
+					goto error;
+
+				change1 = clone_change1;
+			}
+
+			if (caps2) {
+				clone_change2 = _osync_obj_engine_clone_and_demerge_change(sinkengine->engine, caps2, mapping_change, error);
+				if (!clone_change2)
+					goto error;
+
+				change2 = mapping_change;
+			}
+
+			tmp_result = osync_change_compare(change1, change2);
+
+			if (caps1)
+				osync_change_unref(clone_change1);
+
+			if (caps2)
+				osync_change_unref(clone_change2);
+
 			if(tmp_result == OSYNC_CONV_DATA_SAME) {
 				/* SAME is the best we can get */
 				result = OSYNC_CONV_DATA_SAME;
@@ -245,6 +304,10 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 
 	osync_trace(TRACE_EXIT, "%s: %d, %p", __func__, (int)result, *mapping_engine);
 	return result;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return OSYNC_CONV_DATA_UNKNOWN;
 }
 
 osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **error)
@@ -279,22 +342,29 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 			osync_trace(TRACE_INTERNAL, "Looking for mapping for change %s, changetype %i from member %lli", osync_change_get_uid(change), osync_change_get_changetype(change), memberid);
 	
 			/* See if there is an exisiting mapping, which fits the unmapped change */
-			result = _osync_obj_engine_mapping_find(unmapped_mappings, change, sinkengine, &mapping_engine);
-			if (result == OSYNC_CONV_DATA_MISMATCH) {
-				/* If there is none, create one */
-				mapping_engine = _osync_obj_engine_create_mapping_engine(engine, error);
-				if (!mapping_engine)
+			result = _osync_obj_engine_mapping_find(unmapped_mappings, change, sinkengine, &mapping_engine, error);
+			switch (result) {
+				case OSYNC_CONV_DATA_MISMATCH:
+					/* If there is none, create one */
+					mapping_engine = _osync_obj_engine_create_mapping_engine(engine, error);
+					if (!mapping_engine)
+						goto error;
+					
+					osync_trace(TRACE_INTERNAL, "Unable to find mapping. Creating new mapping with id %lli", osync_mapping_get_id(mapping_engine->mapping));
+					/* TODO: what about _prepend (O(1)) instead of _append (O(n))? Order doesn't matter here - right? */
+					new_mappings = osync_list_append(new_mappings, mapping_engine);
+					unmapped_mappings = osync_list_append(unmapped_mappings, mapping_engine);
+					break;
+				case OSYNC_CONV_DATA_SIMILAR:
+					mapping_engine->conflict = TRUE;
+					break;
+				case OSYNC_CONV_DATA_SAME:
+					unmapped_mappings = osync_list_remove(unmapped_mappings, mapping_engine);
+					mapping_engine->conflict = FALSE;
+					break;
+				case OSYNC_CONV_DATA_UNKNOWN:
 					goto error;
-				
-				osync_trace(TRACE_INTERNAL, "Unable to find mapping. Creating new mapping with id %lli", osync_mapping_get_id(mapping_engine->mapping));
-				/* TODO: what about _prepend (O(1)) instead of _append (O(n))? Order doesn't matter here - right? */
-				new_mappings = osync_list_append(new_mappings, mapping_engine);
-				unmapped_mappings = osync_list_append(unmapped_mappings, mapping_engine);
-			} else if (result == OSYNC_CONV_DATA_SIMILAR) {
-				mapping_engine->conflict = TRUE;
-			} else if (result == OSYNC_CONV_DATA_SAME) {
-				unmapped_mappings = osync_list_remove(unmapped_mappings, mapping_engine);
-				mapping_engine->conflict = FALSE;
+					break;
 			}
 
 			/* Update the entry which belongs to our sinkengine with the the change */
@@ -337,7 +407,7 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
 
- error:
+error:
 	osync_trace_enable();
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
