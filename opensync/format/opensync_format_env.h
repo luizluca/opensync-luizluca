@@ -142,6 +142,37 @@ OSYNC_EXPORT OSyncFormatConverter *osync_format_env_find_converter(OSyncFormatEn
  */
 OSYNC_EXPORT OSyncList *osync_format_env_find_converters(OSyncFormatEnv *env, OSyncObjFormat *sourceformat, OSyncObjFormat *targetformat);
 
+/** @brief Registers Capabilities Converter to Format Environment
+ * 
+ * @param env The format environment
+ * @param converter Pointer of the Capabilities Converter
+ * @param error An OSyncError
+ */
+OSYNC_EXPORT void osync_format_env_register_caps_converter(OSyncFormatEnv *env, OSyncCapsConverter *converter, OSyncError **error);
+
+/** @brief Finds first capabilities converter with the given source and target capsformat 
+ * 
+ * @param env Pointer to the environment
+ * @param sourceformat The source format
+ * @param targetformat The target format
+ * @returns The converter, or NULL if not found
+ * 
+ */
+OSYNC_EXPORT OSyncCapsConverter *osync_format_env_find__caps_converter(OSyncFormatEnv *env, const char *sourcecapsformat, const char *targetcapsformat);
+
+/** @brief Returns a list of all capabilities converters with the given source and target format
+ * 
+ * The returned list must be freed with osync_list_free().  The ref count on each
+ * OSyncCapsConverter is not increased.
+ * 
+ * @param env Pointer to the environment
+ * @param sourceformat The source capabilities format
+ * @param targetformat The target capabilities format
+ * @returns List of OSyncCapsConverter, or NULL if none found
+ * 
+ */
+OSYNC_EXPORT OSyncList *osync_format_env_find_caps_converters(OSyncFormatEnv *env, const char *sourcecapsformat, const char *targetcapsformat);
+
 /**
  * @brief Return a OSyncList of all converters which are store in this format environment
  * 

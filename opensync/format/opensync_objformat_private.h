@@ -61,7 +61,6 @@ struct OSyncObjFormat {
 	OSyncFormatMarshalFunc marshal_func;
 	OSyncFormatDemarshalFunc demarshal_func;
 	OSyncFormatValidateFunc validate_func;
-	OSyncFormatCapsConverterFunc capsconverter_func;
 };
 
 /*@}*/

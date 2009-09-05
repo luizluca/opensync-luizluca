@@ -933,6 +933,60 @@ OSyncList *osync_format_env_get_converters(OSyncFormatEnv *env) {
 	return osync_list_copy(env->converters);
 }
 
+void osync_format_env_register_caps_converter(OSyncFormatEnv *env, OSyncCapsConverter *converter, OSyncError **error)
+{
+	osync_assert(env);
+	osync_assert(converter);
+	
+	env->caps_converters = osync_list_append(env->caps_converters, converter);
+	osync_caps_converter_ref(converter);
+}
+
+OSyncCapsConverter *osync_format_env_find_caps_converter(OSyncFormatEnv *env, const char *sourcecapsformat, const char *targetcapsformat)
+{
+	OSyncList *c = NULL;
+	
+	osync_assert(env);
+	osync_assert(sourcecapsformat);
+	osync_assert(targetcapsformat);
+	
+	for (c = env->caps_converters; c; c = c->next) {
+		OSyncCapsConverter *converter = c->data;
+		if (strcmp(sourcecapsformat, osync_caps_converter_get_sourceformat(converter)))
+			continue;
+			
+		if (strcmp(targetcapsformat, osync_caps_converter_get_targetformat(converter)))
+			continue;
+		
+		return converter;
+	}
+	
+	return NULL;
+}
+
+OSyncList *osync_format_env_find_caps_converters(OSyncFormatEnv *env, const char *sourcecapsformat, const char *targetcapsformat)
+{
+	OSyncList *r = NULL;
+	OSyncList *c = NULL;
+
+	osync_assert(env);
+	osync_assert(sourcecapsformat);
+	osync_assert(targetcapsformat);
+
+	for (c = env->converters; c; c = c->next) {
+		OSyncCapsConverter *converter = c->data;
+		if (strcmp(sourcecapsformat, osync_caps_converter_get_sourceformat(converter)))
+			continue;
+			
+		if (strcmp(targetcapsformat, osync_caps_converter_get_targetformat(converter)))
+			continue;
+
+		r = osync_list_append(r, converter);
+	}
+
+	return r;
+}
+
 void osync_format_env_register_filter(OSyncFormatEnv *env, OSyncCustomFilter *filter)
 {
 	osync_assert(env);

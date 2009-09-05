@@ -29,6 +29,7 @@ SET( libopensync_LIB_SRCS
    engine/opensync_obj_engine.c
    engine/opensync_sink_engine.c
    engine/opensync_status.c
+   format/opensync_caps_converter.c
    format/opensync_converter.c
    format/opensync_filter.c
    format/opensync_format_env.c

@@ -44,8 +44,6 @@ typedef osync_bool (* OSyncFormatMarshalFunc) (const char *input, unsigned int i
 typedef osync_bool (* OSyncFormatDemarshalFunc) (OSyncMarshal *marshal, char **output, unsigned int *outpsize, void *user_data, OSyncError **error);
 typedef osync_bool (* OSyncFormatValidateFunc) (const char *data, unsigned int size, void *user_data, OSyncError **error);
 
-typedef osync_bool (* OSyncFormatCapsConverterFunc) (OSyncCapabilities *oldcaps, OSyncCapabilities **newcaps, OSyncError **error);
-
 /**
  * @brief Creates a new object format
  * @param name the name of the object format
@@ -222,12 +220,6 @@ OSYNC_EXPORT void osync_objformat_set_demarshal_func(OSyncObjFormat *format, OSy
  * @param validate_func The validation function to use
  */
 OSYNC_EXPORT void osync_objformat_set_validate_func(OSyncObjFormat *format, OSyncFormatValidateFunc validate_func);
-
-/**
- * @param format Pointer to the object format
- * @param capsconverter_func The function to convert capabilities
- */
-OSYNC_EXPORT void osync_objformat_set_capsconverter_func(OSyncObjFormat *format, OSyncFormatCapsConverterFunc capsconverter_func);
 
 /**
  * @brief Prints the specified object

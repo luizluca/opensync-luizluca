@@ -18,18 +18,30 @@
  * 
  */
 
-#ifndef OPENSYNCFORMAT_H_
-#define OPENSYNCFORMAT_H_
+#ifndef OPENSYNC_CAPS_CONVERTER_PRIVATE_H_
+#define OPENSYNC_CAPS_CONVERTER_PRIVATE_H_
 
-OPENSYNC_BEGIN_DECLS
 
-#include "format/opensync_caps_converter.h"
-#include "format/opensync_converter.h"
-#include "format/opensync_format_env.h"
-#include "format/opensync_objformat.h"
-#include "format/opensync_objformat_sink.h"
-#include "format/opensync_merger.h"
+/**
+ * @defgroup OSyncConverterPrivateAPI OpenSync Converter Private
+ * @ingroup OSyncFormatPrivate
+ * @brief Private part for creating and managing object format converters
+ * 
+ */
+/*@{*/
 
-OPENSYNC_END_DECLS
+/** @brief Represent a converter from one format to another
+ */
+struct OSyncCapsConverter {
+	char *source_capsformat;
+	char *target_capsformat;
+	OSyncCapsConvertFunc convert_func;
+	OSyncCapsConverterInitializeFunc initialize_func;
+	OSyncCapsConverterFinalizeFunc finalize_func;
+	int ref_count;
+	void *userdata;
+};
 
-#endif /*OPENSYNCFORMAT_H_*/
+/*@}*/
+
+#endif /*OPENSYNC_CAPS_CONVERTER_PRIVATE_H_*/

@@ -42,8 +42,10 @@ osync_bool osync_conv_convert_fmtlist(OSyncFormatEnv *env, OSyncChange *change, 
 struct OSyncFormatEnv {
 	/** A List of formats */
 	OSyncList *objformats;
-	/** A list of available converters */
+	/** A list of available format converters */
 	OSyncList *converters;
+	/** A list of available capabilities converters */
+	OSyncList *caps_converters;
 	/** A list of filter functions */
 	OSyncList *custom_filters;
 	/** A list of mergers (OSyncMergers *) */

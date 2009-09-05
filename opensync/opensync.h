@@ -198,6 +198,7 @@ typedef struct OSyncFormatConverterPath OSyncFormatConverterPath;
 typedef struct OSyncFormatConverter OSyncFormatConverter;
 typedef struct OSyncObjFormatSink OSyncObjFormatSink;
 typedef struct OSyncMerger OSyncMerger;
+typedef struct OSyncCapsConverter OSyncCapsConverter;
 
 /* Plugin component */
 typedef struct OSyncContext OSyncContext;
