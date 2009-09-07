@@ -85,6 +85,8 @@ OSYNC_TEST_EXPORT osync_bool osync_capabilities_assemble(OSyncCapabilities *capa
  */
 OSYNC_TEST_EXPORT OSyncCapabilities *osync_capabilities_parse(const char *buffer, unsigned int size, OSyncError **error);
 
+OSYNC_TEST_EXPORT void osync_capabilities_sort(OSyncCapabilities *capabilities);
+
 /*@}*/
 
 

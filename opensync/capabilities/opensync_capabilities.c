@@ -306,3 +306,16 @@ void osync_capabilities_add_objtype(OSyncCapabilities *capabilities, OSyncCapabi
 	capabilities->objtypes = osync_list_append(capabilities->objtypes, capabilitiesobjtype);
 }
 
+void osync_capabilities_sort(OSyncCapabilities *capabilities)
+{
+	OSyncList *l;
+	osync_assert(capabilities);
+
+	for (l = capabilities->objtypes; l; l = l->next) {
+		OSyncCapabilitiesObjType *capsobjtype = (OSyncCapabilitiesObjType *) l->data;
+
+		osync_capabilities_objtype_sort(capsobjtype);
+	}
+
+}
+

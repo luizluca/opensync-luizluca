@@ -53,13 +53,21 @@ OSyncCapability *osync_capability_parse_child(OSyncCapability *cap, xmlNodePtr n
 void osync_capability_free(OSyncCapability *capability);
 
 /**
- * @brief Compare the names of two capabilities
+ * @brief Compare the names of two capabilities (for stdlib)
+ *
+ * 1st and 2nd pointer get dereferneced, to fit the needs of e.g. qsort()
+ *
  * @param capability1 The pointer to a capability object
  * @param capability2 The pointer to a capability object
  */
 int osync_capability_compare_stdlib(const void *capability1, const void *capability2);
 
-
+/**
+ * @brief Compare the names of two capabilities
+ * @param capability1 The pointer to a capability object
+ * @param capability2 The pointer to a capability object
+ */
+int osync_capability_compare(const void *capability1, const void *capability2);
 
 /*@}*/
 

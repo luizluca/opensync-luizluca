@@ -35,6 +35,10 @@ int osync_capability_compare_stdlib(const void *capability1, const void *capabil
 	return strcmp(osync_capability_get_name(*(OSyncCapability **)capability1), osync_capability_get_name(*(OSyncCapability **)capability2));
 }
 
+int osync_capability_compare(const void *capability1, const void *capability2)
+{
+	return strcmp(osync_capability_get_name((OSyncCapability *)capability1), osync_capability_get_name((OSyncCapability *)capability2));
+}
 
 OSyncCapability *osync_capability_parse_child(OSyncCapability *cap, xmlNodePtr node, OSyncError **error)
 {

@@ -53,6 +53,8 @@ OSYNC_TEST_EXPORT osync_bool osync_capabilities_objtype_assemble(OSyncCapabiliti
 
 OSYNC_TEST_EXPORT void osync_capabilities_objtype_add_capability(OSyncCapabilitiesObjType *capsobjtype, OSyncCapability *capability);
 
+OSYNC_TEST_EXPORT void osync_capabilities_objtype_sort(OSyncCapabilitiesObjType *capsobjtype);
+
 /*@}*/
 
 #endif /*OPENSYNC_CAPABILITIES_OBJTYPE_INTERNAL_H_*/
