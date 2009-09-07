@@ -21,6 +21,8 @@
 #ifndef _OPENSYNC_FORMAT_ENV_INTERNALS_H_
 #define _OPENSYNC_FORMAT_ENV_INTERNALS_H_
 
+#include "opensync/format/opensync_filter_internals.h"
+
 /**
  * @defgroup OSyncFormatEnvInternalAPI OpenSync Format Environment Internals
  * @ingroup OSyncFormatPrivate
@@ -162,6 +164,8 @@ OSYNC_TEST_EXPORT unsigned int osync_format_env_num_converters(OSyncFormatEnv *e
  * 
  */
 OSYNC_TEST_EXPORT OSyncFormatConverter *osync_format_env_nth_converter(OSyncFormatEnv *env, int nth);
+
+OSYNC_TEST_EXPORT OSyncList *osync_format_env_find_mergers_objformat(OSyncFormatEnv *env, const char *objformat);
 
 
 /*@}*/
