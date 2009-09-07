@@ -47,6 +47,7 @@
 #include "client/opensync_client_proxy_internals.h"
 #include "group/opensync_member_internals.h"
 #include "format/opensync_objformat_internals.h"
+#include "format/opensync_format_env_internals.h"
 #include "format/opensync_merger_internals.h"
 #include "mapping/opensync_mapping_table_internals.h"
 #include "mapping/opensync_mapping_table_internals.h"
@@ -203,21 +204,65 @@ static void _osync_obj_engine_disconnect_callback(OSyncClientProxy *proxy, void 
 
 static OSyncChange *_osync_obj_engine_clone_and_demerge_change(OSyncObjEngine *engine, OSyncCapabilities *caps, OSyncChange *change, OSyncError **error)
 {
-
+	OSyncList *mergers, *m;
 	OSyncFormatEnv *formatenv = engine->formatenv;
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, engine, caps, change, error);
+
 	OSyncChange *clone_change = osync_change_clone(change, error);
 	if (!clone_change)
 		goto error;
-	OSyncMerger *merger = osync_format_env_find_merger(formatenv,
-			osync_objformat_get_name(osync_change_get_objformat(clone_change)),
-			osync_capabilities_get_format(caps));
 
-	if (merger && caps &&!osync_merger_demerge(merger, clone_change, caps, error))
+
+	//OSyncCapabilities *caps = osync_member_get_capabilities(member);
+	const char *current_capsformat = osync_capabilities_get_format(caps);
+	OSyncObjFormat *objformat = osync_change_get_objformat(clone_change);
+	OSyncMerger *merger = osync_format_env_find_merger(formatenv,
+			osync_objformat_get_name(objformat), osync_capabilities_get_format(caps));
+
+	if (!merger) {
+
+		osync_trace(TRACE_INTERNAL, "Couldn't found merger for capsformat \"%s\" and objformat \"%s\". Looking further.",
+				current_capsformat, osync_objformat_get_name(objformat));
+
+		mergers = osync_format_env_find_mergers_objformat(formatenv, osync_objformat_get_name(objformat));
+		for (m = mergers; m; m = m->next) {
+			OSyncMerger *it_merger = (OSyncMerger *) m->data;
+			OSyncCapsConverter *caps_converter;
+			const char *capsformat = osync_merger_get_capsformat(it_merger);
+
+			/* Find OSyncCapsConverter */
+			caps_converter = osync_format_env_find_caps_converter(formatenv, current_capsformat, capsformat);
+			if (!caps_converter)
+				continue;
+
+			/* Convert capabilities if there is a chance to do so ... */
+			if (!osync_caps_converter_invoke(caps_converter, &caps, NULL /* config */, error))
+				goto error;
+
+
+			// osync_member_set_capabilities(member, caps, error);
+
+			merger = it_merger;
+
+			break;
+		}
+
+	}
+
+	if (!merger) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Couldn't handle the capabilities in format \"%s\" to process a reported change in format  \"%s\"",
+				current_capsformat, osync_objformat_get_name(objformat));
+		goto error;
+	}
+
+	if (!osync_merger_demerge(merger, clone_change, caps, error))
 		goto error;
 
+	osync_trace(TRACE_EXIT, "%s: %p", __func__, clone_change);
 	return clone_change;
 
 error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return NULL; 
 }
 
@@ -263,8 +308,10 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 			OSyncChange *change1 = change;
 			OSyncChange *change2 = mapping_change;
 
+			osync_trace(TRACE_INTERNAL, "Member1-caps: %p Member2-caps: %p", caps1, caps2);
+
 			if (caps1) {
-				clone_change1 = _osync_obj_engine_clone_and_demerge_change(sinkengine->engine, caps1, change, error);
+				clone_change1 = _osync_obj_engine_clone_and_demerge_change(sinkengine->engine, caps1, change2, error);
 				if (!clone_change1)
 					goto error;
 
@@ -272,7 +319,7 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 			}
 
 			if (caps2) {
-				clone_change2 = _osync_obj_engine_clone_and_demerge_change(sinkengine->engine, caps2, mapping_change, error);
+				clone_change2 = _osync_obj_engine_clone_and_demerge_change(sinkengine->engine, caps2, change1, error);
 				if (!clone_change2)
 					goto error;
 

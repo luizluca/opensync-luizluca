@@ -464,10 +464,14 @@ osync_bool osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 			if (osync_change_get_changetype(rightchange) == OSYNC_CHANGE_TYPE_UNKNOWN)
 				continue;
 			
+			/* XXX: this compare is obsolate?! we do one complicated compare with dermging before this step! */
+#if 1 
 			if (osync_change_compare(leftchange, rightchange) != OSYNC_CONV_DATA_SAME) {
 				engine->conflict = TRUE;
 				goto conflict;
-			} else {
+			} else
+#endif
+			{
 				is_same++;
 
 				/* Update the change to the master change.
