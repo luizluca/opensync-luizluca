@@ -182,6 +182,11 @@ osync_bool osync_entry_engine_demerge(OSyncMappingEntryEngine *entry_engine, OSy
 
 	osync_marshal_get_buffer(marshal, &marshalbuf, &marshalsize);
 
+	if (marshalbuf == 0) {
+		marshalbuf = buffer;
+		marshalsize = size;
+	}
+
 	if (!osync_archive_save_data(archive, osync_mapping_get_id(mapping), objtype, marshalbuf, marshalsize, error)) {
 		osync_free(buffer); /* TODO: Is this a valid free? */
 		goto error_free_marshal;
