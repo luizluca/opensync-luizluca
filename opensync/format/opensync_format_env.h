@@ -158,7 +158,7 @@ OSYNC_EXPORT void osync_format_env_register_caps_converter(OSyncFormatEnv *env, 
  * @returns The converter, or NULL if not found
  * 
  */
-OSYNC_EXPORT OSyncCapsConverter *osync_format_env_find__caps_converter(OSyncFormatEnv *env, const char *sourcecapsformat, const char *targetcapsformat);
+OSYNC_EXPORT OSyncCapsConverter *osync_format_env_find_caps_converter(OSyncFormatEnv *env, const char *sourcecapsformat, const char *targetcapsformat);
 
 /** @brief Returns a list of all capabilities converters with the given source and target format
  * 
