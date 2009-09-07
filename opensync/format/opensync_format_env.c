@@ -1041,6 +1041,25 @@ OSyncMerger *osync_format_env_find_merger(OSyncFormatEnv *env, const char *objfo
 	return NULL;
 }
 
+
+OSyncList *osync_format_env_find_mergers_objformat(OSyncFormatEnv *env, const char *objformat)
+{
+	OSyncList *m, *result = NULL;
+	osync_assert(env);
+	osync_assert(objformat);
+
+	
+	for (m = env->mergers; m; m = m->next) {
+		OSyncMerger *merger = m->data;
+		if (strcmp(objformat, osync_merger_get_objformat(merger)))
+			continue;
+
+		result = osync_list_append(result, merger);
+	}
+
+	return result;
+}
+
 OSyncObjFormat *osync_format_env_detect_objformat(OSyncFormatEnv *env, OSyncData *data)
 {
 	OSyncList *d = NULL;
