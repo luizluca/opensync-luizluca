@@ -110,7 +110,11 @@ osync_bool osync_caps_converter_invoke(OSyncCapsConverter *converter, OSyncCapab
 	if (!converter->convert_func(*caps, &new_caps, config, converter->userdata, error))
 		goto error;
 
-	osync_capabilities_unref(*caps);
+	/* Sort capabilities by field-Name */
+	osync_capabilities_sort(new_caps);
+
+	/* TODO: check if the old capabilities object is really not leaking. */
+	/* osync_capabilities_unref(*caps); */
 	*caps = new_caps;
 
 	osync_capabilities_set_format(*caps, converter->target_capsformat);
