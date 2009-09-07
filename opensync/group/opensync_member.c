@@ -865,6 +865,7 @@ OSyncCapabilities *osync_member_get_capabilities(OSyncMember *member)
 	return member->capabilities;
 }
 
+/* FIXME - why has this bool as return value - there is never return FALSE! */
 osync_bool osync_member_set_capabilities(OSyncMember *member, OSyncCapabilities *capabilities, OSyncError **error)
 {
 	osync_assert(member);
