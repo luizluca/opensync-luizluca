@@ -4,6 +4,7 @@
 #include <opensync/opensync-format.h>
 
 #include "opensync/plugin/opensync_plugin_config_private.h"
+#include "opensync/plugin/opensync_plugin_config_internals.h"
 
 static const char *_format_sink_get_objformat(OSyncPluginResource *res) {
 
@@ -877,7 +878,8 @@ START_TEST (plugin_config_save_and_load)
 
 	char *config_file = g_strdup_printf("%s/dummy_config.xml", testbed);
 	fail_unless(osync_plugin_config_file_save(config, config_file, &error), "%s", osync_error_print(&error));
-	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, testbed, &error), NULL);
+	osync_plugin_config_set_schemadir(reloaded_config, testbed);
+	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, &error), NULL);
 	g_free(config_file);
 
 	/* Compare stored config with original config */
@@ -1003,7 +1005,8 @@ START_TEST (plugin_config_save_and_load_connection_bluetooth)
 
 	char *config_file = g_strdup_printf("%s/dummy_config.xml", testbed);
 	fail_unless(osync_plugin_config_file_save(config, config_file, &error), "%s", osync_error_print(&error));
-	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, testbed, &error), NULL);
+	osync_plugin_config_set_schemadir(reloaded_config, testbed);
+	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, &error), NULL);
 	g_free(config_file);
 
 	/* Compare stored config with original config */
@@ -1049,7 +1052,8 @@ START_TEST (plugin_config_save_and_load_connection_irda)
 
 	char *config_file = g_strdup_printf("%s/dummy_config.xml", testbed);
 	fail_unless(osync_plugin_config_file_save(config, config_file, &error), "%s", osync_error_print(&error));
-	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, testbed, &error), NULL);
+	osync_plugin_config_set_schemadir(reloaded_config, testbed);
+	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, &error), NULL);
 	g_free(config_file);
 
 	/* Compare stored config with original config */
@@ -1100,7 +1104,8 @@ START_TEST (plugin_config_save_and_load_connection_usb)
 
 	char *config_file = g_strdup_printf("%s/dummy_config.xml", testbed);
 	fail_unless(osync_plugin_config_file_save(config, config_file, &error), "%s", osync_error_print(&error));
-	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, testbed, &error), NULL);
+	osync_plugin_config_set_schemadir(reloaded_config, testbed);
+	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, &error), NULL);
 	g_free(config_file);
 
 	/* Compare stored config with original config */
@@ -1156,7 +1161,8 @@ START_TEST (plugin_config_save_and_load_connection_network)
 
 	char *config_file = g_strdup_printf("%s/dummy_config.xml", testbed);
 	fail_unless(osync_plugin_config_file_save(config, config_file, &error), "%s", osync_error_print(&error));
-	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, testbed, &error), NULL);
+	osync_plugin_config_set_schemadir(reloaded_config, testbed);
+	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, &error), NULL);
 	g_free(config_file);
 
 	/* Compare stored config with original config */
@@ -1206,7 +1212,8 @@ START_TEST (plugin_config_save_and_load_connection_serial)
 
 	char *config_file = g_strdup_printf("%s/dummy_config.xml", testbed);
 	fail_unless(osync_plugin_config_file_save(config, config_file, &error), "%s", osync_error_print(&error));
-	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, testbed, &error), NULL);
+	osync_plugin_config_set_schemadir(reloaded_config, testbed);
+	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, &error), NULL);
 	g_free(config_file);
 
 	/* Compare stored config with original config */

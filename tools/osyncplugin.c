@@ -366,7 +366,7 @@ static osync_bool init(OSyncError **error) {
 
 	if (osync_plugin_get_config_type(plugin) != OSYNC_PLUGIN_NO_CONFIGURATION && configfile) {
 		OSyncList *r = NULL;
-		if (!osync_plugin_config_file_load(config, configfile, NULL, error))
+		if (!osync_plugin_config_file_load(config, configfile, error))
 			goto error_free_pluginconfig;
 
 		osync_plugin_info_set_config(plugin_info, config);

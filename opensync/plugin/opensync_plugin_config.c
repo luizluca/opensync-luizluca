@@ -34,6 +34,7 @@
 #include "opensync_plugin_resource_private.h"		/* FIXME: direct access to private header */
 
 #include "opensync_plugin_config_private.h"
+#include "opensync_plugin_config_internals.h"
 
 static OSyncPluginAdvancedOptionParameter *_osync_plugin_config_parse_advancedoption_param(OSyncPluginAdvancedOption *option, xmlNode *cur, OSyncError **error)
 {
@@ -743,16 +744,16 @@ static osync_bool _osync_plugin_config_parse(OSyncPluginConfig *config, xmlNode 
 	return FALSE;
 }
 
-osync_bool osync_plugin_config_file_load(OSyncPluginConfig *config, const char *path, const char *schemadir, OSyncError **error)
+osync_bool osync_plugin_config_file_load(OSyncPluginConfig *config, const char *path, OSyncError **error)
 {
 	xmlDocPtr doc = NULL;
 	xmlNodePtr cur = NULL;
 	char *schemafile = NULL;
 	const char *schemapath = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %s, %s, %p)", __func__, config, __NULLSTR(path), __NULLSTR(schemadir), error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %s, %p)", __func__, config, __NULLSTR(path), error);
 
-	schemapath = schemadir ? schemadir : OPENSYNC_SCHEMASDIR;
+	schemapath = config->schemadir ? config->schemadir : OPENSYNC_SCHEMASDIR;
 
 	if (!osync_xml_open_file(&doc, &cur, path, "config", error))
 		goto error;
@@ -777,6 +778,20 @@ osync_bool osync_plugin_config_file_load(OSyncPluginConfig *config, const char *
 
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
+}
+
+void osync_plugin_config_set_schemadir(OSyncPluginConfig *config, const char *schemadir)
+{
+	osync_return_if_fail(config);
+	
+	if (config->schemadir) {
+		osync_free(config->schemadir);
+		config->schemadir = NULL;
+	}
+
+	if (schemadir) {
+		config->schemadir = osync_strdup(schemadir);
+	}
 }
 
 static osync_bool _osync_plugin_config_assemble_authentication(xmlNode *cur, OSyncPluginAuthentication *auth, OSyncError **error)
@@ -1291,6 +1306,9 @@ void osync_plugin_config_unref(OSyncPluginConfig *config)
 			osync_plugin_resource_unref(res);
 			config->resources = osync_list_remove(config->resources, res);
 		}
+
+		if (config->schemadir)
+			osync_free(config->schemadir);
 			
 		osync_free(config);
 	}

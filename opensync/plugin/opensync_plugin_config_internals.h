@@ -18,44 +18,26 @@
  * 
  */
 
-#ifndef _OPENSYNC_PLUGIN_CONFIG_PRIVATE_H_
-#define _OPENSYNC_PLUGIN_CONFIG_PRIVATE_H_
-
-#define OSYNC_PLUGIN_CONFING_SCHEMA "plugin_config.xsd"
+#ifndef _OPENSYNC_PLUGIN_CONFIG_INTERNALS_H_
+#define _OPENSYNC_PLUGIN_CONFIG_INTERNALS_H_
 
 /**
- * @defgroup OSyncPluginConfigPrivateAPI OpenSync Plugin Config Private
+ * @defgroup OSyncPluginConfigInternalsAPI OpenSync Plugin Config Internal 
  * @ingroup OSyncPluginPrivate
  */
 
 /*@{*/
 
-/**
- * @brief Gives information about the plugin configuration
- **/
-struct OSyncPluginConfig {
-	/** Advanced Options */
-	OSyncList *advancedoptions;
-	/** Connection configuration */
-	OSyncPluginConnection *connection;
-	/** Authentication configuration */
-	OSyncPluginAuthentication *authentication;
-	/** Localization configuration */
-	OSyncPluginLocalization *localization;
-	/** List of resource configurations */
-	OSyncList *resources;
 
-	/** Flags to store supported config options */
-	OSyncPluginConfigSupportedFlags supported;
+/** @brief Set schema directory of the plugin configuration schemas
+ *
+ * @param config Contents of config file as OsyncPluginConfig object
+ * @param schemadir Path to the schema location. If schmadir is NULL the default value is used
+ */
+OSYNC_TEST_EXPORT void osync_plugin_config_set_schemadir(OSyncPluginConfig *config, const char *schemadir);
 
-	/** Schema Directory */
-	char *schemadir;
-
-	/** Object reference counting */
-	int ref_count;
-};
 
 /*@}*/
 
-#endif /* _OPENSYNC_PLUGIN_CONFIG_PRIVATE_H_ */
+#endif /* _OPENSYNC_PLUGIN_CONFIG_INTERNALS_H_ */
 

@@ -4,6 +4,7 @@
 #include "opensync/ipc/opensync_message_internals.h"
 #include "opensync/ipc/opensync_serializer_internals.h"
 #include <opensync/opensync-plugin.h>
+#include "opensync/plugin/opensync_plugin_config_internals.h"
 
 static osync_bool _compare_string(const void *string1, const void *string2)
 {
@@ -384,7 +385,8 @@ START_TEST (serializer_pluginconfig_full)
 	fail_unless(config1 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 
-	fail_unless(osync_plugin_config_file_load(config1, "config1.xml", testbed, &error));
+	osync_plugin_config_set_schemadir(config1, testbed);
+	fail_unless(osync_plugin_config_file_load(config1, "config1.xml", &error));
 
 	fail_unless(osync_marshal_pluginconfig(message, config1, &error), NULL);
 	fail_unless(error == NULL, NULL);

@@ -23,6 +23,7 @@
 
 #include "opensync-plugin.h"
 #include "plugin/opensync_objtype_sink_internals.h"
+#include "plugin/opensync_plugin_config_internals.h"
 
 #include "opensync-capabilities.h"
 #include "opensync-group.h"
@@ -256,7 +257,6 @@ OSyncPluginConfig *osync_member_get_config_or_default(OSyncMember *member, OSync
 {
 	char *filename = NULL;
 	OSyncPluginConfig *config = NULL;
-	const char *schemadir = NULL;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, member, error);
 	g_assert(member);
@@ -287,10 +287,10 @@ OSyncPluginConfig *osync_member_get_config_or_default(OSyncMember *member, OSync
 
 #ifdef OPENSYNC_UNITTESTS
 	if (member->schemadir)
-		schemadir = member->schemadir;
+		osync_plugin_config_set_schemadir(config, member->schemadir);
 #endif
 
-	if (!osync_plugin_config_file_load(config, filename, schemadir, error))
+	if (!osync_plugin_config_file_load(config, filename, error))
 		goto error_free_config;
 		
 	osync_member_set_config(member, config);
@@ -317,7 +317,6 @@ osync_bool osync_member_has_config(OSyncMember *member)
 OSyncPluginConfig *osync_member_get_config(OSyncMember *member, OSyncError **error)
 {
 	char *filename = NULL;
-	const char *schemadir = NULL;
 	OSyncPluginConfig *config = NULL;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, member, error);
@@ -342,10 +341,10 @@ OSyncPluginConfig *osync_member_get_config(OSyncMember *member, OSyncError **err
 
 #ifdef OPENSYNC_UNITTESTS
 	if (member->schemadir)
-		schemadir = member->schemadir;
+		osync_plugin_config_set_schemadir(config, member->schemadir);
 #endif
 
-	if (!osync_plugin_config_file_load(config, filename, schemadir, error))
+	if (!osync_plugin_config_file_load(config, filename, error))
 		goto error_free_config;
 
 	osync_free(filename);
