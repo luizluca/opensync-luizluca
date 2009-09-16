@@ -302,7 +302,6 @@ osync_marshal_new
 osync_marshal_read_buffer
 osync_marshal_read_const_data
 osync_marshal_read_const_string
-osync_marshal_read_data
 osync_marshal_read_int
 osync_marshal_read_long_long_int
 osync_marshal_read_string
@@ -312,7 +311,6 @@ osync_marshal_set_marshal_size
 osync_marshal_sized_new
 osync_marshal_unref
 osync_marshal_write_buffer
-osync_marshal_write_data
 osync_marshal_write_int
 osync_marshal_write_long_long_int
 osync_marshal_write_string

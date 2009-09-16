@@ -22,6 +22,7 @@
 #include "opensync_internals.h"
 
 #include "common/opensync_marshal.h"
+#include "common/opensync_marshal_internals.h"
 
 #include "opensync_serializer_internals.h"
 

@@ -35,6 +35,7 @@
 #include "group/opensync_group_internals.h"
 #include "group/opensync_member_internals.h"
 #include "format/opensync_objformat_internals.h"
+#include "common/opensync_marshal_internals.h"
 
 #include "opensync_status_internals.h"
 #include "opensync_obj_engine_internals.h"

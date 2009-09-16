@@ -117,7 +117,6 @@ void osync_marshal_write_string(OSyncMarshal *marshal, const char *value)
 
 void osync_marshal_write_data(OSyncMarshal *marshal, const void *value, unsigned int size)
 {
-	/* TODO move this to PRIVATE API */
 	g_byte_array_append( marshal->buffer, value, size );
 }
 
