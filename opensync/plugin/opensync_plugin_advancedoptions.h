@@ -65,9 +65,6 @@ typedef enum {
 	OSYNC_PLUGIN_ADVANCEDOPTION_TYPE_STRING
 } OSyncPluginAdvancedOptionType;
 
-/* TODO: hide form public API? */
-OSYNC_EXPORT OSyncPluginAdvancedOptionType osync_plugin_advancedoption_type_string_to_val(const char *typestr);
-
 /* OSyncPluginAdvancedOption */
 /** @brief Create a new OSyncPluginAdvancedOption object
  *
