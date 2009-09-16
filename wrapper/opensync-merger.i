@@ -194,12 +194,20 @@ typedef struct {} XMLField;
 		return osync_xmlfield_get_key_value(self, key);
 	}
 
+        /* TODO return value bool */
 	void set_key_value(const char *key, const char *value) {
-		osync_xmlfield_set_key_value(self, key, value);
+                OSyncError *err = NULL;
+		osync_xmlfield_set_key_value(self, key, value, &err);
+		if (raise_exception_on_error(err))
+			return;
 	}
 
+        /* TODO return value bool */
 	void add_key_value(const char *key, const char *value) {
-		osync_xmlfield_add_key_value(self, key, value);
+                OSyncError *err;
+		osync_xmlfield_add_key_value(self, key, value, &err);
+		if (raise_exception_on_error(err))
+			return;
 	}
 
 	int get_key_count() {

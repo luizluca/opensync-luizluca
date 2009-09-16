@@ -157,7 +157,8 @@ START_TEST (xmlfield_sort)
 	
 	OSyncXMLField *xmlfield = osync_xmlformat_get_first_field(xmlformat);
 	for (; xmlfield != NULL; xmlfield = osync_xmlfield_get_next(xmlfield)) {
-		osync_xmlfield_sort(xmlfield);
+		fail_unless(osync_xmlfield_sort(xmlfield, &error), NULL);
+		fail_unless(error == NULL, NULL);
 	}
 
 	xmlfield = osync_xmlformat_get_first_field(xmlformat);
@@ -233,7 +234,8 @@ START_TEST (xmlfield_childlink_for_getter_setter)
 	OSyncXMLFormat *xmlformat = osync_xmlformat_new("top", &error);
 
         OSyncXMLField *foo = osync_xmlfield_new(xmlformat, "foo", &error);
-        osync_xmlfield_set_key_value(foo, "fookeyname1", "foorandomvalue");
+        osync_xmlfield_set_key_value(foo, "fookeyname1", "foorandomvalue", &error);
+        fail_unless(error == NULL, NULL);
 
 	fail_unless(osync_xmlfield_get_child(foo) != NULL);
 

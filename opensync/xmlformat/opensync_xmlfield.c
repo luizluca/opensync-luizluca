@@ -393,7 +393,7 @@ const char *osync_xmlfield_get_key_value(OSyncXMLField *xmlfield, const char *ke
 	return NULL;
 }
 
-void osync_xmlfield_set_key_value(OSyncXMLField *xmlfield, const char *key, const char *value)
+osync_bool osync_xmlfield_set_key_value(OSyncXMLField *xmlfield, const char *key, const char *value, OSyncError **error)
 {
 	xmlNodePtr cur = NULL;
 	osync_assert(xmlfield);
@@ -401,7 +401,7 @@ void osync_xmlfield_set_key_value(OSyncXMLField *xmlfield, const char *key, cons
 
 	// If value is null or empty we don't add it to a xmlfield
 	if (!value || strlen(value) == 0)
-		return;
+		return TRUE;
 
 	cur = xmlfield->node->children;
 	for(; cur != NULL; cur = cur->next) {
@@ -411,17 +411,22 @@ void osync_xmlfield_set_key_value(OSyncXMLField *xmlfield, const char *key, cons
 		}
 	}
 
-	/* TODO: error handling - API breaking? */
+	/* TODO: error handling */
 	if(cur == NULL)
 		cur = xmlNewTextChild(xmlfield->node, NULL, BAD_CAST key, BAD_CAST value);
 
-	/* TODO: error handing -  could be NULL */
-	osync_xmlfield_new_xmlfield(xmlfield, cur, NULL);
+	if (!osync_xmlfield_new_xmlfield(xmlfield, cur, error))
+		goto error;
 
 	xmlfield->sorted = FALSE;
+
+	return TRUE;
+
+error:
+	return FALSE;
 }
 
-void osync_xmlfield_add_key_value(OSyncXMLField *xmlfield, const char *key, const char *value)
+osync_bool osync_xmlfield_add_key_value(OSyncXMLField *xmlfield, const char *key, const char *value, OSyncError **error)
 {
 	xmlNodePtr cur;
 
@@ -430,10 +435,16 @@ void osync_xmlfield_add_key_value(OSyncXMLField *xmlfield, const char *key, cons
 	osync_assert(value);
 
 	cur = xmlNewTextChild(xmlfield->node, NULL, BAD_CAST key, BAD_CAST value);
-	/* TODO: error handing -  could be NULL */
-	osync_xmlfield_new_xmlfield(xmlfield, cur, NULL);
+
+	if (!osync_xmlfield_new_xmlfield(xmlfield, cur, error))
+		goto error;
 
 	xmlfield->sorted = FALSE;
+
+	return TRUE;
+
+error:
+	return FALSE;
 }
 
 unsigned int osync_xmlfield_get_key_count(OSyncXMLField *xmlfield)
@@ -504,7 +515,7 @@ void osync_xmlfield_set_nth_key_value(OSyncXMLField *xmlfield, unsigned int nth,
 	}
 }
 
-void osync_xmlfield_sort(OSyncXMLField *xmlfield)
+osync_bool osync_xmlfield_sort(OSyncXMLField *xmlfield, OSyncError **error)
 {
 	int index, count;
 	void **list = NULL;
@@ -524,7 +535,9 @@ void osync_xmlfield_sort(OSyncXMLField *xmlfield)
 		goto end;
 	}
 	
-	list = g_malloc0(sizeof(xmlNodePtr) * count);
+	list = osync_try_malloc0(sizeof(xmlNodePtr) * count, error);
+	if (!list)
+		goto error;
 	
 	cur = xmlfield->node->children;
 	for (index=0; cur != NULL; index++) {
@@ -555,5 +568,10 @@ void osync_xmlfield_sort(OSyncXMLField *xmlfield)
  end:	
 	xmlfield->sorted = TRUE;
 	osync_trace(TRACE_EXIT, "%s", __func__);
+
+	return TRUE;
+
+error:
+	return FALSE;
 }
 

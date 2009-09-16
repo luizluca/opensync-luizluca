@@ -162,16 +162,18 @@ OSYNC_EXPORT const char *osync_xmlfield_get_key_value(OSyncXMLField *xmlfield, c
  * @param xmlfield Pointer to the xmlfield object
  * @param key The key of the key/value pair
  * @param value The value of the key/value pair
+ * @return TRUE on success, FALSE on error
  */
-OSYNC_EXPORT void osync_xmlfield_set_key_value(OSyncXMLField *xmlfield, const char *key, const char *value);
+OSYNC_EXPORT osync_bool osync_xmlfield_set_key_value(OSyncXMLField *xmlfield, const char *key, const char *value, OSyncError **error);
 
 /**
  * @brief Add the key/value pair to a xmlfield
  * @param xmlfield Pointer to the xmlfield object
  * @param key The key of the key/value pair
  * @param value The value of the key/value pair
+ * @return TRUE on success, FALSE on error
  */
-OSYNC_EXPORT void osync_xmlfield_add_key_value(OSyncXMLField *xmlfield, const char *key, const char *value);
+OSYNC_EXPORT osync_bool osync_xmlfield_add_key_value(OSyncXMLField *xmlfield, const char *key, const char *value, OSyncError **error);
 
 /**
  * @brief Get the count of keys of a xmlfield
@@ -210,8 +212,9 @@ OSYNC_EXPORT void osync_xmlfield_set_nth_key_value(OSyncXMLField *xmlfield, unsi
  *  if the xmlfield was build in an unsorted way. Sorting is not necessary if the
  *  xmlfield was built in a sorted way.
  * @param xmlfield Pointer to the xmlfield object
+ * @return TRUE on success, FALSE otherwise 
  */
-OSYNC_EXPORT void osync_xmlfield_sort(OSyncXMLField *xmlfield);
+OSYNC_EXPORT osync_bool osync_xmlfield_sort(OSyncXMLField *xmlfield, OSyncError **error);
 
 /*@}*/
 
