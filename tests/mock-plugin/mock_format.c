@@ -101,7 +101,8 @@ static osync_bool conv_mockformat2_to_mockformat1(char *input, unsigned int inps
 	OSyncFileFormat *file = osync_try_malloc0(sizeof(OSyncFileFormat), error);
 	osync_assert(file);
 
-	file->path = osync_rand_str(g_random_int_range(1, 100));
+	file->path = osync_rand_str(g_random_int_range(1, 100), error);
+	osync_assert(error == NULL);
 	
 	file->data = input;
 	file->size = inpsize - 1;
@@ -167,11 +168,14 @@ static osync_bool copy_file(const char *input, unsigned int inpsize, char **outp
 
 static void create_file(char **buffer, unsigned int *size, void *user_data)
 {
+	OSyncError *error = NULL;
 	OSyncFileFormat *outfile = osync_try_malloc0(sizeof(OSyncFileFormat), NULL);
 	
-	outfile->path = osync_rand_str(g_random_int_range(1, 100));
+	outfile->path = osync_rand_str(g_random_int_range(1, 100), &error);
+	osync_assert(error == NULL);
 	
-	outfile->data = osync_rand_str(g_random_int_range(1, 100));
+	outfile->data = osync_rand_str(g_random_int_range(1, 100), &error);
+	osync_assert(error == NULL);
 	outfile->size = strlen(outfile->data);
 	
 	*buffer = (char *)outfile;

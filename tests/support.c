@@ -318,7 +318,9 @@ void check_hash(OSyncHashTable *table, const char *cmpuid)
 
 void create_random_file(const char *path)
 {
-	char *content = osync_rand_str(g_random_int_range(100, 200));
+	OSyncError *error = NULL;
+	char *content = osync_rand_str(g_random_int_range(100, 200), &error);
+	fail_unless(error == NULL, NULL);
 	osync_assert(osync_file_write(path, content, strlen(content), 0700, NULL) == TRUE);
 	g_free(content);
 }

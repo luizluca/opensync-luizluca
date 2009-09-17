@@ -83,7 +83,8 @@ START_TEST (hashtable_reload)
 
 	osync_change_set_uid(fakechange, "test1");
 
-	char *rndhash = osync_rand_str(g_random_int_range(100, 200));
+	char *rndhash = osync_rand_str(g_random_int_range(100, 200), &error);
+	osync_assert(error == NULL);
 
 	osync_change_set_hash(fakechange, rndhash);
 	osync_change_set_changetype(fakechange, OSYNC_CHANGE_TYPE_ADDED);

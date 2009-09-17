@@ -69,7 +69,7 @@ OSYNC_EXPORT char *osync_strdup_printf(const char *format, ...);
  *          NULL on OOM situation.
  * 
  */
-OSYNC_EXPORT char *osync_rand_str(int maxlength);
+OSYNC_EXPORT char *osync_rand_str(int maxlength, OSyncError **error);
 
 /*@} */
 

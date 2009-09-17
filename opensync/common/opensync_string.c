@@ -55,7 +55,7 @@ char *osync_strreplace(const char *input, const char *delimiter, const char *rep
 	return ret;
 }
 
-char *osync_rand_str(int maxlength)
+char *osync_rand_str(int maxlength, OSyncError **error)
 {
 	char *randchars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIKLMNOPQRSTUVWXYZ1234567890";
 	
@@ -65,8 +65,9 @@ char *osync_rand_str(int maxlength)
 
 	length = g_random_int_range(1, maxlength + 1);
 
-	retchar = osync_try_malloc0(length * sizeof(char) + 1, NULL);
-	osync_return_val_if_fail(retchar, NULL);
+	retchar = osync_try_malloc0(length * sizeof(char) + 1, error);
+	if (!retchar)
+		goto error;
 
 	retchar[0] = 0;
 
@@ -76,5 +77,8 @@ char *osync_rand_str(int maxlength)
 	}
 
 	return retchar;
+
+error:
+	return NULL;
 }
 
