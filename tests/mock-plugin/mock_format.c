@@ -252,7 +252,7 @@ osync_bool get_format_info(OSyncFormatEnv *env, OSyncError **error)
 
 	_format_set_functions(format);
 
-	osync_format_env_register_objformat(env, format);
+	osync_assert(osync_format_env_register_objformat(env, format, error));
 	osync_objformat_unref(format);
 
 	/* mockformat2 */
@@ -262,7 +262,7 @@ osync_bool get_format_info(OSyncFormatEnv *env, OSyncError **error)
 	_format_set_functions(format);
 	osync_objformat_set_destroy_func(format, destroy_mockformat2);
 
-	osync_format_env_register_objformat(env, format);
+	osync_assert(osync_format_env_register_objformat(env, format, error));
 	osync_objformat_unref(format);
 
 	/* mockformat3 */
@@ -271,7 +271,7 @@ osync_bool get_format_info(OSyncFormatEnv *env, OSyncError **error)
 
 	_format_set_functions(format);
 
-	osync_format_env_register_objformat(env, format);
+	osync_assert(osync_format_env_register_objformat(env, format, error));
 	osync_objformat_unref(format);
 
 	return TRUE;

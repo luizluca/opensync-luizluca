@@ -86,9 +86,11 @@ OSYNC_EXPORT osync_bool osync_plugin_env_load(OSyncPluginEnv *env, const char *p
  * 
  * @param env Pointer to a plugin environment
  * @param plugin Pointer to plugin which should get added to environment
+ * @param error Pointer to a error struct to return a error
+ * @returns TRUE on success, FALSE otherwise
  * 
  */
-OSYNC_EXPORT void osync_plugin_env_register_plugin(OSyncPluginEnv *env, OSyncPlugin *plugin);
+OSYNC_EXPORT osync_bool osync_plugin_env_register_plugin(OSyncPluginEnv *env, OSyncPlugin *plugin, OSyncError **error);
 
 /** @brief Finds the plugin with the given name
  * 

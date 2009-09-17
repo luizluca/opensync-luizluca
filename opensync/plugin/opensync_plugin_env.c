@@ -139,13 +139,15 @@ error:
 	return FALSE;
 }
 
-void osync_plugin_env_register_plugin(OSyncPluginEnv *env, OSyncPlugin *plugin)
+osync_bool osync_plugin_env_register_plugin(OSyncPluginEnv *env, OSyncPlugin *plugin, OSyncError **error)
 {
 	osync_assert(env);
 	osync_assert(plugin);
 	
 	env->plugins = osync_list_append(env->plugins, plugin);
 	osync_plugin_ref(plugin);
+
+	return TRUE;
 }
 
 osync_bool osync_plugin_env_load_module(OSyncPluginEnv *env, const char *filename, OSyncError **error)

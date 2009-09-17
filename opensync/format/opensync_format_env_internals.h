@@ -94,9 +94,11 @@ typedef osync_bool (*OSyncTargetLastConverterFn)(const void *data, OSyncFormatCo
  * 
  * @param env The format environment
  * @param filter Pointer of Custom Filter to register
+ * @param error The location to return a error to
+ * @returns TRUE if successful, FALSE otherwise
  * 
  */
-OSYNC_TEST_EXPORT void osync_format_env_register_filter(OSyncFormatEnv *env, OSyncCustomFilter *filter);
+OSYNC_TEST_EXPORT osync_bool osync_format_env_register_filter(OSyncFormatEnv *env, OSyncCustomFilter *filter, OSyncError **error);
 
 /** @brief Returns the number of available filters
  * 

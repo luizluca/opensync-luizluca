@@ -109,7 +109,9 @@ typedef struct {} PluginEnv;
 	}
 
 	void register_plugin(Plugin *plugin) {
-		osync_plugin_env_register_plugin(self, plugin);
+                Error *err = NULL;
+		osync_plugin_env_register_plugin(self, plugin, &err);
+                raise_exception_on_error(err);
 	}
 
 	Plugin *find_plugin(const char *name) {

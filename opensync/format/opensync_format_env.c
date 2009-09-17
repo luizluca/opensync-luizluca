@@ -810,13 +810,15 @@ error:
 	return FALSE;
 }
 
-void osync_format_env_register_objformat(OSyncFormatEnv *env, OSyncObjFormat *format)
+osync_bool osync_format_env_register_objformat(OSyncFormatEnv *env, OSyncObjFormat *format, OSyncError **error)
 {
 	osync_assert(env);
 	osync_assert(format);
 	
 	env->objformats = osync_list_append(env->objformats, format);
 	osync_objformat_ref(format);
+
+	return TRUE;
 }
 
 OSyncObjFormat *osync_format_env_find_objformat(OSyncFormatEnv *env, const char *name)
@@ -852,7 +854,7 @@ OSyncList *osync_format_env_get_objformats(OSyncFormatEnv *env) {
 	return osync_list_copy(env->objformats);
 }
 
-void osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConverter *converter, OSyncError **error)
+osync_bool osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConverter *converter, OSyncError **error)
 {
 	osync_assert(env);
 	osync_assert(converter);
@@ -863,13 +865,18 @@ void osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConvert
 		
 		OSyncFormatConverter *conv = osync_converter_new_detector(osync_converter_get_targetformat(converter), osync_converter_get_sourceformat(converter), NULL, error);
 		if (!conv)
-			return;
+			goto error;
 	
 		env->converters = osync_list_append(env->converters, conv);
 	}
 	
 	env->converters = osync_list_append(env->converters, converter);
 	osync_converter_ref(converter);
+
+	return TRUE;
+
+error:
+	return FALSE;
 }
 
 OSyncFormatConverter *osync_format_env_find_converter(OSyncFormatEnv *env, OSyncObjFormat *sourceformat, OSyncObjFormat *targetformat)
@@ -933,13 +940,15 @@ OSyncList *osync_format_env_get_converters(OSyncFormatEnv *env) {
 	return osync_list_copy(env->converters);
 }
 
-void osync_format_env_register_caps_converter(OSyncFormatEnv *env, OSyncCapsConverter *converter, OSyncError **error)
+osync_bool osync_format_env_register_caps_converter(OSyncFormatEnv *env, OSyncCapsConverter *converter, OSyncError **error)
 {
 	osync_assert(env);
 	osync_assert(converter);
 	
 	env->caps_converters = osync_list_append(env->caps_converters, converter);
 	osync_caps_converter_ref(converter);
+
+	return TRUE;
 }
 
 OSyncCapsConverter *osync_format_env_find_caps_converter(OSyncFormatEnv *env, const char *sourcecapsformat, const char *targetcapsformat)
@@ -987,13 +996,15 @@ OSyncList *osync_format_env_find_caps_converters(OSyncFormatEnv *env, const char
 	return r;
 }
 
-void osync_format_env_register_filter(OSyncFormatEnv *env, OSyncCustomFilter *filter)
+osync_bool osync_format_env_register_filter(OSyncFormatEnv *env, OSyncCustomFilter *filter, OSyncError **error)
 {
 	osync_assert(env);
 	osync_assert(filter);
 	
 	env->custom_filters = osync_list_append(env->custom_filters, filter);
 	osync_custom_filter_ref(filter);
+
+	return TRUE;
 }
 
 unsigned int osync_format_env_num_filters(OSyncFormatEnv *env)
@@ -1009,13 +1020,15 @@ OSyncCustomFilter *osync_format_env_nth_filter(OSyncFormatEnv *env, unsigned int
 }
 
 
-void osync_format_env_register_merger(OSyncFormatEnv *env, OSyncMerger *merger)
+osync_bool osync_format_env_register_merger(OSyncFormatEnv *env, OSyncMerger *merger, OSyncError **error)
 {
 	osync_assert(env);
 	osync_assert(merger);
 	
 	env->mergers = osync_list_append(env->mergers, merger);
 	osync_merger_ref(merger);
+
+	return TRUE;
 }
 
 

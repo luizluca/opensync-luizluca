@@ -87,9 +87,11 @@ OSYNC_EXPORT osync_bool osync_format_env_load_plugins(OSyncFormatEnv *env, const
  * 
  * @param env Pointer to the environment
  * @param format Pointer ot the Object Format which sould be registred
+ * @param error The location to return a error to
+ * @returns TRUE if successful, FALSE otherwise
  * 
  */
-OSYNC_EXPORT void osync_format_env_register_objformat(OSyncFormatEnv *env, OSyncObjFormat *format);
+OSYNC_EXPORT osync_bool osync_format_env_register_objformat(OSyncFormatEnv *env, OSyncObjFormat *format, OSyncError **error);
 
 /** @brief Finds the object format with the given name
  * 
@@ -116,8 +118,9 @@ OSYNC_EXPORT OSyncList *osync_format_env_get_objformats(OSyncFormatEnv *env);
  * @param env The format environment
  * @param converter Pointer of the Format Converter or Detector
  * @param error An OSyncError
+ * @returns TRUE on success, or FALSE
  */
-OSYNC_EXPORT void osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConverter *converter, OSyncError **error);
+OSYNC_EXPORT osync_bool osync_format_env_register_converter(OSyncFormatEnv *env, OSyncFormatConverter *converter, OSyncError **error);
 
 /** @brief Finds first converter with the given source and target format
  * 
@@ -146,9 +149,11 @@ OSYNC_EXPORT OSyncList *osync_format_env_find_converters(OSyncFormatEnv *env, OS
  * 
  * @param env The format environment
  * @param converter Pointer of the Capabilities Converter
- * @param error An OSyncError
+ * @param error The location to return a error to
+ * @returns TRUE if successful, FALSE otherwise
+
  */
-OSYNC_EXPORT void osync_format_env_register_caps_converter(OSyncFormatEnv *env, OSyncCapsConverter *converter, OSyncError **error);
+OSYNC_EXPORT osync_bool osync_format_env_register_caps_converter(OSyncFormatEnv *env, OSyncCapsConverter *converter, OSyncError **error);
 
 /** @brief Finds first capabilities converter with the given source and target capsformat 
  * 
@@ -281,8 +286,10 @@ OSYNC_EXPORT OSyncFormatConverterPath *osync_format_env_find_path_formats_with_d
  * 
  * @param env The format environment
  * @param merger Pointer of the merger
+ * @param error The location to return a error to
+ * @returns TRUE if successful, FALSE otherwise
  */
-OSYNC_EXPORT void osync_format_env_register_merger(OSyncFormatEnv *env, OSyncMerger *merger); 
+OSYNC_EXPORT osync_bool osync_format_env_register_merger(OSyncFormatEnv *env, OSyncMerger *merger, OSyncError **error); 
 
 OSYNC_EXPORT OSyncMerger *osync_format_env_find_merger(OSyncFormatEnv *env, const char *objformat, const char *capsformat);
 

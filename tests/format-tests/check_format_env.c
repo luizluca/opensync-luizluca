@@ -34,7 +34,7 @@ START_TEST (format_env_register_objformat)
 	fail_unless(format != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_format_env_register_objformat(env, format);
+	osync_format_env_register_objformat(env, format, NULL);
 	
 	osync_objformat_unref(format);
 	
@@ -59,7 +59,7 @@ START_TEST (format_env_register_objformat_count)
 	
 	fail_unless(osync_format_env_num_objformats(env) == 0, NULL);
 	
-	osync_format_env_register_objformat(env, format);
+	osync_format_env_register_objformat(env, format, NULL);
 	osync_objformat_unref(format);
 	
 	fail_unless(osync_format_env_num_objformats(env) == 1, NULL);
@@ -84,7 +84,7 @@ START_TEST (format_env_objformat_find)
 	fail_unless(format != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_format_env_register_objformat(env, format);
+	osync_format_env_register_objformat(env, format, NULL);
 	osync_objformat_unref(format);
 	
 	fail_unless(osync_format_env_find_objformat(env, "format") == format, NULL);
@@ -108,7 +108,7 @@ START_TEST (format_env_objformat_find_false)
 	fail_unless(format != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_format_env_register_objformat(env, format);
+	osync_format_env_register_objformat(env, format, NULL);
 	osync_objformat_unref(format);
 	
 	fail_unless(osync_format_env_find_objformat(env, "format2") == NULL, NULL);
@@ -136,12 +136,12 @@ START_TEST (format_env_register_converter)
 	OSyncObjFormat *format1 = osync_objformat_new("format1", "objtype", &error);
 	fail_unless(format1 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
-	osync_format_env_register_objformat(env, format1);
+	osync_format_env_register_objformat(env, format1, NULL);
 	
 	OSyncObjFormat *format2 = osync_objformat_new("format2", "objtype", &error);
 	fail_unless(format2 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
-	osync_format_env_register_objformat(env, format2);
+	osync_format_env_register_objformat(env, format2, NULL);
 	
 	OSyncFormatConverter *converter = osync_converter_new(OSYNC_CONVERTER_CONV, format1, format2, convert_func, &error);
 	fail_unless(converter != NULL, NULL);
@@ -172,12 +172,12 @@ START_TEST (format_env_register_converter_count)
 	OSyncObjFormat *format1 = osync_objformat_new("format1", "objtype", &error);
 	fail_unless(format1 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
-	osync_format_env_register_objformat(env, format1);
+	osync_format_env_register_objformat(env, format1, NULL);
 	
 	OSyncObjFormat *format2 = osync_objformat_new("format2", "objtype", &error);
 	fail_unless(format2 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
-	osync_format_env_register_objformat(env, format2);
+	osync_format_env_register_objformat(env, format2, NULL);
 	
 	OSyncFormatConverter *converter = osync_converter_new(OSYNC_CONVERTER_CONV, format1, format2, convert_func, &error);
 	fail_unless(converter != NULL, NULL);
@@ -213,12 +213,12 @@ START_TEST (format_env_converter_find)
 	OSyncObjFormat *format1 = osync_objformat_new("format1", "objtype", &error);
 	fail_unless(format1 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
-	osync_format_env_register_objformat(env, format1);
+	osync_format_env_register_objformat(env, format1, NULL);
 	
 	OSyncObjFormat *format2 = osync_objformat_new("format2", "objtype", &error);
 	fail_unless(format2 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
-	osync_format_env_register_objformat(env, format2);
+	osync_format_env_register_objformat(env, format2, NULL);
 	
 	OSyncFormatConverter *converter = osync_converter_new(OSYNC_CONVERTER_CONV, format1, format2, convert_func, &error);
 	fail_unless(converter != NULL, NULL);
@@ -250,17 +250,17 @@ START_TEST (format_env_converter_find_false)
 	OSyncObjFormat *format1 = osync_objformat_new("format1", "objtype", &error);
 	fail_unless(format1 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
-	osync_format_env_register_objformat(env, format1);
+	osync_format_env_register_objformat(env, format1, NULL);
 	
 	OSyncObjFormat *format2 = osync_objformat_new("format2", "objtype", &error);
 	fail_unless(format2 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
-	osync_format_env_register_objformat(env, format2);
+	osync_format_env_register_objformat(env, format2, NULL);
 	
 	OSyncObjFormat *format3 = osync_objformat_new("format3", "objtype", &error);
 	fail_unless(format3 != NULL, NULL);
 	fail_unless(error == NULL, NULL);
-	osync_format_env_register_objformat(env, format3);
+	osync_format_env_register_objformat(env, format3, NULL);
 	
 	OSyncFormatConverter *converter = osync_converter_new(OSYNC_CONVERTER_CONV, format1, format2, convert_func, &error);
 	fail_unless(converter != NULL, NULL);
@@ -300,7 +300,7 @@ START_TEST (format_env_register_filter)
 	fail_unless(filter != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_format_env_register_filter(env, filter);
+	osync_format_env_register_filter(env, filter, NULL);
 
 	osync_custom_filter_unref(filter);
 	
@@ -325,7 +325,7 @@ START_TEST (format_env_register_filter_count)
 	
 	fail_unless(osync_format_env_num_filters(env) == 0, NULL);
 	
-	osync_format_env_register_filter(env, filter);
+	osync_format_env_register_filter(env, filter, NULL);
 
 	fail_unless(osync_format_env_num_filters(env) == 1, NULL);
 	fail_unless(osync_format_env_nth_filter(env, 0) == filter, NULL);

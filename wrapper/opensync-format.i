@@ -166,7 +166,9 @@ typedef struct {} FormatEnv;
 	}
 
 	void register_objformat(ObjFormat *format) {
-		osync_format_env_register_objformat(self, format);
+                Error *err = NULL;
+		osync_format_env_register_objformat(self, format, &err);
+                raise_exception_on_error(err);
 	}
 
 	ObjFormat *find_objformat(const char *name) {
@@ -191,7 +193,9 @@ typedef struct {} FormatEnv;
 
         /*
 	void register_filter(CustomFilter *filter) {
-		osync_format_env_register_filter(self, filter);
+                Error *err = NULL;
+		osync_format_env_register_filter(self, filter, &err);
+                raise_exception_on_error(err);
 	}
 
 	int num_filters() {

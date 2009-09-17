@@ -271,10 +271,10 @@ static void _engine_instrument_pluginenv(OSyncEngine *engine, OSyncDebugGroup *d
 	engine->pluginenv = osync_plugin_env_new(NULL);
 
 	if (debug->plugin)
-		osync_plugin_env_register_plugin(engine->pluginenv, debug->plugin);
+		osync_plugin_env_register_plugin(engine->pluginenv, debug->plugin, NULL);
 
 	if (debug->plugin2)
-		osync_plugin_env_register_plugin(engine->pluginenv, debug->plugin2);
+		osync_plugin_env_register_plugin(engine->pluginenv, debug->plugin2, NULL);
 }
 
 START_TEST (engine_error_single_init_error)
