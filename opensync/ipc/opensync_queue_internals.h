@@ -164,9 +164,11 @@ OSYNC_TEST_EXPORT osync_bool osync_queue_send_message_with_timeout(OSyncQueue *q
  * 
  * @param queue The queue to set up
  * @param context The context to use. NULL for default loop
+ * @param error An OpenSync Error
+ * @return TRUE if successful, FALSE otherwise
  * 
  */
-OSYNC_TEST_EXPORT void osync_queue_setup_with_gmainloop(OSyncQueue *queue, GMainContext *context);
+OSYNC_TEST_EXPORT osync_bool osync_queue_setup_with_gmainloop(OSyncQueue *queue, GMainContext *context, OSyncError **error);
 
 /**
  * @brief Dispatches incoming data from the remote end

@@ -96,9 +96,13 @@ int main(int argc, char **argv)
 		if (!osync_queue_connect(outgoing, OSYNC_QUEUE_SENDER, &error))
 			goto error;
 		
-		osync_client_set_incoming_queue(client, incoming);
+		if (!osync_client_set_incoming_queue(client, incoming, &error))
+			goto error;
+
 		osync_queue_unref(incoming);
-		osync_client_set_outgoing_queue(client, outgoing);
+		if (!osync_client_set_outgoing_queue(client, outgoing, &error))
+			goto error;
+
 		osync_queue_unref(outgoing);
 	} else {
 		/* Create connection pipes **/
@@ -113,7 +117,9 @@ int main(int argc, char **argv)
 		if (!osync_queue_connect(incoming, OSYNC_QUEUE_RECEIVER, &error))
 			goto error;
 		
-		osync_client_set_incoming_queue(client, incoming);
+		if (!osync_client_set_incoming_queue(client, incoming, &error))
+			goto error;
+
 		osync_queue_unref(incoming);
 	}
 

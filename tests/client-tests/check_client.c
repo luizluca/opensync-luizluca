@@ -55,8 +55,10 @@ START_TEST (client_pipes)
 	fail_unless(osync_queue_connect(write2, OSYNC_QUEUE_SENDER, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_client_set_incoming_queue(client, read1);
-	osync_client_set_outgoing_queue(client, write2);
+	fail_unless(osync_client_set_incoming_queue(client, read1, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	fail_unless(osync_client_set_outgoing_queue(client, write2, &error), NULL);
+	fail_unless(error == NULL, NULL);
 
 	OSyncMessage *message = osync_message_new(OSYNC_MESSAGE_NOOP, 0, &error);
 	fail_unless(message != NULL, NULL);
@@ -131,8 +133,10 @@ START_TEST (client_threadcom)
 	fail_unless(osync_queue_connect(write2, OSYNC_QUEUE_SENDER, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_client_set_incoming_queue(client, read1);
-	osync_client_set_outgoing_queue(client, write2);
+	fail_unless(osync_client_set_incoming_queue(client, read1, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	fail_unless(osync_client_set_outgoing_queue(client, write2, &error), NULL);
+	fail_unless(error == NULL, NULL);
 
 	OSyncMessage *message = osync_message_new(OSYNC_MESSAGE_NOOP, 0, &error);
 	fail_unless(message != NULL, NULL);
@@ -208,8 +212,10 @@ START_TEST (client_run)
 	fail_unless(osync_queue_connect(write2, OSYNC_QUEUE_SENDER, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_client_set_incoming_queue(client, read1);
-	osync_client_set_outgoing_queue(client, write2);
+	fail_unless(osync_client_set_incoming_queue(client, read1, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	fail_unless(osync_client_set_outgoing_queue(client, write2, &error), NULL);
+	fail_unless(error == NULL, NULL);
 
 	OSyncMessage *message = osync_message_new(OSYNC_MESSAGE_NOOP, 0, &error);
 	fail_unless(message != NULL, NULL);
@@ -295,8 +301,10 @@ START_TEST (client_run_threadcom)
 	fail_unless(osync_queue_connect(write2, OSYNC_QUEUE_SENDER, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_client_set_incoming_queue(client, read1);
-	osync_client_set_outgoing_queue(client, write2);
+	fail_unless(osync_client_set_incoming_queue(client, read1, &error), NULL);
+	fail_unless(error == NULL, NULL);
+	fail_unless(osync_client_set_outgoing_queue(client, write2, &error), NULL);
+	fail_unless(error == NULL, NULL);
 
 	OSyncMessage *message = osync_message_new(OSYNC_MESSAGE_NOOP, 0, &error);
 	fail_unless(message != NULL, NULL);

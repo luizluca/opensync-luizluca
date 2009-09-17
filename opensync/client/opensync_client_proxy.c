@@ -994,8 +994,12 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 				goto error_free_pipe2;
 			
 			
-			osync_client_set_incoming_queue(proxy->client, read1);
-			osync_client_set_outgoing_queue(proxy->client, write2);
+			if (!osync_client_set_incoming_queue(proxy->client, read1, error))
+				goto error_free_pipe2;
+
+			if (!osync_client_set_outgoing_queue(proxy->client, write2, error))
+				goto error_free_pipe2;
+
 			osync_queue_cross_link(read1, write2);
 			
 			if (!osync_client_run(proxy->client, error))
@@ -1099,10 +1103,12 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 	}
 	
 	osync_queue_set_message_handler(proxy->incoming, _osync_client_proxy_message_handler, proxy);
-	osync_queue_setup_with_gmainloop(proxy->incoming, proxy->context);
+	if (!osync_queue_setup_with_gmainloop(proxy->incoming, proxy->context, error))
+		goto error;
 	
 	osync_queue_set_message_handler(proxy->outgoing, _osync_client_proxy_hup_handler, proxy);
-	osync_queue_setup_with_gmainloop(proxy->outgoing, proxy->context);
+	if (!osync_queue_setup_with_gmainloop(proxy->outgoing, proxy->context, error))
+		goto error;
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;

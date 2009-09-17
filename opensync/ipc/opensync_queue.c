@@ -1290,12 +1290,15 @@ void osync_queue_set_pending_limit(OSyncQueue *queue, unsigned int limit)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-void osync_queue_setup_with_gmainloop(OSyncQueue *queue, GMainContext *context)
+osync_bool osync_queue_setup_with_gmainloop(OSyncQueue *queue, GMainContext *context, OSyncError **error)
 {
 	OSyncQueue **queueptr = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, queue, context);
 	
-	queue->incoming_functions = g_malloc0(sizeof(GSourceFuncs));
+	queue->incoming_functions = osync_try_malloc0(sizeof(GSourceFuncs), error);
+	if (!queue->incoming_functions)
+		goto error;
+
 	queue->incoming_functions->prepare = _incoming_prepare;
 	queue->incoming_functions->check = _incoming_check;
 	queue->incoming_functions->dispatch = _incoming_dispatch;
@@ -1316,6 +1319,11 @@ void osync_queue_setup_with_gmainloop(OSyncQueue *queue, GMainContext *context)
 		g_main_context_ref(context);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__,  osync_error_print(error));
+	return FALSE;
 }
 
 osync_bool osync_queue_dispatch(OSyncQueue *queue, OSyncError **error)

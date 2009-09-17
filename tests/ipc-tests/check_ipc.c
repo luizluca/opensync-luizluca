@@ -1085,7 +1085,8 @@ START_TEST (ipc_loop_payload)
 	if (cpid == 0) { //Child
 		osync_queue_set_message_handler(client_queue, client_handler1, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(client_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(client_queue, context, &error));
+		osync_assert(error == NULL);
 		
 		osync_thread_start(thread);
 	
@@ -1122,7 +1123,8 @@ START_TEST (ipc_loop_payload)
 	} else {
 		osync_queue_set_message_handler(server_queue, server_handler1, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(server_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(server_queue, context, &error));
+		osync_assert(error == NULL);
 		
 		osync_thread_start(thread);
 	
@@ -1272,7 +1274,8 @@ START_TEST (ipc_loop_stress)
 	
 		osync_queue_set_message_handler(client_queue, client_handler2, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(client_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(client_queue, context, &error));
+		osync_assert(error == NULL);
 		
 		osync_thread_start(thread);
 		
@@ -1312,7 +1315,8 @@ START_TEST (ipc_loop_stress)
 		
 		osync_queue_set_message_handler(server_queue, server_handler2, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(server_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(server_queue, context, &error));
+		osync_assert(error == NULL);
 		
 		osync_thread_start(thread);
 	
@@ -1451,7 +1455,8 @@ START_TEST (ipc_loop_callback)
 	
 		osync_queue_set_message_handler(client_queue, client_handler3, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(client_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(client_queue, context, &error));
+		osync_assert(error == NULL);
 		
 		osync_thread_start(thread);
 		
@@ -1492,7 +1497,8 @@ START_TEST (ipc_loop_callback)
 		
 		osync_queue_set_message_handler(server_queue, server_handler_abort, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(server_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(server_queue, context, &error));
+		osync_assert(error == NULL);
 		
 		osync_thread_start(thread);
 	
@@ -1655,7 +1661,8 @@ START_TEST (ipc_callback_break)
 	
 		osync_queue_set_message_handler(client_queue, client_handler4, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(client_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(client_queue, context, &error));
+		osync_assert(error == NULL);
 		
 		osync_thread_start(thread);
 		
@@ -1686,7 +1693,8 @@ START_TEST (ipc_callback_break)
 		
 		osync_queue_set_message_handler(server_queue, server_handler4, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(server_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(server_queue, context, &error));
+		osync_assert(error == NULL);
 		
 		osync_thread_start(thread);
 	
@@ -1863,7 +1871,8 @@ START_TEST (ipc_pipes_stress)
 	
 		osync_queue_set_message_handler(client_queue, client_handler2, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(client_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(client_queue, context, &error));
+		osync_assert(error == NULL);
 		
 		osync_thread_start(thread);
 		
@@ -1913,7 +1922,8 @@ START_TEST (ipc_pipes_stress)
 		
 		osync_queue_set_message_handler(server_queue, server_handler2, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(server_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(server_queue, context, &error));
+		osync_assert(error == NULL);
 		
 		osync_thread_start(thread);
 	
@@ -2003,7 +2013,7 @@ START_TEST (ipc_callback_break_pipes)
 	
 		osync_queue_set_message_handler(client_queue, client_handler4, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(client_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(client_queue, context, &error));
 		
 		osync_thread_start(thread);
 		
@@ -2044,7 +2054,7 @@ START_TEST (ipc_callback_break_pipes)
 		
 		osync_queue_set_message_handler(server_queue, server_handler4, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(server_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(server_queue, context, &error));
 		
 		osync_thread_start(thread);
 	
@@ -2205,7 +2215,7 @@ START_TEST (ipc_timeout)
 		osync_queue_set_message_handler(client_queue, client_handler5, GINT_TO_POINTER(1));
 		osync_queue_set_pending_limit(client_queue, OSYNC_QUEUE_PENDING_LIMIT);
 		
-		osync_queue_setup_with_gmainloop(client_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(client_queue, context, &error));
 		
 		osync_thread_start(thread);
 
@@ -2246,7 +2256,7 @@ START_TEST (ipc_timeout)
 		
 		osync_queue_set_message_handler(server_queue, server_handler4, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(server_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(server_queue, context, &error));
 		
 		osync_thread_start(thread);
 
@@ -2393,7 +2403,7 @@ START_TEST (ipc_late_reply)
 		osync_queue_set_message_handler(client_queue, client_handler_sleep, GINT_TO_POINTER(1));
 		osync_queue_set_pending_limit(client_queue, OSYNC_QUEUE_PENDING_LIMIT);
 		
-		osync_queue_setup_with_gmainloop(client_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(client_queue, context, &error));
 		
 		osync_thread_start(thread);
 
@@ -2434,7 +2444,7 @@ START_TEST (ipc_late_reply)
 		
 		osync_queue_set_message_handler(server_queue, server_handler4, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(server_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(server_queue, context, &error));
 		
 		osync_thread_start(thread);
 
@@ -2538,7 +2548,7 @@ START_TEST (ipc_loop_with_timeout)
 		osync_queue_set_message_handler(client_queue, client_handler_sleep, GINT_TO_POINTER(1));
 		osync_queue_set_pending_limit(client_queue, OSYNC_QUEUE_PENDING_LIMIT);
 		
-		osync_queue_setup_with_gmainloop(client_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(client_queue, context, &error));
 		
 		osync_thread_start(thread);
 		
@@ -2579,7 +2589,7 @@ START_TEST (ipc_loop_with_timeout)
 		
 		osync_queue_set_message_handler(server_queue, server_handler_abort, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(server_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(server_queue, context, &error));
 		
 		osync_thread_start(thread);
 	
@@ -2737,7 +2747,7 @@ START_TEST (ipc_loop_timeout_with_idle)
 		// Set pending limit to 3 so response wil be delayed at most 3 seconds
 		osync_queue_set_pending_limit(client_queue, 3);
 		
-		osync_queue_setup_with_gmainloop(client_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(client_queue, context, &error));
 		
 		osync_thread_start(thread);
 		
@@ -2784,7 +2794,7 @@ START_TEST (ipc_loop_timeout_with_idle)
 		
 		osync_queue_set_message_handler(server_queue, server_handler_abort, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(server_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(server_queue, context, &error));
 		
 		osync_thread_start(thread);
 	
@@ -2923,7 +2933,7 @@ START_TEST (ipc_timeout_noreplyq)
 		osync_queue_set_message_handler(client_queue, client_handler6, GINT_TO_POINTER(1));
 		osync_queue_set_pending_limit(client_queue, OSYNC_QUEUE_PENDING_LIMIT);
 		
-		osync_queue_setup_with_gmainloop(client_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(client_queue, context, &error));
 		
 		osync_thread_start(thread);
 
@@ -2963,7 +2973,7 @@ START_TEST (ipc_timeout_noreplyq)
 		
 		osync_queue_set_message_handler(server_queue, server_handler4, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(server_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(server_queue, context, &error));
 		
 		osync_thread_start(thread);
 
@@ -3062,7 +3072,7 @@ START_TEST (ipc_timeout_noreceiver)
 		osync_queue_set_pending_limit(client_queue, OSYNC_QUEUE_PENDING_LIMIT);
 		
 		/* Do not start receiver */
-		/* osync_queue_setup_with_gmainloop(client_queue, context); */
+		/* osync_assert(osync_queue_setup_with_gmainloop(client_queue, context, &error)); */
 		
 		osync_thread_start(thread);
 
@@ -3102,7 +3112,7 @@ START_TEST (ipc_timeout_noreceiver)
 		
 		osync_queue_set_message_handler(server_queue, server_handler4, GINT_TO_POINTER(1));
 		
-		osync_queue_setup_with_gmainloop(server_queue, context);
+		osync_assert(osync_queue_setup_with_gmainloop(server_queue, context, &error));
 		
 		osync_thread_start(thread);
 

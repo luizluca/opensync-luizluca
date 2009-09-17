@@ -677,7 +677,9 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 			goto error;
 		}
 		
-		osync_client_set_outgoing_queue(client, outgoing);
+		if (!osync_client_set_outgoing_queue(client, outgoing, error))
+			goto error;
+
 		osync_queue_cross_link(client->incoming, client->outgoing);
 		osync_queue_unref(outgoing);
 		osync_trace(TRACE_INTERNAL, "done connecting to engine");
@@ -1703,19 +1705,33 @@ void osync_client_unref(OSyncClient *client)
 	}
 }
 
-void osync_client_set_incoming_queue(OSyncClient *client, OSyncQueue *incoming)
+osync_bool osync_client_set_incoming_queue(OSyncClient *client, OSyncQueue *incoming, OSyncError **error)
 {
 	osync_queue_set_message_handler(incoming, _osync_client_message_handler, client);
-	osync_queue_setup_with_gmainloop(incoming, client->context);
+
+	if (!osync_queue_setup_with_gmainloop(incoming, client->context, error))
+		goto error;
+
 	client->incoming = osync_queue_ref(incoming);
 	osync_queue_set_pending_limit(incoming, OSYNC_QUEUE_PENDING_LIMIT);
+
+	return TRUE;
+
+error:
+	return FALSE;
 }
 
-void osync_client_set_outgoing_queue(OSyncClient *client, OSyncQueue *outgoing)
+osync_bool osync_client_set_outgoing_queue(OSyncClient *client, OSyncQueue *outgoing, OSyncError **error)
 {
 	osync_queue_set_message_handler(outgoing, _osync_client_hup_handler, client);
-	osync_queue_setup_with_gmainloop(outgoing, client->context);
+	if (!osync_queue_setup_with_gmainloop(outgoing, client->context, error))
+		goto error;
+
 	client->outgoing = osync_queue_ref(outgoing);
+
+	return TRUE;
+error:
+	return FALSE;
 }
 
 void osync_client_run_and_block(OSyncClient *client)
@@ -1762,7 +1778,8 @@ osync_bool osync_client_run_external(OSyncClient *client, char *pipe_path, OSync
 	if (!osync_queue_create(incoming, error))
 		goto error_free_queue;
 	
-	osync_client_set_incoming_queue(client, incoming);
+	if (!osync_client_set_incoming_queue(client, incoming, error))
+		goto error_remove_queue;
 	
 	client->thread = osync_thread_new(client->context, error);
 	if (!client->thread)

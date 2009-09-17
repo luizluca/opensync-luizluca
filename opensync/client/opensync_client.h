@@ -25,8 +25,8 @@ OSYNC_EXPORT OSyncClient *osync_client_new(OSyncError **error);
 OSYNC_EXPORT OSyncClient *osync_client_ref(OSyncClient *client);
 OSYNC_EXPORT void osync_client_unref(OSyncClient *client);
 
-OSYNC_EXPORT void osync_client_set_incoming_queue(OSyncClient *client, OSyncQueue *incoming);
-OSYNC_EXPORT void osync_client_set_outgoing_queue(OSyncClient *client, OSyncQueue *outgoing);
+OSYNC_EXPORT osync_bool osync_client_set_incoming_queue(OSyncClient *client, OSyncQueue *incoming, OSyncError **error);
+OSYNC_EXPORT osync_bool osync_client_set_outgoing_queue(OSyncClient *client, OSyncQueue *outgoing, OSyncError **error);
 
 OSYNC_EXPORT void osync_client_run_and_block(OSyncClient *client);
 OSYNC_EXPORT osync_bool osync_client_run(OSyncClient *client, OSyncError **error);
