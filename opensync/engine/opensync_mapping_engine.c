@@ -466,7 +466,7 @@ osync_bool osync_mapping_engine_check_conflict(OSyncMappingEngine *engine)
 			
 			/* XXX: this compare is obsolate?! we do one complicated compare with dermging before this step! */
 #if 1 
-			if (osync_change_compare(leftchange, rightchange) != OSYNC_CONV_DATA_SAME) {
+			if (osync_change_compare(leftchange, rightchange, NULL /* hopefully obsoalte*/) != OSYNC_CONV_DATA_SAME) {
 				engine->conflict = TRUE;
 				goto conflict;
 			} else
@@ -722,6 +722,7 @@ osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, O
 			OSyncList *e = NULL;
 			OSyncChange *change = NULL;
 			OSyncMappingEntryEngine *entry = NULL;
+			OSyncConvCmpResult cmpret;
 			mapping = m->data;
 			
 			/* Get the first change of the mapping to test. Compare the given change with this change.
@@ -733,10 +734,17 @@ osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, O
 					break;
 			}
 			
-			if (!change || osync_change_compare(existingEntry->change, change) == OSYNC_CONV_DATA_SAME){
+			if (change)
+				cmpret = osync_change_compare(existingEntry->change, change, error);
+
+			if (!change  || cmpret == OSYNC_CONV_DATA_SAME) {
 				existingChange = existingEntry->change;
 				osync_change_ref(existingChange);
 				osync_assert(osync_change_get_uid(existingChange));
+				break;
+			} else if (cmpret == OSYNC_CONV_DATA_UNKNOWN) {
+				/* This is an error during comparing */
+				goto error;
 				break;
 			}
 

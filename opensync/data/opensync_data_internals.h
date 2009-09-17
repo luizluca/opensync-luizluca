@@ -46,10 +46,11 @@ void osync_data_steal_data(OSyncData *data, char **buffer, unsigned int *size);
  * 
  * @param leftdata The left data to compare
  * @param rightdata The right data to compare
+ * @param error An error struct
  * @returns The result of the comparison
  * 
  */
-OSyncConvCmpResult osync_data_compare(OSyncData *leftdata, OSyncData *rightdata);
+OSyncConvCmpResult osync_data_compare(OSyncData *leftdata, OSyncData *rightdata, OSyncError **error);
 /*@}*/
 
 #endif /* _OPENSYNC_DATA_INTERNALS_H_ */

@@ -177,9 +177,9 @@ OSyncChange *osync_change_clone(OSyncChange *source, OSyncError **error)
 	return change;
 }
 
-OSyncConvCmpResult osync_change_compare(OSyncChange *leftchange, OSyncChange *rightchange)
+OSyncConvCmpResult osync_change_compare(OSyncChange *leftchange, OSyncChange *rightchange, OSyncError **error)
 {
-	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, leftchange, rightchange);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, leftchange, rightchange, error);
 	osync_assert(rightchange);
 	osync_assert(leftchange);
 
@@ -189,8 +189,8 @@ OSyncConvCmpResult osync_change_compare(OSyncChange *leftchange, OSyncChange *ri
 		if (osync_trace_is_enabled()) {
 			char *leftprint, *rightprint;
 			
-			leftprint = osync_data_get_printable(leftchange->data);
-			rightprint = osync_data_get_printable(rightchange->data);
+			leftprint = osync_data_get_printable(leftchange->data, NULL);
+			rightprint = osync_data_get_printable(rightchange->data, NULL);
 
 			osync_trace(TRACE_SENSITIVE, "\nleft change (UID:%s):\n%s\n"
 				"right change (UID:%s):\n%s\n",
@@ -210,7 +210,7 @@ OSyncConvCmpResult osync_change_compare(OSyncChange *leftchange, OSyncChange *ri
 				osync_free(rightprint);
 		}
 
-		ret = osync_data_compare(leftchange->data, rightchange->data);
+		ret = osync_data_compare(leftchange->data, rightchange->data, error);
 		osync_trace(TRACE_EXIT, "%s: Compare data: %i", __func__, ret);
 		return ret;
 	} else {
@@ -234,7 +234,7 @@ osync_bool osync_change_duplicate(OSyncChange *change, osync_bool *dirty, OSyncE
 	osync_data_get_data(data, &input, &insize);
 	
 	if (!osync_objformat_duplicate(osync_data_get_objformat(data), osync_change_get_uid(change), input, insize, &newuid, &output, &outsize, dirty, error))
-		return FALSE;
+		goto error;
 	
 	if (newuid) {
 		osync_change_set_uid(change, newuid);
@@ -242,11 +242,15 @@ osync_bool osync_change_duplicate(OSyncChange *change, osync_bool *dirty, OSyncE
 	}
 	
 	if (output) {
-		osync_objformat_destroy(osync_data_get_objformat(data), input, insize);
+		if (!osync_objformat_destroy(osync_data_get_objformat(data), input, insize, error))
+			goto error;
+
 		osync_data_set_data(data, output, outsize);
 	}
 	
 	return TRUE;
+error:
+	return FALSE;
 }
 
 

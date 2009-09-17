@@ -45,7 +45,7 @@ static osync_bool mock_format_get_error(const char *domain)
 	return FALSE;
 }
 
-static OSyncConvCmpResult compare_file(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *user_data)
+static OSyncConvCmpResult compare_file(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *user_data, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p, %i)", __func__, leftdata, leftsize, rightdata, rightsize);
 	osync_assert(leftdata);
@@ -112,7 +112,7 @@ static osync_bool conv_mockformat2_to_mockformat1(char *input, unsigned int inps
 	return TRUE;
 }
 
-static void destroy_file(char *input, unsigned int inpsize, void *user_data)
+static osync_bool destroy_file(char *input, unsigned int inpsize, void *user_data, OSyncError **error)
 {
 	OSyncFileFormat *file = (OSyncFileFormat *)input;
 	osync_assert(sizeof(OSyncFileFormat) == inpsize);
@@ -124,14 +124,18 @@ static void destroy_file(char *input, unsigned int inpsize, void *user_data)
 		g_free(file->path);
 	
 	g_free(file);
+
+	return TRUE;
 }
 
-static void destroy_mockformat2(char *input, unsigned int inpsize, void *user_data)
+static osync_bool destroy_mockformat2(char *input, unsigned int inpsize, void *user_data, OSyncError **error)
 {
 	if (!input || inpsize == 0)
-		return;
+		return TRUE;
 
 	osync_free(input);
+
+	return TRUE;
 }
 
 static osync_bool duplicate_file(const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, void *user_data, OSyncError **error)
@@ -166,20 +170,21 @@ static osync_bool copy_file(const char *input, unsigned int inpsize, char **outp
 	return TRUE;
 }
 
-static void create_file(char **buffer, unsigned int *size, void *user_data)
+static osync_bool create_file(char **buffer, unsigned int *size, void *user_data, OSyncError **error)
 {
-	OSyncError *error = NULL;
 	OSyncFileFormat *outfile = osync_try_malloc0(sizeof(OSyncFileFormat), NULL);
 	
-	outfile->path = osync_rand_str(g_random_int_range(1, 100), &error);
-	osync_assert(error == NULL);
+	outfile->path = osync_rand_str(g_random_int_range(1, 100), error);
+	osync_assert(*error == NULL);
 	
-	outfile->data = osync_rand_str(g_random_int_range(1, 100), &error);
-	osync_assert(error == NULL);
+	outfile->data = osync_rand_str(g_random_int_range(1, 100), error);
+	osync_assert(*error == NULL);
 	outfile->size = strlen(outfile->data);
 	
 	*buffer = (char *)outfile;
 	*size = sizeof(OSyncFileFormat);
+
+	return TRUE;
 }
 
 static time_t revision_file(const char *input, unsigned int inpsize, void *user_data, OSyncError **error)
@@ -193,7 +198,7 @@ static time_t revision_file(const char *input, unsigned int inpsize, void *user_
 	return lastmod;
 }
 
-static char *print_file(const char *data, unsigned int size, void *user_data)
+static char *print_file(const char *data, unsigned int size, void *user_data, OSyncError **error)
 {
 	OSyncFileFormat *file = (OSyncFileFormat *)data;
 	

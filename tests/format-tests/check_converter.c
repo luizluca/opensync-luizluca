@@ -10,21 +10,25 @@ osync_bool converter_conv(char *input, unsigned int inpsize, char **output, unsi
 	return TRUE;
 }
 
-void destroy_format(char *data, unsigned int size, void *user_data)
+osync_bool destroy_format(char *data, unsigned int size, void *user_data, OSyncError **error)
 {
 	g_free(data);
+
+	return TRUE;
 }
 
 typedef struct testdata {
 	char *string1;
 } testdata;
 
-void destroy_testdata(char *input, unsigned int size, void *user_data)
+osync_bool destroy_testdata(char *input, unsigned int size, void *user_data, OSyncError **error)
 {
 	testdata *data = (testdata *)input;
 	if (data->string1)
 		g_free(data->string1);
 	g_free(data);
+
+	return TRUE;
 }
 
 osync_bool conv_format1_to_format2_const(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)

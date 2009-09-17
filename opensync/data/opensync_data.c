@@ -56,11 +56,16 @@ OSyncData *osync_data_ref(OSyncData *data)
 
 void osync_data_unref(OSyncData *data)
 {
+	OSyncError *error = NULL;
+
 	osync_assert(data);
 	
 	if (g_atomic_int_dec_and_test(&(data->ref_count))) {
 		if (data->data)
-			osync_objformat_destroy(data->objformat, data->data, data->size);
+			if (!osync_objformat_destroy(data->objformat, data->data, data->size, &error)) {
+				/* FIXME: We can't deal here with an error - right? Any other chance?! */
+				osync_error_unref(&error);
+			}
 			
 		if (data->objformat)
 			osync_objformat_unref(data->objformat);
@@ -136,9 +141,15 @@ void osync_data_steal_data(OSyncData *data, char **buffer, unsigned int *size)
 
 void osync_data_set_data(OSyncData *data, char *buffer, unsigned int size)
 {
+	OSyncError *error = NULL;
+
 	osync_assert(data);
 	if (data->data) {
-		osync_objformat_destroy(data->objformat, data->data, data->size);
+		if (!osync_objformat_destroy(data->objformat, data->data, data->size, &error)) {
+			/* FIXME: how to handle this? Do we really want to expose here an OSyncError*?! */
+			osync_error_unref(&error); /* For now just ignore the error*/
+			return;
+		}
 	}
 	data->data = buffer;
 	data->size = size;
@@ -176,7 +187,7 @@ OSyncData *osync_data_clone(OSyncData *source, OSyncError **error)
 	return data;
 }
 
-OSyncConvCmpResult osync_data_compare(OSyncData *leftdata, OSyncData *rightdata)
+OSyncConvCmpResult osync_data_compare(OSyncData *leftdata, OSyncData *rightdata, OSyncError **error)
 {
 	OSyncConvCmpResult ret = 0;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, leftdata, rightdata);
@@ -203,12 +214,12 @@ OSyncConvCmpResult osync_data_compare(OSyncData *leftdata, OSyncData *rightdata)
 		return OSYNC_CONV_DATA_MISMATCH;
 	}
 	
-	ret = osync_objformat_compare(leftdata->objformat, leftdata->data, leftdata->size, rightdata->data, rightdata->size);
+	ret = osync_objformat_compare(leftdata->objformat, leftdata->data, leftdata->size, rightdata->data, rightdata->size, error);
 	osync_trace(TRACE_EXIT, "%s: %i", __func__, ret);
 	return ret;
 }
 
-char *osync_data_get_printable(OSyncData *data)
+char *osync_data_get_printable(OSyncData *data, OSyncError **error)
 {
 	OSyncObjFormat *format = NULL;
 	osync_assert(data);
@@ -216,7 +227,7 @@ char *osync_data_get_printable(OSyncData *data)
 	format = data->objformat;
 	osync_assert(format);
 	
-	return osync_objformat_print(format, data->data, data->size);
+	return osync_objformat_print(format, data->data, data->size, error);
 }
 
 time_t osync_data_get_revision(OSyncData *data, OSyncError **error)

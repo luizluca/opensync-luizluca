@@ -31,14 +31,14 @@
 /*@{*/
 
 typedef void * (* OSyncFormatInitializeFunc) (OSyncError **error);
-typedef void (* OSyncFormatFinalizeFunc) (void *user_data);
+typedef osync_bool (* OSyncFormatFinalizeFunc) (void *user_data, OSyncError **error);
 
-typedef OSyncConvCmpResult (* OSyncFormatCompareFunc) (const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *user_data);
+typedef OSyncConvCmpResult (* OSyncFormatCompareFunc) (const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *user_data, OSyncError **error);
 typedef osync_bool (* OSyncFormatCopyFunc) (const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, void *user_data, OSyncError **error);
 typedef osync_bool (* OSyncFormatDuplicateFunc) (const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, void *user_data, OSyncError **error);
-typedef void (* OSyncFormatCreateFunc) (char **data, unsigned int *size, void *user_data);
-typedef void (* OSyncFormatDestroyFunc) (char *data, unsigned int size, void *user_data);
-typedef char *(* OSyncFormatPrintFunc) (const char *data, unsigned int size, void *user_data);
+typedef osync_bool (* OSyncFormatCreateFunc) (char **data, unsigned int *size, void *user_data, OSyncError **error);
+typedef osync_bool (* OSyncFormatDestroyFunc) (char *data, unsigned int size, void *user_data, OSyncError **error);
+typedef char *(* OSyncFormatPrintFunc) (const char *data, unsigned int size, void *user_data, OSyncError **error);
 typedef time_t (* OSyncFormatRevisionFunc) (const char *data, unsigned int size, void *user_data, OSyncError **error);
 typedef osync_bool (* OSyncFormatMarshalFunc) (const char *input, unsigned int inpsize, OSyncMarshal *marshal, void *user_data, OSyncError **error);
 typedef osync_bool (* OSyncFormatDemarshalFunc) (OSyncMarshal *marshal, char **output, unsigned int *outpsize, void *user_data, OSyncError **error);
@@ -230,10 +230,11 @@ OSYNC_EXPORT void osync_objformat_set_validate_func(OSyncObjFormat *format, OSyn
  * @param format Pointer to the object format
  * @param data Pointer to the object to destroy
  * @param size Size in bytes of the object specified by the data parameter
+ * @param error Pointer to an error struct
  * @returns Human readable string of the specified object. Caller is responsible for freeing the string with osync_free().
  *          Or NULL if size is 0 or data NULL.
  */
-OSYNC_EXPORT char *osync_objformat_print(OSyncObjFormat *format, const char *data, unsigned int size);
+OSYNC_EXPORT char *osync_objformat_print(OSyncObjFormat *format, const char *data, unsigned int size, OSyncError **error);
 
 /*@}*/
 

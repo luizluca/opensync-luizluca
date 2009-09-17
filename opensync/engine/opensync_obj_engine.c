@@ -326,7 +326,7 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 				change2 = mapping_change;
 			}
 
-			tmp_result = osync_change_compare(change1, change2);
+			tmp_result = osync_change_compare(change1, change2, error);
 
 			if (caps1)
 				osync_change_unref(clone_change1);
@@ -345,6 +345,9 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 				/* SIMILAR is better than MISMATCH */
 				result = OSYNC_CONV_DATA_SIMILAR;
 				*mapping_engine = tmp_mapping_engine;
+			} else if (tmp_result == OSYNC_CONV_DATA_UNKNOWN) {
+				/* This is an error, handle th error. */
+				goto error;
 			}
 		}
 	}

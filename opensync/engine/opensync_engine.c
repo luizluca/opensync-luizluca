@@ -305,15 +305,16 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 					
 					osync_data_get_data(osync_change_get_data(change), &buffer, &size);
 
-					/* FIXME
+					/* TODO: Implement MERGER here
 					ret = osync_objformat_merge(objformat, &buffer, &size, entirebuf, entsize, caps, &error);
 					osync_free(entirebuf); 
 
 					if (ret != TRUE)
 						goto error;
 					*/
+
 					osync_trace(TRACE_SENSITIVE, "Merge result:\n%s\n",
-						osync_objformat_print(objformat, buffer, size));
+						osync_objformat_print(objformat, buffer, size, NULL));
 				}
 			}
 		}

@@ -198,7 +198,7 @@ osync_bool osync_entry_engine_demerge(OSyncMappingEntryEngine *entry_engine, OSy
 		goto error_free_marshal; */
 
 	osync_trace(TRACE_SENSITIVE, "Post Demerge:\n%s\n",
-			osync_objformat_print(objformat, buffer, size));
+			osync_objformat_print(objformat, buffer, size, NULL));
 
 	osync_marshal_unref(marshal);
 

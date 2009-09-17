@@ -85,7 +85,12 @@ typedef struct {} Data;
         */
 
 	char *get_printable() {
-		return osync_data_get_printable(self);
+                Error *err = NULL;
+		char *data = osync_data_get_printable(self, &err);
+		if (raise_exception_on_error(err))
+			return NULL;
+		else
+			return data;
 	}
 
 	time_t get_revision() {
@@ -170,7 +175,12 @@ typedef struct {} Change;
 	}
 
 	ConvCmpResult compare(Change *change) {
-		return osync_change_compare(self, change);
+                Error *err = NULL;
+		ConvCmpResult ret = osync_change_compare(self, change, &err);
+	        if (raise_exception_on_error(err))
+			return 0; /*FIXME return CONV_DATA_UNKNOWN */
+		else
+			return ret;
 	}
 
         /*

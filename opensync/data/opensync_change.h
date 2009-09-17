@@ -145,18 +145,20 @@ OSYNC_EXPORT void osync_change_set_objtype(OSyncChange *change, const char *objt
 /*! @brief Compares two changes
  * 
  * Compares the two given changes and returns:
- * CONV_DATA_MISMATCH if they are not the same
- * CONV_DATA_SIMILAR if the are not the same but look similar
- * CONV_DATA_SAME if they are exactly the same
+ * OSYNC_CONV_DATA_MISMATCH if they are not the same
+ * OSYNC_CONV_DATA_SIMILAR if the are not the same but look similar
+ * OSYNC_CONV_DATA_SAME if they are exactly the same
+ * OSYNC_CONV_DATA_UNKNOWN if the reuslt is uknown, there was a error
  * This function does also compare changetypes etc unlike
  * osync_data_compare()
  * 
  * @param leftchange The left change to compare
  * @param rightchange The right change to compare
+ * @param error An error struct
  * @returns The result of the comparison
  * 
  */
-OSYNC_EXPORT OSyncConvCmpResult osync_change_compare(OSyncChange *leftchange, OSyncChange *rightchange);
+OSYNC_EXPORT OSyncConvCmpResult osync_change_compare(OSyncChange *leftchange, OSyncChange *rightchange, OSyncError **error);
 
 /*@}*/
 

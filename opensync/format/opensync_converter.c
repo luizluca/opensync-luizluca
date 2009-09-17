@@ -201,7 +201,8 @@ osync_bool osync_converter_invoke(OSyncFormatConverter *converter, OSyncData *da
 
 			/* Good. We now have some new data. Now we have to see what to do with the old data */
 			if (free_input) {
-				osync_objformat_destroy(converter->source_format, input_data, input_size);
+				if (!osync_objformat_destroy(converter->source_format, input_data, input_size, error))
+					goto error;
 			}
 			osync_data_set_data(data, output_data, output_size);
 		}

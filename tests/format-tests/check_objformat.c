@@ -4,7 +4,7 @@
 #include <opensync/opensync-serializer.h>
 #include "opensync/format/opensync_objformat_internals.h"
 
-static OSyncConvCmpResult compare_format(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *user_data)
+static OSyncConvCmpResult compare_format(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *user_data, OSyncError **error)
 {
 	if (rightsize == leftsize && !strcmp(leftdata, rightdata))
 		return OSYNC_CONV_DATA_SAME;
@@ -12,9 +12,10 @@ static OSyncConvCmpResult compare_format(const char *leftdata, unsigned int left
 	return OSYNC_CONV_DATA_MISMATCH;
 }
 
-void destroy_format(char *data, unsigned int size, void *user_data)
+osync_bool destroy_format(char *data, unsigned int size, void *user_data, OSyncError **error)
 {
 	g_free(data);
+	return TRUE;
 }
 
 osync_bool copy_format(const char *indata, unsigned int insize, char **outdata, unsigned int *outsize, void *user_data, OSyncError **error)
@@ -31,13 +32,14 @@ static osync_bool duplicate_format(const char *uid, const char *input, unsigned 
 	return TRUE;
 }
 
-void create_format(char **data, unsigned int *size, void *user_data)
+osync_bool create_format(char **data, unsigned int *size, void *user_data, OSyncError **error)
 {
 	*data = strdup("data");
 	*size = 5;
+	return TRUE;
 }
 
-char *print_format(const char *data, unsigned int size, void *user_data)
+char *print_format(const char *data, unsigned int size, void *user_data, OSyncError **error)
 {
 	return strdup(data);
 }
@@ -128,8 +130,11 @@ START_TEST (objformat_compare)
 	fail_unless(error == NULL, NULL);
 	osync_objformat_set_compare_func(format, compare_format);
 	
-	fail_unless(osync_objformat_compare(format, "test", 5, "test", 5) == OSYNC_CONV_DATA_SAME, NULL);
-	fail_unless(osync_objformat_compare(format, "test", 5, "tesd", 5) == OSYNC_CONV_DATA_MISMATCH, NULL);
+	fail_unless(osync_objformat_compare(format, "test", 5, "test", 5, &error) == OSYNC_CONV_DATA_SAME, NULL);
+	fail_unless(error == NULL, NULL);
+
+	fail_unless(osync_objformat_compare(format, "test", 5, "tesd", 5, &error) == OSYNC_CONV_DATA_MISMATCH, NULL);
+	fail_unless(error == NULL, NULL);
 	
 	osync_objformat_unref(format);
 	
@@ -147,7 +152,8 @@ START_TEST (objformat_destroy)
 	fail_unless(error == NULL, NULL);
 	osync_objformat_set_destroy_func(format, destroy_format);
 	
-	osync_objformat_destroy(format, strdup("test"), 5);
+	osync_objformat_destroy(format, strdup("test"), 5, &error);
+	fail_unless(error == NULL, NULL);
 	
 	osync_objformat_unref(format);
 	
@@ -174,7 +180,8 @@ START_TEST (objformat_copy)
 	fail_unless(!strcmp(outdata, "test"), NULL);
 	fail_unless(outsize == 5, NULL);
 	
-	osync_objformat_destroy(format, outdata, 5);
+	osync_objformat_destroy(format, outdata, 5, &error);
+	fail_unless(error == NULL, NULL);
 	
 	osync_objformat_unref(format);
 	
@@ -221,12 +228,14 @@ START_TEST (objformat_create)
 	
 	char *outdata = NULL;
 	unsigned int outsize = 0;
-	osync_objformat_create(format, &outdata, &outsize);
+	osync_objformat_create(format, &outdata, &outsize, &error);
+	fail_unless(error == NULL, NULL);
 	
 	fail_unless(!strcmp(outdata, "data"), NULL);
 	fail_unless(outsize == 5, NULL);
 	
-	osync_objformat_destroy(format, outdata, 5);
+	osync_objformat_destroy(format, outdata, 5, &error);
+	fail_unless(error == NULL, NULL);
 	
 	osync_objformat_unref(format);
 	
@@ -244,7 +253,8 @@ START_TEST (objformat_print)
 	fail_unless(error == NULL, NULL);
 	osync_objformat_set_print_func(format, print_format);
 	
-	char *print = osync_objformat_print(format, "test", 5);
+	char *print = osync_objformat_print(format, "test", 5, &error);
+	fail_unless(error == NULL, NULL);
 	
 	fail_unless(!strcmp(print, "test"), NULL);
 	g_free(print);

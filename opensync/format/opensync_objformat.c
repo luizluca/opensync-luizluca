@@ -114,11 +114,11 @@ void osync_objformat_set_finalize_func(OSyncObjFormat *format, OSyncFormatFinali
 	format->finalize_func = finalize_func;
 }
 
-void osync_objformat_finalize(OSyncObjFormat *format)
+osync_bool osync_objformat_finalize(OSyncObjFormat *format, OSyncError **error)
 {
-	osync_return_if_fail(format);
-	osync_return_if_fail(format->finalize_func);
-	format->finalize_func(format->user_data);
+	osync_return_val_if_fail(format, TRUE);
+	osync_return_val_if_fail(format->finalize_func, TRUE);
+	return format->finalize_func(format->user_data, error);
 }
 
 void osync_objformat_set_compare_func(OSyncObjFormat *format, OSyncFormatCompareFunc cmp_func)
@@ -127,11 +127,11 @@ void osync_objformat_set_compare_func(OSyncObjFormat *format, OSyncFormatCompare
 	format->cmp_func = cmp_func;
 }
 
-OSyncConvCmpResult osync_objformat_compare(OSyncObjFormat *format, const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize)
+OSyncConvCmpResult osync_objformat_compare(OSyncObjFormat *format, const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, OSyncError **error)
 {
 	osync_return_val_if_fail(format, OSYNC_CONV_DATA_UNKNOWN);
 	osync_return_val_if_fail(format->cmp_func, OSYNC_CONV_DATA_UNKNOWN);
-	return format->cmp_func(leftdata, leftsize, rightdata, rightsize, format->user_data);
+	return format->cmp_func(leftdata, leftsize, rightdata, rightsize, format->user_data, error);
 }
 
 void osync_objformat_set_destroy_func(OSyncObjFormat *format, OSyncFormatDestroyFunc destroy_func)
@@ -140,16 +140,16 @@ void osync_objformat_set_destroy_func(OSyncObjFormat *format, OSyncFormatDestroy
 	format->destroy_func = destroy_func;
 }
 
-void osync_objformat_destroy(OSyncObjFormat *format, char *data, unsigned int size)
+osync_bool osync_objformat_destroy(OSyncObjFormat *format, char *data, unsigned int size, OSyncError **error)
 {
-	osync_return_if_fail(format);
+	osync_return_val_if_fail(format, TRUE);
 	
 	if (!format->destroy_func) {
 		osync_trace(TRACE_INTERNAL, "Format %s don't have a destroy function. Possible memory leak", format->name);
-		return;
+		return TRUE;
 	}
 	
-	format->destroy_func(data, size, format->user_data);
+	return format->destroy_func(data, size, format->user_data, error);
 }
 
 void osync_objformat_set_copy_func(OSyncObjFormat *format, OSyncFormatCopyFunc copy_func)
@@ -205,12 +205,12 @@ void osync_objformat_set_create_func(OSyncObjFormat *format, OSyncFormatCreateFu
 	format->create_func = create_func;
 }
 
-void osync_objformat_create(OSyncObjFormat *format, char **data, unsigned int *size)
+osync_bool osync_objformat_create(OSyncObjFormat *format, char **data, unsigned int *size, OSyncError **error)
 {
-	osync_return_if_fail(format);
-	osync_return_if_fail(format->create_func);
+	osync_return_val_if_fail(format, TRUE);
+	osync_return_val_if_fail(format->create_func, TRUE);
 
-	format->create_func(data, size, format->user_data);
+	return format->create_func(data, size, format->user_data, error);
 }
 
 void osync_objformat_set_print_func(OSyncObjFormat *format, OSyncFormatPrintFunc print_func)
@@ -219,7 +219,7 @@ void osync_objformat_set_print_func(OSyncObjFormat *format, OSyncFormatPrintFunc
 	format->print_func = print_func;
 }
 
-char *osync_objformat_print(OSyncObjFormat *format, const char *data, unsigned int size)
+char *osync_objformat_print(OSyncObjFormat *format, const char *data, unsigned int size, OSyncError **error)
 {
 	osync_return_val_if_fail(format, NULL);
 	osync_return_val_if_fail(data, NULL);
@@ -228,7 +228,7 @@ char *osync_objformat_print(OSyncObjFormat *format, const char *data, unsigned i
 	if (!format->print_func)
 		return g_strndup(data, size);
 	
-	return format->print_func(data, size, format->user_data);
+	return format->print_func(data, size, format->user_data, error);
 }
 
 void osync_objformat_set_revision_func(OSyncObjFormat *format, OSyncFormatRevisionFunc revision_func)

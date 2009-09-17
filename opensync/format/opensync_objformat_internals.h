@@ -49,8 +49,10 @@ OSYNC_TEST_EXPORT osync_bool osync_objformat_initialize(OSyncObjFormat *format, 
  * this object format got registered this function is NOOP.
  *
  * @param format Pointer to the object format
+ * @param error Pointer to an error struct
+ * @returns TRUE on success, FALSE otherwise 
  */
-OSYNC_TEST_EXPORT void osync_objformat_finalize(OSyncObjFormat *format);
+OSYNC_TEST_EXPORT osync_bool osync_objformat_finalize(OSyncObjFormat *format, OSyncError **error);
 
 /**
  * @brief Compares two objects of the same object format
@@ -62,9 +64,10 @@ OSYNC_TEST_EXPORT void osync_objformat_finalize(OSyncObjFormat *format);
  * @param leftsize the size in bytes of the object specified by the leftdata parameter
  * @param rightdata Pointer to the other object to compare
  * @param rightsize the size in bytes of the object specified by the rightdata parameter
+ * @param error Pointer to an error struct
  * @returns the comparison result
  */
-OSYNC_TEST_EXPORT OSyncConvCmpResult osync_objformat_compare(OSyncObjFormat *format, const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize);
+OSYNC_TEST_EXPORT OSyncConvCmpResult osync_objformat_compare(OSyncObjFormat *format, const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, OSyncError **error);
 
 /**
  * @brief Duplicate an object of the specified format
@@ -91,16 +94,21 @@ OSYNC_TEST_EXPORT osync_bool osync_objformat_duplicate(OSyncObjFormat *format, c
  * @param format Pointer to the object format
  * @param data Pointer to the data
  * @param size Size of the data
+ * @param error Pointer to an error struct
+ * @returns TRUE on success, FALSE otherwise 
  */
-OSYNC_TEST_EXPORT void osync_objformat_create(OSyncObjFormat *format, char **data, unsigned int *size);
+OSYNC_TEST_EXPORT osync_bool osync_objformat_create(OSyncObjFormat *format, char **data, unsigned int *size, OSyncError **error);
 
 /**
  * @brief Destroy an object of the specified format
  * @param format Pointer to the object format
  * @param data Pointer to the object to destroy
  * @param size Size in bytes of the object specified by the data parameter
+ * @param error Pointer to an error struct
+ * @returns TRUE on success, FALSE otherwise 
+ *
  */
-OSYNC_TEST_EXPORT void osync_objformat_destroy(OSyncObjFormat *format, char *data, unsigned int size);
+OSYNC_TEST_EXPORT osync_bool osync_objformat_destroy(OSyncObjFormat *format, char *data, unsigned int size, OSyncError **error);
 
 /**
  * @brief Copy data in the specified way of the format

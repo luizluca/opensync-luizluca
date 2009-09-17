@@ -190,6 +190,7 @@ void osync_format_env_objformat_finalize(OSyncFormatEnv *env)
 {
 	OSyncObjFormat *objformat = NULL;
 	unsigned int i, num_objformats;
+	OSyncError *error = NULL;
 
 	osync_return_if_fail(env);	
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, env);
@@ -199,7 +200,10 @@ void osync_format_env_objformat_finalize(OSyncFormatEnv *env)
 	for (i = 0; i < num_objformats; i++ ) {
 		objformat = osync_format_env_nth_objformat(env, i);
 		osync_assert(objformat);
-		osync_objformat_finalize(objformat);
+		if (!osync_objformat_finalize(objformat, &error)) {
+			/* FIXME, how to handle errors in here? */
+			osync_error_unref(&error); /* fow now just ignore the error */
+		}
 	}
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
