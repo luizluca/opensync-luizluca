@@ -97,9 +97,10 @@ OSYNC_EXPORT OSyncXMLFieldList *osync_xmlformat_search_field(OSyncXMLFormat *xml
  * @param buffer The pointer to the buffer which will hold the xml document. It is up
  *  to the caller to free this buffer.
  * @param size The pointer to the buffer which will hold the size of the xml document
- * @return Always returns TRUE.
+ * @param error The error which will hold the info in case of an error
+ * @return TRUE on success, FALSE on any error
  */
-OSYNC_EXPORT osync_bool osync_xmlformat_assemble(OSyncXMLFormat *xmlformat, char **buffer, unsigned int *size);
+OSYNC_EXPORT osync_bool osync_xmlformat_assemble(OSyncXMLFormat *xmlformat, char **buffer, unsigned int *size, OSyncError **error);
 
 /**
  * @brief Sort all xmlfields of the xmlformat.
@@ -108,8 +109,11 @@ OSYNC_EXPORT osync_bool osync_xmlformat_assemble(OSyncXMLFormat *xmlformat, char
  *  The recommended approach is to assemble the xmlformat in a sorted way instead.
  *
  * @param xmlformat The pointer to the xmlformat object
+ * @param error The error which will hold the info in case of an error
+ * @return TRUE on success, FALSE on any error
+ *
  */
-OSYNC_EXPORT void osync_xmlformat_sort(OSyncXMLFormat *xmlformat);
+OSYNC_EXPORT osync_bool osync_xmlformat_sort(OSyncXMLFormat *xmlformat, OSyncError **error);
 
 /**
  * @brief Check if all xmlfields of an xmlformat are sorted.

@@ -242,17 +242,17 @@ OSyncXMLFieldList *osync_xmlformat_search_field(OSyncXMLFormat *xmlformat, const
 	return NULL;
 }
 
-osync_bool osync_xmlformat_assemble(OSyncXMLFormat *xmlformat, char **buffer, unsigned int *size)
+osync_bool osync_xmlformat_assemble(OSyncXMLFormat *xmlformat, char **buffer, unsigned int *size, OSyncError **error)
 {
 	osync_assert(xmlformat);
 	osync_assert(buffer);
 	osync_assert(size);
 	
 	xmlDocDumpFormatMemoryEnc(xmlformat->doc, (xmlChar **)buffer, (int *)size, NULL, 1);
-	return TRUE;	
+	return TRUE;
 }
 
-void osync_xmlformat_sort(OSyncXMLFormat *xmlformat)
+osync_bool osync_xmlformat_sort(OSyncXMLFormat *xmlformat, OSyncError **error)
 {
 	int index;
 	OSyncXMLField *cur;
@@ -266,7 +266,9 @@ void osync_xmlformat_sort(OSyncXMLFormat *xmlformat)
 		goto end;
 	}
 	
-	list = g_malloc0(sizeof(OSyncXMLField *) * xmlformat->child_count);
+	list = osync_try_malloc0(sizeof(OSyncXMLField *) * xmlformat->child_count, error);
+	if (!list)
+		goto error;
 	
 	index = 0;
 	cur = osync_xmlformat_get_first_field(xmlformat);
@@ -301,6 +303,11 @@ void osync_xmlformat_sort(OSyncXMLFormat *xmlformat)
  end:	
 	xmlformat->sorted = TRUE;
 	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
 }
 
 osync_bool osync_xmlformat_is_sorted(OSyncXMLFormat *xmlformat)
@@ -344,19 +351,24 @@ osync_bool osync_xmlformat_copy(OSyncXMLFormat *source, OSyncXMLFormat **destina
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, source, destination);
 
-	osync_xmlformat_assemble(source, &buffer, &size);
-	*destination = osync_xmlformat_parse(buffer, size, error);
-	if (!(*destination)) {
-		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-		return FALSE;
-	}
+	if (!osync_xmlformat_assemble(source, &buffer, &size, error))
+		goto error;
 
-	if (source->sorted) (*destination)->sorted = TRUE;
+	*destination = osync_xmlformat_parse(buffer, size, error);
+	if (!(*destination))
+		goto error;
+
+	if (source->sorted)
+		(*destination)->sorted = TRUE;
 
 	g_free(buffer);
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
 }
 
 unsigned int osync_xmlformat_size()

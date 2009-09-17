@@ -113,18 +113,21 @@ typedef struct {} XMLFormat;
 	PyObject *assemble() {
 		char *buf;
 		unsigned int size;
-		osync_bool ret = osync_xmlformat_assemble(self, &buf, &size);
-		if (!ret) {
-			wrapper_exception("osync_xmlformat_assemble failed\n");
+                Error *err = NULL;
+		osync_xmlformat_assemble(self, &buf, &size, &err);
+		if (raise_exception_on_error(err))
 			return NULL;
-		}
+
 		PyObject *obj = PyString_FromStringAndSize(buf, size);
 		free(buf);
 		return obj;
 	}
 
 	void sort() {
-		osync_xmlformat_sort(self);
+                Error *err = NULL;
+		osync_xmlformat_sort(self, &err);
+		if (raise_exception_on_error(err))
+			return;
 	}
 
 %pythoncode %{

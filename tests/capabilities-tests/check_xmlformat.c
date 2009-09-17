@@ -57,7 +57,8 @@ START_TEST (xmlformat_sort)
 	fail_unless(xmlformat != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	osync_xmlformat_sort(xmlformat);
+	osync_xmlformat_sort(xmlformat, &error);
+	fail_unless(error == NULL, NULL);
 	
 	osync_xmlformat_unref(xmlformat);
 
@@ -82,7 +83,9 @@ START_TEST (xmlformat_is_sorted)
 	
 	fail_unless(osync_xmlformat_is_sorted(xmlformat) == FALSE, NULL);
 
-	osync_xmlformat_sort(xmlformat);
+	osync_xmlformat_sort(xmlformat, &error);
+	fail_unless(error == NULL, NULL);
+
 
 	fail_unless(osync_xmlformat_is_sorted(xmlformat) == TRUE, NULL);
 	
@@ -108,7 +111,10 @@ START_TEST (xmlformat_search_field)
 	fail_unless(xmlformat != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	g_free(buffer);
-	osync_xmlformat_sort(xmlformat);
+	osync_xmlformat_sort(xmlformat, &error);
+	fail_unless(error == NULL, NULL);
+
+
 	
 	OSyncXMLFieldList *xmlfieldlist = osync_xmlformat_search_field(xmlformat, "Name", &error, NULL);
 	fail_unless(xmlfieldlist != NULL, NULL);
