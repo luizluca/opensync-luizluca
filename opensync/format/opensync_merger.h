@@ -30,7 +30,7 @@
 /*@{*/
 
 typedef void * (* OSyncMergerInitializeFunc) (OSyncError **error);
-typedef void (* OSyncMergerFinalizeFunc) (void *user_data);
+typedef osync_bool (* OSyncMergerFinalizeFunc) (void *userdata, OSyncError **error);
 
 typedef osync_bool (* OSyncMergerMergeFunc) (char **buf, unsigned int *size, const char *entirebuf, unsigned int entiresize, OSyncCapabilities *caps, void *userdata, OSyncError **error);
 typedef osync_bool (* OSyncMergerDemergeFunc) (char **buf, unsigned int *size, OSyncCapabilities *caps, void *userdata, OSyncError **error);
