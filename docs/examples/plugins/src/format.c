@@ -157,7 +157,7 @@ osync_bool get_format_info(OSyncFormatEnv *env, OSyncError **error)
 	 */
 	OSyncObjFormat *format = osync_objformat_new("<your format name>", "<some object type>", error);
 	if (!format)
-		return FALSE;
+		goto error;
 
 	osync_objformat_set_compare_func(format, compare_format1);
 	osync_objformat_set_destroy_func(format, destroy_format1);
@@ -167,10 +167,15 @@ osync_bool get_format_info(OSyncFormatEnv *env, OSyncError **error)
 	osync_objformat_set_initialize_func(format, init_format1);
 	osync_objformat_set_finalize_func(format, finialize_format1);
 
-	osync_format_env_register_objformat(env, format);
+	if (!osync_format_env_register_objformat(env, format, error))
+		goto error;
+
 	osync_objformat_unref(format);
 
 	return TRUE;
+
+error:
+	return FALSE;
 }
 
 void *initialize_converter(const char* config, OSyncError **error)
