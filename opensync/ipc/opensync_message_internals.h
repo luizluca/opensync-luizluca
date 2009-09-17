@@ -180,18 +180,20 @@ OSYNC_TEST_EXPORT unsigned int osync_message_get_message_size(OSyncMessage *mess
  * 
  * @param message The message
  * @param size The size of the message to set
+ * @param error Pointer to a error-struct
  * 
  */
-OSYNC_TEST_EXPORT void osync_message_set_message_size(OSyncMessage *message, unsigned int size);
+OSYNC_TEST_EXPORT osync_bool osync_message_set_message_size(OSyncMessage *message, unsigned int size, OSyncError **error);
 
 /** @brief Get the buffer/content of the message object
  * 
  * @param message The message
  * @param data Pointer to data 
  * @param size Size of the data
+ * @param error Pointer to a error-struct
  * 
  */
-OSYNC_TEST_EXPORT void osync_message_get_buffer(OSyncMessage *message, char **data, unsigned int *size);
+OSYNC_TEST_EXPORT osync_bool osync_message_get_buffer(OSyncMessage *message, char **data, unsigned int *size, OSyncError **error);
 
 /** @brief Set timeout (in seconds) for the message object
  * 
@@ -277,28 +279,28 @@ OSYNC_TEST_EXPORT void osync_message_set_answered(OSyncMessage *message);
  * @param message The message
  * @param value The integer value to append
  */
-OSYNC_TEST_EXPORT void osync_message_write_int(OSyncMessage *message, int value);
+OSYNC_TEST_EXPORT osync_bool osync_message_write_int(OSyncMessage *message, int value, OSyncError **error);
 
 /** @brief Appends an unsigned integer value to serialized message buffer
  * 
  * @param message The message
  * @param value The integer value to append
  */
-OSYNC_TEST_EXPORT void osync_message_write_uint(OSyncMessage *message, unsigned int value);
+OSYNC_TEST_EXPORT osync_bool osync_message_write_uint(OSyncMessage *message, unsigned int value, OSyncError **error);
 
 /** @brief Appends a long long integer value to serialized message buffer
  * 
  * @param message The message
  * @param value The long long integer value to append
  */
-OSYNC_TEST_EXPORT void osync_message_write_long_long_int(OSyncMessage *message, long long int value);
+OSYNC_TEST_EXPORT osync_bool osync_message_write_long_long_int(OSyncMessage *message, long long int value, OSyncError **error);
 
 /** @brief Appends a string to serialized message buffer
  * 
  * @param message The message
  * @param value The string to append
  */
-OSYNC_TEST_EXPORT void osync_message_write_string(OSyncMessage *message, const char *value);
+OSYNC_TEST_EXPORT osync_bool osync_message_write_string(OSyncMessage *message, const char *value, OSyncError **error);
 
 /** @brief Appends data with a specific length to the serialized message buffer
  *
@@ -309,7 +311,7 @@ OSYNC_TEST_EXPORT void osync_message_write_string(OSyncMessage *message, const c
  * @param value The data to append
  * @param size Size of corresponding data parameter
  */
-OSYNC_TEST_EXPORT void osync_message_write_data(OSyncMessage *message, const void *value, unsigned int size);
+OSYNC_TEST_EXPORT osync_bool osync_message_write_data(OSyncMessage *message, const void *value, unsigned int size, OSyncError **error);
 
 /** @brief Appends data with a specific length to the serialized message buffer,
  * plus the length of the data to determine the end.
@@ -318,7 +320,7 @@ OSYNC_TEST_EXPORT void osync_message_write_data(OSyncMessage *message, const voi
  * @param value The data to append
  * @param size Size of corresponding data parameter
  */
-OSYNC_TEST_EXPORT void osync_message_write_buffer(OSyncMessage *message, const void *value, unsigned int size);
+OSYNC_TEST_EXPORT osync_bool osync_message_write_buffer(OSyncMessage *message, const void *value, unsigned int size, OSyncError **error);
 
 /** @brief Read serialized integer from message buffer. This increments the read
  * position of the message buffer.
@@ -326,7 +328,7 @@ OSYNC_TEST_EXPORT void osync_message_write_buffer(OSyncMessage *message, const v
  * @param message The message
  * @param value Reference to store the integer value 
  */
-OSYNC_TEST_EXPORT void osync_message_read_int(OSyncMessage *message, int *value);
+OSYNC_TEST_EXPORT osync_bool osync_message_read_int(OSyncMessage *message, int *value, OSyncError **error);
 
 /** @brief Read serialized unsigned integer from message buffer. This increments the read
  * position of the message buffer.
@@ -334,7 +336,7 @@ OSYNC_TEST_EXPORT void osync_message_read_int(OSyncMessage *message, int *value)
  * @param message The message
  * @param value Reference to store the integer value 
  */
-OSYNC_TEST_EXPORT void osync_message_read_uint(OSyncMessage *message, unsigned int *value);
+OSYNC_TEST_EXPORT osync_bool osync_message_read_uint(OSyncMessage *message, unsigned int *value, OSyncError **error);
 
 /** @brief Read serialized long long integer from message buffer. This increments the read
  * position of the message buffer.
@@ -342,7 +344,7 @@ OSYNC_TEST_EXPORT void osync_message_read_uint(OSyncMessage *message, unsigned i
  * @param message The message
  * @param value Reference to store the long long integer value 
  */
-OSYNC_TEST_EXPORT void osync_message_read_long_long_int(OSyncMessage *message, long long int *value);
+OSYNC_TEST_EXPORT osync_bool osync_message_read_long_long_int(OSyncMessage *message, long long int *value, OSyncError **error);
 
 /** @brief Read serialized string from message buffer. This increments the read
  * position of the message buffer. Caller is responsible for freeing the duplicated
@@ -351,7 +353,7 @@ OSYNC_TEST_EXPORT void osync_message_read_long_long_int(OSyncMessage *message, l
  * @param message The message
  * @param value Reference to store the pointer to the newly allocated string 
  */
-OSYNC_TEST_EXPORT void osync_message_read_string(OSyncMessage *message, char **value);
+OSYNC_TEST_EXPORT osync_bool osync_message_read_string(OSyncMessage *message, char **value, OSyncError **error);
 
 /** @brief Read specific size of serialized data from message buffer. This increments 
  * the read position of the message buffer. Caller is responsible for freeing the 
@@ -361,7 +363,7 @@ OSYNC_TEST_EXPORT void osync_message_read_string(OSyncMessage *message, char **v
  * @param value Reference to store the pointer to the newly allocated data 
  * @param size Size of data
  */
-OSYNC_TEST_EXPORT void osync_message_read_data(OSyncMessage *message, void *value, unsigned int size);
+OSYNC_TEST_EXPORT osync_bool osync_message_read_data(OSyncMessage *message, void *value, unsigned int size, OSyncError **error);
 
 /** @brief Read serialized const data from message buffer. This increments the read
  * position of the message buffer.
@@ -370,7 +372,7 @@ OSYNC_TEST_EXPORT void osync_message_read_data(OSyncMessage *message, void *valu
  * @param value Reference to store the data pointer 
  * @param size The size of data
  */
-OSYNC_TEST_EXPORT void osync_message_read_const_data(OSyncMessage *message, void **value, unsigned int size);
+OSYNC_TEST_EXPORT osync_bool osync_message_read_const_data(OSyncMessage *message, void **value, unsigned int size, OSyncError **error);
 
 /** @brief Read serialized const string from message buffer. This increments the read
  * position of the message buffer.
@@ -378,7 +380,7 @@ OSYNC_TEST_EXPORT void osync_message_read_const_data(OSyncMessage *message, void
  * @param message The message
  * @param value Reference to store the string pointer 
  */
-OSYNC_TEST_EXPORT void osync_message_read_const_string(OSyncMessage *message, const char **value);
+OSYNC_TEST_EXPORT osync_bool osync_message_read_const_string(OSyncMessage *message, const char **value, OSyncError **error);
 
 /** @brief Read serialized data from message buffer. This increments the read
  * position of the message buffer. Caller is responsible for freeing the duplicated
@@ -388,7 +390,7 @@ OSYNC_TEST_EXPORT void osync_message_read_const_string(OSyncMessage *message, co
  * @param value Reference to store the pointer to the newly allocated data 
  * @param size Size of data
  */
-OSYNC_TEST_EXPORT void osync_message_read_buffer(OSyncMessage *message, void **value, unsigned int *size);
+OSYNC_TEST_EXPORT osync_bool osync_message_read_buffer(OSyncMessage *message, void **value, unsigned int *size, OSyncError **error);
 
 /*@}*/
 

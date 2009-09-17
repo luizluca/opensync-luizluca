@@ -180,7 +180,8 @@ osync_bool osync_entry_engine_demerge(OSyncMappingEntryEngine *entry_engine, OSy
 	if (!osync_objformat_marshal(objformat, buffer, size, marshal, error))
 		goto error_free_marshal;
 
-	osync_marshal_get_buffer(marshal, &marshalbuf, &marshalsize);
+	if (!osync_marshal_get_buffer(marshal, &marshalbuf, &marshalsize, error))
+		goto error_free_marshal;
 
 	if (marshalbuf == 0) {
 		marshalbuf = buffer;

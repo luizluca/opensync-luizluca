@@ -70,13 +70,15 @@ unsigned int osync_marshal_get_marshal_size(OSyncMarshal *marshal)
 	return marshal->buffer->len;
 }
 
-void osync_marshal_set_marshal_size(OSyncMarshal *marshal, unsigned int size)
+osync_bool osync_marshal_set_marshal_size(OSyncMarshal *marshal, unsigned int size, OSyncError **error)
 {
 	osync_assert(marshal);
 	marshal->buffer->len = size;
+
+	return TRUE;
 }
 
-void osync_marshal_get_buffer(OSyncMarshal *marshal, char **data, unsigned int *size)
+osync_bool osync_marshal_get_buffer(OSyncMarshal *marshal, char **data, unsigned int *size, OSyncError **error)
 {
 	osync_assert(marshal);
 	
@@ -85,24 +87,32 @@ void osync_marshal_get_buffer(OSyncMarshal *marshal, char **data, unsigned int *
 	
 	if (size)
 		*size = marshal->buffer->len;
+
+	return TRUE;
 }
 
-void osync_marshal_write_int(OSyncMarshal *marshal, int value)
+osync_bool osync_marshal_write_int(OSyncMarshal *marshal, int value, OSyncError **error)
 {
 	g_byte_array_append( marshal->buffer, (unsigned char*)&value, sizeof( int ) );
+
+	return TRUE;
 }
 
-void osync_marshal_write_uint(OSyncMarshal *marshal, unsigned int value)
+osync_bool osync_marshal_write_uint(OSyncMarshal *marshal, unsigned int value, OSyncError **error)
 {
 	g_byte_array_append( marshal->buffer, (unsigned char*)&value, sizeof( unsigned int ) );
+
+	return TRUE;
 }
 
-void osync_marshal_write_long_long_int(OSyncMarshal *marshal, long long int value)
+osync_bool osync_marshal_write_long_long_int(OSyncMarshal *marshal, long long int value, OSyncError **error)
 {
 	g_byte_array_append( marshal->buffer, (unsigned char*)&value, sizeof( long long int ) );
+
+	return TRUE;
 }
 
-void osync_marshal_write_string(OSyncMarshal *marshal, const char *value)
+osync_bool osync_marshal_write_string(OSyncMarshal *marshal, const char *value, OSyncError **error)
 {
 	unsigned int length = 0;
 
@@ -113,106 +123,152 @@ void osync_marshal_write_string(OSyncMarshal *marshal, const char *value)
 
 	if (value)
 		g_byte_array_append( marshal->buffer, (unsigned char*)value, length );
+
+	return TRUE;
 }
 
-void osync_marshal_write_data(OSyncMarshal *marshal, const void *value, unsigned int size)
+osync_bool osync_marshal_write_data(OSyncMarshal *marshal, const void *value, unsigned int size, OSyncError **error)
 {
 	g_byte_array_append( marshal->buffer, value, size );
+
+	return TRUE;
 }
 
-void osync_marshal_write_buffer(OSyncMarshal *marshal, const void *value, unsigned int size)
+osync_bool osync_marshal_write_buffer(OSyncMarshal *marshal, const void *value, unsigned int size, OSyncError **error)
 {
 	/* serialize the length of the data to make it possible to determine the end
 	   of this data blob in the serialized blob. This makes demarshaling possible! */
-	osync_marshal_write_uint(marshal, size);
-	if (size > 0)
-		osync_marshal_write_data(marshal, value, size);
+	if (!osync_marshal_write_uint(marshal, size, error))
+		goto error;
+
+	if (size > 0) {
+		if (!osync_marshal_write_data(marshal, value, size, error))
+			goto error;
+	}
+
+	return TRUE;
+
+error:
+	return FALSE;
 }
 
-void osync_marshal_read_int(OSyncMarshal *marshal, int *value)
+osync_bool osync_marshal_read_int(OSyncMarshal *marshal, int *value, OSyncError **error)
 {
 	osync_assert(marshal->buffer->len >= marshal->buffer_read_pos + sizeof(int));
 	
 	memcpy(value, &(marshal->buffer->data[ marshal->buffer_read_pos ]), sizeof(int));
 	marshal->buffer_read_pos += sizeof(int);
+
+	return TRUE;
 }
 
-void osync_marshal_read_uint(OSyncMarshal *marshal, unsigned int *value)
+osync_bool osync_marshal_read_uint(OSyncMarshal *marshal, unsigned int *value, OSyncError **error)
 {
 	osync_assert(marshal->buffer->len >= marshal->buffer_read_pos + sizeof(unsigned int));
 	
 	memcpy(value, &(marshal->buffer->data[ marshal->buffer_read_pos ]), sizeof(unsigned int));
 	marshal->buffer_read_pos += sizeof(unsigned int);
+
+	return TRUE;
 }
 
-void osync_marshal_read_long_long_int(OSyncMarshal *marshal, long long int *value)
+osync_bool osync_marshal_read_long_long_int(OSyncMarshal *marshal, long long int *value, OSyncError **error)
 {
 	osync_assert(marshal->buffer->len >= marshal->buffer_read_pos + sizeof(long long int));
 	
 	memcpy(value, &(marshal->buffer->data[ marshal->buffer_read_pos ]), sizeof(long long int));
 	marshal->buffer_read_pos += sizeof(long long int);
+
+	return TRUE;
 }
 
-void osync_marshal_read_const_string(OSyncMarshal *marshal, const char **value)
+osync_bool osync_marshal_read_const_string(OSyncMarshal *marshal, const char **value, OSyncError **error)
 {
 	int length = 0;
-	osync_marshal_read_int(marshal, &length);
+
+	if (!osync_marshal_read_int(marshal, &length, error))
+		goto error;
 
 	if (length == -1) {
 		*value = NULL;
-		return;
+		return TRUE;
 	}
 	
 	osync_assert(marshal->buffer->len >= marshal->buffer_read_pos + length);
 	*value = (char *)&(marshal->buffer->data[marshal->buffer_read_pos]);
 	marshal->buffer_read_pos += length;
+
+	return TRUE;
+error:
+	return FALSE;
 }
 
-void osync_marshal_read_string(OSyncMarshal *marshal, char **value)
+osync_bool osync_marshal_read_string(OSyncMarshal *marshal, char **value, OSyncError **error)
 {
 	unsigned int length = 0;
-	osync_marshal_read_uint(marshal, &length);
+
+	if (!osync_marshal_read_uint(marshal, &length, error))
+		goto error;
 
 	if (!length) {
 		*value = NULL;
-		return;
+		return TRUE;
 	}
 	
 	osync_assert(marshal->buffer->len >= marshal->buffer_read_pos + length);
 	
-	/* TODO: Error handling? */
-	*value = (char*) osync_try_malloc0(length, NULL);
+	*value = (char*) osync_try_malloc0(length, error);
 	if (!*value)
-		return;
+		goto error;
 
 	memcpy(*value, &(marshal->buffer->data[ marshal->buffer_read_pos ]), length );
 	marshal->buffer_read_pos += length;
+
+	return TRUE;
+
+error:
+	return FALSE;
 }
 
-void osync_marshal_read_const_data(OSyncMarshal *marshal, void **value, unsigned int size)
+osync_bool osync_marshal_read_const_data(OSyncMarshal *marshal, void **value, unsigned int size, OSyncError **error)
 {
 	osync_assert(marshal->buffer->len >= marshal->buffer_read_pos + size);
 	
 	*value = &(marshal->buffer->data[marshal->buffer_read_pos]);
 	marshal->buffer_read_pos += size;
+
+	return TRUE;
 }
 
-void osync_marshal_read_data(OSyncMarshal *marshal, void *value, unsigned int size)
+osync_bool osync_marshal_read_data(OSyncMarshal *marshal, void *value, unsigned int size, OSyncError **error)
 {
 	osync_assert(marshal->buffer->len >= marshal->buffer_read_pos + size);
 	
 	memcpy(value, &(marshal->buffer->data[ marshal->buffer_read_pos ]), size );
 	marshal->buffer_read_pos += size;
+
+	return TRUE;
 }
 
-void osync_marshal_read_buffer(OSyncMarshal *marshal, void **value, unsigned int *size)
+osync_bool osync_marshal_read_buffer(OSyncMarshal *marshal, void **value, unsigned int *size, OSyncError **error)
 {
 	/* Now, read the data from the marshal */
-	osync_marshal_read_uint(marshal, size);
+	if (!osync_marshal_read_uint(marshal, size, error))
+		goto error;
 	
 	if (*size > 0) {
-		*value = g_malloc0(*size);
-		osync_marshal_read_data(marshal, *value, *size);
+		*value = osync_try_malloc0(*size, error);
+
+		if (!*value)
+			goto error;
+
+		if (!osync_marshal_read_data(marshal, *value, *size, error))
+			goto error;
 	}
+
+	return TRUE;
+
+error:
+	return FALSE;
 }
 

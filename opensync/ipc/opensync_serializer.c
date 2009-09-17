@@ -53,14 +53,18 @@ osync_bool osync_marshal_data(OSyncMessage *message, OSyncData *data, OSyncError
 	objformat = osync_data_get_objformat(data);
 	
 	/* Write the format and objtype first */
-	osync_message_write_string(message, osync_objformat_get_name(objformat));
-	osync_message_write_string(message, osync_data_get_objtype(data));
+	osync_message_write_string(message, osync_objformat_get_name(objformat), error);
+	osync_message_write_string(message, osync_data_get_objtype(data), error);
+
+	if (osync_error_is_set(error))
+		goto error;
 
 	/* Now we get the pointer to the data */
 	osync_data_get_data(data, &input_data, &input_size);
 	
 	if (input_size > 0) {
-		osync_message_write_int(message, 1);
+		if (!osync_message_write_int(message, 1, error))
+			goto error;
 		
 		/* If the format must be marshalled, we call the marshal function
 		 * and the send the marshalled data. Otherwise we send the unmarshalled data */
@@ -74,10 +78,12 @@ osync_bool osync_marshal_data(OSyncMessage *message, OSyncData *data, OSyncError
 			 * be removed by the osync_demarshal_data funciton.
 			 */
 			input_size++;
-			osync_message_write_buffer(message, input_data, input_size);
+			if (!osync_message_write_buffer(message, input_data, input_size, error))
+				goto error;
 		}
 	} else {
-		osync_message_write_int(message, 0);
+		if (!osync_message_write_int(message, 0, error))
+			goto error;
 	}
 	
 	return TRUE;
@@ -106,8 +112,11 @@ osync_bool osync_demarshal_data(OSyncMessage *message, OSyncData **data, OSyncFo
 	 * data */
 	
 	/* Get the objtype and format */
-	osync_message_read_string(message, &objformat);
-	osync_message_read_string(message, &objtype);
+	osync_message_read_string(message, &objformat, error);
+	osync_message_read_string(message, &objtype, error);
+
+	if (osync_error_is_set(error))
+		goto error;
 	
 	/* Search for the format */
 	format = osync_format_env_find_objformat(env, objformat);
@@ -116,7 +125,8 @@ osync_bool osync_demarshal_data(OSyncMessage *message, OSyncData **data, OSyncFo
 		goto error;
 	}
 
-	osync_message_read_int(message, &has_data);
+	if (!osync_message_read_int(message, &has_data, error))
+		goto error;
 	
 	if (has_data) {
 		if (osync_objformat_must_marshal(format) == TRUE) {
@@ -124,7 +134,8 @@ osync_bool osync_demarshal_data(OSyncMessage *message, OSyncData **data, OSyncFo
 			if (!osync_objformat_demarshal(format, marshal, &input_data, &input_size, error))
 				goto error;
 		} else {
-			osync_message_read_buffer(message, (void *)&input_data, &input_size);
+			if (!osync_message_read_buffer(message, (void *)&input_data, &input_size, error))
+				goto error;
 
 			/* If the format is a plain, then we have to remove
 			 * one from the input_size, since once one was added by 
@@ -165,9 +176,12 @@ osync_bool osync_marshal_change(OSyncMessage *message, OSyncChange *change, OSyn
 	 * changetype
 	 * data */
 	
-	osync_message_write_string(message, osync_change_get_uid(change));
-	osync_message_write_string(message, osync_change_get_hash(change));
-	osync_message_write_int(message, osync_change_get_changetype(change));
+	osync_message_write_string(message, osync_change_get_uid(change), error);
+	osync_message_write_string(message, osync_change_get_hash(change), error);
+	osync_message_write_int(message, osync_change_get_changetype(change), error);
+
+	if (osync_error_is_set(error))
+		goto error;
 	
 	data = osync_change_get_data(change);
 	if (!osync_marshal_data(message, data, error))
@@ -200,9 +214,12 @@ osync_bool osync_demarshal_change(OSyncMessage *message, OSyncChange **change, O
 	if (!*change)
 		goto error;
 
-	osync_message_read_string(message, &uid);
-	osync_message_read_string(message, &hash);
-	osync_message_read_int(message, &change_type);
+	osync_message_read_string(message, &uid, error);
+	osync_message_read_string(message, &hash, error);
+	osync_message_read_int(message, &change_type, error);
+
+	if (osync_error_is_set(error))
+		goto error;
 
 	if (!osync_demarshal_data(message, &data, env, error))
 		goto error_free_change;
@@ -238,10 +255,16 @@ osync_bool osync_marshal_objformat_sink(OSyncMessage *message, OSyncObjFormatSin
 	const char *objformat_name = osync_objformat_sink_get_objformat(sink);
 	const char *objformat_sink_config = osync_objformat_sink_get_config(sink);
 
-	osync_message_write_string(message, objformat_name); 
-	osync_message_write_string(message, objformat_sink_config); 
+	osync_message_write_string(message, objformat_name, error); 
+	osync_message_write_string(message, objformat_sink_config, error); 
+
+	if (osync_error_is_set(error))
+		goto error;
 	
 	return TRUE;
+
+error:
+	return FALSE;
 }
 
 osync_bool osync_demarshal_objformat_sink(OSyncMessage *message, OSyncObjFormatSink **sink, OSyncError **error)
@@ -258,13 +281,16 @@ osync_bool osync_demarshal_objformat_sink(OSyncMessage *message, OSyncObjFormatS
 	 */
 	
 	/* Get the objtype and format */
-	osync_message_read_string(message, &objformat_name);
+	if (!osync_message_read_string(message, &objformat_name, error))
+		goto error;
 	
 	*sink = osync_objformat_sink_new(objformat_name, error);
 	if (!*sink)
 		goto error;
 
-	osync_message_read_string(message, &objformat_sink_config);
+	if (!osync_message_read_string(message, &objformat_sink_config, error))
+		goto error;
+
 	osync_objformat_sink_set_config(*sink, objformat_sink_config);
 	osync_free(objformat_sink_config);
 
@@ -303,14 +329,18 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 	 */
 	
 	num = osync_objtype_sink_num_objformat_sinks(sink);
-	osync_message_write_string(message, osync_objtype_sink_get_name(sink));
+	osync_message_write_string(message, osync_objtype_sink_get_name(sink), error);
 
-	osync_message_write_int(message, osync_objtype_sink_get_function_read(sink));
-	osync_message_write_int(message, osync_objtype_sink_get_function_getchanges(sink));
+	osync_message_write_int(message, osync_objtype_sink_get_function_read(sink), error);
+	osync_message_write_int(message, osync_objtype_sink_get_function_getchanges(sink), error);
 
-	osync_message_write_string(message, osync_objtype_sink_get_preferred_format(sink));
+	osync_message_write_string(message, osync_objtype_sink_get_preferred_format(sink), error);
 
-	osync_message_write_int(message, num);
+	osync_message_write_int(message, num, error);
+	
+	if (osync_error_is_set(error))
+		goto error;
+
 	for (i = 0; i < num; i++) {
 		OSyncObjFormatSink *formatsink = osync_objtype_sink_nth_objformat_sink(sink, i);
 		if (!osync_marshal_objformat_sink(message, formatsink, error)) 
@@ -318,18 +348,21 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 	}
 	
 	/* enabled */
-	osync_message_write_int(message, osync_objtype_sink_is_enabled(sink));
+	osync_message_write_int(message, osync_objtype_sink_is_enabled(sink), error);
 
 	/* timeouts */
-	osync_message_write_int(message, osync_objtype_sink_get_connect_timeout(sink));
-	osync_message_write_int(message, osync_objtype_sink_get_disconnect_timeout(sink));
+	osync_message_write_int(message, osync_objtype_sink_get_connect_timeout(sink), error);
+	osync_message_write_int(message, osync_objtype_sink_get_disconnect_timeout(sink), error);
 
-	osync_message_write_int(message, osync_objtype_sink_get_getchanges_timeout(sink));
-	osync_message_write_int(message, osync_objtype_sink_get_commit_timeout(sink));
-	osync_message_write_int(message, osync_objtype_sink_get_committedall_timeout(sink));
-	osync_message_write_int(message, osync_objtype_sink_get_syncdone_timeout(sink));
+	osync_message_write_int(message, osync_objtype_sink_get_getchanges_timeout(sink), error);
+	osync_message_write_int(message, osync_objtype_sink_get_commit_timeout(sink), error);
+	osync_message_write_int(message, osync_objtype_sink_get_committedall_timeout(sink), error);
+	osync_message_write_int(message, osync_objtype_sink_get_syncdone_timeout(sink), error);
 
-	osync_message_write_int(message, osync_objtype_sink_get_read_timeout(sink));
+	osync_message_write_int(message, osync_objtype_sink_get_read_timeout(sink), error);
+
+	if (osync_error_is_set(error))
+		goto error;
 
 	
 	return TRUE;
@@ -372,21 +405,31 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	if (!*sink)
 		goto error;
 	
-	osync_message_read_string(message, &name);
+	if (!osync_message_read_string(message, &name, error))
+		goto error;
+
 	osync_objtype_sink_set_name(*sink, name);
 	osync_free(name);
  	
-	osync_message_read_int(message, &read);
+	if (!osync_message_read_int(message, &read, error))
+		goto error;
+
 	osync_objtype_sink_set_function_read(*sink, read);
 
-	osync_message_read_int(message, &get_changes);
+	if (!osync_message_read_int(message, &get_changes, error))
+		goto error;
+
 	osync_objtype_sink_set_function_getchanges(*sink, get_changes);
 
-	osync_message_read_string(message, &preferred_format);
+	if (!osync_message_read_string(message, &preferred_format, error))
+		goto error;
+
 	osync_objtype_sink_set_preferred_format(*sink, preferred_format);
 	osync_free(preferred_format);
 
-	osync_message_read_int(message, &num_formats);
+	if (!osync_message_read_int(message, &num_formats, error))
+		goto error;
+
 	for (i = 0; i < num_formats; i++) {
 		OSyncObjFormatSink *formatsink;
 		if (!osync_demarshal_objformat_sink(message, &formatsink, error)) 
@@ -397,29 +440,45 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	}
 
 	/* enabled */
-	osync_message_read_int(message, &enabled);
+	if (!osync_message_read_int(message, &enabled, error))
+		goto error;
+
 	osync_objtype_sink_set_enabled(*sink, enabled);
 
 	/* timeouts */
-	osync_message_read_int(message, &timeout);
+	if (!osync_message_read_int(message, &timeout, error))
+		goto error;
+
 	osync_objtype_sink_set_connect_timeout(*sink, timeout);
 
-	osync_message_read_int(message, &timeout);
+	if (!osync_message_read_int(message, &timeout, error))
+		goto error;
+
 	osync_objtype_sink_set_disconnect_timeout(*sink, timeout);
 
-	osync_message_read_int(message, &timeout);
+	if (!osync_message_read_int(message, &timeout, error))
+		goto error;
+
 	osync_objtype_sink_set_getchanges_timeout(*sink, timeout);
 
-	osync_message_read_int(message, &timeout);
+	if (!osync_message_read_int(message, &timeout, error))
+		goto error;
+
 	osync_objtype_sink_set_commit_timeout(*sink, timeout);
 
-	osync_message_read_int(message, &timeout);
+	if (!osync_message_read_int(message, &timeout, error))
+		goto error;
+
 	osync_objtype_sink_set_committedall_timeout(*sink, timeout);
 
-	osync_message_read_int(message, &timeout);
+	if (!osync_message_read_int(message, &timeout, error))
+		goto error;
+
 	osync_objtype_sink_set_syncdone_timeout(*sink, timeout);
 
-	osync_message_read_int(message, &timeout);
+	if (!osync_message_read_int(message, &timeout, error))
+		goto error;
+
 	osync_objtype_sink_set_read_timeout(*sink, timeout);
 
 	return TRUE;
@@ -428,38 +487,55 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	return FALSE;
 }
 
-void osync_marshal_error(OSyncMessage *message, OSyncError *error)
+osync_bool osync_marshal_error(OSyncMessage *message, OSyncError *marshal_error, OSyncError **error)
 {
 	osync_assert(message);
 
-	if (error) {
+	if (marshal_error) {
 		const char *msg = NULL;
-		osync_message_write_int(message, 1);
-		osync_message_write_int(message, osync_error_get_type(&error));
-		msg = osync_error_print(&error);
-		osync_message_write_string(message, msg);
+		osync_message_write_int(message, 1, error);
+		osync_message_write_int(message, osync_error_get_type(&marshal_error), error);
+		msg = osync_error_print(&marshal_error);
+		osync_message_write_string(message, msg, error);
 	} else {
-		osync_message_write_int(message, 0);
+		osync_message_write_int(message, 0, error);
 	}
+
+	if (osync_error_is_set(error))
+		goto error;
+
+	return TRUE;
+
+error:
+	return FALSE;
 }
 
-void osync_demarshal_error(OSyncMessage *message, OSyncError **error)
+osync_bool osync_demarshal_error(OSyncMessage *message, OSyncError **marshal_error, OSyncError **error)
 {
 	int hasError = 0;
 	osync_assert(message);
 
-	osync_message_read_int(message, &hasError);
+	if (!osync_message_read_int(message, &hasError, error))
+		goto error;
 	
 	if (hasError) {
 		char *msg = NULL;
 		int error_type = OSYNC_NO_ERROR;
 		
-		osync_message_read_int(message, &error_type);
-		osync_message_read_string(message, &msg);
+		osync_message_read_int(message, &error_type, error);
+		osync_message_read_string(message, &msg, error);
 		
-		osync_error_set(error, (OSyncErrorType)error_type, msg);
+		osync_error_set(marshal_error, (OSyncErrorType)error_type, msg);
 		osync_free(msg);
 	}
+
+	if (osync_error_is_set(error))
+		goto error;
+
+	return TRUE;
+
+error:
+	return FALSE;
 }
 
 osync_bool osync_marshal_pluginconnection(OSyncMessage *message, OSyncPluginConnection *conn, OSyncError **error)
@@ -494,37 +570,44 @@ osync_bool osync_marshal_pluginconnection(OSyncMessage *message, OSyncPluginConn
 	 */
 
 	type = osync_plugin_connection_get_type(conn);
-	osync_message_write_int(message, type);
+	if (!osync_message_write_int(message, type, error))
+		goto error;
+
 	switch(type) {
 	case OSYNC_PLUGIN_CONNECTION_BLUETOOTH:
-		osync_message_write_string(message, osync_plugin_connection_bt_get_addr(conn));
-		osync_message_write_string(message, osync_plugin_connection_bt_get_sdpuuid(conn));
-		osync_message_write_uint(message, osync_plugin_connection_bt_get_channel(conn));
+		osync_message_write_string(message, osync_plugin_connection_bt_get_addr(conn), error);
+		osync_message_write_string(message, osync_plugin_connection_bt_get_sdpuuid(conn), error);
+		osync_message_write_uint(message, osync_plugin_connection_bt_get_channel(conn), error);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_USB:
-		osync_message_write_string(message, osync_plugin_connection_usb_get_vendorid(conn));
-		osync_message_write_string(message, osync_plugin_connection_usb_get_productid(conn));
-		osync_message_write_uint(message, osync_plugin_connection_usb_get_interface(conn));
+		osync_message_write_string(message, osync_plugin_connection_usb_get_vendorid(conn), error);
+		osync_message_write_string(message, osync_plugin_connection_usb_get_productid(conn), error);
+		osync_message_write_uint(message, osync_plugin_connection_usb_get_interface(conn), error);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_NETWORK:
-		osync_message_write_string(message, osync_plugin_connection_net_get_address(conn));
-		osync_message_write_uint(message, osync_plugin_connection_net_get_port(conn));
-		osync_message_write_string(message, osync_plugin_connection_net_get_protocol(conn));
-		osync_message_write_string(message, osync_plugin_connection_net_get_dnssd(conn));
+		osync_message_write_string(message, osync_plugin_connection_net_get_address(conn), error);
+		osync_message_write_uint(message, osync_plugin_connection_net_get_port(conn), error);
+		osync_message_write_string(message, osync_plugin_connection_net_get_protocol(conn), error);
+		osync_message_write_string(message, osync_plugin_connection_net_get_dnssd(conn), error);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_SERIAL:
-		osync_message_write_uint(message, osync_plugin_connection_serial_get_speed(conn));
-		osync_message_write_string(message, osync_plugin_connection_serial_get_devicenode(conn));
+		osync_message_write_uint(message, osync_plugin_connection_serial_get_speed(conn), error);
+		osync_message_write_string(message, osync_plugin_connection_serial_get_devicenode(conn), error);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_IRDA:
-		osync_message_write_string(message, osync_plugin_connection_irda_get_service(conn));
+		osync_message_write_string(message, osync_plugin_connection_irda_get_service(conn), error);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_UNKNOWN:
 		break;
 	}
 
+	if (osync_error_is_set(error))
+		goto error;
 	
 	return TRUE;
+
+error:
+	return FALSE;
 }
 
 osync_bool osync_demarshal_pluginconnection(OSyncMessage *message, OSyncPluginConnection **conn, OSyncError **error)
@@ -570,7 +653,8 @@ osync_bool osync_demarshal_pluginconnection(OSyncMessage *message, OSyncPluginCo
 	 * irda_service (char *)
 	 */
 
-	osync_message_read_int(message, &type);
+	if (!osync_message_read_int(message, &type, error))
+		goto error;
 
 	*conn = osync_plugin_connection_new(error);
 	if (!*conn)
@@ -580,39 +664,39 @@ osync_bool osync_demarshal_pluginconnection(OSyncMessage *message, OSyncPluginCo
 
 	switch(type) {
 	case OSYNC_PLUGIN_CONNECTION_BLUETOOTH:
-		osync_message_read_string(message, &bt_address);
+		osync_message_read_string(message, &bt_address, error);
 		osync_plugin_connection_bt_set_addr(*conn, bt_address);
 
-		osync_message_read_string(message, &bt_sdpuuid);
+		osync_message_read_string(message, &bt_sdpuuid, error);
 		osync_plugin_connection_bt_set_sdpuuid(*conn, bt_sdpuuid);
 
-		osync_message_read_uint(message, &bt_channel);
+		osync_message_read_uint(message, &bt_channel, error);
 		osync_plugin_connection_bt_set_channel(*conn, bt_channel);
 
 		osync_free(bt_address);
 		osync_free(bt_sdpuuid);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_USB:
-		osync_message_read_string(message, &usb_vendorid);
+		osync_message_read_string(message, &usb_vendorid, error);
 		osync_plugin_connection_usb_set_vendorid(*conn, usb_vendorid);
 
-		osync_message_read_string(message, &usb_productid);
+		osync_message_read_string(message, &usb_productid, error);
 		osync_plugin_connection_usb_set_productid(*conn, usb_productid);
 
-		osync_message_read_uint(message, &usb_interface);
+		osync_message_read_uint(message, &usb_interface, error);
 		osync_plugin_connection_usb_set_interface(*conn, usb_interface);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_NETWORK:
-		osync_message_read_string(message, &net_address);
+		osync_message_read_string(message, &net_address, error);
 		osync_plugin_connection_net_set_address(*conn, net_address);
 
-		osync_message_read_uint(message, &net_port);
+		osync_message_read_uint(message, &net_port, error);
 		osync_plugin_connection_net_set_port(*conn, net_port);
 
-		osync_message_read_string(message, &net_protocol);
+		osync_message_read_string(message, &net_protocol, error);
 		osync_plugin_connection_net_set_protocol(*conn, net_protocol);
 
-		osync_message_read_string(message, &net_dnssd);
+		osync_message_read_string(message, &net_dnssd, error);
 		osync_plugin_connection_net_set_dnssd(*conn, net_dnssd);
 			
 		osync_free(net_address);
@@ -620,16 +704,16 @@ osync_bool osync_demarshal_pluginconnection(OSyncMessage *message, OSyncPluginCo
 		osync_free(net_dnssd);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_SERIAL:
-		osync_message_read_uint(message, &serial_speed);
+		osync_message_read_uint(message, &serial_speed, error);
 		osync_plugin_connection_serial_set_speed(*conn, serial_speed);
 
-		osync_message_read_string(message, &serial_devicenode);
+		osync_message_read_string(message, &serial_devicenode, error);
 		osync_plugin_connection_serial_set_devicenode(*conn, serial_devicenode);
 
 		osync_free(serial_devicenode);
 		break;
 	case OSYNC_PLUGIN_CONNECTION_IRDA:
-		osync_message_read_string(message, &irda_service);
+		osync_message_read_string(message, &irda_service, error);
 		osync_plugin_connection_serial_set_devicenode(*conn, irda_service);
 
 		osync_free(irda_service);
@@ -638,9 +722,12 @@ osync_bool osync_demarshal_pluginconnection(OSyncMessage *message, OSyncPluginCo
 		break;
 	}
 
+	if (osync_error_is_set(error))
+		goto error;
+
 	return TRUE;
 
- error:
+error:
 	return FALSE;
 }
 
@@ -669,17 +756,23 @@ osync_bool osync_marshal_objformatsink(OSyncMessage *message, OSyncObjFormatSink
 	name = osync_objformat_sink_get_objformat(sink);
 
 	osync_assert(name);
-	osync_message_write_string(message, name);
+	if (!osync_message_write_string(message, name, error))
+		goto error;
 	
 	if (config)
 		available_settings |= MARSHAL_OBJFORMATSINK_CONFIG;
 
-	osync_message_write_uint(message, available_settings);
+	if (!osync_message_write_uint(message, available_settings, error))
+		goto error;
 
 	if (config)
-		osync_message_write_string(message, config); 
+		if (!osync_message_write_string(message, config, error))
+			goto error;
 
 	return TRUE;
+
+error:
+	return FALSE;
 }
 
 osync_bool osync_demarshal_objformatsink(OSyncMessage *message, OSyncObjFormatSink **sink, OSyncError **error)
@@ -700,7 +793,9 @@ osync_bool osync_demarshal_objformatsink(OSyncMessage *message, OSyncObjFormatSi
 	 * config (string)
 	 */
 
-	osync_message_read_string(message, &name);
+	if (!osync_message_read_string(message, &name, error))
+		goto error;
+
 	osync_assert(name);
 
 	*sink = osync_objformat_sink_new(name, error);
@@ -709,10 +804,14 @@ osync_bool osync_demarshal_objformatsink(OSyncMessage *message, OSyncObjFormatSi
 
 	osync_free(name);
 
-	osync_message_read_uint(message, &available_settings);
+	if (!osync_message_read_uint(message, &available_settings, error))
+		goto error;
 
 	if (available_settings & MARSHAL_OBJFORMATSINK_CONFIG) {
-		osync_message_read_string(message, &config);
+
+		if (!osync_message_read_string(message, &config, error))
+			goto error;
+
 		osync_objformat_sink_set_config(*sink, config);
 		osync_free(config);
 	}
@@ -757,30 +856,40 @@ osync_bool osync_marshal_pluginadvancedoption_param(OSyncMessage *message, OSync
 	if (displayname)
 		available_subconfigs |= MARSHAL_PLUGINADVANCEDOPTION_PARAM_DISPLAYNAME;
 
-	osync_message_write_uint(message, available_subconfigs);
+	if (!osync_message_write_uint(message, available_subconfigs, error))
+		goto error;
 
-	osync_message_write_string(message, displayname);
+	if (!osync_message_write_string(message, displayname, error))
+		goto error;
 
 	name = osync_plugin_advancedoption_param_get_name(param);
-	osync_message_write_string(message, name);
+	if (!osync_message_write_string(message, name, error))
+		goto error;
 
 	type = osync_plugin_advancedoption_param_get_type(param);
-	osync_message_write_uint(message, type);
+	if (!osync_message_write_uint(message, type, error))
+		goto error;
 
 	value = osync_plugin_advancedoption_param_get_value(param);
-	osync_message_write_string(message, value);
+	if (!osync_message_write_string(message, value, error))
+		goto error;
 
 	valenum = osync_plugin_advancedoption_param_get_valenums(param);
 	num_valenum = osync_list_length(valenum);
-	osync_message_write_uint(message, num_valenum);
+	if (!osync_message_write_uint(message, num_valenum, error))
+		goto error;
 
 	for (v = valenum; v; v = v->next) {
 		value = v->data;
-		osync_message_write_string(message, value);
+		if (!osync_message_write_string(message, value, error))
+			goto error;
 	}
 	osync_list_free(valenum);
 	
 	return TRUE;
+
+error:
+	return FALSE;
 }
 
 #define MARSHAL_PLUGINADVANCEDOPTION_DISPLAYNAME (1 << 1)
@@ -833,47 +942,56 @@ osync_bool osync_marshal_pluginadvancedoption(OSyncMessage *message, OSyncPlugin
 	if (maxsize)
 		available_subconfigs |= MARSHAL_PLUGINADVANCEDOPTION_MAXSIZE;
 
-	osync_message_write_uint(message, available_subconfigs);
+	osync_message_write_uint(message, available_subconfigs, error);
 
 	if (displayname)
-		osync_message_write_string(message, displayname);
+		osync_message_write_string(message, displayname, error);
 
 	if (maxoccurs)
-		osync_message_write_uint(message, maxoccurs);
+		osync_message_write_uint(message, maxoccurs, error);
 
 	if (maxsize)
-		osync_message_write_uint(message, maxsize);
+		osync_message_write_uint(message, maxsize, error);
 
 	name = osync_plugin_advancedoption_get_name(opt);
-	osync_message_write_string(message, name);
+	osync_message_write_string(message, name, error);
 
 	type = osync_plugin_advancedoption_get_type(opt);
-	osync_message_write_uint(message, type);
+	osync_message_write_uint(message, type, error);
 
 	value = osync_plugin_advancedoption_get_value(opt);
-	osync_message_write_string(message, value);
+	osync_message_write_string(message, value, error);
 
 	parameters = osync_plugin_advancedoption_get_parameters(opt);
 	num_parameters = osync_list_length(parameters);
-	osync_message_write_uint(message, num_parameters);
+	osync_message_write_uint(message, num_parameters, error);
+
+	if (osync_error_is_set(error))
+		goto error;
 
 	for ( p = parameters; p; p = p->next) {
 		param = p->data;
-		osync_message_write_string(message, param);
+		if (!osync_message_write_string(message, param, error))
+			goto error;
 	}
 	osync_list_free(parameters);
 	
 	valenum = osync_plugin_advancedoption_get_valenums(opt);
 	num_valenum = osync_list_length(valenum);
-	osync_message_write_uint(message, num_valenum);
+	if (!osync_message_write_uint(message, num_valenum, error))
+		goto error;
 
 	for (v = valenum; v; v=v->next) {
 		value = v->data;
-		osync_message_write_string(message, value);
+		if (!osync_message_write_string(message, value, error))
+			goto error;
 	}
 	osync_list_free(valenum);
 	
 	return TRUE;
+
+error:
+	return FALSE;
 }
 
 osync_bool osync_demarshal_pluginadvancedoption_param(OSyncMessage *message, OSyncPluginAdvancedOptionParameter **param, OSyncError **error)
@@ -899,31 +1017,43 @@ osync_bool osync_demarshal_pluginadvancedoption_param(OSyncMessage *message, OSy
 	if (!*param)
 		goto error;
 
-	osync_message_read_string(message, &displayname);
+	if (!osync_message_read_string(message, &displayname, error))
+		goto error;
+
 	osync_plugin_advancedoption_param_set_name(*param, displayname);
 	osync_free(displayname);
 
-	osync_message_read_string(message, &name);
+	if (!osync_message_read_string(message, &name, error))
+		goto error;
+
 	osync_plugin_advancedoption_param_set_name(*param, name);
 	osync_free(name);
 
-	osync_message_read_uint(message, &type);
+	if (!osync_message_read_uint(message, &type, error))
+		goto error;
+
 	osync_plugin_advancedoption_param_set_type(*param, type);
 
-	osync_message_read_string(message, &value);
+	if (!osync_message_read_string(message, &value, error))
+		goto error;
+
 	osync_plugin_advancedoption_param_set_value(*param, value);
 	osync_free(value);
 
-	osync_message_read_uint(message, &num_valenum);
+	if (!osync_message_read_uint(message, &num_valenum, error))
+		goto error;
 
 	for (i=0; i < num_valenum; i++) {
-		osync_message_read_string(message, &value);
+
+		if (!osync_message_read_string(message, &value, error))
+			goto error;
+
 		osync_plugin_advancedoption_param_add_valenum(*param, value);
 		osync_free(value);
 	}
 
 	return TRUE;
- error:
+error:
 	return FALSE;
 }
 
@@ -960,36 +1090,51 @@ osync_bool osync_demarshal_pluginadvancedoption(OSyncMessage *message, OSyncPlug
 	if (!*opt)
 		goto error;
 
-	osync_message_read_uint(message, &available_subconfigs);
+	if (!osync_message_read_uint(message, &available_subconfigs, error))
+		goto error;
+
 	if (available_subconfigs & MARSHAL_PLUGINADVANCEDOPTION_DISPLAYNAME) {
-		osync_message_read_string(message, &displayname);
+		if (!osync_message_read_string(message, &displayname, error))
+			goto error;
+
 		osync_plugin_advancedoption_set_name(*opt, displayname);
 		osync_free(displayname);
 	}
 
 	if (available_subconfigs & MARSHAL_PLUGINADVANCEDOPTION_MAXOCCURS) {
-		osync_message_read_uint(message, &maxoccurs);
+		if (!osync_message_read_uint(message, &maxoccurs, error))
+			goto error;
+
 		osync_plugin_advancedoption_set_maxoccurs(*opt, maxoccurs);
 	}
 
 
 	if (available_subconfigs & MARSHAL_PLUGINADVANCEDOPTION_MAXSIZE) {
-		osync_message_read_uint(message, &maxsize);
+		if (!osync_message_read_uint(message, &maxsize, error))
+			goto error;
+
 		osync_plugin_advancedoption_set_max(*opt, maxsize);
 	}
 
-	osync_message_read_string(message, &name);
+	if (!osync_message_read_string(message, &name, error))
+		goto error;
+
 	osync_plugin_advancedoption_set_name(*opt, name);
 	osync_free(name);
 
-	osync_message_read_uint(message, &type);
+	if (!osync_message_read_uint(message, &type, error))
+		goto error;
+
 	osync_plugin_advancedoption_set_type(*opt, type);
 
-	osync_message_read_string(message, &value);
+	if (!osync_message_read_string(message, &value, error))
+		goto error;
+
 	osync_plugin_advancedoption_set_value(*opt, value);
 	osync_free(value);
 
-	osync_message_read_uint(message, &num_parameters);
+	if (!osync_message_read_uint(message, &num_parameters, error))
+		goto error;
 
 	for (i=0; i < num_parameters; i++) {
 		OSyncPluginAdvancedOptionParameter *param;
@@ -1000,17 +1145,20 @@ osync_bool osync_demarshal_pluginadvancedoption(OSyncMessage *message, OSyncPlug
 		osync_plugin_advancedoption_param_unref(param);
 	}
 
-	osync_message_read_uint(message, &num_valenum);
+	if (!osync_message_read_uint(message, &num_valenum, error))
+		goto error;
 
 	for (i=0; i < num_valenum; i++) {
-		osync_message_read_string(message, &value);
+		if (!osync_message_read_string(message, &value, error))
+			goto error;
+
 		osync_plugin_advancedoption_add_valenum(*opt, value);
 		osync_free(value);
 	}
 
 	return TRUE;
 
- error:
+error:
 	return FALSE;
 }
 
@@ -1051,18 +1199,24 @@ osync_bool osync_marshal_pluginlocalization(OSyncMessage *message, OSyncPluginLo
 	if (language)
 		available_fields |= MARSHAL_PLUGINLOCALIZATION_LANGUAGE;
 
-	osync_message_write_uint(message, available_fields);
+	osync_message_write_uint(message, available_fields, error);
 
 	if (encoding)
-		osync_message_write_string(message, encoding);
+		osync_message_write_string(message, encoding, error);
 
 	if (timezone)
-		osync_message_write_string(message, timezone);
+		osync_message_write_string(message, timezone, error);
 
 	if (language)
-		osync_message_write_string(message, language);
+		osync_message_write_string(message, language, error);
+
+	if (osync_error_is_set(error))
+		goto error;
 
 	return TRUE;
+
+error:
+	return FALSE;
 }
 
 osync_bool osync_demarshal_pluginlocalization(OSyncMessage *message, OSyncPluginLocalization **local, OSyncError **error)
@@ -1079,23 +1233,30 @@ osync_bool osync_demarshal_pluginlocalization(OSyncMessage *message, OSyncPlugin
 	if (!*local)
 		goto error;
 
-	osync_message_read_uint(message, &available_fields);
+	if (!osync_message_read_uint(message, &available_fields, error))
+		goto error;
 
 	if (available_fields & MARSHAL_PLUGINLOCALIZATION_ENCODING) {
-		osync_message_read_string(message, &encoding);
+		if (!osync_message_read_string(message, &encoding, error))
+			goto error;
+
 		osync_plugin_localization_set_encoding(*local, encoding);
 		osync_free(encoding);
 	}
 
 	if (available_fields & MARSHAL_PLUGINLOCALIZATION_TIMEZONE) {
-		osync_message_read_string(message, &timezone);
+		if (!osync_message_read_string(message, &timezone, error))
+				goto error;
+
 		osync_plugin_localization_set_encoding(*local, timezone);
 		osync_free(timezone);
 	}
 	
 	
 	if (available_fields & MARSHAL_PLUGINLOCALIZATION_LANGUAGE) {
-		osync_message_read_string(message, &language);
+		if (!osync_message_read_string(message, &language, error))
+			goto error;
+
 		osync_plugin_localization_set_encoding(*local, language);
 		osync_free(language);
 	}
@@ -1142,17 +1303,23 @@ osync_bool osync_marshal_pluginauthentication(OSyncMessage *message, OSyncPlugin
 	if (reference)
 		available_fields |= MARSHAL_PLUGINAUTEHNTICATION_REFERENCE;
 
-	osync_message_write_uint(message, available_fields);
+	osync_message_write_uint(message, available_fields, error);
 
-	osync_message_write_string(message, username);
+	osync_message_write_string(message, username, error);
 
 	if (password)
-		osync_message_write_string(message, password);
+		osync_message_write_string(message, password, error);
 
 	if (reference)
-		osync_message_write_string(message, reference);
+		osync_message_write_string(message, reference, error);
+
+	if (osync_error_is_set(error))
+		goto error;
 
 	return TRUE;
+
+error:
+	return FALSE;
 }
 
 osync_bool osync_demarshal_pluginauthentication(OSyncMessage *message, OSyncPluginAuthentication **auth, OSyncError **error)
@@ -1179,26 +1346,33 @@ osync_bool osync_demarshal_pluginauthentication(OSyncMessage *message, OSyncPlug
 	if (!*auth)
 		goto error;
 
-	osync_message_read_uint(message, &available_fields);
+	if (!osync_message_read_uint(message, &available_fields, error))
+		goto error;
 
-	osync_message_read_string(message, &username);
+	if (!osync_message_read_string(message, &username, error))
+		goto error;
+
 	osync_plugin_authentication_set_username(*auth, username);
 	osync_free(username);
 
 	if (available_fields & MARSHAL_PLUGINAUTEHNTICATION_PASSWORD) {
-		osync_message_read_string(message, &password);
+		if (!osync_message_read_string(message, &password, error))
+			goto error;
+
 		osync_plugin_authentication_set_password(*auth, password);
 		osync_free(password);
 	}
 
 	if (available_fields & MARSHAL_PLUGINAUTEHNTICATION_REFERENCE) {
-		osync_message_read_string(message, &reference);
+		if (!osync_message_read_string(message, &reference, error))
+			goto error;
+
 		osync_plugin_authentication_set_reference(*auth, reference);
 		osync_free(reference);
 	}
 
 	return TRUE;
- error:
+error:
 	return FALSE;
 
 }
@@ -1248,16 +1422,19 @@ osync_bool osync_marshal_pluginresource(OSyncMessage *message, OSyncPluginResour
 	url = osync_plugin_resource_get_url(res);
 
 	/* enabled */
-	osync_message_write_int(message, osync_plugin_resource_is_enabled(res));
+	osync_message_write_int(message, osync_plugin_resource_is_enabled(res), error);
 
 	/* objtype */
 	osync_assert(objtype);
-	osync_message_write_string(message, objtype);
+	osync_message_write_string(message, objtype, error);
 
 	/* num_sinks */
 	sinks = osync_plugin_resource_get_objformat_sinks(res);
 	num_sinks = osync_list_length(sinks);
-	osync_message_write_uint(message, num_sinks);
+	osync_message_write_uint(message, num_sinks, error);
+
+	if (osync_error_is_set(error))
+		goto error;
 
 	/* format sinks */
 	for (s = sinks; s; s = s->next) {
@@ -1284,22 +1461,25 @@ osync_bool osync_marshal_pluginresource(OSyncMessage *message, OSyncPluginResour
 	if (url)
 		available_settings |= MARSHAL_PLUGINRESOURCE_URL;
 
-	osync_message_write_uint(message, available_settings);
+	osync_message_write_uint(message, available_settings, error);
 
 	if (preferred_format)
-		osync_message_write_string(message, preferred_format);
+		osync_message_write_string(message, preferred_format, error);
 
 	if (name)
-		osync_message_write_string(message, name);
+		osync_message_write_string(message, name, error);
 
 	if (mime)
-		osync_message_write_string(message, mime);
+		osync_message_write_string(message, mime, error);
 
 	if (path)
-		osync_message_write_string(message, path);
+		osync_message_write_string(message, path, error);
 
 	if (url)
-		osync_message_write_string(message, url);
+		osync_message_write_string(message, url, error);
+
+	if (osync_error_is_set(error))
+		goto error;
 	
 	return TRUE;
 
@@ -1341,14 +1521,20 @@ osync_bool osync_demarshal_pluginresource(OSyncMessage *message, OSyncPluginReso
 		goto error;
 
 
-	osync_message_read_int(message, &enabled);
+	if (!osync_message_read_int(message, &enabled, error))
+		goto error;
+
 	osync_plugin_resource_enable(*res, enabled);
 
-	osync_message_read_string(message, &objtype);
+	if (!osync_message_read_string(message, &objtype, error))
+		goto error;
+
 	osync_plugin_resource_set_objtype(*res, objtype);
 	osync_free(objtype);
 
-	osync_message_read_uint(message, &num_sinks);
+	if (!osync_message_read_uint(message, &num_sinks, error))
+		goto error;
+
 	for (i=0; i < num_sinks; i++) {
 		OSyncObjFormatSink *sink = NULL;
 		if (!osync_demarshal_objformatsink(message, &sink, error))
@@ -1358,34 +1544,45 @@ osync_bool osync_demarshal_pluginresource(OSyncMessage *message, OSyncPluginReso
 		osync_objformat_sink_unref(sink);
 	}
 
-	osync_message_read_uint(message, &available_settings);
+	if (!osync_message_read_uint(message, &available_settings, error))
+		goto error;
 
 	if (available_settings & MARSHAL_PLUGINRESOURCE_PREFERRED_FORMAT) {
-		osync_message_read_string(message, &preferred_format);
+		if (!osync_message_read_string(message, &preferred_format, error))
+			goto error;
+
 		osync_plugin_resource_set_preferred_format(*res, preferred_format);
 		osync_free(preferred_format);
 	}
 
 	if (available_settings & MARSHAL_PLUGINRESOURCE_NAME) {
-		osync_message_read_string(message, &name);
+		if (!osync_message_read_string(message, &name, error))
+			goto error;
+
 		osync_plugin_resource_set_name(*res, name);
 		osync_free(name);
 	}
 
 	if (available_settings & MARSHAL_PLUGINRESOURCE_MIME) {
-		osync_message_read_string(message, &mime);
+		if (!osync_message_read_string(message, &mime, error))
+			goto error;
+
 		osync_plugin_resource_set_mime(*res, mime);
 		osync_free(mime);
 	}
 
 	if (available_settings & MARSHAL_PLUGINRESOURCE_PATH) {
-		osync_message_read_string(message, &path);
+		if (!osync_message_read_string(message, &path, error))
+			goto error;
+
 		osync_plugin_resource_set_path(*res, path);
 		osync_free(path);
 	}
 
 	if (available_settings & MARSHAL_PLUGINRESOURCE_URL) {
-		osync_message_read_string(message, &url);
+		if (!osync_message_read_string(message, &url, error))
+			goto error;
+
 		osync_plugin_resource_set_url(*res, url);
 		osync_free(url);
 	}
@@ -1439,7 +1636,8 @@ osync_bool osync_marshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig *
 	if (local)
 		available_subconfigs |= MARSHAL_PLUGINCONFIG_LOCALIZATION;
 
-	osync_message_write_uint(message, available_subconfigs);
+	if (!osync_message_write_uint(message, available_subconfigs, error))
+		goto error;
 
 	if (conn && !osync_marshal_pluginconnection(message, conn, error))
 		goto error;
@@ -1451,7 +1649,8 @@ osync_bool osync_marshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig *
 		goto error;
 
 	r = osync_plugin_config_get_resources(config);
-	osync_message_write_uint(message, osync_list_length(r));
+	if (!osync_message_write_uint(message, osync_list_length(r), error))
+		goto error;
 
 	for (; r; r = r->next) {
 		OSyncPluginResource *res = r->data;
@@ -1460,7 +1659,8 @@ osync_bool osync_marshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig *
 	}
 
 	options = osync_plugin_config_get_advancedoptions(config);
-	osync_message_write_uint(message, osync_list_length(options));
+	if (!osync_message_write_uint(message, osync_list_length(options), error))
+		goto error;
 
 	for (aos = options; aos; aos = aos->next) {
 		OSyncPluginAdvancedOption *opt = aos->data;
@@ -1504,7 +1704,8 @@ osync_bool osync_demarshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig
 		goto error;
 
 	/* available subconfigs */
-	osync_message_read_uint(message, &available_subconfigs);
+	if (!osync_message_read_uint(message, &available_subconfigs, error))
+		goto error;
 
 	/* Connection */
 	if (available_subconfigs & MARSHAL_PLUGINCONFIG_CONNECTION) {
@@ -1533,7 +1734,8 @@ osync_bool osync_demarshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig
 		osync_plugin_localization_unref(local);
 	}
 
-	osync_message_read_uint(message, &num_resources);
+	if (!osync_message_read_uint(message, &num_resources, error))
+		goto error;
 
 	/* number of resources */
 	for (i = 0; i < num_resources; i++) {
@@ -1546,7 +1748,8 @@ osync_bool osync_demarshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig
 
 	}
 
-	osync_message_read_uint(message, &num_advancedoptions);
+	if (!osync_message_read_uint(message, &num_advancedoptions, error))
+		goto error;
 	
 	/* number of advancedoptions */
 	for (i=0; i < num_advancedoptions; i++) {

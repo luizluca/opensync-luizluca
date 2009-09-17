@@ -260,7 +260,10 @@ static void _osync_client_proxy_init_handler(OSyncMessage *message, void *user_d
 	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
 		ctx->init_callback(proxy, ctx->init_callback_data, NULL);
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-		osync_demarshal_error(message, &error);
+
+		if (!osync_demarshal_error(message, &error, &locerror))
+			goto error;
+
 		ctx->init_callback(proxy, ctx->init_callback_data, error);
 		osync_error_unref(&error);
 	} else {
@@ -293,7 +296,10 @@ static void _osync_client_proxy_fin_handler(OSyncMessage *message, void *user_da
 	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
 		ctx->fin_callback(proxy, ctx->fin_callback_data, NULL);
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-		osync_demarshal_error(message, &error);
+
+		if (osync_demarshal_error(message, &error, &locerror))
+			goto error;
+
 		ctx->fin_callback(proxy, ctx->fin_callback_data, error);
 		osync_error_unref(&error);
 	} else {
@@ -327,41 +333,50 @@ static osync_bool _osync_client_proxy_read_discover_message(OSyncClientProxy *pr
 
 
 	/* Merger - Set the capabilities */
-	osync_message_read_int(message, &sent_version);
+	if (!osync_message_read_int(message, &sent_version, error))
+		goto error;
+
 	if (sent_version) {
 		version = osync_version_new(error);
 		if (!version)
 			goto error;
 		
-		osync_message_read_string(message, &str);
+		osync_message_read_string(message, &str, error);
 		osync_version_set_plugin(version, str);
 		osync_free(str);
-		osync_message_read_string(message, &str);
+		osync_message_read_string(message, &str, error);
 		osync_version_set_priority(version, str);
 		osync_free(str);
-		osync_message_read_string(message, &str);
+		osync_message_read_string(message, &str, error);
 		osync_version_set_vendor(version, str);
 		osync_free(str);
-		osync_message_read_string(message, &str);
+		osync_message_read_string(message, &str, error);
 		osync_version_set_modelversion(version, str);
 		osync_free(str);
-		osync_message_read_string(message, &str);
+		osync_message_read_string(message, &str, error);
 		osync_version_set_firmwareversion(version, str);
 		osync_free(str);
-		osync_message_read_string(message, &str);
+		osync_message_read_string(message, &str, error);
 		osync_version_set_softwareversion(version, str);
 		osync_free(str);
-		osync_message_read_string(message, &str);
+		osync_message_read_string(message, &str, error);
 		osync_version_set_hardwareversion(version, str);
 		osync_free(str);
-		osync_message_read_string(message, &str);
+		osync_message_read_string(message, &str, error);
 		osync_version_set_identifier(version, str);
 		osync_free(str);	
+
+		if (osync_error_is_set(error))
+			goto error_free_version;
 	}
 			
-	osync_message_read_int(message, &sent_capabilities);
+	if (!osync_message_read_int(message, &sent_capabilities, error))
+		goto error;
+
 	if (sent_capabilities) {
-		osync_message_read_string(message, &str);
+		if (!osync_message_read_string(message, &str, error))
+			goto error_free_version;
+
 		capabilities = osync_capabilities_parse(str, strlen(str), error);
 		osync_free(str);
 		if (!capabilities)
@@ -428,9 +443,12 @@ static void _osync_client_proxy_discover_handler(OSyncMessage *message, void *us
 	
 	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
 		
-		osync_message_read_int(message, &proxy->has_main_sink);
+		osync_message_read_int(message, &proxy->has_main_sink, &locerror);
 		
-		osync_message_read_uint(message, &num_sinks);
+		osync_message_read_uint(message, &num_sinks, &locerror);
+
+		if (osync_error_is_set(&locerror))
+			goto error;
 		
 		osync_trace(TRACE_INTERNAL, "main sink?: %i, num objs?: %i", proxy->has_main_sink, num_sinks);
 		
@@ -456,7 +474,10 @@ static void _osync_client_proxy_discover_handler(OSyncMessage *message, void *us
 				goto error;
 
 			osync_plugin_config_flush_resources(config);
-			osync_message_read_uint(message, &num_res);
+
+			if (!osync_message_read_uint(message, &num_res, &locerror))
+				goto error;
+
 			for (i=0; i < num_res; i++) {
 				if (!osync_demarshal_pluginresource(message, &resource, &locerror))
 					goto error;
@@ -471,7 +492,10 @@ static void _osync_client_proxy_discover_handler(OSyncMessage *message, void *us
 
 		ctx->discover_callback(proxy, ctx->discover_callback_data, NULL);
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-		osync_demarshal_error(message, &error);
+
+		if (!osync_demarshal_error(message, &error, &locerror))
+			goto error;
+
 		ctx->discover_callback(proxy, ctx->discover_callback_data, error);
 		osync_error_unref(&error);
 	} else {
@@ -503,10 +527,16 @@ static void _osync_client_proxy_connect_handler(OSyncMessage *message, void *use
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
 	
 	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
-		osync_message_read_int(message, &slowsync);
+
+		if (!osync_message_read_int(message, &slowsync, &locerror))
+			goto error;
+
 		ctx->connect_callback(proxy, ctx->connect_callback_data, slowsync, NULL);
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-		osync_demarshal_error(message, &error);
+
+		if (!osync_demarshal_error(message, &error, &locerror))
+			goto error;
+
 		ctx->connect_callback(proxy, ctx->connect_callback_data, FALSE, error);
 		osync_error_unref(&error);
 	} else {
@@ -539,7 +569,10 @@ static void _osync_client_proxy_connect_done_handler(OSyncMessage *message, void
 	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
 		ctx->connect_done_callback(proxy, ctx->connect_done_callback_data, NULL);
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-		osync_demarshal_error(message, &error);
+
+		if (!osync_demarshal_error(message, &error, &locerror))
+			goto error;
+
 		ctx->connect_done_callback(proxy, ctx->connect_done_callback_data, error);
 		osync_error_unref(&error);
 	} else {
@@ -572,7 +605,10 @@ static void _osync_client_proxy_disconnect_handler(OSyncMessage *message, void *
 	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
 		ctx->disconnect_callback(proxy, ctx->disconnect_callback_data, NULL);
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-		osync_demarshal_error(message, &error);
+
+		if (!osync_demarshal_error(message, &error, &locerror))
+			goto error;
+
 		ctx->disconnect_callback(proxy, ctx->disconnect_callback_data, error);
 		osync_error_unref(&error);
 	} else {
@@ -605,7 +641,10 @@ static void _osync_client_proxy_read_handler(OSyncMessage *message, void *user_d
 	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
 		ctx->read_callback(proxy, ctx->read_callback_data, NULL);
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-		osync_demarshal_error(message, &error);
+		
+		if (!osync_demarshal_error(message, &error, &locerror))
+			goto error;
+
 		ctx->read_callback(proxy, ctx->read_callback_data, error);
 		osync_error_unref(&error);
 	} else {
@@ -644,7 +683,10 @@ static void _osync_client_proxy_get_changes_handler(OSyncMessage *message, void 
 		}
 
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-		osync_demarshal_error(message, &error);
+
+		if (!osync_demarshal_error(message, &error, &locerror))
+			goto error;
+
 		ctx->get_changes_callback(proxy, ctx->get_changes_callback_data, error);
 		osync_client_proxy_set_error(proxy, error);
 		osync_error_unref(&error);
@@ -677,11 +719,17 @@ static void _osync_client_proxy_commit_change_handler(OSyncMessage *message, voi
 	
 	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
 		char *uid = NULL;
-		osync_message_read_string(message, &uid);
+
+		if (!osync_message_read_string(message, &uid, &locerror))
+			goto error;
+
 		ctx->commit_change_callback(proxy, ctx->commit_change_callback_data, uid, NULL);
 		osync_free(uid);
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-		osync_demarshal_error(message, &error);
+
+		if (!osync_demarshal_error(message, &error, &locerror))
+			goto error;
+
 		ctx->commit_change_callback(proxy, ctx->commit_change_callback_data, NULL, error);
 		osync_error_unref(&error);
 	} else {
@@ -714,7 +762,10 @@ static void _osync_client_proxy_committed_all_handler(OSyncMessage *message, voi
 	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
 		ctx->committed_all_callback(proxy, ctx->committed_all_callback_data, NULL);
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-		osync_demarshal_error(message, &error);
+
+		if (!osync_demarshal_error(message, &error, &locerror))
+			goto error;
+
 		ctx->committed_all_callback(proxy, ctx->committed_all_callback_data, error);
 		osync_error_unref(&error);
 	} else {
@@ -747,7 +798,10 @@ static void _osync_client_proxy_sync_done_handler(OSyncMessage *message, void *u
 	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
 		ctx->sync_done_callback(proxy, ctx->sync_done_callback_data, NULL);
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
-		osync_demarshal_error(message, &error);
+
+		if (!osync_demarshal_error(message, &error, &locerror))
+			goto error;
+
 		ctx->sync_done_callback(proxy, ctx->sync_done_callback_data, error);
 		osync_error_unref(&error);
 	} else {
@@ -1187,13 +1241,16 @@ osync_bool osync_client_proxy_initialize(OSyncClientProxy *proxy, initialize_cb 
 	if (!message)
 		goto error;
 	
-	osync_message_write_string(message, osync_queue_get_path(proxy->incoming));
-	osync_message_write_string(message, formatdir);
-	osync_message_write_string(message, plugindir);
-	osync_message_write_string(message, plugin);
-	osync_message_write_string(message, groupname);
-	osync_message_write_string(message, configdir);
-	osync_message_write_int(message, haspluginconfig);
+	osync_message_write_string(message, osync_queue_get_path(proxy->incoming), error);
+	osync_message_write_string(message, formatdir, error);
+	osync_message_write_string(message, plugindir, error);
+	osync_message_write_string(message, plugin, error);
+	osync_message_write_string(message, groupname, error);
+	osync_message_write_string(message, configdir, error);
+	osync_message_write_int(message, haspluginconfig, error);
+
+	if (osync_error_is_set(error))
+		goto error;
 
 	if (haspluginconfig && !osync_marshal_pluginconfig(message, config, error))
 		goto error;
@@ -1228,7 +1285,7 @@ osync_bool osync_client_proxy_initialize(OSyncClientProxy *proxy, initialize_cb 
 	if (proxy->member)
 		memberid = osync_member_get_id(proxy->member);
 
-	osync_message_write_long_long_int(message, memberid);
+	osync_message_write_long_long_int(message, memberid, error);
 #endif	
 	
 	osync_message_set_handler(message, _osync_client_proxy_init_handler, ctx);
@@ -1427,8 +1484,11 @@ osync_bool osync_client_proxy_connect(OSyncClientProxy *proxy, connect_cb callba
 	
 	osync_message_set_handler(message, _osync_client_proxy_connect_handler, ctx);
 
-	osync_message_write_string(message, objtype);
-	osync_message_write_int(message, slowsync);
+	osync_message_write_string(message, objtype, error);
+	osync_message_write_int(message, slowsync, error);
+	
+	if (osync_error_is_set(error))
+		goto error_free_message;
 	
 	if (!osync_queue_send_message_with_timeout(proxy->outgoing, proxy->incoming, message, timeout, error))
 		goto error_free_message;
@@ -1477,8 +1537,11 @@ osync_bool osync_client_proxy_connect_done(OSyncClientProxy *proxy, sync_done_cb
 	
 	osync_message_set_handler(message, _osync_client_proxy_connect_done_handler, ctx);
 
-	osync_message_write_string(message, objtype);
-	osync_message_write_int(message, slowsync);
+	osync_message_write_string(message, objtype, error);
+	osync_message_write_int(message, slowsync, error);
+
+	if (osync_error_is_set(error))
+		goto error_free_message;
 	
 	if (!osync_queue_send_message_with_timeout(proxy->outgoing, proxy->incoming, message, timeout, error))
 		goto error_free_message;
@@ -1526,7 +1589,8 @@ osync_bool osync_client_proxy_disconnect(OSyncClientProxy *proxy, disconnect_cb 
 	
 	osync_message_set_handler(message, _osync_client_proxy_disconnect_handler, ctx);
 
-	osync_message_write_string(message, objtype);
+	if (!osync_message_write_string(message, objtype, error))
+		goto error_free_message;
 	
 	if (!osync_queue_send_message_with_timeout(proxy->outgoing, proxy->incoming, message, timeout, error))
 		goto error_free_message;
@@ -1623,8 +1687,11 @@ osync_bool osync_client_proxy_get_changes(OSyncClientProxy *proxy, get_changes_c
 	
 	osync_message_set_handler(message, _osync_client_proxy_get_changes_handler, ctx);
 
-	osync_message_write_string(message, objtype);
-	osync_message_write_int(message, slowsync);
+	osync_message_write_string(message, objtype, error);
+	osync_message_write_int(message, slowsync, error);
+
+	if (osync_error_is_set(error))
+		goto error_free_message;
 	
 	if (!osync_queue_send_message_with_timeout(proxy->outgoing, proxy->incoming, message, timeout, error))
 		goto error_free_message;
@@ -1724,7 +1791,10 @@ osync_bool osync_client_proxy_committed_all(OSyncClientProxy *proxy, committed_a
 	
 	osync_message_set_handler(message, _osync_client_proxy_committed_all_handler, ctx);
 
-	osync_message_write_string(message, objtype);
+	osync_message_write_string(message, objtype, error);
+
+	if (osync_error_is_set(error))
+		goto error;
 	
 	if (!osync_queue_send_message_with_timeout(proxy->outgoing, proxy->incoming, message, timeout, error))
 		goto error_free_message;
@@ -1773,7 +1843,8 @@ osync_bool osync_client_proxy_sync_done(OSyncClientProxy *proxy, sync_done_cb ca
 	
 	osync_message_set_handler(message, _osync_client_proxy_sync_done_handler, ctx);
 
-	osync_message_write_string(message, objtype);
+	if (!osync_message_write_string(message, objtype, error))
+		goto error_free_message;
 	
 	if (!osync_queue_send_message_with_timeout(proxy->outgoing, proxy->incoming, message, timeout, error))
 		goto error_free_message;

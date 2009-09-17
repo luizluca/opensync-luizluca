@@ -40,8 +40,9 @@
  * @param marshal The marshal object
  * @param value The data to append
  * @param size Size of corresponding data parameter
+ * @param error Pointer to a error-struct
  */
-OSYNC_TEST_EXPORT void osync_marshal_write_data(OSyncMarshal *marshal, const void *value, unsigned int size);
+OSYNC_TEST_EXPORT osync_bool osync_marshal_write_data(OSyncMarshal *marshal, const void *value, unsigned int size, OSyncError **error);
 
 /** @brief Read specific size of serialized data from marshal buffer. This increments 
  * the read position of the marshal buffer. Caller is responsible for freeing the 
@@ -50,8 +51,9 @@ OSYNC_TEST_EXPORT void osync_marshal_write_data(OSyncMarshal *marshal, const voi
  * @param marshal The marshal object
  * @param value Reference to store the pointer to the newly allocated data 
  * @param size Size of data
+ * @param error Pointer to a error-struct
  */
-OSYNC_TEST_EXPORT void osync_marshal_read_data(OSyncMarshal *marshal, void *value, unsigned int size);
+OSYNC_TEST_EXPORT osync_bool osync_marshal_read_data(OSyncMarshal *marshal, void *value, unsigned int size, OSyncError **error);
 
 /*@}*/
 

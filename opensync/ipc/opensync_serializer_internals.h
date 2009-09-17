@@ -35,8 +35,8 @@ osync_bool osync_demarshal_data(OSyncMessage *message, OSyncData **data, OSyncFo
 osync_bool osync_marshal_change(OSyncMessage *message, OSyncChange *change, OSyncError **error);
 osync_bool osync_demarshal_change(OSyncMessage *message, OSyncChange **change, OSyncFormatEnv *env, OSyncError **error);
 
-void osync_marshal_error(OSyncMessage *message, OSyncError *error);
-void osync_demarshal_error(OSyncMessage *message, OSyncError **error);
+osync_bool osync_marshal_error(OSyncMessage *message, OSyncError *marshal_error, OSyncError **error);
+osync_bool osync_demarshal_error(OSyncMessage *message, OSyncError **marshal_error, OSyncError **error);
 
 osync_bool osync_marshal_objformat_sink(OSyncMessage *message, OSyncObjFormatSink *sink, OSyncError **error);
 osync_bool osync_demarshal_objformat_sink(OSyncMessage *message, OSyncObjFormatSink **sink, OSyncError **error);

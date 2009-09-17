@@ -77,46 +77,52 @@ OSYNC_EXPORT unsigned int osync_marshal_get_marshal_size(OSyncMarshal *marshal);
  * 
  * @param marshal The marshal object
  * @param size The size of the marshal to set
+ * @param error Pointer to a error-struct
  * 
  */
-OSYNC_EXPORT void osync_marshal_set_marshal_size(OSyncMarshal *marshal, unsigned int size);
+OSYNC_EXPORT osync_bool osync_marshal_set_marshal_size(OSyncMarshal *marshal, unsigned int size, OSyncError **error);
 
 /** @brief Get the buffer/content of the marshal object
  * 
  * @param marshal The marshal object
  * @param data Pointer to data 
  * @param size Size of the data
+ * @param error Pointer to a error-struct
  * 
  */
-OSYNC_EXPORT void osync_marshal_get_buffer(OSyncMarshal *marshal, char **data, unsigned int *size);
+OSYNC_EXPORT osync_bool osync_marshal_get_buffer(OSyncMarshal *marshal, char **data, unsigned int *value, OSyncError **error);
 
 /** @brief Appends an integer value to serialized buffer
  * 
  * @param marshal The marshal object
  * @param value The integer value to append
+ * @param error Pointer to a error-struct
  */
-OSYNC_EXPORT void osync_marshal_write_int(OSyncMarshal *marshal, int value);
+OSYNC_EXPORT osync_bool osync_marshal_write_int(OSyncMarshal *marshal, int value, OSyncError **error);
 
 /** @brief Appends an unsigned integer value to serialized buffer
  * 
  * @param marshal The marshal object
  * @param value The integer value to append
+ * @param error Pointer to a error-struct
  */
-OSYNC_EXPORT void osync_marshal_write_uint(OSyncMarshal *marshal, unsigned int value);
+OSYNC_EXPORT osync_bool osync_marshal_write_uint(OSyncMarshal *marshal, unsigned int value, OSyncError **error);
 
 /** @brief Appends a long long integer value to serialized buffer
  * 
  * @param marshal The marshal object
  * @param value The long long integer value to append
+ * @param error Pointer to a error-struct
  */
-OSYNC_EXPORT void osync_marshal_write_long_long_int(OSyncMarshal *marshal, long long int value);
+OSYNC_EXPORT osync_bool osync_marshal_write_long_long_int(OSyncMarshal *marshal, long long int value, OSyncError **error);
 
 /** @brief Appends a string to serialized buffer
  * 
  * @param marshal The marshal object
  * @param value The string to append
+ * @param error Pointer to a error-struct
  */
-OSYNC_EXPORT void osync_marshal_write_string(OSyncMarshal *marshal, const char *value);
+OSYNC_EXPORT osync_bool osync_marshal_write_string(OSyncMarshal *marshal, const char *value, OSyncError **error);
 
 /** @brief Appends data with a specific length to the serialized buffer,
  * plus the length of the data to determine the end.
@@ -124,32 +130,36 @@ OSYNC_EXPORT void osync_marshal_write_string(OSyncMarshal *marshal, const char *
  * @param marshal The marshal object
  * @param value The data to append
  * @param size Size of corresponding data parameter
+ * @param error Pointer to a error-struct
  */
-OSYNC_EXPORT void osync_marshal_write_buffer(OSyncMarshal *marshal, const void *value, unsigned int size);
+OSYNC_EXPORT osync_bool osync_marshal_write_buffer(OSyncMarshal *marshal, const void *value, unsigned int size, OSyncError **error);
 
 /** @brief Read serialized integer from marshal buffer. This increments the read
  * position of the marshal buffer.
  *
  * @param marshal The marshal object
  * @param value Reference to store the integer value 
+ * @param error Pointer to a error-struct
  */
-OSYNC_EXPORT void osync_marshal_read_int(OSyncMarshal *marshal, int *value);
+OSYNC_EXPORT osync_bool osync_marshal_read_int(OSyncMarshal *marshal, int *value, OSyncError **error);
 
 /** @brief Read serialized unsigned integer from marshal buffer. This increments the read
  * position of the marshal buffer.
  *
  * @param marshal The marshal object
  * @param value Reference to store the integer value 
+ * @param error Pointer to a error-struct
  */
-OSYNC_EXPORT void osync_marshal_read_uint(OSyncMarshal *marshal, unsigned int *value);
+OSYNC_EXPORT osync_bool osync_marshal_read_uint(OSyncMarshal *marshal, unsigned int *value, OSyncError **error);
 
 /** @brief Read serialized long long integer from marshal buffer. This increments the read
  * position of the marshal buffer.
  *
  * @param marshal The marshal object
  * @param value Reference to store the long long integer value 
+ * @param error Pointer to a error-struct
  */
-OSYNC_EXPORT void osync_marshal_read_long_long_int(OSyncMarshal *marshal, long long int *value);
+OSYNC_EXPORT osync_bool osync_marshal_read_long_long_int(OSyncMarshal *marshal, long long int *value, OSyncError **error);
 
 /** @brief Read serialized string from marshal buffer. This increments the read
  * position of the marshal buffer. Caller is responsible for freeing the duplicated
@@ -157,8 +167,9 @@ OSYNC_EXPORT void osync_marshal_read_long_long_int(OSyncMarshal *marshal, long l
  *
  * @param marshal The marshal object
  * @param value Reference to store the pointer to the newly allocated string 
+ * @param error Pointer to a error-struct
  */
-OSYNC_EXPORT void osync_marshal_read_string(OSyncMarshal *marshal, char **value);
+OSYNC_EXPORT osync_bool osync_marshal_read_string(OSyncMarshal *marshal, char **value, OSyncError **error);
 
 /** @brief Read serialized const data from marshal buffer. This increments the read
  * position of the marshal buffer.
@@ -166,16 +177,18 @@ OSYNC_EXPORT void osync_marshal_read_string(OSyncMarshal *marshal, char **value)
  * @param marshal The marshal object
  * @param value Reference to store the data pointer 
  * @param size The size of data
+ * @param error Pointer to a error-struct
  */
-OSYNC_EXPORT void osync_marshal_read_const_data(OSyncMarshal *marshal, void **value, unsigned int size);
+OSYNC_EXPORT osync_bool osync_marshal_read_const_data(OSyncMarshal *marshal, void **value, unsigned int size, OSyncError **error);
 
 /** @brief Read serialized const string from marshal buffer. This increments the read
  * position of the marshal buffer.
  *
  * @param marshal The marshal object
  * @param value Reference to store the string pointer 
+ * @param error Pointer to a error-struct
  */
-OSYNC_EXPORT void osync_marshal_read_const_string(OSyncMarshal *marshal, const char **value);
+OSYNC_EXPORT osync_bool osync_marshal_read_const_string(OSyncMarshal *marshal, const char **value, OSyncError **error);
 
 /** @brief Read serialized data from marshal buffer. This increments the read
  * position of the marshal buffer. Caller is responsible for freeing the duplicated
@@ -184,8 +197,9 @@ OSYNC_EXPORT void osync_marshal_read_const_string(OSyncMarshal *marshal, const c
  * @param marshal The marshal object
  * @param value Reference to store the pointer to the newly allocated data 
  * @param size Size of data
+ * @param error Pointer to a error-struct
  */
-OSYNC_EXPORT void osync_marshal_read_buffer(OSyncMarshal *marshal, void **value, unsigned int *size);
+OSYNC_EXPORT osync_bool osync_marshal_read_buffer(OSyncMarshal *marshal, void **value, unsigned int *size, OSyncError **error);
 
 /*@}*/
 

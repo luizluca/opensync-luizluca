@@ -521,7 +521,8 @@ static gboolean _queue_dispatch(GSource *source, GSourceFunc callback, gpointer 
 		if (!_osync_queue_write_int(queue, (int) osync_message_get_timeout(message), &error))
 			goto error;
 		
-		osync_message_get_buffer(message, &data, &length);
+		if (!osync_message_get_buffer(message, &data, &length, &error))
+			goto error;
 		
 		if (length) {
 			unsigned int sent = 0;
@@ -716,7 +717,9 @@ static gboolean _source_dispatch(GSource *source, GSourceFunc callback, gpointer
 		
 		/* We now get the buffer from the message which will already
 		 * have the correct size for the read */
-		osync_message_get_buffer(message, &buffer, NULL);
+		if (!osync_message_get_buffer(message, &buffer, NULL, &error))
+			goto error_free_message;
+
 		if (size) {
 			int read = 0;
 			do {
@@ -733,7 +736,9 @@ static gboolean _source_dispatch(GSource *source, GSourceFunc callback, gpointer
 				read += inc;
 			} while (read < size);
 		}
-		osync_message_set_message_size(message, size);
+
+		if (!osync_message_set_message_size(message, size, &error))
+			goto error_free_message;
 		
 		g_async_queue_push(queue->incoming, message);
 		

@@ -49,14 +49,12 @@ time_t revision_format(const char *data, unsigned int size, void *user_data, OSy
 
 osync_bool marshal_format(const char *input, unsigned int inpsize, OSyncMarshal *marshal, void *user_data, OSyncError **error)
 {
-	osync_marshal_write_buffer(marshal, input, inpsize);
-	return TRUE;
+	return osync_marshal_write_buffer(marshal, input, inpsize, error);
 }
 
 osync_bool demarshal_format(OSyncMarshal *marshal, char **output, unsigned int *outsize, void *user_data, OSyncError **error)
 {
-	osync_marshal_read_buffer(marshal, (void *)output, outsize);
-	return TRUE;
+	return osync_marshal_read_buffer(marshal, (void *)output, outsize, error);
 }
 
 START_TEST (objformat_new)

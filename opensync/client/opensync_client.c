@@ -119,7 +119,8 @@ static void _osync_client_connect_callback(void *data, OSyncError *error)
 	message = baton->message;
 	client = baton->client;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, data, error);
-	osync_message_read_string(message, &objtype);
+	if (!osync_message_read_string(message, &objtype, &error))
+		goto error;
 
 	if (objtype) {
 		// objtype sink (e.g. event, contact, ...)
@@ -145,7 +146,8 @@ static void _osync_client_connect_callback(void *data, OSyncError *error)
 			goto error;
 
 		//Send connect specific reply data
-		osync_message_write_int(reply, slowsync);
+		if (!osync_message_write_int(reply, slowsync, &error))
+			goto error_free_message;
 
 	} else {
 		reply = osync_message_new_errorreply(message, error, &locerror);
@@ -269,29 +271,38 @@ static osync_bool _osync_client_handle_capabilities_message(OSyncClient *client,
 
 	version = osync_plugin_info_get_version(client->plugin_info);
 	if (version) {
-		osync_message_write_int(reply, 1);
-		osync_message_write_string(reply, osync_version_get_plugin(version));
-		osync_message_write_string(reply, osync_version_get_priority(version));
-		osync_message_write_string(reply, osync_version_get_vendor(version));
-		osync_message_write_string(reply, osync_version_get_modelversion(version));
-		osync_message_write_string(reply, osync_version_get_firmwareversion(version));
-		osync_message_write_string(reply, osync_version_get_softwareversion(version));
-		osync_message_write_string(reply, osync_version_get_hardwareversion(version));
-		osync_message_write_string(reply, osync_version_get_identifier(version));
+		osync_message_write_int(reply, 1, error);
+		osync_message_write_string(reply, osync_version_get_plugin(version), error);
+		osync_message_write_string(reply, osync_version_get_priority(version), error);
+		osync_message_write_string(reply, osync_version_get_vendor(version), error);
+		osync_message_write_string(reply, osync_version_get_modelversion(version), error);
+		osync_message_write_string(reply, osync_version_get_firmwareversion(version), error);
+		osync_message_write_string(reply, osync_version_get_softwareversion(version), error);
+		osync_message_write_string(reply, osync_version_get_hardwareversion(version), error);
+		osync_message_write_string(reply, osync_version_get_identifier(version), error);
 	} else {
-		osync_message_write_int(reply, 0);
+		osync_message_write_int(reply, 0, error);
 	}
+
+	if (osync_error_is_set(error))
+		goto error;
 	
 	/* Report detected capabilities */
 	capabilities = osync_plugin_info_get_capabilities(client->plugin_info);
 	if (capabilities) {
-		osync_message_write_int(reply, 1);
+		if (!osync_message_write_int(reply, 1, error))
+			goto error;
+
 		if (!osync_capabilities_assemble(capabilities, &buffer, &size, error))
 			goto error;
-		osync_message_write_string(reply, buffer);
+
+		if (!osync_message_write_string(reply, buffer, error))
+			goto error;
+
 		g_free(buffer);
 	} else {
-		osync_message_write_int(reply, 0);
+		if (!osync_message_write_int(reply, 0, error))
+			goto error;
 	}
 
 	return TRUE;
@@ -442,7 +453,8 @@ static void _osync_client_read_callback(void *data, OSyncError *error)
 			goto error;
 
 		//Send get_changes specific reply data
-		osync_message_write_string(reply, osync_change_get_uid(baton->change));
+		if (!osync_message_write_string(reply, osync_change_get_uid(baton->change), &locerror))
+			goto error;
 	} else {
 		reply = osync_message_new_errorreply(message, error, &locerror);
 	}
@@ -493,7 +505,8 @@ static void _osync_client_commit_change_callback(void *data, OSyncError *error)
 			goto error;
 
 		//Send get_changes specific reply data
-		osync_message_write_string(reply, osync_change_get_uid(baton->change));
+		if (!osync_message_write_string(reply, osync_change_get_uid(baton->change), &locerror))
+			goto error_free_message;
 	} else {
 		reply = osync_message_new_errorreply(message, error, &locerror);
 	}
@@ -635,13 +648,16 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
 	
-	osync_message_read_string(message, &enginepipe);
-	osync_message_read_string(message, &formatdir);
-	osync_message_read_string(message, &plugindir);
-	osync_message_read_string(message, &pluginname);
-	osync_message_read_string(message, &groupname);
-	osync_message_read_string(message, &configdir);
-	osync_message_read_int(message, &haspluginconfig);
+	osync_message_read_string(message, &enginepipe, error);
+	osync_message_read_string(message, &formatdir, error);
+	osync_message_read_string(message, &plugindir, error);
+	osync_message_read_string(message, &pluginname, error);
+	osync_message_read_string(message, &groupname, error);
+	osync_message_read_string(message, &configdir, error);
+	osync_message_read_int(message, &haspluginconfig, error);
+
+	if (osync_error_is_set(error))
+		goto error;
 
 	if (haspluginconfig && !osync_demarshal_pluginconfig(message, &config, error))
 		goto error;
@@ -705,7 +721,9 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 #ifdef OPENSYNC_UNITTESTS
 	{
 		long long int memberid;
-		osync_message_read_long_long_int(message, &memberid); // Introduced (only) for testing/debugging purpose (mock-sync)
+		if (!osync_message_read_long_long_int(message, &memberid, error)) // Introduced (only) for testing/debugging purpose (mock-sync)
+			goto error;
+
 		client->plugin_info->memberid = memberid;
 	}
 #endif	
@@ -896,9 +914,12 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 		goto error;
 
 	if (osync_plugin_info_get_main_sink(client->plugin_info))
-		osync_message_write_int(reply, 1);
+		osync_message_write_int(reply, 1, error);
 	else
-		osync_message_write_int(reply, 0);
+		osync_message_write_int(reply, 0, error);
+
+	if (osync_error_is_set(error))
+		goto error_free_message;
 
 	objtypesinks = osync_plugin_info_get_objtype_sinks(client->plugin_info);
 	list = objtypesinks;
@@ -910,7 +931,8 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 		list = list->next;
 	}
 
-	osync_message_write_uint(reply, avail);
+	if (!osync_message_write_uint(reply, avail, error))
+		goto error_free_message;
 	
 	list = objtypesinks;
 	while(list) {
@@ -930,7 +952,9 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	res = osync_plugin_config_get_resources(config);
 	num_res = osync_list_length(res);
 
-	osync_message_write_uint(reply, num_res);
+	if (!osync_message_write_uint(reply, num_res, error))
+		goto error;
+
 	for (; res; res = res->next) {
 		resource = res->data;
 		if (!osync_marshal_pluginresource(reply, resource, error))
@@ -969,9 +993,13 @@ static osync_bool _osync_client_handle_connect(OSyncClient *client, OSyncMessage
 	 * because the connect functions work asynchronous and the last sink
 	 * (usually the main sink) is the current sink.
 	 */
-	osync_message_read_string(message, &objtype);
-	osync_message_read_int(message, &slowsync);
-	osync_message_write_string(message, objtype);
+	osync_message_read_string(message, &objtype, error);
+	osync_message_read_int(message, &slowsync, error);
+	osync_message_write_string(message, objtype, error);
+
+	if (osync_error_is_set(error))
+		goto error;
+
 	osync_trace(TRACE_INTERNAL, "Searching sink for %s", objtype);
 	
 	if (objtype) {
@@ -993,7 +1021,8 @@ static osync_bool _osync_client_handle_connect(OSyncClient *client, OSyncMessage
 			goto error;
 		
 		/* SlowSync dummy value for connect reply message handler. */
-		osync_message_write_int(reply, FALSE);
+		if (!osync_message_write_int(reply, FALSE, error))
+			goto error_free_reply;
 
 		if (!osync_queue_send_message(client->outgoing, NULL, reply, error))
 			goto error_free_reply;
@@ -1041,8 +1070,12 @@ static osync_bool _osync_client_handle_connect_done(OSyncClient *client, OSyncMe
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
 	
-	osync_message_read_string(message, &objtype);
-	osync_message_read_int(message, &slowsync);
+	osync_message_read_string(message, &objtype, error);
+	osync_message_read_int(message, &slowsync, error);
+
+	if (osync_error_is_set(error))
+		goto error;
+
 	osync_trace(TRACE_INTERNAL, "Searching sink for %s (slowsync: %d)", objtype, slowsync);
 	
 	if (objtype) {
@@ -1103,7 +1136,9 @@ static osync_bool _osync_client_handle_disconnect(OSyncClient *client, OSyncMess
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
 	
-	osync_message_read_string(message, &objtype);
+	if (!osync_message_read_string(message, &objtype, error))
+		goto error;
+
 	osync_trace(TRACE_INTERNAL, "Searching sink for %s", objtype);
 	
 	if (objtype) {
@@ -1158,8 +1193,12 @@ static osync_bool _osync_client_handle_get_changes(OSyncClient *client, OSyncMes
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
 	
-	osync_message_read_string(message, &objtype);
-	osync_message_read_int(message, &slowsync);
+	osync_message_read_string(message, &objtype, error);
+	osync_message_read_int(message, &slowsync, error);
+
+	if (osync_error_is_set(error))
+		goto error;
+
 	osync_trace(TRACE_INTERNAL, "Searching sink for %s (slowsync: %i)", objtype, slowsync);
 	
 	if (objtype) {
@@ -1320,7 +1359,9 @@ static osync_bool _osync_client_handle_committed_all(OSyncClient *client, OSyncM
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
 
-	osync_message_read_string(message, &objtype);
+	if (!osync_message_read_string(message, &objtype, error))
+		goto error;
+
 	osync_trace(TRACE_INTERNAL, "Searching sink for %s", objtype ? objtype : "(MainSink)");
 
 	if (objtype) {
@@ -1374,7 +1415,9 @@ static osync_bool _osync_client_handle_sync_done(OSyncClient *client, OSyncMessa
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
 	
-	osync_message_read_string(message, &objtype);
+	if (!osync_message_read_string(message, &objtype, error))
+		goto error;
+
 	osync_trace(TRACE_INTERNAL, "Searching sink for %s", objtype);
 	
 	if (objtype) {

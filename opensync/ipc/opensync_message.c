@@ -110,14 +110,14 @@ unsigned int osync_message_get_message_size(OSyncMessage *message)
 	return osync_marshal_get_marshal_size(message->marshal);
 }
 
-void osync_message_set_message_size(OSyncMessage *message, unsigned int size)
+osync_bool osync_message_set_message_size(OSyncMessage *message, unsigned int size, OSyncError **error)
 {
-	osync_marshal_set_marshal_size(message->marshal, size);
+	return osync_marshal_set_marshal_size(message->marshal, size, error);
 }
 
-void osync_message_get_buffer(OSyncMessage *message, char **data, unsigned int *size)
+osync_bool osync_message_get_buffer(OSyncMessage *message, char **data, unsigned int *size, OSyncError **error)
 {
-	osync_marshal_get_buffer(message->marshal, data, size);
+	return osync_marshal_get_buffer(message->marshal, data, size, error);
 }
 
 void osync_message_set_handler(OSyncMessage *message, OSyncMessageHandler handler, void *user_data)
@@ -152,35 +152,47 @@ OSyncMessage *osync_message_new_errorreply(OSyncMessage *message, OSyncError *er
 {
 	OSyncMessage *reply = osync_message_new(OSYNC_MESSAGE_ERRORREPLY, 0, loc_error);
 	if (!reply)
-		return NULL;
+		goto error;
 
-	osync_marshal_error(reply, error);
+	if (!osync_marshal_error(reply, error, loc_error))
+		goto error;
 	
 	if (message)
 		reply->id = message->id;
 	return reply;
+
+error:
+	return NULL;
 }
 
 OSyncMessage *osync_message_new_error(OSyncError *error, OSyncError **loc_error)
 {
 	OSyncMessage *message = osync_message_new(OSYNC_MESSAGE_ERROR, 0, loc_error);
 	if (!message)
-		return NULL;
+		goto error;
 
-	osync_marshal_error(message, error);
+	if (!osync_marshal_error(message, error, loc_error))
+		goto error;
 	
 	return message;
+
+error:
+	return NULL;
 }
 
 OSyncMessage *osync_message_new_queue_error(OSyncError *error, OSyncError **loc_error)
 {
 	OSyncMessage *message = osync_message_new(OSYNC_MESSAGE_QUEUE_ERROR, 0, loc_error);
 	if (!message)
-		return NULL;
+		goto error;
 
-	osync_marshal_error(message, error);
+	if (!osync_marshal_error(message, error, loc_error))
+		goto error;
 	
 	return message;
+
+error:
+	return NULL;
 }
 
 osync_bool osync_message_is_error(OSyncMessage *message)
@@ -206,75 +218,75 @@ OSyncMessageCommand osync_message_get_command(OSyncMessage *message)
 	return message->cmd;
 }
 
-void osync_message_write_int(OSyncMessage *message, int value)
+osync_bool osync_message_write_int(OSyncMessage *message, int value, OSyncError **error)
 {
-	osync_marshal_write_int(message->marshal, value);
+	return osync_marshal_write_int(message->marshal, value, error);
 }
 
-void osync_message_write_uint(OSyncMessage *message, unsigned int value)
+osync_bool osync_message_write_uint(OSyncMessage *message, unsigned int value, OSyncError **error)
 {
-	osync_marshal_write_uint(message->marshal, value);
+	return osync_marshal_write_uint(message->marshal, value, error);
 }
 
-void osync_message_write_long_long_int(OSyncMessage *message, long long int value)
+osync_bool osync_message_write_long_long_int(OSyncMessage *message, long long int value, OSyncError **error)
 {
-	osync_marshal_write_long_long_int(message->marshal, value);
+	return osync_marshal_write_long_long_int(message->marshal, value, error);
 }
 
-void osync_message_write_string(OSyncMessage *message, const char *value)
+osync_bool osync_message_write_string(OSyncMessage *message, const char *value, OSyncError **error)
 {
-	osync_marshal_write_string(message->marshal, value);
+	return osync_marshal_write_string(message->marshal, value, error);
 }
 
-void osync_message_write_data(OSyncMessage *message, const void *value, unsigned int size)
+osync_bool osync_message_write_data(OSyncMessage *message, const void *value, unsigned int size, OSyncError **error)
 {
-	osync_marshal_write_data(message->marshal, value, size);
+	return osync_marshal_write_data(message->marshal, value, size, error);
 }
 
-void osync_message_write_buffer(OSyncMessage *message, const void *value, unsigned int size)
+osync_bool osync_message_write_buffer(OSyncMessage *message, const void *value, unsigned int size, OSyncError **error)
 {
-	osync_marshal_write_buffer(message->marshal, value, size);
+	return osync_marshal_write_buffer(message->marshal, value, size, error);
 }
 
-void osync_message_read_int(OSyncMessage *message, int *value)
+osync_bool osync_message_read_int(OSyncMessage *message, int *value, OSyncError **error)
 {
-	osync_marshal_read_int(message->marshal, value);
+	return osync_marshal_read_int(message->marshal, value, error);
 }
 
-void osync_message_read_uint(OSyncMessage *message, unsigned int *value)
+osync_bool osync_message_read_uint(OSyncMessage *message, unsigned int *value, OSyncError **error)
 {
-	osync_marshal_read_uint(message->marshal, value);
+	return osync_marshal_read_uint(message->marshal, value, error);
 }
 
-void osync_message_read_long_long_int(OSyncMessage *message, long long int *value)
+osync_bool osync_message_read_long_long_int(OSyncMessage *message, long long int *value, OSyncError **error)
 {
-	osync_marshal_read_long_long_int(message->marshal, value);
+	return osync_marshal_read_long_long_int(message->marshal, value, error);
 }
 
 /* TODO Change char** to const char ** */
-void osync_message_read_const_string(OSyncMessage *message, const char **value)
+osync_bool osync_message_read_const_string(OSyncMessage *message, const char **value, OSyncError **error)
 {
-	osync_marshal_read_const_string(message->marshal, value);
+	return osync_marshal_read_const_string(message->marshal, value, error);
 }
 
-void osync_message_read_string(OSyncMessage *message, char **value)
+osync_bool osync_message_read_string(OSyncMessage *message, char **value, OSyncError **error)
 {
-	osync_marshal_read_string(message->marshal, value);
+	return osync_marshal_read_string(message->marshal, value, error);
 }
 
-void osync_message_read_const_data(OSyncMessage *message, void **value, unsigned int size)
+osync_bool osync_message_read_const_data(OSyncMessage *message, void **value, unsigned int size, OSyncError **error)
 {
-	osync_marshal_read_const_data(message->marshal, value, size);
+	return osync_marshal_read_const_data(message->marshal, value, size, error);
 }
 
-void osync_message_read_data(OSyncMessage *message, void *value, unsigned int size)
+osync_bool osync_message_read_data(OSyncMessage *message, void *value, unsigned int size, OSyncError **error)
 {
-	osync_marshal_read_data(message->marshal, value, size);
+	return osync_marshal_read_data(message->marshal, value, size, error);
 }
 
-void osync_message_read_buffer(OSyncMessage *message, void **value, unsigned int *size)
+osync_bool osync_message_read_buffer(OSyncMessage *message, void **value, unsigned int *size, OSyncError **error)
 {
-	osync_marshal_read_buffer(message->marshal, value, size);
+	return osync_marshal_read_buffer(message->marshal, value, size, error);
 }
 
 char* osync_message_get_commandstr(OSyncMessage *message)
