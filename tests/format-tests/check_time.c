@@ -15,6 +15,7 @@
 START_TEST (time_timezone_diff)
 {
        struct tm local;
+       OSyncError *error = NULL;
        int zonediff_normal, zonediff_day, zonediff_month;
 
        // discover localtime zone
@@ -37,17 +38,20 @@ START_TEST (time_timezone_diff)
 //     t = mktime(&local);
 //     gmtime_r(&t, &utc);
 
-       zonediff_normal = osync_time_timezone_diff(&local);
+       zonediff_normal = osync_time_timezone_diff(&local, &error);
+       fail_unless(error == NULL, NULL);
 
 
        // test day straddle
        local.tm_hour = 23;
-       zonediff_day = osync_time_timezone_diff(&local);
+       zonediff_day = osync_time_timezone_diff(&local, &error);
+       fail_unless(error == NULL, NULL);
 
 
        // test month straddle
        local.tm_mday = 31;
-       zonediff_month = osync_time_timezone_diff(&local);
+       zonediff_month = osync_time_timezone_diff(&local, &error);
+       fail_unless(error == NULL, NULL);
 
        printf("normal = %d\nday = %d\nmonth = %d\n",
                zonediff_normal, zonediff_day, zonediff_month);
@@ -59,10 +63,11 @@ END_TEST
 static int test_relative2tm(const char *byday, int month, int year,
 	int expected_day, int expected_wday)
 {
+	OSyncError *error = NULL;
 	printf("Test parameters: %s, month: %d, year: %d\n",
 		byday, month, year);
 
-	struct tm *test = osync_time_relative2tm(byday, month, year);
+	struct tm *test = osync_time_relative2tm(byday, month, year, &error);
 	if( !test ) {
 		printf("   Error in osync_time_relative2tm()\n");
 		return expected_day == -1;
@@ -121,19 +126,22 @@ int tm_equal(struct tm *a, struct tm *b)
 
 void test_unix_converter(const struct tm *base, const char *vresult)
 {
+	OSyncError *error = NULL;
 	struct tm tm_first, tm_second, *tm_ptr = NULL;
 	time_t first, second;
 	char *vtime = NULL;
 
 	// test that osync_time_localtm2unix() behaves like mktime()
 	memcpy(&tm_first, base, sizeof(struct tm));
-	first = osync_time_localtm2unix(&tm_first);
+	first = osync_time_localtm2unix(&tm_first, &error);
+	fail_unless(error == NULL, NULL);
 	tm_first.tm_isdst = -1;
 	second = mktime(&tm_first);
 	fail_unless( first == second, NULL );
 
 	// test that osync_time_unix2localtm() behaves like localtime()
-	tm_ptr = osync_time_unix2localtm(&first);
+	tm_ptr = osync_time_unix2localtm(&first, &error);
+	fail_unless(error == NULL, NULL);
 	localtime_r(&first, &tm_second);
 	fail_unless( tm_equal(&tm_first, &tm_second), NULL );
 	fail_unless( tm_equal(tm_ptr, &tm_second), NULL );
@@ -141,7 +149,8 @@ void test_unix_converter(const struct tm *base, const char *vresult)
 	tm_ptr = NULL;
 
 	// test that osync_time_unix2utctm() behaves like gmtime_r()
-	tm_ptr = osync_time_unix2utctm(&first);
+	tm_ptr = osync_time_unix2utctm(&first, &error);
+	fail_unless(error == NULL, NULL);
 	gmtime_r(&first, &tm_second);
 	fail_unless( tm_equal(tm_ptr, &tm_second), NULL );
 	g_free(tm_ptr);
@@ -149,15 +158,19 @@ void test_unix_converter(const struct tm *base, const char *vresult)
 
 	// test that osync_time_utctm2unix() works correctly
 	tm_second.tm_isdst = 0;		// make sure incorrect value is handled
-	second = osync_time_utctm2unix(&tm_second);
+	second = osync_time_utctm2unix(&tm_second, &error);
+	fail_unless(error == NULL, NULL);
 	fail_unless( first == second, NULL );
 
 	// test vtime string converters, in both directions
-	vtime = osync_time_unix2vtime(&first);
+	vtime = osync_time_unix2vtime(&first, &error);
+	fail_unless(error == NULL, NULL);
 	fail_unless( vtime != NULL, NULL );
 	fail_unless( strcmp(vtime, vresult) == 0, NULL );
 	printf("osync_time_unix2vtime() returned: %s\n", vtime);
-	second = osync_time_vtime2unix(vtime, 0);
+	second = osync_time_vtime2unix(vtime, 0, &error);
+	fail_unless(error == NULL, NULL);
+	fail_unless( vtime != NULL, NULL );
 	fail_unless( first == second );
 	g_free(vtime);
 }

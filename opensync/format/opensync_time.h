@@ -86,9 +86,10 @@ OSYNC_EXPORT osync_bool osync_time_isutc(const char *vformat);
 /** @brief Function converts vtime to tm struct
  * 
  * @param vtime The formatted timestamp (YYYYMMDDTHHMMSS)
+ * @param error An OSyncError struct
  * @returns struct tm (caller is responsible for freeing)
  */
-OSYNC_EXPORT struct tm *osync_time_vtime2tm(const char *vtime);
+OSYNC_EXPORT struct tm *osync_time_vtime2tm(const char *vtime, OSyncError **error);
 
 /** @brief Function converts struct tm in vtime string
  * 
@@ -97,9 +98,10 @@ OSYNC_EXPORT struct tm *osync_time_vtime2tm(const char *vtime);
  *
  * @param time The tm struct which gets converted
  * @param is_utc If struct tm is UTC time is_utc have to be TRUE
+ * @param error An OSyncError struct
  * @returns vtime formatted as YYYYMMDDTHHMMSS[Z] (caller is responsible for freeing)
  */
-OSYNC_EXPORT char *osync_time_tm2vtime(const struct tm *time, osync_bool is_utc);
+OSYNC_EXPORT char *osync_time_tm2vtime(const struct tm *time, osync_bool is_utc, OSyncError **error);
 
 /*@}*/
 
@@ -119,16 +121,18 @@ OSYNC_EXPORT char *osync_time_tm2vtime(const struct tm *time, osync_bool is_utc)
  * 
  * @param offset Seconds of UTC offset
  * @param vtime The osync formmatted timestamp
+ * @param error An OSyncError struct
  * @returns Unix timestamp in time_t (UTC)
  */
-OSYNC_EXPORT time_t osync_time_vtime2unix(const char *vtime, int offset);
+OSYNC_EXPORT time_t osync_time_vtime2unix(const char *vtime, int offset, OSyncError **error);
 
 /** @brief Function converts unix timestamp to vtime in UTC
  *
  * @param timestamp The unix timestamp which gets converted 
+ * @param error An OSyncError struct
  * @returns vtime formatted as YYYYMMDDTHHMMSSZ (caller is responsible for freeing)
  */
-OSYNC_EXPORT char *osync_time_unix2vtime(const time_t *timestamp);
+OSYNC_EXPORT char *osync_time_unix2vtime(const time_t *timestamp, OSyncError **error);
 
 /* Unix time_t converters */
 
@@ -138,13 +142,15 @@ OSYNC_EXPORT char *osync_time_unix2vtime(const time_t *timestamp);
  *		forced to -1. Aka, mktime().
  *
  * @param localtime The struct tm, in localtime, which gets converted
+ * @param error An OSyncError struct
  * @returns time_t (in UTC of course)
  */ 
-OSYNC_EXPORT time_t osync_time_localtm2unix(const struct tm *localtime);
+OSYNC_EXPORT time_t osync_time_localtm2unix(const struct tm *localtime, OSyncError **error);
 
 /** @brief Function converts struct tm, in utc, to unix timestamp.
  *
  * @param utctime The struct tm, in utc, which gets converted
+ * @param error An OSyncError struct
  * @returns time_t (in UTC of course)
  *
  * This algorithm abuses the POSIX time functions, only because
@@ -156,25 +162,27 @@ OSYNC_EXPORT time_t osync_time_localtm2unix(const struct tm *localtime);
  *
  * If there is a better way, I'd love to know!  - cdfrey
  */
-OSYNC_EXPORT time_t osync_time_utctm2unix(const struct tm *utctime);
+OSYNC_EXPORT time_t osync_time_utctm2unix(const struct tm *utctime, OSyncError **error);
 
 /** @brief Function converts unix timestamp to struct tm in localtime.
  *		This is the same as calling localtime_r(), except you
  *		have to free the returned value. Aka, localtime().
  * 
  * @param timestamp The unixtimestamp which gets converted
+ * @param error An OSyncError struct
  * @returns: struct tm (in localtime) (Caller is responsible for freeing!)
  */ 
-OSYNC_EXPORT struct tm *osync_time_unix2localtm(const time_t *timestamp);
+OSYNC_EXPORT struct tm *osync_time_unix2localtm(const time_t *timestamp, OSyncError **error);
 
 /** @brief Function converts unix timestamp to struct tm in utc.
  *		This is the same as calling gmtime_r(), except you
  *		have to free the returned value. Aka, gmtime().
  * 
  * @param timestamp The unixtimestamp which gets converted
+ * @paran error An OSyncError struct
  * @returns: struct tm (in UTC) (Caller is responsible for freeing)
  */ 
-OSYNC_EXPORT struct tm *osync_time_unix2utctm(const time_t *timestamp);
+OSYNC_EXPORT struct tm *osync_time_unix2utctm(const time_t *timestamp, OSyncError **error);
 
 /*@}*/
 
@@ -199,9 +207,10 @@ OSYNC_EXPORT struct tm *osync_time_unix2utctm(const time_t *timestamp);
  * 
  * @param local The point in time when the offset have to be calculated,
  *	specified in localtime (need for CEST/CET)
+ * @param error An OSyncError struct
  * @returns Seconds of timezone offset
  */
-OSYNC_EXPORT int osync_time_timezone_diff(const struct tm *local);
+OSYNC_EXPORT int osync_time_timezone_diff(const struct tm *local, OSyncError **error);
 
 /** @brief Function converts (struct tm) ltime from localtime to UTC.
  *         Paramter offset is used as UTC offset.  Note that _only_ the
@@ -210,9 +219,10 @@ OSYNC_EXPORT int osync_time_timezone_diff(const struct tm *local);
  * 
  * @param ltime The struct tm which gets converted to UTC timezone
  * @param offset Seconds of UTC offset, in seconds east of UTC.
+ * @param error An OSyncError struct
  * @returns struct tm in UTC (caller is responsible for freeing)
  */
-OSYNC_EXPORT struct tm *osync_time_tm2utc(const struct tm *ltime, int offset);
+OSYNC_EXPORT struct tm *osync_time_tm2utc(const struct tm *ltime, int offset, OSyncError **error);
 
 /** @brief Function converts (struct tm) utime from UTC to localtime 
  *         Paramter offset is used as UTC offset.  Note that _only_ the
@@ -221,25 +231,28 @@ OSYNC_EXPORT struct tm *osync_time_tm2utc(const struct tm *ltime, int offset);
  * 
  * @param utime The struct tm which gets converted to localtime
  * @param offset Seconds of UTC offset, in seconds east of UTC.
+ * @param error An OSyncError struct
  * @returns struct tm in localtime (caller is responsible for freeing)
  */
-OSYNC_EXPORT struct tm *osync_time_tm2localtime(const struct tm *utime, int offset);
+OSYNC_EXPORT struct tm *osync_time_tm2localtime(const struct tm *utime, int offset, OSyncError **error);
 
 /** @brief Functions converts a localtime vtime stamp to a UTC vtime stamp
  *
  * @param localtime The local timestamp in vtime format
  * @param offset Seconds of UTC offset, in seconds east of UTC.
+ * @param error An OSyncError struct
  * @returns vtime in UTC timezone (caller is responsible for freeing)
  */
-OSYNC_EXPORT char *osync_time_vtime2utc(const char* localtime, int offset);
+OSYNC_EXPORT char *osync_time_vtime2utc(const char* localtime, int offset, OSyncError **error);
 
 /** @brief Functions converts a UTC vtime stamp to a localtime vtime stamp
  * 
  * @param utc The timestap in UTC timezone which gets converted to localtime 
  * @param offset The offset in seconds between UTC and localtime
+ * @param error An OSyncError struct
  * @returns vtime in local  timezon (caller is preponsible for freeing) 
  */
-OSYNC_EXPORT char *osync_time_vtime2localtime(const char* utc, int offset);
+OSYNC_EXPORT char *osync_time_vtime2localtime(const char* utc, int offset, OSyncError **error);
 
 /** @brief Function converts UTC offset string in offset in seconds
  *
@@ -267,16 +280,18 @@ OSYNC_EXPORT int osync_time_utcoffset2sec(const char *offset);
 /** @brief Functions converts timestamps of vcal to localtime
  * 
  * @param vcal The vcalendar which has to be converted.
+ * @param error An OSyncError struct
  * @return modified vcalendar with local timestamps (related to system time) 
  */ 
-OSYNC_EXPORT char *osync_time_vcal2localtime(const char *vcal);
+OSYNC_EXPORT char *osync_time_vcal2localtime(const char *vcal, OSyncError **error);
 
 /** @brief Functions converts timestamps of vcal to UTC
  * 
  * @param vcal The vcalendar which has to be converted.
+ * @param error An OSyncError struct
  * @return modified vcalendar with UTC timestamps (related to system time) 
  */ 
-OSYNC_EXPORT char *osync_time_vcal2utc(const char *vcal);
+OSYNC_EXPORT char *osync_time_vcal2utc(const char *vcal, OSyncError **error);
 
 
 /*@}*/
@@ -343,11 +358,12 @@ OSYNC_EXPORT int osync_time_str2wday(const char *swday);
  * @param byday string of the relative day of month modifier
  * @param bymonth calendar number of the month (January = 1)
  * @param year calendar year (e.g. 1970, 2007, etc)
+ * @param error An OSyncError struct
  * @returns struct tm of the relative information date with 00:00:00 timestamp
  *          or NULL on error.
  *	    (Caller is responsible for freeing)
  */ 
-OSYNC_EXPORT struct tm *osync_time_relative2tm(const char *byday, const int bymonth, const int year);
+OSYNC_EXPORT struct tm *osync_time_relative2tm(const char *byday, const int bymonth, const int year, OSyncError **error);
 
 /*@}*/
 

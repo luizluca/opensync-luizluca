@@ -171,11 +171,16 @@ char *osync_time_set_vtime(const char *vtime, const char *time, osync_bool is_ut
 
 /*****************************************************************************/
 
-struct tm *osync_time_vtime2tm(const char *vtime)
+struct tm *osync_time_vtime2tm(const char *vtime, OSyncError **error)
 {
-	struct tm *utime = g_malloc0(sizeof(struct tm));
 	osync_trace(TRACE_ENTRY, "%s(%s)", __func__, vtime);
-
+	struct tm *utime = g_try_malloc0(sizeof(struct tm));
+	
+	if (!utime) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not allocate memory for time stuct.");
+		goto error;
+	}
+	
 	utime->tm_year = 0;
 	utime->tm_mon = 0;
 	utime->tm_mday = 0;
@@ -198,9 +203,12 @@ struct tm *osync_time_vtime2tm(const char *vtime)
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return utime;
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return NULL;
 }
 
-char *osync_time_tm2vtime(const struct tm *time, osync_bool is_utc)
+char *osync_time_tm2vtime(const struct tm *time, osync_bool is_utc, OSyncError **error)
 {
 	GString *vtime = g_string_new("");
 	struct tm my_time = *time;
@@ -234,16 +242,16 @@ char *osync_time_tm2vtime(const struct tm *time, osync_bool is_utc)
 
 /*****************************************************************************/
 
-time_t osync_time_vtime2unix(const char *vtime, int offset)
+time_t osync_time_vtime2unix(const char *vtime, int offset, OSyncError **error)
 {
 	struct tm *utime = NULL; 
 	time_t timestamp;
 	char *utc = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%s, %i)", __func__, vtime, offset);
 
-	utc = osync_time_vtime2utc(vtime, offset);
-	utime = osync_time_vtime2tm(utc);
-	timestamp = osync_time_utctm2unix(utime);
+	utc = osync_time_vtime2utc(vtime, offset, error);
+	utime = osync_time_vtime2tm(utc, error);
+	timestamp = osync_time_utctm2unix(utime, error);
 
 	g_free(utc);
 	g_free(utime);
@@ -253,14 +261,14 @@ time_t osync_time_vtime2unix(const char *vtime, int offset)
 }
 
 
-char *osync_time_unix2vtime(const time_t *timestamp)
+char *osync_time_unix2vtime(const time_t *timestamp, OSyncError **error)
 {
 	char *vtime;
 	struct tm utc;
 	osync_trace(TRACE_ENTRY, "%s(%lu)", __func__, *timestamp);
 
 	gmtime_r(timestamp, &utc);
-	vtime = osync_time_tm2vtime(&utc, TRUE);
+	vtime = osync_time_tm2vtime(&utc, TRUE, error);
 
 	osync_trace(TRACE_EXIT, "%s: %s", __func__, vtime);
 	return vtime;
@@ -271,10 +279,14 @@ char *osync_time_unix2vtime(const time_t *timestamp)
  * Unix time_t converters
  */
 
-time_t osync_time_localtm2unix(const struct tm *localtime)
+time_t osync_time_localtm2unix(const struct tm *localtime, OSyncError **error)
 {
 	time_t timestamp;
-	struct tm *tmp = g_malloc0(sizeof(struct tm));
+	struct tm *tmp = g_try_malloc0(sizeof(struct tm));
+	if (!tmp) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not allocate memory for time stuct.");
+		return -1L;
+	}
 
 	memcpy(tmp, localtime, sizeof(struct tm));
 
@@ -286,12 +298,16 @@ time_t osync_time_localtm2unix(const struct tm *localtime)
 	return timestamp; 
 }
  
-time_t osync_time_utctm2unix(const struct tm *utctime)
+time_t osync_time_utctm2unix(const struct tm *utctime, OSyncError **error)
 {
 	time_t timestamp;
 
 #if 1
-	struct tm *tmp = g_malloc0(sizeof(struct tm));
+	struct tm *tmp = g_try_malloc0(sizeof(struct tm));
+	if (!tmp) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not allocate memory for time stuct.");
+		return -1;
+	}
 	struct tm localnow;
 	struct tm check;
 	int tzdiff;
@@ -300,7 +316,7 @@ time_t osync_time_utctm2unix(const struct tm *utctime)
 	// to reduce the number of loops to find the correct match
 	time(&timestamp);
 	localtime_r(&timestamp, &localnow);
-	tzdiff = osync_time_timezone_diff(&localnow);
+	tzdiff = osync_time_timezone_diff(&localnow, error);
 
 	// now loop, converting "local time" to time_t to utctm,
 	// and adjusting until there are no differences... this
@@ -355,19 +371,27 @@ time_t osync_time_utctm2unix(const struct tm *utctime)
 	return timestamp; 
 }
 
-struct tm *osync_time_unix2localtm(const time_t *timestamp)
+struct tm *osync_time_unix2localtm(const time_t *timestamp, OSyncError **error)
 {
-	struct tm *ptr_tm = g_malloc0(sizeof(struct tm));
-
+	struct tm *ptr_tm = g_try_malloc0(sizeof(struct tm));
+	if (!ptr_tm) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not allocate memory for time stuct.");
+		return NULL;
+	}
+	
 	localtime_r(timestamp, ptr_tm);
 
 	return ptr_tm;
 }
 
-struct tm *osync_time_unix2utctm(const time_t *timestamp)
+struct tm *osync_time_unix2utctm(const time_t *timestamp, OSyncError **error)
 {
-	struct tm *ptr_tm = g_malloc0(sizeof(struct tm));
-
+	struct tm *ptr_tm = g_try_malloc0(sizeof(struct tm));
+	if (!ptr_tm) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not allocate memory for time stuct.");
+		return NULL;
+	}
+	
 	gmtime_r(timestamp, ptr_tm);
 
 	return ptr_tm;
@@ -375,7 +399,7 @@ struct tm *osync_time_unix2utctm(const time_t *timestamp)
 
 /*****************************************************************************/
 	
-int osync_time_timezone_diff(const struct tm *local)
+int osync_time_timezone_diff(const struct tm *local, OSyncError **error)
 {
 	struct tm utime;
 	unsigned int lsecs, usecs;
@@ -384,7 +408,7 @@ int osync_time_timezone_diff(const struct tm *local)
 	osync_trace(TRACE_ENTRY, "%s()", __func__);
 
 	/* convert local time to UTC */
-	timestamp = osync_time_localtm2unix(local);
+	timestamp = osync_time_localtm2unix(local, error);
 
 	/* convert UTC to split tm struct in UTC */
 	gmtime_r(&timestamp, &utime);
@@ -434,10 +458,14 @@ int osync_time_timezone_diff(const struct tm *local)
 	return zonediff;
 }
  
-struct tm *osync_time_tm2utc(const struct tm *ltime, int offset)
+struct tm *osync_time_tm2utc(const struct tm *ltime, int offset, OSyncError **error)
 {
-	struct tm *tmtime = g_malloc0(sizeof(struct tm));
 	osync_trace(TRACE_ENTRY, "%s(%p, %i)", __func__, ltime, offset);
+	struct tm *tmtime = g_try_malloc0(sizeof(struct tm));
+	if (!tmtime) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not allocate memory for time stuct.");
+		goto error;
+	}
 
 	tmtime->tm_year = ltime->tm_year;
 	tmtime->tm_mon = ltime->tm_mon;
@@ -457,11 +485,18 @@ struct tm *osync_time_tm2utc(const struct tm *ltime, int offset)
 
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, tmtime);
 	return tmtime;
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return NULL;
 }
  
-struct tm *osync_time_tm2localtime(const struct tm *utime, int offset)
+struct tm *osync_time_tm2localtime(const struct tm *utime, int offset, OSyncError **error)
 {
-	struct tm *tmtime = g_malloc0(sizeof(struct tm));
+	struct tm *tmtime = g_try_malloc0(sizeof(struct tm));
+	if (!tmtime) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not allocate memory for time stuct.");
+		return NULL;
+	}
 	
 	tmtime->tm_year = utime->tm_year;
 	tmtime->tm_mon = utime->tm_mon;
@@ -482,7 +517,7 @@ struct tm *osync_time_tm2localtime(const struct tm *utime, int offset)
 	return tmtime; 
 }
  
-char *osync_time_vtime2utc(const char* localtime, int offset)
+char *osync_time_vtime2utc(const char* localtime, int offset, OSyncError **error)
 {
 	char *utc = NULL; 
 	struct tm *tm_local = NULL, *tm_utc = NULL;
@@ -493,9 +528,9 @@ char *osync_time_vtime2utc(const char* localtime, int offset)
 		goto end;
 	}
 
-	tm_local = osync_time_vtime2tm(localtime);
-	tm_utc = osync_time_tm2utc(tm_local, offset);
-	utc = osync_time_tm2vtime(tm_utc, TRUE);
+	tm_local = osync_time_vtime2tm(localtime, error);
+	tm_utc = osync_time_tm2utc(tm_local, offset, error);
+	utc = osync_time_tm2vtime(tm_utc, TRUE, error);
 
 	g_free(tm_local);
 	g_free(tm_utc);
@@ -505,7 +540,7 @@ char *osync_time_vtime2utc(const char* localtime, int offset)
 	return utc;
 }
  
-char *osync_time_vtime2localtime(const char* utc, int offset)
+char *osync_time_vtime2localtime(const char* utc, int offset, OSyncError **error)
 {
 	char *localtime = NULL; 
 	struct tm *tm_local = NULL, *tm_utc = NULL;
@@ -515,9 +550,9 @@ char *osync_time_vtime2localtime(const char* utc, int offset)
 		return localtime;
 	}
 		
-	tm_utc = osync_time_vtime2tm(utc);
-	tm_local = osync_time_tm2localtime(tm_utc, offset);
-	localtime = osync_time_tm2vtime(tm_local, FALSE);
+	tm_utc = osync_time_vtime2tm(utc, error);
+	tm_local = osync_time_tm2localtime(tm_utc, offset, error);
+	localtime = osync_time_tm2vtime(tm_local, FALSE, error);
 
 	g_free(tm_local);
 	g_free(tm_utc);
@@ -558,13 +593,13 @@ const char *_time_attr[] = {
 	NULL
 };
 
-/*! @brief Function converts a UTC vtime stamp to a localtime vtime stamp
+/** @brief Function converts a UTC vtime stamp to a localtime vtime stamp
  * 
  * @param entry The whole vcal entry as GString which gets modified. 
  * @param field The field name which should be modified. 
  * @param toUTC The toggle in which direction we convert. TRUE = convert to UTC
  */ 
-static void _convert_time_field(GString *entry, const char *field, osync_bool toUTC)
+static void _convert_time_field(GString *entry, const char *field, osync_bool toUTC, OSyncError **error)
 {
 	int i, tzdiff;
 	char *res = NULL;
@@ -584,14 +619,14 @@ static void _convert_time_field(GString *entry, const char *field, osync_bool to
 		entry = g_string_erase(entry, pos, i);
 
 		// Get System offset to UTC
-		tm_stamp = osync_time_vtime2tm(stamp->str);
-		tzdiff = osync_time_timezone_diff(tm_stamp);
+		tm_stamp = osync_time_vtime2tm(stamp->str, error);
+		tzdiff = osync_time_timezone_diff(tm_stamp, error);
 		g_free(tm_stamp);
 
 		if (toUTC)
-			new_stamp = osync_time_vtime2utc(stamp->str, tzdiff);
+			new_stamp = osync_time_vtime2utc(stamp->str, tzdiff, error);
 		else
-			new_stamp = osync_time_vtime2localtime(stamp->str, tzdiff); 
+			new_stamp = osync_time_vtime2localtime(stamp->str, tzdiff, error); 
 
 		entry = g_string_insert(entry, pos, new_stamp);
 		g_free(new_stamp);
@@ -604,27 +639,27 @@ static void _convert_time_field(GString *entry, const char *field, osync_bool to
  * @param toUTC If TRUE conversion from localtime to UTC.
  * @return timestamp modified vcalendar 
  */ 
-char *_convert_entry(const char *vcal, osync_bool toUTC)
+char *_convert_entry(const char *vcal, osync_bool toUTC, OSyncError **error)
 {
 	int i = 0;
 	GString *new_entry = g_string_new(vcal);
 
 	for (i=0; _time_attr[i] != NULL; i++) 
-		_convert_time_field(new_entry, _time_attr[i], toUTC);
+		_convert_time_field(new_entry, _time_attr[i], toUTC, error);
 
 	return g_string_free(new_entry, FALSE);
 }
 
 
-char *osync_time_vcal2localtime(const char *vcal)
+char *osync_time_vcal2localtime(const char *vcal, OSyncError **error)
 {
-	return _convert_entry(vcal, FALSE);
+	return _convert_entry(vcal, FALSE, error);
 }
 
 
-char *osync_time_vcal2utc(const char *vcal)
+char *osync_time_vcal2utc(const char *vcal, OSyncError **error)
 {
-	return _convert_entry(vcal, TRUE);
+	return _convert_entry(vcal, TRUE, error);
 }
 
 /*****************************************************************************/
@@ -780,9 +815,13 @@ int osync_time_str2wday(const char *swday)
 	return weekday; 
 }
 
-struct tm *osync_time_relative2tm(const char *byday, const int bymonth, const int year)
+struct tm *osync_time_relative2tm(const char *byday, const int bymonth, const int year, OSyncError **error)
 {
-	struct tm *datestamp = g_malloc0(sizeof(struct tm));
+	struct tm *datestamp = g_try_malloc0(sizeof(struct tm));
+	if (!datestamp) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not allocate memory for time stuct.");
+		return NULL;
+	}
 	struct tm search;
 	char weekday[3];
 	int first_wday = 0, last_wday = 0;
