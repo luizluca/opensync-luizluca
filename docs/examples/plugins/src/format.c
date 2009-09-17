@@ -14,7 +14,7 @@ typedef struct converter_data {
 } converter_data;
 
 
-static OSyncConvCmpResult compare_format1(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *data)
+static OSyncConvCmpResult compare_format1(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *data, OSyncError **error)
 {
 	/*
 	 * This function can be used to compare two types of your formats.
@@ -40,6 +40,10 @@ static OSyncConvCmpResult compare_format1(const char *leftdata, unsigned int lef
 	 *
 	 * return OSYNC_CONV_DATA_MISMATCH;
 	 * This means the objects are not the same and not similar.
+	 *
+	 * return OSYNC_CONV_DATA_UNKNOWN;
+	 * On any error, and set parameter error with a human readable error
+	 * message.
 	 *
 	 */
 	return OSYNC_CONV_DATA_MISMATCH;
@@ -97,12 +101,14 @@ static osync_bool conv_format2_to_format1(char *input, unsigned int inpsize, cha
 	return TRUE;
 }
 
-static void destroy_format1(char *input, unsigned int size, void *data)
+static osync_bool destroy_format1(char *input, unsigned int size, void *data, OSyncError **error)
 {
 	/*
 	 * Here you have to free the data allocated by your format
 	 *
 	 */
+
+	return TRUE;
 }
 
 static osync_bool duplicate_format1(const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, void *data, OSyncError **error)
@@ -120,7 +126,7 @@ static osync_bool duplicate_format1(const char *uid, const char *input, unsigned
 	return TRUE;
 }
 
-static char *print_format1(const char *data, unsigned int size, void *user_data)
+static char *print_format1(const char *data, unsigned int size, void *user_data, OSyncError **error)
 {
 	/*
 	 * If your format is not in a human printable format already
@@ -143,11 +149,13 @@ void *init_format1(OSyncError **error) {
 	return (void *)format_specific_data;
 }
 
-void finialize_format1(void *data) {
+osync_bool finialize_format1(void *data, OSyncError **error) {
 	/*
 	 * Release all format data
 	 */
 	osync_free(data);
+
+	return TRUE;
 }
 
 osync_bool get_format_info(OSyncFormatEnv *env, OSyncError **error)
