@@ -31,7 +31,7 @@
 
 typedef osync_bool (* OSyncCapsConvertFunc) (OSyncCapabilities *oldcaps, OSyncCapabilities **newcaps, const char *config, void *userdata, OSyncError **error);
 typedef void * (* OSyncCapsConverterInitializeFunc) (const char *config, OSyncError **error);
-typedef void (* OSyncCapsConverterFinalizeFunc) (void *userdata);
+typedef osync_bool (* OSyncCapsConverterFinalizeFunc) (void *userdata, OSyncError **error);
 
 /**
  * @brief Creates a new converter
@@ -112,8 +112,10 @@ OSYNC_EXPORT void osync_caps_converter_initialize(OSyncCapsConverter *converter,
  * @brief Invokes finalize function of a converter
  *
  * @param converter Pointer to the converter which should be finalized
+ * @param error Pointer to an error struct
+ * @returns TRUE on success, FALSE otherwise
  */
-OSYNC_EXPORT void osync_caps_converter_finalize(OSyncCapsConverter *converter);
+OSYNC_EXPORT osync_bool osync_caps_converter_finalize(OSyncCapsConverter *converter, OSyncError **error);
 
 /*@}*/
 

@@ -149,12 +149,13 @@ void osync_caps_converter_initialize(OSyncCapsConverter *converter, const char *
 	}
 }
 
-void osync_caps_converter_finalize(OSyncCapsConverter *converter)
+osync_bool osync_caps_converter_finalize(OSyncCapsConverter *converter, OSyncError **error)
 {
 	osync_assert(converter);
 
-	if (converter->finalize_func) {
-		converter->finalize_func(converter->userdata);
-	}
+	if (!converter->finalize_func)
+		return TRUE;
+
+	return converter->finalize_func(converter->userdata, error);
 }
 
