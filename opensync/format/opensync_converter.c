@@ -332,13 +332,14 @@ void osync_converter_initialize(OSyncFormatConverter *converter, const char *con
 	}
 }
 
-void osync_converter_finalize(OSyncFormatConverter *converter)
+osync_bool osync_converter_finalize(OSyncFormatConverter *converter, OSyncError **error)
 {
 	osync_assert(converter);
 
-	if (converter->finalize_func) {
-		converter->finalize_func(converter->userdata);
-	}
+	if (!converter->finalize_func)
+		return TRUE;
+
+	return converter->finalize_func(converter->userdata, error);
 }
 
 OSyncList *osync_converter_path_get_edges(OSyncFormatConverterPath *path) {

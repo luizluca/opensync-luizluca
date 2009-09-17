@@ -154,6 +154,7 @@ static void osync_format_env_converter_finalize(OSyncFormatEnv *env)
 {
 	OSyncFormatConverter *converter = NULL;
 	int i,numconverters;
+	OSyncError *error = NULL;
 
 	osync_assert(env);	
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, env);
@@ -163,7 +164,12 @@ static void osync_format_env_converter_finalize(OSyncFormatEnv *env)
 	for (i = 0; i < numconverters; i++ ) {
 		converter = osync_format_env_nth_converter(env, i);
 		osync_assert(converter);
-		osync_converter_finalize(converter);
+
+		/* TODO: don't ignore the error */ 
+		if (!osync_converter_finalize(converter, &error)) {
+			osync_error_unref(&error);
+		}
+
 	}
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
