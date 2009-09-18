@@ -207,8 +207,9 @@ OSYNC_EXPORT struct tm *osync_time_unix2utctm(const time_t *timestamp, OSyncErro
  * 
  * @param local The point in time when the offset have to be calculated,
  *	specified in localtime (need for CEST/CET)
- * @param error An OSyncError struct
- * @returns Seconds of timezone offset
+ * @param error An OSyncError struct. Always check if error is set before
+ *	using the return value
+ * @return Seconds of timezone offset
  */
 OSYNC_EXPORT int osync_time_timezone_diff(const struct tm *local, OSyncError **error);
 

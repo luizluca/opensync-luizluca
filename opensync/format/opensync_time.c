@@ -250,14 +250,31 @@ time_t osync_time_vtime2unix(const char *vtime, int offset, OSyncError **error)
 	osync_trace(TRACE_ENTRY, "%s(%s, %i)", __func__, vtime, offset);
 
 	utc = osync_time_vtime2utc(vtime, offset, error);
+	if (osync_error_is_set(error)) {
+		goto error;
+	}
 	utime = osync_time_vtime2tm(utc, error);
+	if (osync_error_is_set(error)) {
+		goto error_free_utc;
+	}
 	timestamp = osync_time_utctm2unix(utime, error);
+	if (osync_error_is_set(error)) {
+		goto error_free_utime;
+	}
 
 	g_free(utc);
 	g_free(utime);
 
 	osync_trace(TRACE_EXIT, "%s: %lu", __func__, timestamp);
 	return timestamp;
+	
+error_free_utime:
+	g_free(utime);
+error_free_utc:
+	g_free(utc);
+error:
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return -1L;
 }
 
 
@@ -270,7 +287,7 @@ char *osync_time_unix2vtime(const time_t *timestamp, OSyncError **error)
 	gmtime_r(timestamp, &utc);
 	vtime = osync_time_tm2vtime(&utc, TRUE, error);
 
-	osync_trace(TRACE_EXIT, "%s: %s", __func__, vtime);
+	osync_trace(TRACE_EXIT, "%s: %s", __func__, __NULLSTR(vtime));
 	return vtime;
 }
 
@@ -306,7 +323,7 @@ time_t osync_time_utctm2unix(const struct tm *utctime, OSyncError **error)
 	struct tm *tmp = g_try_malloc0(sizeof(struct tm));
 	if (!tmp) {
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not allocate memory for time stuct.");
-		return -1;
+		return -1L;
 	}
 	struct tm localnow;
 	struct tm check;
@@ -317,6 +334,10 @@ time_t osync_time_utctm2unix(const struct tm *utctime, OSyncError **error)
 	time(&timestamp);
 	localtime_r(&timestamp, &localnow);
 	tzdiff = osync_time_timezone_diff(&localnow, error);
+	if (osync_error_is_set(error)) {
+		g_free(tm);
+		return NULL;
+	}
 
 	// now loop, converting "local time" to time_t to utctm,
 	// and adjusting until there are no differences... this
@@ -398,7 +419,7 @@ struct tm *osync_time_unix2utctm(const time_t *timestamp, OSyncError **error)
 }
 
 /*****************************************************************************/
-	
+
 int osync_time_timezone_diff(const struct tm *local, OSyncError **error)
 {
 	struct tm utime;
@@ -409,6 +430,9 @@ int osync_time_timezone_diff(const struct tm *local, OSyncError **error)
 
 	/* convert local time to UTC */
 	timestamp = osync_time_localtm2unix(local, error);
+	if (osync_error_is_set(error)) {
+		goto error;
+	}
 
 	/* convert UTC to split tm struct in UTC */
 	gmtime_r(&timestamp, &utime);
@@ -456,6 +480,10 @@ int osync_time_timezone_diff(const struct tm *local, OSyncError **error)
 
 	osync_trace(TRACE_EXIT, "%s: %i", __func__, zonediff);
 	return zonediff;
+error:
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	//TODO which value has to be returned in an error case?
+	return -1;
 }
  
 struct tm *osync_time_tm2utc(const struct tm *ltime, int offset, OSyncError **error)
@@ -521,7 +549,7 @@ char *osync_time_vtime2utc(const char* localtime, int offset, OSyncError **error
 {
 	char *utc = NULL; 
 	struct tm *tm_local = NULL, *tm_utc = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%s)", __func__, localtime);
+	osync_trace(TRACE_ENTRY, "%s(%s,%i)", __func__, localtime, offset);
 
 	if (strstr(localtime, "Z")) {
 		utc = g_strdup(localtime);
@@ -529,21 +557,39 @@ char *osync_time_vtime2utc(const char* localtime, int offset, OSyncError **error
 	}
 
 	tm_local = osync_time_vtime2tm(localtime, error);
+	if (osync_error_is_set(error)) {
+		goto error;
+	}
 	tm_utc = osync_time_tm2utc(tm_local, offset, error);
+	if (osync_error_is_set(error)) {
+		goto error_free_local;
+	}
 	utc = osync_time_tm2vtime(tm_utc, TRUE, error);
+	if (osync_error_is_set(error)) {
+		goto error_free_utc;
+	}
 
 	g_free(tm_local);
 	g_free(tm_utc);
 	
- end:	
+ end:
 	osync_trace(TRACE_EXIT, "%s: %s", __func__, utc);
 	return utc;
+
+error_free_utc:
+	g_free(tm_utc);
+error_free_local:
+	g_free(tm_local);
+error:
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return NULL;
 }
  
 char *osync_time_vtime2localtime(const char* utc, int offset, OSyncError **error)
 {
 	char *localtime = NULL; 
 	struct tm *tm_local = NULL, *tm_utc = NULL;
+	osync_trace(TRACE_ENTRY, "%s(%s,%i)", __func__, utc, offset);
 
 	if (!strstr(utc, "Z")) {
 		localtime = g_strdup(utc);
@@ -551,13 +597,32 @@ char *osync_time_vtime2localtime(const char* utc, int offset, OSyncError **error
 	}
 		
 	tm_utc = osync_time_vtime2tm(utc, error);
+	if (osync_error_is_set(error)) {
+		goto error;
+	}
 	tm_local = osync_time_tm2localtime(tm_utc, offset, error);
+	if (osync_error_is_set(error)) {
+		goto error_free_utc;
+	}
 	localtime = osync_time_tm2vtime(tm_local, FALSE, error);
+	if (osync_error_is_set(error)) {
+		goto error_free_local;
+	}
 
 	g_free(tm_local);
 	g_free(tm_utc);
 	
+	osync_trace(TRACE_EXIT, "%s: %s", __func__, localtime);
+	
 	return localtime;
+
+error_free_local:
+	g_free(tm_local);
+error_free_utc:
+	g_free(tm_utc);
+error:
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return NULL;
 }
 
 int osync_time_utcoffset2sec(const char *offset)
@@ -598,6 +663,7 @@ const char *_time_attr[] = {
  * @param entry The whole vcal entry as GString which gets modified. 
  * @param field The field name which should be modified. 
  * @param toUTC The toggle in which direction we convert. TRUE = convert to UTC
+ * @param error An OSyncError struct
  */ 
 static void _convert_time_field(GString *entry, const char *field, osync_bool toUTC, OSyncError **error)
 {
@@ -620,6 +686,7 @@ static void _convert_time_field(GString *entry, const char *field, osync_bool to
 
 		// Get System offset to UTC
 		tm_stamp = osync_time_vtime2tm(stamp->str, error);
+
 		tzdiff = osync_time_timezone_diff(tm_stamp, error);
 		g_free(tm_stamp);
 
@@ -633,10 +700,11 @@ static void _convert_time_field(GString *entry, const char *field, osync_bool to
 	}
 }
 
-/*! @brief Functions converts timestamps of vcal in localtime or UTC. 
+/** @brief Functions converts timestamps of vcal in localtime or UTC. 
  * 
  * @param vcal The vcalendar which has to be converted.
  * @param toUTC If TRUE conversion from localtime to UTC.
+ * @param error An OSyncError struct
  * @return timestamp modified vcalendar 
  */ 
 char *_convert_entry(const char *vcal, osync_bool toUTC, OSyncError **error)
