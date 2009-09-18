@@ -336,7 +336,6 @@ osync_bool get_sync_info(OSyncPluginEnv *env, OSyncError **error)
 	return TRUE;
 error:
 	osync_trace(TRACE_ERROR, "Unable to register: %s", osync_error_print(error));
-	osync_error_unref(error);
 	return FALSE;
 }
 
