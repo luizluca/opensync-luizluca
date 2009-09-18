@@ -335,8 +335,8 @@ time_t osync_time_utctm2unix(const struct tm *utctime, OSyncError **error)
 	localtime_r(&timestamp, &localnow);
 	tzdiff = osync_time_timezone_diff(&localnow, error);
 	if (osync_error_is_set(error)) {
-		g_free(tm);
-		return NULL;
+		g_free(tmp);
+		return -1L;
 	}
 
 	// now loop, converting "local time" to time_t to utctm,
