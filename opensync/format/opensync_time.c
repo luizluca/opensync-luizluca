@@ -645,7 +645,7 @@ int osync_time_utcoffset2sec(const char *offset)
 
 /*****************************************************************************/
 
-/*! List of vcal fields which have should be converted by following
+/** List of vcal fields which have should be converted by following
  *  workaround functions. 
  */
 const char *_time_attr[] = {
@@ -658,14 +658,7 @@ const char *_time_attr[] = {
 	NULL
 };
 
-/** @brief Function converts a UTC vtime stamp to a localtime vtime stamp
- * 
- * @param entry The whole vcal entry as GString which gets modified. 
- * @param field The field name which should be modified. 
- * @param toUTC The toggle in which direction we convert. TRUE = convert to UTC
- * @param error An OSyncError struct
- */ 
-static void _convert_time_field(GString *entry, const char *field, osync_bool toUTC, OSyncError **error)
+static void osync_time_convert_time_field(GString *entry, const char *field, osync_bool toUTC, OSyncError **error)
 {
 	int i, tzdiff;
 	char *res = NULL;
@@ -700,20 +693,13 @@ static void _convert_time_field(GString *entry, const char *field, osync_bool to
 	}
 }
 
-/** @brief Functions converts timestamps of vcal in localtime or UTC. 
- * 
- * @param vcal The vcalendar which has to be converted.
- * @param toUTC If TRUE conversion from localtime to UTC.
- * @param error An OSyncError struct
- * @return timestamp modified vcalendar 
- */ 
-char *_convert_entry(const char *vcal, osync_bool toUTC, OSyncError **error)
+char *osync_time_convert_entry(const char *vcal, osync_bool toUTC, OSyncError **error)
 {
 	int i = 0;
 	GString *new_entry = g_string_new(vcal);
 
 	for (i=0; _time_attr[i] != NULL; i++) 
-		_convert_time_field(new_entry, _time_attr[i], toUTC, error);
+		osync_time_convert_time_field(new_entry, _time_attr[i], toUTC, error);
 
 	return g_string_free(new_entry, FALSE);
 }
@@ -721,13 +707,13 @@ char *_convert_entry(const char *vcal, osync_bool toUTC, OSyncError **error)
 
 char *osync_time_vcal2localtime(const char *vcal, OSyncError **error)
 {
-	return _convert_entry(vcal, FALSE, error);
+	return osync_time_convert_entry(vcal, FALSE, error);
 }
 
 
 char *osync_time_vcal2utc(const char *vcal, OSyncError **error)
 {
-	return _convert_entry(vcal, TRUE, error);
+	return osync_time_convert_entry(vcal, TRUE, error);
 }
 
 /*****************************************************************************/
