@@ -198,7 +198,7 @@ void *initialize_converter(const char* config, OSyncError **error)
 	return (void*)userdata;
 }
 
-void finalize_converter(void *userdata)
+osync_bool finalize_converter(void *userdata, OSyncError **error)
 {
 	/*
 	 * Here you can free all your converter specific data.
@@ -206,6 +206,11 @@ void finalize_converter(void *userdata)
 	converter_data *converterdata = (converter_data*)userdata;
 	osync_free(converterdata->data);
 	osync_free(converterdata);
+	
+	/*
+	 * return TRUE if the conversion was successful
+	 */
+	return TRUE;
 }
 
 osync_bool get_conversion_info(OSyncFormatEnv *env, OSyncError **error)
