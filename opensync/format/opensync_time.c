@@ -482,8 +482,10 @@ int osync_time_timezone_diff(const struct tm *local, OSyncError **error)
 	return zonediff;
 error:
 	osync_trace(TRACE_EXIT, "%s", __func__);
-	//TODO which value has to be returned in an error case?
-	return -1;
+	// Positive and negative values are valid here, so only
+	// osync_error_is_set(error) can tell if this is an error.
+	// Return 0 here as a random default.
+	return 0;
 }
  
 struct tm *osync_time_tm2utc(const struct tm *ltime, int offset, OSyncError **error)
