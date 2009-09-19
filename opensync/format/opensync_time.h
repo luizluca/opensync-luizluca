@@ -263,9 +263,11 @@ OSYNC_EXPORT char *osync_time_vtime2localtime(const char* utc, int offset, OSync
 /** @brief Function converts UTC offset string in offset in seconds
  *
  * @param offset The offset string of the form a timezone field (Example +0200) 
- * @returns seconds of UTC offset 
+ * @error An OSyncError struct
+ * @returns seconds of UTC offset. On error, osync_error_is_set(error) is
+ *	true, and the return value is 0.
  */ 
-OSYNC_EXPORT int osync_time_utcoffset2sec(const char *offset);
+OSYNC_EXPORT int osync_time_utcoffset2sec(const char *offset, OSyncError **error);
 
 /*@}*/
 

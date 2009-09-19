@@ -21,6 +21,7 @@
  */
 
 #include <time.h>
+#include <ctype.h>
 
 #include "opensync.h"
 #include "opensync_time.h"
@@ -627,19 +628,31 @@ error:
 	return NULL;
 }
 
-int osync_time_utcoffset2sec(const char *offset)
+int osync_time_utcoffset2sec(const char *offset, OSyncError **error)
 {
 	char csign = 0;
 	int seconds = 0, sign = 1;
 	int hours = 0, minutes = 0;
 	osync_trace(TRACE_ENTRY, "%s(%s)", __func__, offset);
 
-	sscanf(offset, "%c%2d%2d", &csign, &hours, &minutes);
+	// make sure the format of offset is what we expect: [-+][0-9]{4}
+	if( strlen(offset) >= 5 &&
+	    (offset[0] == '-' || offset[0] == '+') &&
+	    isdigit(offset[1]) && isdigit(offset[2]) &&
+	    isdigit(offset[3]) && isdigit(offset[4]) &&
+	    sscanf(offset, "%c%2d%2d", &csign, &hours, &minutes) == 3 )
+	{
 
-	if (csign == '-')
-		sign = -1;
+		if (csign == '-')
+			sign = -1;
 
-	seconds = (hours * 3600 + minutes * 60) * sign; 
+		seconds = (hours * 3600 + minutes * 60) * sign; 
+
+	}
+	else {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "%s: unable to parse utc offset into seconds: %s", __func__, offset);
+		osync_trace(TRACE_INTERNAL, "%s: unable to parse utc offset into seconds: %s", __func__, offset);
+	}
 
 	osync_trace(TRACE_EXIT, "%s: %i", __func__, seconds);
 	return seconds;

@@ -211,9 +211,45 @@ START_TEST (time_unix_converters)
 }
 END_TEST
 
+START_TEST (time_utc_offset)
+{
+	OSyncError *error = NULL;
+	int seconds;
+
+	// UTC offset format is %c%2d%2d, i.e. +0200
+
+	// test missing lead char
+	osync_time_utcoffset2sec("0400", &error);
+	fail_unless(osync_error_is_set(&error), NULL);
+	osync_error_unref(&error);
+	error = NULL;
+
+	// test missing numbers
+	osync_time_utcoffset2sec("-040", &error);
+	fail_unless(osync_error_is_set(&error), NULL);
+	osync_error_unref(&error);
+	error = NULL;
+
+	// test correct operation [1]
+	seconds = osync_time_utcoffset2sec("-0400", &error);
+	fail_unless(!osync_error_is_set(&error), NULL);
+	fail_unless(seconds == -(4 * 60 * 60), NULL);
+	osync_error_unref(&error);
+	error = NULL;
+
+	// test correct operation, with trailing chars [2]
+	seconds = osync_time_utcoffset2sec("-0400555", &error);
+	fail_unless(!osync_error_is_set(&error), NULL);
+	fail_unless(seconds == -(4 * 60 * 60), NULL);
+	osync_error_unref(&error);
+	error = NULL;
+}
+END_TEST
+
 OSYNC_TESTCASE_START("time")
 OSYNC_TESTCASE_ADD(time_timezone_diff)
 OSYNC_TESTCASE_ADD(time_relative2tm)
 OSYNC_TESTCASE_ADD(time_unix_converters)
+OSYNC_TESTCASE_ADD(time_utc_offset)
 OSYNC_TESTCASE_END
 
