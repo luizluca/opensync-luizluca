@@ -1,7 +1,7 @@
 PROJECT( libopensync C )
 
 SET( OPENSYNC_VERSION_MAJOR "0" )
-SET( OPENSYNC_VERSION_MINOR "39" )
+SET( OPENSYNC_VERSION_MINOR "40" )
 
 # The most recent interface number that this library implements.
 #UPDATE: If any interface have been added, removed or changed since
