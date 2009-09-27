@@ -1062,7 +1062,12 @@ osync_bool osync_group_is_uptodate(OSyncGroup *group)
 	if (!version_str)
 		goto end;
 
-	sscanf((const char *) version_str, "%u.%u", &version_major, &version_minor);
+	if (sscanf((const char *) version_str, "%u.%u", &version_major, &version_minor) != 2) {
+		/* unparsable version string, can't compare versions,
+		   assume update is required */
+		osync_trace(TRACE_ERROR, "%s: cannot parse version string: %s", __func__, version_str);
+		goto end;
+	}
 
 	osync_trace(TRACE_INTERNAL, "Version: %s (current %u.%u required %u.%u)",
 	            version_str, version_major, version_minor, 
