@@ -115,10 +115,10 @@ osync_bool osync_group_env_load_groups(OSyncGroupEnv *env, const char *path, OSy
 		
 		if (!g_file_test(env->groupsdir, G_FILE_TEST_EXISTS)) {
 			if (g_mkdir(env->groupsdir, 0700) < 0) {
-				osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to create group directory at %s: %s", path, g_strerror(errno));
+				osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to create group directory at %s: %s", env->groupsdir, g_strerror(errno));
 				goto error_free_path;
 			}
-			osync_trace(TRACE_INTERNAL, "Created groups configdir %s\n", path);
+			osync_trace(TRACE_INTERNAL, "Created groups configdir %s\n", env->groupsdir);
 		}
 	} else {
 		if (!g_path_is_absolute(path)) {
@@ -133,7 +133,7 @@ osync_bool osync_group_env_load_groups(OSyncGroupEnv *env, const char *path, OSy
 		goto error_free_path;
 	}
 	
-	/* Open the firectory */
+	/* Open the directory */
 	dir = g_dir_open(env->groupsdir, 0, &gerror);
 	if (!dir) {
 		osync_error_set(error, OSYNC_ERROR_IO_ERROR, "Unable to open main configdir %s: %s", env->groupsdir, gerror->message);
