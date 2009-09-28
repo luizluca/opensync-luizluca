@@ -399,8 +399,8 @@ osync_bool osync_xmlfield_set_key_value(OSyncXMLField *xmlfield, const char *key
 	osync_assert(xmlfield);
 	osync_assert(key);
 
-	// If value is null or empty we don't add it to a xmlfield
-	if (!value || strlen(value) == 0)
+	// If value is null we don't add it to a xmlfield
+	if (!value)
 		return TRUE;
 
 	cur = xmlfield->node->children;

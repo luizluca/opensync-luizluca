@@ -97,6 +97,38 @@ START_TEST (xmlformat_is_sorted)
 }
 END_TEST
 
+START_TEST (xmlfield_set_key_value)
+{
+	char *testbed = setup_testbed("xmlformats");
+	
+	OSyncError *error = NULL;
+	const char * value = NULL;
+	
+	OSyncXMLFormat *xmlformat = osync_xmlformat_new("contact", &error);
+	fail_unless(xmlformat != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+	
+	OSyncXMLField *xmlfield = osync_xmlfield_new(xmlformat, "Name", &error);
+	fail_unless(xmlfield != NULL, NULL);
+	fail_unless(error == NULL, NULL);
+	
+	fail_unless( osync_xmlfield_set_key_value(xmlfield, "Name", "Foo", &error) == TRUE);
+	fail_unless(error == NULL, NULL);
+	value = osync_xmlfield_get_value(xmlfield);
+	fail_unless(strcmp("Foo", "Foo") == 0);
+	
+	fail_unless(osync_xmlfield_set_key_value(xmlfield, "Firstname", "", &error) == TRUE);
+	fail_unless(error == NULL, NULL);
+	OSyncXMLField *next = osync_xmlfield_get_child(xmlfield);
+	fail_if(next == NULL);
+	value = osync_xmlfield_get_key_value(xmlfield, "Firstname");
+	fail_if(value == NULL);
+	
+	osync_xmlformat_unref(xmlformat);
+	
+	destroy_testbed(testbed);
+}
+END_TEST
 
 START_TEST (xmlformat_search_field)
 {
@@ -204,28 +236,28 @@ END_TEST
 
 START_TEST (xmlformat_schema_validate)
 {
-        char *testbed = setup_testbed("xmlformats");
-        char *buffer;
-        unsigned int size;
-        OSyncError *error = NULL;
-        OSyncXMLFormatSchema *schema = NULL;
+	char *testbed = setup_testbed("xmlformats");
+	char *buffer;
+	unsigned int size;
+	OSyncError *error = NULL;
+	OSyncXMLFormatSchema *schema = NULL;
 
-        fail_unless(osync_file_read("mockobjtype.xml", &buffer, &size, &error), NULL);
-        fail_unless(error == NULL, NULL);
+	fail_unless(osync_file_read("mockobjtype.xml", &buffer, &size, &error), NULL);
+	fail_unless(error == NULL, NULL);
 
-        OSyncXMLFormat *xmlformat = osync_xmlformat_parse(buffer, size, &error);
-        fail_unless(error == NULL, NULL);
+	OSyncXMLFormat *xmlformat = osync_xmlformat_parse(buffer, size, &error);
+	fail_unless(error == NULL, NULL);
 
-        g_free(buffer);
-        schema = osync_xmlformat_schema_new_xmlformat(xmlformat, testbed, &error);
-        fail_if( schema == NULL );
-        fail_unless( osync_xmlformat_schema_validate(schema, xmlformat, &error) );
+	g_free(buffer);
+	schema = osync_xmlformat_schema_new_xmlformat(xmlformat, testbed, &error);
+	fail_if( schema == NULL );
+	fail_unless( osync_xmlformat_schema_validate(schema, xmlformat, &error) );
 
-        osync_xmlformat_schema_unref(schema);
+	osync_xmlformat_schema_unref(schema);
 
-        osync_xmlformat_unref(xmlformat);
+	osync_xmlformat_unref(xmlformat);
 
-        destroy_testbed(testbed);
+	destroy_testbed(testbed);
 }
 END_TEST
 
@@ -234,20 +266,20 @@ END_TEST
  */
 START_TEST (xmlfield_childlink_for_getter_setter)
 {
-        char *testbed = setup_testbed(NULL);
-        OSyncError *error = NULL;
+	char *testbed = setup_testbed(NULL);
+	OSyncError *error = NULL;
 
 	OSyncXMLFormat *xmlformat = osync_xmlformat_new("top", &error);
 
-        OSyncXMLField *foo = osync_xmlfield_new(xmlformat, "foo", &error);
-        osync_xmlfield_set_key_value(foo, "fookeyname1", "foorandomvalue", &error);
-        fail_unless(error == NULL, NULL);
+	OSyncXMLField *foo = osync_xmlfield_new(xmlformat, "foo", &error);
+	osync_xmlfield_set_key_value(foo, "fookeyname1", "foorandomvalue", &error);
+	fail_unless(error == NULL, NULL);
 
 	fail_unless(osync_xmlfield_get_child(foo) != NULL);
 
-        osync_xmlformat_unref(xmlformat);
+	osync_xmlformat_unref(xmlformat);
 
-        destroy_testbed(testbed);
+	destroy_testbed(testbed);
 }
 END_TEST
 
@@ -264,6 +296,7 @@ OSYNC_TESTCASE_ADD(xmlformat_schema_validate)
 // xmlfield
 OSYNC_TESTCASE_ADD(xmlfield_new)
 OSYNC_TESTCASE_ADD(xmlfield_sort)
+OSYNC_TESTCASE_ADD(xmlfield_set_key_value)
 OSYNC_TESTCASE_ADD(xmlfield_childlink_for_getter_setter)
 OSYNC_TESTCASE_END
 
