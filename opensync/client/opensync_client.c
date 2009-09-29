@@ -1713,7 +1713,12 @@ osync_bool osync_client_set_incoming_queue(OSyncClient *client, OSyncQueue *inco
 		goto error;
 
 	client->incoming = osync_queue_ref(incoming);
+
+	/* FIXME: temporarily disable pending limit.
+	 Re-enable this once the syncml pending limit deadlock has been fixed */
+#if 0
 	osync_queue_set_pending_limit(incoming, OSYNC_QUEUE_PENDING_LIMIT);
+#endif
 
 	return TRUE;
 
