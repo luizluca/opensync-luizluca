@@ -89,6 +89,53 @@ void osync_group_env_unref(OSyncGroupEnv *env)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
+/* Returns const char* containing the result of XDG_CONFIG_HOME
+ * according to the spec.  It is the caller's responsibility to
+ * free the returned string.
+ *
+ * If HOME does not exist, then the current user's home directory
+ * is used.  In any case, ".config" is always in the generated
+ * default directory name, so it is safe to use non-dot directory
+ * names to build on.
+ *
+ * On fatal error, NULL is returned.
+ */
+static char *osync_xdg_get_config_home(void)
+{
+	/* http://standards.freedesktop.org/basedir-spec/latest/ar01s03.html */
+
+	/* XDG_CONFIG_HOME is the base directory to use instead of HOME.
+	   If it does not exist, or if the value is an empty string,
+	   then use the default: $HOME/.config */
+
+	const char *configdir = g_getenv("XDG_CONFIG_HOME");
+	if (configdir != NULL && strlen(configdir) != 0)
+		return osync_strdup(configdir);
+
+	/* Use $HOME instead of passwd home, in case someone runs
+	 * with OpenSync with sudo. The behaviour of sudo might
+	 * differ on different systems, depending on the sudoers
+	 * configuration. For more details see ticket #751
+	 */
+	const char *homedir = g_getenv("HOME");
+	if (homedir == NULL) {
+		homedir = g_get_home_dir();
+		if (homedir == NULL)
+			return NULL;
+	}
+
+	return osync_strdup_printf("%s%c.config", homedir, G_DIR_SEPARATOR);
+}
+
+/* The XDG_CONFIG_HOME spec states that any new directories are created
+ * with mode 0700.  This function is a simple wrapper for
+ * g_mkdir_with_parents() that enforces this.
+ */
+static int osync_xdg_make_config_dir(const char *full_path)
+{
+	return g_mkdir_with_parents(full_path, 0700);
+}
+
 osync_bool osync_group_env_load_groups(OSyncGroupEnv *env, const char *path, OSyncError **error)
 {	
 	GDir *dir = NULL;
@@ -102,19 +149,16 @@ osync_bool osync_group_env_load_groups(OSyncGroupEnv *env, const char *path, OSy
 	/* Create the correct path and test it */
 	if (!path) {
 
-		/* Use $HOME instead of passwd home, in case someone runs with OpenSync
-		 * with sudo. The behavoir of sudo might differ on different systems,
-		 * depending on the sudoers configuration. For more details see ticket #751
-		 */
-		const char *homedir = g_getenv("HOME");
+		char *homedir = osync_xdg_get_config_home();
 		if (!homedir)
-			homedir = g_get_home_dir();
+			return FALSE;
 
-		env->groupsdir = osync_strdup_printf("%s%c.opensync", homedir, G_DIR_SEPARATOR);
+		env->groupsdir = osync_strdup_printf("%s%copensync%c0.40", homedir, G_DIR_SEPARATOR, G_DIR_SEPARATOR);
 		osync_trace(TRACE_INTERNAL, "Default home dir: %s", env->groupsdir);
+		osync_free(homedir);
 		
 		if (!g_file_test(env->groupsdir, G_FILE_TEST_EXISTS)) {
-			if (g_mkdir(env->groupsdir, 0700) < 0) {
+			if (osync_xdg_make_config_dir(env->groupsdir) < 0) {
 				osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to create group directory at %s: %s", env->groupsdir, g_strerror(errno));
 				goto error_free_path;
 			}
