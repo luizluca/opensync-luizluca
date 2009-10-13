@@ -195,6 +195,8 @@ osync_bool osync_capabilities_save(OSyncCapabilities *capabilities, const char *
 	osync_assert(capabilities);
 	osync_assert(file);
 
+	osync_capabilities_sort(capabilities);
+
 	ret = osync_capabilities_assemble(capabilities, &buffer, &size, error);
 	if (!ret)
 		goto error;
