@@ -315,7 +315,6 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 				if (!clone_change1)
 					goto error;
 
-				change1 = clone_change1;
 			}
 
 			if (caps2) {
@@ -323,8 +322,14 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 				if (!clone_change2)
 					goto error;
 
-				change2 = mapping_change;
 			}
+
+
+			if (clone_change1)
+				change1 = clone_change1;
+
+			if (clone_change2)
+				change2 = clone_change2;
 
 			tmp_result = osync_change_compare(change1, change2, error);
 
