@@ -777,7 +777,8 @@ void osync_group_add_member(OSyncGroup *group, OSyncMember *member)
 	osync_assert(group);
 	
 	if (!osync_member_get_configdir(member)) {
-		char *configdir = osync_strdup_printf("%s%c%lli", group->configdir, G_DIR_SEPARATOR, osync_group_create_member_id(group));
+		member->id = osync_group_create_member_id(group);
+		char *configdir = osync_strdup_printf("%s%c%lli", group->configdir, G_DIR_SEPARATOR, member->id);
 		osync_member_set_configdir(member, configdir);
 		osync_free(configdir);
 	}
