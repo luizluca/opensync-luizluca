@@ -310,15 +310,15 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 
 			osync_trace(TRACE_INTERNAL, "Member1-caps: %p Member2-caps: %p", caps1, caps2);
 
-			if (caps1) {
-				clone_change1 = _osync_obj_engine_clone_and_demerge_change(sinkengine->engine, caps1, change2, error);
+			if (caps2) {
+				clone_change1 = _osync_obj_engine_clone_and_demerge_change(sinkengine->engine, caps2, change1, error);
 				if (!clone_change1)
 					goto error;
 
 			}
 
-			if (caps2) {
-				clone_change2 = _osync_obj_engine_clone_and_demerge_change(sinkengine->engine, caps2, change1, error);
+			if (caps1) {
+				clone_change2 = _osync_obj_engine_clone_and_demerge_change(sinkengine->engine, caps1, change2, error);
 				if (!clone_change2)
 					goto error;
 
@@ -333,10 +333,10 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 
 			tmp_result = osync_change_compare(change1, change2, error);
 
-			if (caps1)
+			if (caps2)
 				osync_change_unref(clone_change1);
 
-			if (caps2)
+			if (caps1)
 				osync_change_unref(clone_change2);
 
 			if(tmp_result == OSYNC_CONV_DATA_SAME) {
