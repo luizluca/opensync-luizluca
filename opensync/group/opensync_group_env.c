@@ -271,8 +271,12 @@ static osync_bool osync_group_env_setup_config_dir(const char *groupsdir, OSyncE
 		homedir = g_get_home_dir();
 
 	osync22dir = osync_strdup_printf("%s%c.opensync", homedir, G_DIR_SEPARATOR);
-	if (!osync_glob_copy(osync22dir, "group*", groupsdir, error))
-		goto destroy;
+	if (g_file_test(osync22dir, G_FILE_TEST_IS_DIR)) {
+		if (!osync_glob_copy(osync22dir, "group*", groupsdir, error))
+			goto destroy;
+	} else {
+		osync_trace(TRACE_INTERNAL, "No old configdir %s to copy\n", osync22dir);
+	}
 
 	osync_trace(TRACE_INTERNAL, "Created groups configdir %s\n", groupsdir);
 	ret = TRUE;
