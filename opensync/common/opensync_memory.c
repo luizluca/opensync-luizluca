@@ -35,7 +35,7 @@ void *osync_try_malloc0(unsigned int size, OSyncError **error)
 #endif /*OPENSYNC_UNITTESTS*/
 
 	if (!result) {
-		osync_error_set(error, OSYNC_ERROR_GENERIC, "No memory left");
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "No memory left (tried to allocate %u bytes)", size);
 		return NULL;
 	}
 	memset(result, 0, size);
