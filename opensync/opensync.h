@@ -146,7 +146,7 @@ typedef int osync_bool;
  * Determines how the sync process is to be run.
  */
 typedef enum {
-	/** The start type is unknown, there was an error */
+	/** The start type is unknown (has not been set) */
 	OSYNC_START_TYPE_UNKNOWN,
 	/** Start as child process */
 	OSYNC_START_TYPE_PROCESS,
