@@ -177,6 +177,9 @@ OSyncXMLFieldList *osync_xmlformat_search_field(OSyncXMLFormat *xmlformat, const
 	if (!xmlfieldlist)
 		goto error;
 
+	if (xmlformat->child_count == 0)
+		goto empty;	/* nothing to do */
+
 	liste = osync_try_malloc0(sizeof(OSyncXMLField *) * xmlformat->child_count, error);
 	if (!liste)
 		goto error;
@@ -233,7 +236,7 @@ OSyncXMLFieldList *osync_xmlformat_search_field(OSyncXMLFormat *xmlformat, const
 	xmlFreeNode(key->node);
 	g_free(key);
 	g_free(liste);
-
+ empty:
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, xmlfieldlist);
 	return xmlfieldlist;
 
