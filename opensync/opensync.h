@@ -140,10 +140,19 @@ typedef int osync_bool;
  * Enums
  *************************************************************/
 
+/*! @ingroup OSyncPlugin
+ * @brief The possible start types of a plugin or client proxy
+ *
+ * Determines how the sync process is to be run.
+ */
 typedef enum {
+	/** The start type is unknown, there was an error */
 	OSYNC_START_TYPE_UNKNOWN,
+	/** Start as child process */
 	OSYNC_START_TYPE_PROCESS,
+	/** Start in a separate thread */
 	OSYNC_START_TYPE_THREAD,
+	/** Start as a separate external process */
 	OSYNC_START_TYPE_EXTERNAL
 } OSyncStartType;
 
@@ -151,11 +160,11 @@ typedef enum {
  * @brief The possible returns of a change comparison
  */
 typedef enum {
-	/** The result is unknown, there was a error */
+	/** The result is unknown, there was an error */
 	OSYNC_CONV_DATA_UNKNOWN = 0,
 	/** The changes are not the same */
 	OSYNC_CONV_DATA_MISMATCH = 1,
-	/** The changs are not the same but look similar */
+	/** The changes are not the same but look similar */
 	OSYNC_CONV_DATA_SIMILAR = 2,
 	/** The changes are exactly the same */
 	OSYNC_CONV_DATA_SAME = 3
