@@ -11,6 +11,15 @@ OPENSYNC_PLUGIN_ADD( example_plugin plugin.c )
 TARGET_LINK_LIBRARIES( example_plugin ${OPENSYNC_LIBRARIES} )
 OPENSYNC_PLUGIN_INSTALL( example_plugin )
 
+### External Synchronization Plugin ########
+OPENSYNC_PLUGIN_ADD( example_external_plugin external_plugin.c )
+OPENSYNC_PLUGIN_CONFIG(external-demo )
+TARGET_LINK_LIBRARIES( example_external_plugin ${OPENSYNC_LIBRARIES} )
+OPENSYNC_PLUGIN_INSTALL( example_external_plugin )
+
+ADD_EXECUTABLE( example_external_demo external_demo.c )
+TARGET_LINK_LIBRARIES( example_external_demo ${OPENSYNC_LIBRARIES} )
+
 ### Format Plugin ########################
 OPENSYNC_FORMAT_ADD( format_plugin format.c )
 TARGET_LINK_LIBRARIES( format_plugin ${OPENSYNC_LIBRARIES} )
