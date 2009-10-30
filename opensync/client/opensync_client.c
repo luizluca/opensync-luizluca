@@ -1705,6 +1705,42 @@ void osync_client_unref(OSyncClient *client)
 	}
 }
 
+void osync_client_set_plugin(OSyncClient *client, OSyncPlugin *plugin)
+{
+	osync_return_if_fail(client);
+	osync_return_if_fail(plugin);
+
+	if (client->plugin)
+		osync_plugin_unref(client->plugin);
+
+
+	client->plugin = osync_plugin_ref(plugin);
+}
+
+OSyncPlugin *osync_client_get_plugin(OSyncClient *client)
+{
+	osync_return_val_if_fail(client, NULL);
+	return client->plugin;
+}
+
+void osync_client_set_pipe_path(OSyncClient *client, const char *pipe_path)
+{
+	osync_return_if_fail(client);
+	osync_return_if_fail(pipe_path);
+
+	if (client->pipe_path)
+		osync_free(client->pipe_path);
+
+
+	client->pipe_path = osync_strdup(pipe_path);
+}
+
+const char *osync_client_get_pipe_path(OSyncClient *client)
+{
+	osync_return_val_if_fail(client, NULL);
+	return client->pipe_path;
+}
+
 osync_bool osync_client_set_incoming_queue(OSyncClient *client, OSyncQueue *incoming, OSyncError **error)
 {
 	osync_queue_set_message_handler(incoming, _osync_client_message_handler, client);
@@ -1739,44 +1775,61 @@ error:
 	return FALSE;
 }
 
-void osync_client_run_and_block(OSyncClient *client)
+osync_bool osync_client_run_and_block(OSyncClient *client, OSyncError **error)
 {
+
+	if (!osync_client_setup_pipes(client, NULL, error))
+		goto error;
+
+	if (!osync_client_connect_pipes(client, error))
+		goto error;
+	
 	client->syncloop = g_main_loop_new(client->context, TRUE);
 	g_main_loop_run(client->syncloop);
+
+	return TRUE;
+
+error:
+	return FALSE;
 }
 
 osync_bool osync_client_run(OSyncClient *client, OSyncError **error)
 {
+	if (!osync_client_setup_pipes(client, NULL, error))
+		goto error;
+
+	if (!osync_client_connect_pipes(client, error))
+		goto error;
+
 	client->thread = osync_thread_new(client->context, error);
 	if (!client->thread)
-		return FALSE;
+		goto error;
 		
 	osync_thread_start(client->thread);
 	
 	return TRUE;
-}
 
-static gboolean osyncClientConnectCallback(gpointer data)
-{
-	OSyncClient *client = NULL;
-	client = data;
-	osync_trace(TRACE_INTERNAL, "About to connect to the incoming queue");
-	
-	/* We now connect to our incoming queue */
-	if (!osync_queue_connect(client->incoming, OSYNC_QUEUE_RECEIVER, NULL))
-		return TRUE;
-	
+error:
 	return FALSE;
 }
 
-
-osync_bool osync_client_run_external(OSyncClient *client, char *pipe_path, OSyncPlugin *plugin, OSyncError **error)
+osync_bool osync_client_setup_pipes(OSyncClient *client, const char *pipe_path, OSyncError **error)
 {
 	OSyncQueue *incoming = NULL;
-	GSource *source = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p, %p)", __func__, client, pipe_path, plugin, error);
+
+	const char *path = NULL;
+
+	if (pipe_path) {
+		path = pipe_path;
+	} else if (client->pipe_path) {
+		path = client->pipe_path;
+	} else {
+		/* If there are no pipes - which is perfectly fine - this is just NOP */
+		return TRUE;
+	}
+
 	/* Create connection pipes **/
-	incoming = osync_queue_new(pipe_path, error);
+	incoming = osync_queue_new(path, error);
 	if (!incoming)
 		goto error;
 	
@@ -1785,10 +1838,59 @@ osync_bool osync_client_run_external(OSyncClient *client, char *pipe_path, OSync
 	
 	if (!osync_client_set_incoming_queue(client, incoming, error))
 		goto error_remove_queue;
+
+	osync_queue_unref(incoming);
+
+	return TRUE;
+
+error_remove_queue:
+	osync_queue_remove(incoming, NULL);
+error_free_queue:
+	osync_queue_unref(incoming);
+error:
+	return FALSE;
+}
+
+osync_bool osync_client_connect_pipes(OSyncClient *client, OSyncError **error)
+{
+	/* Nop pipes are perfeclty fine - this function does NOP in this case */
+	if (!client->incoming)
+		return TRUE;
+
+	/* Skip if queues already connected - this is different for each plugin start type */
+	if (osync_queue_is_connected(client->incoming))
+		return TRUE;
+
+	/* We now connect to our incoming queue */
+	return osync_queue_connect(client->incoming, OSYNC_QUEUE_RECEIVER, error);
+}
+
+static gboolean osyncClientConnectCallback(gpointer data)
+{
+	OSyncClient *client = NULL;
+	client = data;
+	osync_trace(TRACE_INTERNAL, "About to connect to the incoming queue");
+	
+
+	/* We now connect to our incoming queue */
+	if (!osync_client_connect_pipes(client, NULL))
+		return TRUE;
+	
+	return FALSE;
+}
+
+
+osync_bool osync_client_run_external(OSyncClient *client, char *pipe_path, OSyncPlugin *plugin, OSyncError **error)
+{
+	GSource *source = NULL;
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p, %p)", __func__, client, pipe_path, plugin, error);
+
+	if (!osync_client_setup_pipes(client, pipe_path, error))
+		goto error;
 	
 	client->thread = osync_thread_new(client->context, error);
 	if (!client->thread)
-		goto error_remove_queue;
+		goto error;
 	
 	osync_thread_start(client->thread);
 	
@@ -1799,15 +1901,9 @@ osync_bool osync_client_run_external(OSyncClient *client, char *pipe_path, OSync
 	g_source_set_callback(source, osyncClientConnectCallback, client, NULL);
 	g_source_attach(source, client->context);
 	
-	osync_queue_unref(incoming);
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
-
- error_remove_queue:
-	osync_queue_remove(incoming, NULL);
- error_free_queue:
-	osync_queue_unref(incoming);
  error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;

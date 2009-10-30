@@ -53,12 +53,16 @@ osync_change_set_hash
 osync_change_set_objtype
 osync_change_set_uid
 osync_change_unref
+osync_client_get_pipe_path
+osync_client_get_plugin
 osync_client_new
 osync_client_ref
 osync_client_run
 osync_client_run_and_block
 osync_client_set_incoming_queue
 osync_client_set_outgoing_queue
+osync_client_set_pipe_path
+osync_client_set_plugin
 osync_client_unref
 osync_context_new
 osync_context_ref

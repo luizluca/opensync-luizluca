@@ -123,7 +123,8 @@ int main(int argc, char **argv)
 		osync_queue_unref(incoming);
 	}
 
-	osync_client_run_and_block(client);
+	if (!osync_client_run_and_block(client, &error))
+		goto error;
 	
 	osync_client_unref(client);
 

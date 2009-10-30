@@ -34,6 +34,9 @@ struct OSyncClient {
 	OSyncFormatEnv *format_env;
 	void *plugin_data;
 	OSyncThread *thread;
+
+	/* pipe path for the queue */
+	char *pipe_path;
 };
 
 #endif /*OPENSYNC_CLIENT_PRIVATE_H_*/
