@@ -126,15 +126,15 @@ int main(int argc, char **argv)
 	osync_client_set_plugin(client, plugin);
 
 
-	printf("[EXTERNAL-DEMO]: OSyncPlugin:%p OSyncClient:%p\n", __func__, plugin, client);
-	printf("[EXTERNAL-DEMO]: Starting (blocking) OSyncClient ...\n", __func__, plugin, client);
+	printf("[EXTERNAL-DEMO]: %s OSyncPlugin:%p OSyncClient:%p\n", __func__, plugin, client);
+	printf("[EXTERNAL-DEMO]: Starting (blocking) OSyncClient ...\n");
 
-        if (!osync_client_run_and_block(client, &error))
+	if (!osync_client_run_and_block(client, &error))
 		goto error;
 
-	printf("[EXTERNAL-DEMO]: OSyncClient completed.", __func__, plugin, client);
+	printf("[EXTERNAL-DEMO]: OSyncClient completed.");
 
-        osync_client_unref(client);
+	osync_client_unref(client);
 
 	return 0;
 
