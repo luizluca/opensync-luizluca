@@ -124,13 +124,13 @@ void osync_plugin_set_data(OSyncPlugin *plugin, void *data)
 	plugin->plugin_data = data;
 }
 
-OSyncConfigurationType osync_plugin_get_config_type(OSyncPlugin *plugin)
+OSyncPluginConfigurationType osync_plugin_get_config_type(OSyncPlugin *plugin)
 {
 	osync_assert(plugin);
 	return plugin->config_type;
 }
 
-void osync_plugin_set_config_type(OSyncPlugin *plugin, OSyncConfigurationType config_type)
+void osync_plugin_set_config_type(OSyncPlugin *plugin, OSyncPluginConfigurationType config_type)
 {
 	osync_assert(plugin);
 	plugin->config_type = config_type;

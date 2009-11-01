@@ -76,7 +76,7 @@ typedef enum {
 	OSYNC_PLUGIN_OPTIONAL_CONFIGURATION = 1,
 	/** Plugin must be configured to run correctly */
 	OSYNC_PLUGIN_NEEDS_CONFIGURATION = 2
-} OSyncConfigurationType;
+} OSyncPluginConfigurationType;
 
 /** @brief Registers a new plugin
  *
@@ -155,14 +155,14 @@ OSYNC_EXPORT void osync_plugin_set_longname(OSyncPlugin *plugin, const char *lon
  * @param plugin Pointer to the plugin
  * @returns The configuration requirement type of the plugin
  */
-OSYNC_EXPORT OSyncConfigurationType osync_plugin_get_config_type(OSyncPlugin *plugin);
+OSYNC_EXPORT OSyncPluginConfigurationType osync_plugin_get_config_type(OSyncPlugin *plugin);
 
 /** @brief Sets whether or not the plugin requires configuration
  *
  * @param plugin Pointer to the plugin
  * @param type The configuration requirement type of the plugin
  */
-OSYNC_EXPORT void osync_plugin_set_config_type(OSyncPlugin *plugin, OSyncConfigurationType type);
+OSYNC_EXPORT void osync_plugin_set_config_type(OSyncPlugin *plugin, OSyncPluginConfigurationType type);
 
 
 /** @brief Returns start type of plugin 
