@@ -734,6 +734,7 @@ static OSyncClientProxy *_osync_engine_initialize_member(OSyncEngine *engine, OS
 	OSyncPluginConfig *config = NULL;
 	OSyncPlugin *plugin = NULL;
 	OSyncClientProxy *proxy = NULL;
+	const char *external_command = NULL;
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, engine, member, error);
 
@@ -773,9 +774,26 @@ static OSyncClientProxy *_osync_engine_initialize_member(OSyncEngine *engine, OS
 	osync_client_proxy_set_context(proxy, engine->context);
 	osync_client_proxy_set_change_callback(proxy, _osync_engine_receive_change, engine);
 
-	const char *external_command=NULL;
-	if (osync_plugin_get_start_type(plugin)==OSYNC_START_TYPE_EXTERNAL)
-		external_command=osync_member_get_external_command(member);
+	if (osync_plugin_get_start_type(plugin) == OSYNC_START_TYPE_EXTERNAL) {
+
+
+		/* First try to get the indiviual external_command from the member plugin configuration */
+		if (config) {
+			OSyncPluginExternalPlugin *externalplugin = osync_plugin_config_get_externalplugin(config);
+
+			if (externalplugin)
+				external_command = osync_plugin_externalplugin_get_external_command(externalplugin);
+
+		}
+
+		/* If no PluginConfig specific external_command got set, use the default external-plugin config
+		 * command, if available
+		 */
+		if (!external_command) {
+			/* TODO: Grahams code to retrieve the external_command from the external-plugin config */
+		}
+
+	}
 
 	if (!osync_client_proxy_spawn(proxy, osync_plugin_get_start_type(plugin), osync_member_get_configdir(member), external_command, error))
 		goto error_free_proxy;
