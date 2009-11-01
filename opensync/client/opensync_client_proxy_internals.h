@@ -44,7 +44,7 @@ void osync_client_proxy_set_context(OSyncClientProxy *proxy, GMainContext *ctx);
 void osync_client_proxy_set_change_callback(OSyncClientProxy *proxy, change_cb cb, void *userdata);
 OSyncMember *osync_client_proxy_get_member(OSyncClientProxy *proxy);
 
-OSYNC_TEST_EXPORT osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type, const char *path, OSyncError **error);
+OSYNC_TEST_EXPORT osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type, const char *path, const char* external_command, OSyncError **error);
 OSYNC_TEST_EXPORT osync_bool osync_client_proxy_shutdown(OSyncClientProxy *proxy, OSyncError **error);
 
 OSYNC_TEST_EXPORT osync_bool osync_client_proxy_initialize(OSyncClientProxy *proxy, initialize_cb callback, void *userdata, const char *formatdir, const char *plugindir, const char *plugin, const char *groupname, const char *configdir, OSyncPluginConfig *config, OSyncError **error);

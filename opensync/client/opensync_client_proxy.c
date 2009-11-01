@@ -952,7 +952,7 @@ OSyncMember *osync_client_proxy_get_member(OSyncClientProxy *proxy)
 	return proxy->member;
 }
 
-osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type, const char *path, OSyncError **error)
+osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type, const char *path, const char* external_command, OSyncError **error)
 {
 	OSyncQueue *read1 = NULL;
 	OSyncQueue *read2 = NULL;
@@ -1080,6 +1080,22 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 			goto error;
 	} else {
 		name = osync_strdup_printf("%s%cpluginpipe", path, G_DIR_SEPARATOR);
+	
+		if (external_command) {
+			char *command = osync_strdup_printf(external_command, name);
+			osync_trace(TRACE_INTERNAL, "g_spawn_command_line_async(%s)", command);
+			GError *gerror = NULL;
+			gboolean f = g_spawn_command_line_async(command, &gerror);
+			if (!f) {
+				osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to g_spawn_command_line_async(%s): %s", command, gerror->message);
+				g_error_free (gerror);
+				osync_free(command);
+				goto error;
+			}
+			osync_free(command);
+		}
+
+
 		proxy->outgoing = osync_queue_new(name, error);
 		osync_free(name);
 		if (!proxy->outgoing)

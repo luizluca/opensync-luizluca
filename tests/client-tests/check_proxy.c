@@ -39,7 +39,7 @@ START_TEST (proxy_spawn)
 	fail_unless(proxy != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	fail_unless(osync_client_proxy_spawn(proxy, OSYNC_START_TYPE_THREAD, NULL, &error), NULL);
+	fail_unless(osync_client_proxy_spawn(proxy, OSYNC_START_TYPE_THREAD, NULL, NULL, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
 	fail_unless(osync_client_proxy_shutdown(proxy, &error), NULL);
@@ -110,7 +110,7 @@ START_TEST (proxy_init)
 	fail_unless(proxy != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	fail_unless(osync_client_proxy_spawn(proxy, OSYNC_START_TYPE_THREAD, NULL, &error), NULL);
+	fail_unless(osync_client_proxy_spawn(proxy, OSYNC_START_TYPE_THREAD, NULL, NULL, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
 	OSyncPluginConfig *config = simple_plugin_config(NULL, "data1", "mockobjtype1", "mockformat1", NULL);
@@ -159,7 +159,7 @@ START_TEST (proxy_discover)
 	fail_unless(proxy != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 	
-	fail_unless(osync_client_proxy_spawn(proxy, OSYNC_START_TYPE_THREAD, NULL, &error), NULL);
+	fail_unless(osync_client_proxy_spawn(proxy, OSYNC_START_TYPE_THREAD, NULL, NULL, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
 	OSyncPluginConfig *config = simple_plugin_config(NULL, "data1", "mockobjtype1", "mockformat1", NULL);
@@ -225,7 +225,7 @@ START_TEST (proxy_connect)
 	fail_unless(proxy != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 
-	fail_unless(osync_client_proxy_spawn(proxy, OSYNC_START_TYPE_THREAD, NULL, &error), NULL);
+	fail_unless(osync_client_proxy_spawn(proxy, OSYNC_START_TYPE_THREAD, NULL, NULL, &error), NULL);
 	fail_unless(error == NULL, NULL);
 	
 	OSyncPluginConfig *config = simple_plugin_config(NULL, "data1", "mockobjtype1", "mockformat1", NULL);

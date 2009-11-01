@@ -33,6 +33,7 @@
 #include "opensync_plugin_connection_internals.h"
 #include "opensync_plugin_localization_private.h"	/* FIXME: direct access to private header */
 #include "opensync_plugin_resource_private.h"		/* FIXME: direct access to private header */
+#include "opensync_plugin_externalplugin_private.h"	/* FIXME: direct access to private header */
 
 #include "opensync_plugin_config_private.h"
 #include "opensync_plugin_config_internals.h"
@@ -200,6 +201,47 @@ static osync_bool _osync_plugin_config_parse_authentication(OSyncPluginConfig *c
 
 	osync_plugin_config_set_authentication(config, auth);
 	osync_plugin_authentication_unref(auth);
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+
+ error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
+}
+
+static osync_bool _osync_plugin_config_parse_externalplugin(OSyncPluginConfig *config, xmlNode *cur, OSyncError **error)
+{
+	OSyncPluginExternalPlugin *externalplugin = NULL;
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, config, cur, error);
+
+	if (cur == NULL) { // don't set externalplugin if ExternalPlugin tag is empty
+		osync_trace(TRACE_EXIT, "%s", __func__);
+		return TRUE;	
+	}
+	
+	externalplugin = osync_plugin_externalplugin_new(error);
+	if (!externalplugin)
+		goto error;
+
+	for (; cur != NULL; cur = cur->next) {
+		char *str = NULL;
+		if (cur->type != XML_ELEMENT_NODE)
+			continue;
+
+		str = (char*)xmlNodeGetContent(cur);
+		if (!str)
+			continue;
+
+		if (!xmlStrcmp(cur->name, (const xmlChar *)"ExternalCommand")) {
+			osync_plugin_externalplugin_set_external_command(externalplugin, str);
+		}
+
+		osync_xml_free(str);
+	}
+
+	osync_plugin_config_set_externalplugin(config, externalplugin);
+	osync_plugin_externalplugin_unref(externalplugin);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
@@ -728,6 +770,9 @@ static osync_bool _osync_plugin_config_parse(OSyncPluginConfig *config, xmlNode 
 		} else if (!xmlStrcmp(cur->name, (const xmlChar *)"Resources")) {
 			config->supported |= OPENSYNC_PLUGIN_CONFIG_RESOURCES;
 			ret = _osync_plugin_config_parse_resources(config, cur->xmlChildrenNode, error);
+		} else if (!xmlStrcmp(cur->name, (const xmlChar *)"ExternalPlugin")) {
+			config->supported |= OPENSYNC_PLUGIN_CONFIG_EXTERNALPLUGIN;
+			ret = _osync_plugin_config_parse_externalplugin(config, cur->xmlChildrenNode, error);
 		} else {
 			osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "Unknown configuration field \"%s\"", cur->name);
 			goto error;
@@ -816,6 +861,28 @@ static osync_bool _osync_plugin_config_assemble_authentication(xmlNode *cur, OSy
 	if ((ref = osync_plugin_authentication_get_reference(auth)))
 		xmlNewChild(node, NULL, (xmlChar*)"Reference", (xmlChar*)ref);
 
+
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+ error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
+}
+
+static osync_bool _osync_plugin_config_assemble_externalplugin(xmlNode *cur, OSyncPluginExternalPlugin *externalplugin, OSyncError **error)
+{
+	const char *external_command;
+	xmlNode *node = NULL;
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, cur, externalplugin, error);
+
+	node = xmlNewChild(cur, NULL, (xmlChar*)"ExternalPlugin", NULL);
+	if (!node) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "No memory left to assemble configuration.");
+		goto error;
+	}
+
+	if ((external_command = osync_plugin_externalplugin_get_external_command(externalplugin)))
+		xmlNewChild(node, NULL, (xmlChar*)"ExternalCommand", (xmlChar*)external_command);
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
@@ -1308,6 +1375,9 @@ void osync_plugin_config_unref(OSyncPluginConfig *config)
 			config->resources = osync_list_remove(config->resources, res);
 		}
 
+		if (config->externalplugin)
+			osync_plugin_externalplugin_unref(config->externalplugin);
+
 		if (config->schemadir)
 			osync_free(config->schemadir);
 			
@@ -1330,6 +1400,7 @@ osync_bool osync_plugin_config_file_save(OSyncPluginConfig *config, const char *
 	OSyncPluginConnection *conn;
 	OSyncPluginAuthentication *auth;
 	OSyncPluginLocalization *local;
+	OSyncPluginExternalPlugin *externalplugin;
 	OSyncList *resources;
 	OSyncList *options;
 	char *version_str = NULL;
@@ -1380,6 +1451,11 @@ osync_bool osync_plugin_config_file_save(OSyncPluginConfig *config, const char *
 	/* Resources */
 	if ((resources = osync_plugin_config_get_resources(config)))
 		if (!_osync_plugin_config_assemble_resources(doc->children, resources, error))
+			goto error_and_free;
+
+	/* ExternalPlugin */
+	if ((externalplugin = osync_plugin_config_get_externalplugin(config)))
+		if (!_osync_plugin_config_assemble_externalplugin(doc->children, externalplugin, error))
 			goto error_and_free;
 
 	xmlSaveFormatFile(path, doc, 1);
@@ -1567,6 +1643,26 @@ OSyncPluginResource *osync_plugin_config_find_active_resource(OSyncPluginConfig 
 	return NULL;
 }
 
+/* External Plugin */
+OSyncPluginExternalPlugin *osync_plugin_config_get_externalplugin(OSyncPluginConfig *config)
+{
+	osync_assert(config);
+	return config->externalplugin;
+}
+
+void osync_plugin_config_set_externalplugin(OSyncPluginConfig *config, OSyncPluginExternalPlugin *externalplugin)
+{
+	osync_assert(config);
+	
+	if (config->externalplugin) {
+		osync_plugin_externalplugin_unref(config->externalplugin);
+		config->externalplugin = NULL;
+	}
+	
+	if (externalplugin) {
+		config->externalplugin = osync_plugin_externalplugin_ref(externalplugin);
+	}
+}
 
 OSyncPluginConnection *osync_plugin_config_get_connection(OSyncPluginConfig *config)
 {

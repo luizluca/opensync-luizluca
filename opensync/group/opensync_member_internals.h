@@ -184,6 +184,25 @@ OSYNC_TEST_EXPORT OSyncCapabilities* osync_member_load_capabilities(OSyncMember 
  */
 OSYNC_TEST_EXPORT osync_bool osync_member_save_capabilities(OSyncMember *member, OSyncCapabilities* capabilities, OSyncError** error);
 
+
+/** @brief Returns the external command of a member
+ *
+ * If the plugin is of type OSYNC_START_TYPE_EXTERNAL, an external command can be executed by OpenSync.
+ * The external_command should be a string in printf format, with one %s.
+ * Before the command is executed, a variant of printf will be called
+ * to replace the %s with the path to the plugin pipe.
+ * The resulting command will be exectued with the glib function
+ * g_spawn_command_line_async.
+ *
+ * The external command is specified in the plugin configuration file for the member, e.g.
+ * <ExternalPlugin><ExternalCommand>the command</ExternalCommand></ExternalPlugin>
+ * 
+ * @param plugin Pointer to the plugin
+ * @returns External command of the plugin
+ * 
+ */
+OSYNC_TEST_EXPORT const char *osync_member_get_external_command(OSyncMember *member);
+
 /*@}*/
 
 #endif /* _OPENSYNC_MEMBER_INTERNALS_H_ */

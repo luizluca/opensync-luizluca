@@ -47,7 +47,9 @@ typedef enum {
 	/** Resources */
 	OPENSYNC_PLUGIN_CONFIG_RESOURCES	= (1 << 3),
 	/** Connection options */
-	OPENSYNC_PLUGIN_CONFIG_CONNECTION	= (1 << 4)
+	OPENSYNC_PLUGIN_CONFIG_CONNECTION	= (1 << 4),
+	/** External Plugin */
+	OPENSYNC_PLUGIN_CONFIG_EXTERNALPLUGIN	= (1 << 5)
 } OSyncPluginConfigSupportedFlag;
 
 /** @brief Set of OSyncPluginConfigSupportedFlags
@@ -216,6 +218,21 @@ OSYNC_EXPORT OSyncPluginConnection *osync_plugin_config_get_connection(OSyncPlug
  * @param connection the connection settings as an OSyncPluginConnection
  */
 OSYNC_EXPORT void osync_plugin_config_set_connection(OSyncPluginConfig *config, OSyncPluginConnection *connection);
+
+/* External Plugin */
+/**@brief Get the external plugin settings from a config
+ *
+ * @param config An OSyncPluginConfig
+ * @returns an OSyncPluginExternalPlugin with the details of the external plugin or NULL if no external plugin settings configured
+ */
+OSYNC_EXPORT OSyncPluginExternalPlugin *osync_plugin_config_get_externalplugin(OSyncPluginConfig *config);
+
+/**@brief Set the external plugin configuration
+ *
+ * @param config An OSyncPluginConfig
+ * @param authentication The new external plugin settings as an OSyncPluginExternalPlugin
+ */
+OSYNC_EXPORT void osync_plugin_config_set_externalplugin(OSyncPluginConfig *config, OSyncPluginExternalPlugin *externalplugin);
 
 /*@}*/
 

@@ -773,7 +773,11 @@ static OSyncClientProxy *_osync_engine_initialize_member(OSyncEngine *engine, OS
 	osync_client_proxy_set_context(proxy, engine->context);
 	osync_client_proxy_set_change_callback(proxy, _osync_engine_receive_change, engine);
 
-	if (!osync_client_proxy_spawn(proxy, osync_plugin_get_start_type(plugin), osync_member_get_configdir(member), error))
+	const char *external_command=NULL;
+	if (osync_plugin_get_start_type(plugin)==OSYNC_START_TYPE_EXTERNAL)
+		external_command=osync_member_get_external_command(member);
+
+	if (!osync_client_proxy_spawn(proxy, osync_plugin_get_start_type(plugin), osync_member_get_configdir(member), external_command, error))
 		goto error_free_proxy;
 	
 	engine->busy = TRUE;

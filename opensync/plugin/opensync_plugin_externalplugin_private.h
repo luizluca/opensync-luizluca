@@ -1,6 +1,6 @@
 /*
  * libopensync - A synchronization framework
- * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
+ * Copyright (C) 2009  Henrik Kaare Poulsen
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,24 +18,32 @@
  * 
  */
 
-#ifndef OPENSYNCPLUGIN_H_
-#define OPENSYNCPLUGIN_H_
+#ifndef _OPENSYNC_PLUGIN_EXTERNALPLUGIN_PRIVATE_H_
+#define _OPENSYNC_PLUGIN_EXTERNALPLUGIN_PRIVATE_H_
 
-OPENSYNC_BEGIN_DECLS
+/**
+ * @defgroup OSyncPluginExternalPluginPrivateAPI OpenSync Plugin ExternalPlugin Private
+ * @ingroup OSyncPluginPrivate
+ */
 
-#include "plugin/opensync_context.h"
-#include "plugin/opensync_plugin.h"
-#include "plugin/opensync_plugin_env.h"
-#include "plugin/opensync_plugin_info.h"
-#include "plugin/opensync_plugin_config.h"
-#include "plugin/opensync_plugin_advancedoptions.h"
-#include "plugin/opensync_plugin_authentication.h"
-#include "plugin/opensync_plugin_connection.h"
-#include "plugin/opensync_plugin_localization.h"
-#include "plugin/opensync_plugin_resource.h"
-#include "plugin/opensync_plugin_externalplugin.h"
-#include "plugin/opensync_objtype_sink.h"
+/*@{*/
 
-OPENSYNC_END_DECLS
+/**
+ * @brief Gives information for plugin of type OSYNC_START_TYPE_EXTERNAL
+ **/
+struct OSyncPluginExternalPlugin {
+	/** Command to be executed to start the external process.
+	    In printf format; should have one %s
+	    which will be replaced with
+	    the path of the plugin pipe to the client process
+	*/
+	char *external_command;
 
-#endif /* OPENSYNCPLUGIN_H_ */
+	/** Object reference counting */
+	int ref_count;
+};
+
+/*@}*/
+
+#endif /* _OPENSYNC_PLUGIN_EXTERNALPLUGIN_PRIVATE_H_ */
+

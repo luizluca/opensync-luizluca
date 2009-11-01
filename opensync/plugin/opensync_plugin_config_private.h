@@ -44,6 +44,8 @@ struct OSyncPluginConfig {
 	OSyncPluginLocalization *localization;
 	/** List of resource configurations */
 	OSyncList *resources;
+	/** External plugin configuration */
+	OSyncPluginExternalPlugin *externalplugin;
 
 	/** Flags to store supported config options */
 	OSyncPluginConfigSupportedFlags supported;

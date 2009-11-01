@@ -334,6 +334,7 @@ OSYNC_EXPORT osync_bool osync_member_config_is_uptodate(OSyncMember *member);
  */
 OSYNC_EXPORT osync_bool osync_member_plugin_is_uptodate(OSyncMember *member);
 
+
 /*@}*/
 
 #endif /* _OPENSYNC_MEMBER_H_ */

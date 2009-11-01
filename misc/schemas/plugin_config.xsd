@@ -9,6 +9,7 @@
         <xsd:element maxOccurs="1" minOccurs="0" name="Connection" type="Connection"/>
         <xsd:element maxOccurs="1" minOccurs="0" name="Localization" type="Localization"/>
         <xsd:element maxOccurs="1" minOccurs="0" name="Resources" type="Resources"/>
+        <xsd:element maxOccurs="1" minOccurs="0" name="ExternalPlugin" type="ExternalPlugin"/>
       </xsd:sequence>
       <xsd:attribute name="version" type="xsd:string"/>
     </xsd:complexType>
@@ -161,6 +162,12 @@
       <xsd:element maxOccurs="1" minOccurs="0" name="Network" type="ConnectionNetwork" />
       <xsd:element maxOccurs="1" minOccurs="0" name="Serial" type="ConnectionSerial" />
       <xsd:element maxOccurs="1" minOccurs="0" name="USB" type="ConnectionUSB" />
+    </xsd:all>
+  </xsd:complexType>
+
+  <xsd:complexType name="ExternalPlugin">
+    <xsd:all>
+      <xsd:element maxOccurs="1" minOccurs="1" name="ExternalCommand" type="xsd:string" />
     </xsd:all>
   </xsd:complexType>
 

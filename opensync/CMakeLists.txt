@@ -60,6 +60,7 @@ SET( libopensync_LIB_SRCS
    plugin/opensync_plugin_info.c
    plugin/opensync_plugin_localization.c
    plugin/opensync_plugin_resource.c
+   plugin/opensync_plugin_externalplugin.c
    plugin/opensync_objtype_sink.c
    version/opensync_version.c
    xmlformat/opensync_xmlfield.c

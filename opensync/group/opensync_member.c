@@ -832,6 +832,18 @@ OSyncList *osync_member_get_objtypes(OSyncMember *member) {
 	return new_list;
 }
 
+const char *osync_member_get_external_command(OSyncMember *member)
+{
+	osync_assert(member);
+	OSyncError *error;
+	OSyncPluginConfig *config = osync_member_get_config_or_default(member, &error);
+	if (config) {
+		OSyncPluginExternalPlugin *externalplugin = osync_plugin_config_get_externalplugin(config);
+		if (externalplugin) return osync_plugin_externalplugin_get_external_command(externalplugin);
+	}
+	return NULL;
+}
+
 osync_bool osync_member_objtype_enabled(OSyncMember *member, const char *objtype)
 {
 	OSyncObjTypeSink *sink = NULL;
