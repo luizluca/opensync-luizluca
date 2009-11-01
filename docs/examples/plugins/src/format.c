@@ -13,6 +13,10 @@ typedef struct converter_data {
 	char *data;
 } converter_data;
 
+typedef struct format_userdata {
+	char *data1;
+	int data2;
+} format_userdata;
 
 static OSyncConvCmpResult compare_format1(const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *data, OSyncError **error)
 {
@@ -145,7 +149,7 @@ void *init_format1(OSyncError **error) {
 	 * function. If the data should be passes to all format 
 	 * functions it has to be returned as a pointer.
 	 */
-	char *format_specific_data = osync_try_malloc0(0, error);
+	char *format_specific_data = osync_try_malloc0(sizeof(format_userdata), error);
 	return (void *)format_specific_data;
 }
 
