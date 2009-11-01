@@ -28,6 +28,8 @@
 #include "opensync_plugin_env_internals.h"
 #include "opensync_plugin_env_private.h"
 
+#include "common/opensync_xml_internals.h"
+
 OSyncPluginEnv *osync_plugin_env_new(OSyncError **error)
 {
 	OSyncPluginEnv *env = NULL;
@@ -69,9 +71,8 @@ void osync_plugin_env_unref(OSyncPluginEnv *env)
 			env->plugins = osync_list_remove(env->plugins, env->plugins->data);
 		}
 	
-		/* Unload all modules */
+		/* Unref (and so unload) all modules */
 		while (env->modules) {
-			osync_module_unload(env->modules->data);
 			osync_module_unref(env->modules->data);
 			env->modules = osync_list_remove(env->modules, env->modules->data);
 		}
@@ -107,6 +108,33 @@ osync_bool osync_plugin_env_load(OSyncPluginEnv *env, const char *path, OSyncErr
 		}
 	}
 	
+	/* First try to load config files for external plugins */
+	dir = g_dir_open(path, 0, &gerror);
+	if (!dir) {
+		osync_error_set(error, OSYNC_ERROR_IO_ERROR, "Unable to open directory %s: %s", path, gerror->message);
+		g_error_free(gerror);
+		goto error;
+	}
+	
+	while ((de = g_dir_read_name(dir))) {
+		filename = osync_strdup_printf ("%s%c%s", path, G_DIR_SEPARATOR, de);
+		
+		if (!g_file_test(filename, G_FILE_TEST_IS_REGULAR) || !g_pattern_match_simple("*.xml", filename)) {
+			osync_free(filename);
+			continue;
+		}
+		
+		if (!osync_plugin_env_load_module_xml(env, filename, error)) {
+			osync_trace(TRACE_ERROR, "Unable to load module: %s", osync_error_print(error));
+			/* FIXME: report error to user and free error */
+		}
+		
+		osync_free(filename);
+	}
+	
+	g_dir_close(dir);
+	
+	/* Then try to load loadable plugins */
 	dir = g_dir_open(path, 0, &gerror);
 	if (!dir) {
 		osync_error_set(error, OSYNC_ERROR_IO_ERROR, "Unable to open directory %s: %s", path, gerror->message);
@@ -124,6 +152,7 @@ osync_bool osync_plugin_env_load(OSyncPluginEnv *env, const char *path, OSyncErr
 		
 		if (!osync_plugin_env_load_module(env, filename, error)) {
 			osync_trace(TRACE_ERROR, "Unable to load module: %s", osync_error_print(error));
+			/* FIXME: report error to user and free error */
 		}
 		
 		osync_free(filename);
@@ -195,6 +224,86 @@ error_free_module:
 	osync_module_unload(module);
 	osync_module_unref(module);
 error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
+}
+
+osync_bool osync_plugin_env_load_module_xml(OSyncPluginEnv *env, const char *filename, OSyncError **error)
+{
+	OSyncModule *module = NULL;
+	int version = 0;
+	gchar *name = NULL, *longname = NULL, *description = NULL, *command = NULL, *version_str = NULL;
+	xmlDocPtr doc;
+	xmlNodePtr cur;
+	
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p)", __func__, env, filename, error);
+	osync_assert(env);
+	osync_assert(filename);
+
+	if (!osync_xml_open_file(&doc, &cur, filename, "ExternalPlugin", &error))
+		goto error;
+
+	version_str = xmlGetProp(cur->parent, (const xmlChar *)"version");
+	if (version_str) version = atoi(version_str);
+
+	for (; cur != NULL; cur = cur->next) {
+		char *str = NULL;
+		if (cur->type != XML_ELEMENT_NODE)
+			continue;
+
+		str = (char*)xmlNodeGetContent(cur);
+		if (!str)
+			continue;
+
+		if (!xmlStrcmp(cur->name, BAD_CAST "Name"))
+		  name = osync_strdup(str);
+		else if (!xmlStrcmp(cur->name, BAD_CAST "LongName"))
+		  longname = osync_strdup(str);
+		else if (!xmlStrcmp(cur->name, BAD_CAST "Description"))
+		  description = osync_strdup(str);
+		else if (!xmlStrcmp(cur->name, BAD_CAST "ExternalCommand"))
+		  command = osync_strdup(str);
+
+		osync_xml_free(str);
+	}
+	osync_xml_free_doc(doc);
+
+       	module = osync_module_new(error);
+	if (!module)
+		goto error;
+
+      	if (version != OPENSYNC_PLUGINVERSION) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "External plugin API version mismatch. Is: %i. Should be %i", version, OPENSYNC_PLUGINVERSION);
+		goto error_free_module;
+	}
+
+	/* This code simulates the get_sync_info code of a normal plugin */
+        OSyncPlugin *plugin = osync_plugin_new(error);
+        if (!plugin)
+                goto error_free_module;
+
+        osync_plugin_set_name(plugin, name);
+        osync_plugin_set_longname(plugin, longname);
+        osync_plugin_set_description(plugin, description);
+        osync_plugin_set_start_type(plugin, OSYNC_START_TYPE_EXTERNAL);
+
+        if (!osync_plugin_env_register_plugin(env, plugin, error)) {
+	  osync_plugin_unref(plugin);
+	  goto error_free_module;
+	}
+
+        osync_plugin_unref(plugin);
+
+	env->modules = osync_list_append(env->modules, module);
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+
+error_free_module:
+	osync_module_unref(module);
+error:
+	osync_free(name); osync_free(longname); osync_free(description); 
+	osync_free(command); osync_free(version_str);
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
 }

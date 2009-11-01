@@ -1,9 +1,10 @@
 /*
  *
- * !!! This is only a temporary solution and will be soon obsolete. !!!
+ * !!! This approach still works but the preferred approach is to use !!!
+ * !!! the XML file: see external_plugin.xml.  Using a real plugin, !!!
+ * !!! as in this code, is now deprecated. !!!
  *
  * This plugin is just a stub to register an external plugin to the plugin-env
- * In the future this will be done via configuration files.
  *
  */
 

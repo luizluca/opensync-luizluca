@@ -40,6 +40,16 @@
  */
 osync_bool osync_plugin_env_load_module(OSyncPluginEnv *env, const char *filename, OSyncError **error);
 
+/** @brief Loads a configuration file for an external module into the plugin environment 
+ * 
+ * @param env Pointer to a plugin environment
+ * @param filename Config filename, as full path, to load
+ * @param error Pointer to error-struct
+ * @returns TRUE on success, FALSE otherwise
+ * 
+ */
+osync_bool osync_plugin_env_load_module_xml(OSyncPluginEnv *env, const char *filename, OSyncError **error);
+
 /** @brief Checks if plugin is usable 
  * 
  * @param env Pointer to a OSyncPluginEnv environment

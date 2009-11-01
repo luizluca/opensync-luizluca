@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- Note: this is the XML version of the example external plugin.
+ Either this or the external_plugin.c version can be used - they 
+ have the same effect. Using this XML file is the preferred approach, 
+ but creating a real plugin is still supported. Use one or the other, 
+ but not both! -->
+ <ExternalPlugin version="1">
+  <Name>external-demo-xml</Name>
+  <LongName>long name. maybe &lt; 50 chars</LongName>
+  <Description>A longer description. &lt; 200 chars</Description>
+  <ExternalCommand>example_external_demo %s</ExternalCommand>
+ </ExternalPlugin>
