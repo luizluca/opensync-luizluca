@@ -232,7 +232,8 @@ osync_bool osync_plugin_env_load_module_xml(OSyncPluginEnv *env, const char *fil
 {
 	OSyncModule *module = NULL;
 	int version = 0;
-	gchar *name = NULL, *longname = NULL, *description = NULL, *command = NULL, *version_str = NULL;
+	gchar *name = NULL, *longname = NULL, *description = NULL, *command = NULL;
+	xmlChar *version_str = NULL;
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	
@@ -240,11 +241,14 @@ osync_bool osync_plugin_env_load_module_xml(OSyncPluginEnv *env, const char *fil
 	osync_assert(env);
 	osync_assert(filename);
 
-	if (!osync_xml_open_file(&doc, &cur, filename, "ExternalPlugin", &error))
+	if (!osync_xml_open_file(&doc, &cur, filename, "ExternalPlugin", error))
 		goto error;
 
-	version_str = xmlGetProp(cur->parent, (const xmlChar *)"version");
-	if (version_str) version = atoi(version_str);
+	version_str = xmlGetProp(cur->parent, BAD_CAST "version");
+	if (version_str) {
+		version = atoi((const char *) version_str);
+		osync_xml_free(version_str);
+	}
 
 	for (; cur != NULL; cur = cur->next) {
 		char *str = NULL;
@@ -303,7 +307,7 @@ error_free_module:
 	osync_module_unref(module);
 error:
 	osync_free(name); osync_free(longname); osync_free(description); 
-	osync_free(command); osync_free(version_str);
+	osync_free(command);
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
 }
