@@ -23,7 +23,7 @@ ENDMACRO( OPENSYNC_PLUGIN_INSTALL )
 ### Got introduced to be able in future to move those plugins into
 ### a seperated directory, without fixing all plugin build environments
 MACRO( OPENSYNC_EXTERNAL_PLUGIN_INSTALL _pluginName ) 
-  INSTALL( TARGETS ${_pluginName} DESTINATION ${OPENSYNC_PLUGINDIR} )
+  INSTALL( FILES ${_pluginName} DESTINATION ${OPENSYNC_PLUGINDIR} )
 ENDMACRO( OPENSYNC_EXTERNAL_PLUGIN_INSTALL )
 
 ## Install format plugin
