@@ -33,6 +33,29 @@ typedef osync_bool (* usable_fn) (OSyncError **);
 
 /*@{*/
 
+/** @brief Get default external command of the plugin
+ *
+ * The default external command is set in the plugin external configuration (XML) file
+ * 
+ * @param plugin The plugin to check
+ * @returns external command as const-char* string if a command is set, NULL otherwise.
+ * 
+ */
+OSYNC_TEST_EXPORT const char *osync_plugin_get_external_command(OSyncPlugin *plugin);
+
+/** @brief Get default external command of the plugin
+ *
+ * External command as const-char* string get substitued with the pipe-path.
+ * For this, one %s is required, which will be substriuted with the pipe-path.
+ *
+ * Example: /usr/local/bin/foobar --pipe %s
+ *
+ * @param plugin The plugin to check
+ * @param external_command External command as const-char* string like-printf with %s which get substitured with pipe-path
+ * 
+ */
+OSYNC_TEST_EXPORT void osync_plugin_set_external_command(OSyncPlugin *plugin, const char *external_command);
+
 /** @brief Checks if a plugin is available and usable
  * 
  * @param plugin The plugin to check

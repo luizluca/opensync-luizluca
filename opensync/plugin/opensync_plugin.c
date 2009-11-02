@@ -65,6 +65,9 @@ void osync_plugin_unref(OSyncPlugin *plugin)
 			
 		if (plugin->description)
 			osync_free(plugin->description);
+
+		if (plugin->external_command)
+			osync_free(plugin->external_command);
 			
 		osync_free(plugin);
 	}
@@ -110,6 +113,20 @@ void osync_plugin_set_description(OSyncPlugin *plugin, const char *description)
 	if (plugin->description)
 		osync_free(plugin->description);
 	plugin->description = osync_strdup(description);
+}
+
+const char *osync_plugin_get_external_command(OSyncPlugin *plugin)
+{
+	osync_assert(plugin);
+	return plugin->external_command;
+}
+
+void osync_plugin_set_external_command(OSyncPlugin *plugin, const char *external_command)
+{
+	osync_assert(plugin);
+	if (plugin->external_command)
+		osync_free(plugin->external_command);
+	plugin->external_command = osync_strdup(external_command);
 }
 
 void *osync_plugin_get_data(OSyncPlugin *plugin)

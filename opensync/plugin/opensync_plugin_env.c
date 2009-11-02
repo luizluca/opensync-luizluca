@@ -23,6 +23,7 @@
 
 #include "opensync-module.h"
 #include "module/opensync_module_internals.h"
+#include "plugin/opensync_plugin_internals.h"
 
 #include "opensync-plugin.h"
 #include "opensync_plugin_env_internals.h"
@@ -290,6 +291,11 @@ osync_bool osync_plugin_env_load_module_xml(OSyncPluginEnv *env, const char *fil
         osync_plugin_set_longname(plugin, longname);
         osync_plugin_set_description(plugin, description);
         osync_plugin_set_start_type(plugin, OSYNC_START_TYPE_EXTERNAL);
+
+	if (command) {
+		osync_plugin_set_external_command(plugin, command);
+		osync_free(command);
+	}
 
         if (!osync_plugin_env_register_plugin(env, plugin, error)) {
 	  osync_plugin_unref(plugin);

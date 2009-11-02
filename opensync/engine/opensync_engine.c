@@ -36,6 +36,7 @@
 #include "group/opensync_member_internals.h"
 #include "format/opensync_objformat_internals.h"
 #include "common/opensync_marshal_internals.h"
+#include "plugin/opensync_plugin_internals.h"
 
 #include "opensync_status_internals.h"
 #include "opensync_obj_engine_internals.h"
@@ -790,7 +791,7 @@ static OSyncClientProxy *_osync_engine_initialize_member(OSyncEngine *engine, OS
 		 * command, if available
 		 */
 		if (!external_command) {
-			/* TODO: Grahams code to retrieve the external_command from the external-plugin config */
+			external_command = osync_plugin_get_external_command(plugin);
 		}
 
 	}

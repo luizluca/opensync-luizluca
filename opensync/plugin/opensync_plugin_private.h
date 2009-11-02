@@ -53,6 +53,10 @@ struct OSyncPlugin {
 	char *longname;
 	/** A short description what the plugin does */
 	char *description;
+
+	/** Default external command (optional) */
+	char *external_command;
+
 	/** The function to initialize the plugin. */
 	initialize_fn initialize;
 	/** The function to finalize the plugin. The input will be the output of the initialize function */

@@ -963,7 +963,7 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 	char *writefd = NULL;
 	char *name = NULL;
 	
-	osync_trace(TRACE_ENTRY, "%s(%p, %i, %s, %p)", __func__, proxy, type, path, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %i, %s, %s, %p)", __func__, proxy, type, path, __NULLSTR(external_command), error);
 	osync_assert(proxy);
 	osync_assert(type != OSYNC_START_TYPE_UNKNOWN);
 		
