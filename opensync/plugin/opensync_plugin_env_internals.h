@@ -30,6 +30,8 @@
 
 /*@{*/
 
+#define OSYNC_EXTERNAL_PLUGIN_CONFIG_SCHEMA "external_plugin_config.xsd"
+
 /** @brief Loads a module into the plugin environment 
  * 
  * @param env Pointer to a plugin environment
@@ -71,6 +73,19 @@ OSYNC_TEST_EXPORT osync_bool osync_plugin_env_plugin_is_usable(OSyncPluginEnv *e
  * 
  */
 OSYNC_TEST_EXPORT unsigned int osync_plugin_env_num_plugins(OSyncPluginEnv *env);
+
+
+#ifdef OPENSYNC_UNITTESTING
+/** @brief Change the schema path to a non-default directory
+ * 
+ * XXX: This is only intended for unittesting.
+ * 
+ * @param env Pointer to a OSyncPluginEnv environment
+ * @param schemapath Path to the non-default schema-path 
+ * 
+ */
+OSYNC_TEST_EXPORT void osync_plugin_env_set_schemapath(OSyncPluginEnv *env, const char *schemapth);
+#endif /* OPENSYNC_UNITTESTING */
 
 /*@}*/
 

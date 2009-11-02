@@ -77,6 +77,10 @@ void osync_plugin_env_unref(OSyncPluginEnv *env)
 			osync_module_unref(env->modules->data);
 			env->modules = osync_list_remove(env->modules, env->modules->data);
 		}
+
+		if (env->schemapath)
+			osync_free(env->schemapath);
+
 		osync_free(env);
 	}
 	
@@ -229,10 +233,19 @@ error:
 	return FALSE;
 }
 
+#ifdef OPENSYNC_UNITTESTING
+void osync_plugin_env_set_schemapath(OSyncPluginEnv *env, const char *schemapth)
+{
+	env->schemapth = osync_strdup(schempath);
+}
+#endif /* OPENSYNC_UNITTESTING */
+
 osync_bool osync_plugin_env_load_module_xml(OSyncPluginEnv *env, const char *filename, OSyncError **error)
 {
 	OSyncModule *module = NULL;
 	int version = 0;
+	const char *schemapath = env->schemapath ? env->schemapath : OPENSYNC_SCHEMASDIR;
+	char *schemafile = NULL;
 	gchar *name = NULL, *longname = NULL, *description = NULL, *command = NULL;
 	xmlChar *version_str = NULL;
 	xmlDocPtr doc;
@@ -244,6 +257,15 @@ osync_bool osync_plugin_env_load_module_xml(OSyncPluginEnv *env, const char *fil
 
 	if (!osync_xml_open_file(&doc, &cur, filename, "ExternalPlugin", error))
 		goto error;
+
+	/* Validate external plugin configuration file */
+	schemafile = osync_strdup_printf("%s%c%s", schemapath, G_DIR_SEPARATOR, OSYNC_EXTERNAL_PLUGIN_CONFIG_SCHEMA);
+	if (!osync_xml_validate_document(doc, schemafile)) {
+		osync_error_set(error, OSYNC_ERROR_MISCONFIGURATION, "Plugin configuration file is not valid! %s", schemafile);
+		osync_free(schemafile);
+		goto error;
+	}
+	osync_free(schemafile);
 
 	version_str = xmlGetProp(cur->parent, BAD_CAST "version");
 	if (version_str) {

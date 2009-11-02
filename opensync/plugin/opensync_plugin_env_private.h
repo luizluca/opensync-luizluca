@@ -35,6 +35,9 @@ struct OSyncPluginEnv {
 	
 	GModule *current_module;
 
+	/** Non-default schemapath, only for unit-testing */
+	char *schemapath;
+
 	int ref_count;
 };
 
