@@ -12,10 +12,7 @@ TARGET_LINK_LIBRARIES( example_plugin ${OPENSYNC_LIBRARIES} )
 OPENSYNC_PLUGIN_INSTALL( example_plugin )
 
 ### External Synchronization Plugin ########
-OPENSYNC_PLUGIN_ADD( example_external_plugin external_plugin.c )
-OPENSYNC_PLUGIN_CONFIG(external-demo )
-TARGET_LINK_LIBRARIES( example_external_plugin ${OPENSYNC_LIBRARIES} )
-OPENSYNC_PLUGIN_INSTALL( example_external_plugin )
+OPENSYNC_PLUGIN_CONFIG( external-demo )
 OPENSYNC_EXTERNAL_PLUGIN_INSTALL( external_plugin.xml )
 
 ADD_EXECUTABLE( example_external_demo external_demo.c )
