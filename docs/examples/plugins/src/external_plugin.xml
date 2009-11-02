@@ -5,7 +5,7 @@
  but creating a real plugin is still supported. Use one or the other, 
  but not both! -->
  <ExternalPlugin version="1">
-  <Name>external-demo-xml</Name>
+  <Name>external-plugin</Name>
   <LongName>long name. maybe &lt; 50 chars</LongName>
   <Description>A longer description. &lt; 200 chars</Description>
   <ExternalCommand>example_external_demo %s</ExternalCommand>
