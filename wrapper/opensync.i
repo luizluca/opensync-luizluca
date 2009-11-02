@@ -18,7 +18,7 @@ typedef OSyncCapabilities Capabilities;
 typedef OSyncCapability Capability;
 typedef OSyncChange Change;
 typedef OSyncChangeType ChangeType;
-typedef OSyncConfigurationType ConfigurationType;
+typedef OSyncPluginConfigurationType ConfigurationType;
 typedef OSyncConflictResolution ConflictResolution;
 typedef OSyncContext Context;
 typedef OSyncConvCmpResult ConvCmpResult;
