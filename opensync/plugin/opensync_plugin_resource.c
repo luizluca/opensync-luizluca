@@ -161,7 +161,7 @@ void osync_plugin_resource_add_objformat_sink(OSyncPluginResource *resource, OSy
 		return;
 
 	osync_objformat_sink_ref(formatsink);
-	resource->objformatsinks = osync_list_prepend(resource->objformatsinks, formatsink);
+	resource->objformatsinks = osync_list_append(resource->objformatsinks, formatsink);
 }
 
 void osync_plugin_resource_remove_objformat_sink(OSyncPluginResource *resource, OSyncObjFormatSink *formatsink)

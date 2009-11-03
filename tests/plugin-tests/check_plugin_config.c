@@ -6,11 +6,11 @@
 #include "opensync/plugin/opensync_plugin_config_private.h"
 #include "opensync/plugin/opensync_plugin_config_internals.h"
 
-static const char *_format_sink_get_objformat(OSyncPluginResource *res) {
+static const char *_format_sink_get_objformat(OSyncPluginResource *res, unsigned int nth) {
 
 	OSyncObjFormatSink *format_sink;
 	OSyncList *objformats = osync_plugin_resource_get_objformat_sinks(res);
-	format_sink = (OSyncObjFormatSink *) osync_list_nth_data(objformats, 0);
+	format_sink = (OSyncObjFormatSink *) osync_list_nth_data(objformats, nth);
 	fail_unless(!!format_sink, NULL);
 	osync_list_free(objformats);
 	return osync_objformat_sink_get_objformat(format_sink);
@@ -675,7 +675,7 @@ START_TEST (plugin_config_resources)
 	osync_plugin_resource_add_objformat_sink(resource, format_sink);
 	osync_objformat_sink_unref(format_sink);
 
-	fail_unless(!strcmp(_format_sink_get_objformat(resource), "foobar"), NULL);
+	fail_unless(!strcmp(_format_sink_get_objformat(resource, 0), "foobar"), NULL);
 
 	/* Overwrite (leak check) */
 	OSyncObjFormatSink *format_sink2 = osync_objformat_sink_new("barfoo", &error);
@@ -686,7 +686,7 @@ START_TEST (plugin_config_resources)
 	osync_plugin_resource_add_objformat_sink(resource, format_sink2);
 	osync_objformat_sink_unref(format_sink2);
 
-	fail_unless(!strcmp(_format_sink_get_objformat(resource), "barfoo"), NULL);
+	fail_unless(!strcmp(_format_sink_get_objformat(resource, 1), "barfoo"), NULL);
 
 	/* Check for correct number objformat sinks: 2 sinks! */
 	OSyncList *objformats = osync_plugin_resource_get_objformat_sinks(resource);
@@ -911,7 +911,7 @@ START_TEST (plugin_config_save_and_load)
 		char *value = g_strdup_printf("foobar%i", i);
 		fail_unless(!strcmp(osync_plugin_resource_get_name(r->data), value), NULL);
 		fail_unless(!strcmp(osync_plugin_resource_get_mime(r->data), value), NULL);
-		fail_unless(!strcmp(_format_sink_get_objformat(r->data), value), NULL);
+		fail_unless(!strcmp(_format_sink_get_objformat(r->data, 0), value), NULL);
 		fail_unless(!strcmp(osync_plugin_resource_get_objtype(r->data), value), NULL);
 
 		fail_unless(!strcmp(osync_plugin_resource_get_path(r->data), value), NULL);
@@ -1231,6 +1231,77 @@ START_TEST (plugin_config_save_and_load_connection_serial)
 }
 END_TEST
 
+START_TEST (plugin_config_save_load_save)
+{
+	char *testbed = setup_testbed(NULL);
+
+	OSyncError *error = NULL;
+	OSyncPluginConfig *config = osync_plugin_config_new(&error);
+	OSyncPluginConfig *reloaded_config = osync_plugin_config_new(&error);
+
+	fail_unless(error == NULL, NULL);
+	fail_unless(config != NULL, NULL);
+
+	/* Resource #1 */
+	OSyncPluginResource *resource1 = osync_plugin_resource_new(&error);
+	fail_unless(error == NULL, NULL);
+	fail_unless(resource1 != NULL, NULL);
+
+	/* OSyncObjFormatSink */
+	OSyncObjFormatSink *format_sink1 = osync_objformat_sink_new("foobar1fmt1", &error);
+	fail_unless(format_sink1 != NULL, NULL);
+	osync_objformat_sink_set_config(format_sink1, "random1");
+
+	OSyncObjFormatSink *format_sink2 = osync_objformat_sink_new("foobar1fmt2", &error);
+	fail_unless(format_sink2 != NULL, NULL);
+	osync_objformat_sink_set_config(format_sink2, "random2");
+
+	/* Name */
+	osync_plugin_resource_set_name(resource1, "foobar1");
+	osync_plugin_resource_set_mime(resource1, "foobar1");
+	osync_plugin_resource_add_objformat_sink(resource1, format_sink1);
+	osync_plugin_resource_add_objformat_sink(resource1, format_sink2);
+	osync_objformat_sink_unref(format_sink1);
+	osync_plugin_resource_set_objtype(resource1, "foobar1");
+	osync_plugin_resource_set_path(resource1, "foobar1");
+	osync_plugin_resource_set_url(resource1, "foobar1");
+
+	osync_plugin_config_add_resource(config, resource1);
+
+	/* Set subcomponents */
+	osync_plugin_config_set_schemadir(reloaded_config, testbed);
+	char *config_file = g_strdup_printf("%s/dummy_config.xml", testbed);
+	fail_unless(osync_plugin_config_file_save(config, config_file, &error), "%s", osync_error_print(&error));
+	fail_unless(osync_plugin_config_file_load(reloaded_config, config_file, &error), NULL);
+
+	
+	char *config_file2 = g_strdup_printf("%s/dummy_config2.xml", testbed);
+	osync_plugin_config_file_save(reloaded_config, config_file2, &error);
+	fail_unless(error == NULL, "%s", osync_error_print(&error));
+
+	char *config_file_contents = NULL;
+	char *config_file2_contents = NULL;
+	fail_unless(g_file_get_contents(config_file, &config_file_contents, NULL, NULL), NULL);
+	fail_unless(g_file_get_contents(config_file2, &config_file2_contents, NULL, NULL), NULL);
+	g_free(config_file);
+	g_free(config_file2);
+
+	fail_unless(config_file_contents != NULL, NULL);
+	fail_unless(config_file2_contents != NULL, NULL);
+	
+	fail_unless(!strcmp(config_file_contents, config_file2_contents), "Config file changed after reading in then writing out");
+
+	g_free(config_file_contents);
+	g_free(config_file2_contents);
+
+	osync_plugin_config_unref(config);
+	osync_plugin_config_unref(reloaded_config);						   
+	destroy_testbed(testbed);
+}
+END_TEST
+
+
+
 OSYNC_TESTCASE_START("plugin_config")
 OSYNC_TESTCASE_ADD(plugin_config_new)
 OSYNC_TESTCASE_ADD(plugin_config_new_nomemory)
@@ -1250,5 +1321,6 @@ OSYNC_TESTCASE_ADD(plugin_config_save_and_load_connection_usb)
 OSYNC_TESTCASE_ADD(plugin_config_save_and_load_connection_irda)
 OSYNC_TESTCASE_ADD(plugin_config_save_and_load_connection_network)
 OSYNC_TESTCASE_ADD(plugin_config_save_and_load_connection_serial)
+OSYNC_TESTCASE_ADD(plugin_config_save_load_save)
 OSYNC_TESTCASE_END
 
