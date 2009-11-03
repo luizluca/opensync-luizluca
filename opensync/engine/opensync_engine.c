@@ -418,12 +418,15 @@ osync_bool osync_engine_mapping_ignore_conflict(OSyncEngine *engine, OSyncMappin
 {
 	OSyncEngineCommand *cmd = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, mapping_engine, error);
+
+	if (!osync_mapping_engine_supports_ignore(mapping_engine)) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Can't resolve the conflict by ignore it!");
+		goto error;
+	}
 	
 	cmd = osync_try_malloc0(sizeof(OSyncEngineCommand), error);
-	if (!cmd) {
-		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-		return FALSE;
-	}
+	if (!cmd)
+		goto error;
 	
 	cmd->cmd = OSYNC_ENGINE_COMMAND_SOLVE;
 	cmd->mapping_engine = mapping_engine;
@@ -433,18 +436,25 @@ osync_bool osync_engine_mapping_ignore_conflict(OSyncEngine *engine, OSyncMappin
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
 }
 
 osync_bool osync_engine_mapping_use_latest(OSyncEngine *engine, OSyncMappingEngine *mapping_engine, OSyncError **error)
 {
 	OSyncEngineCommand *cmd = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, mapping_engine, error);
+
+	if (!osync_mapping_engine_supports_use_latest(mapping_engine)) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Can't resolve the conflict by using the latest change!");
+		goto error;
+	}
 	
 	cmd = osync_try_malloc0(sizeof(OSyncEngineCommand), error);
-	if (!cmd) {
-		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-		return FALSE;
-	}
+	if (!cmd)
+		goto error;
 	
 	cmd->cmd = OSYNC_ENGINE_COMMAND_SOLVE;
 	cmd->mapping_engine = mapping_engine;
@@ -454,6 +464,10 @@ osync_bool osync_engine_mapping_use_latest(OSyncEngine *engine, OSyncMappingEngi
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
 }
 
 OSyncEngine *osync_engine_new(OSyncGroup *group, OSyncError **error)
