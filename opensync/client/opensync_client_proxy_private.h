@@ -72,6 +72,9 @@
 		change_cb change_callback;
 		void *change_callback_data;
 
+		uid_update_cb uid_update_callback;
+		void *uid_update_callback_data;
+
 		/** Proxy specific error struct */
 		OSyncError *error;
 	};

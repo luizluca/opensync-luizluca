@@ -172,6 +172,11 @@ static void _osync_engine_converter_path_unref(gpointer data) {
 	osync_converter_path_unref(converter_path);
 }
 
+static void _osync_engine_receive_uid_update(OSyncClientProxy *proxy, void *userdata, const char *objtype, const char *olduid, const char *newuid)
+{
+	printf("OBJTYPE: %s OLDUID: %s NEWUID: %s\n", objtype, olduid, newuid);
+}
+
 static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata, OSyncChange *change)
 {
 	OSyncEngine *engine = userdata;
@@ -788,6 +793,7 @@ static OSyncClientProxy *_osync_engine_initialize_member(OSyncEngine *engine, OS
 		
 	osync_client_proxy_set_context(proxy, engine->context);
 	osync_client_proxy_set_change_callback(proxy, _osync_engine_receive_change, engine);
+	osync_client_proxy_set_uid_update_callback(proxy, _osync_engine_receive_uid_update, engine);
 
 	if (osync_plugin_get_start_type(plugin) == OSYNC_START_TYPE_EXTERNAL) {
 

@@ -827,6 +827,7 @@ static void _osync_client_proxy_message_handler(OSyncMessage *message, void *use
 	OSyncClientProxy *proxy = user_data;
 	OSyncError *error = NULL;
 	OSyncChange *change = NULL;
+	char *objtype = NULL, *olduid = NULL, *newuid = NULL;
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
 	
@@ -850,13 +851,52 @@ static void _osync_client_proxy_message_handler(OSyncMessage *message, void *use
 		osync_change_unref(change);
 		break;
 
+	case OSYNC_MESSAGE_MAPPING_CHANGED:
+
+		osync_assert(proxy->uid_update_callback);
+
+		if (proxy->error) {
+			osync_trace(TRACE_INTERNAL, "WARNING: Proxy error taintend! Ignoring incoming changes!");
+			break;
+		}
+
+		if (!osync_message_read_string(message, &objtype, &error))
+			goto error;
+
+		if (!osync_message_read_string(message, &olduid, &error))
+			goto error;
+
+		if (!osync_message_read_string(message, &newuid, &error))
+			goto error;
+			
+		proxy->uid_update_callback(proxy, proxy->uid_update_callback_data, objtype, olduid, newuid);
+
+		osync_free(objtype);
+		osync_free(olduid);
+		osync_free(newuid);
+
+		objtype = NULL;
+		olduid = NULL;
+		newuid = NULL;
+
+		break;
+
 	default:
 		break;
 	}
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return;
 
- error:
+error:
+	if (objtype)
+		osync_free(objtype);
+
+	if (olduid)
+		osync_free(olduid);
+
+	if (newuid)
+		osync_free(newuid);
+
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&error));
 	osync_error_unref(&error);
 }
@@ -944,6 +984,14 @@ void osync_client_proxy_set_change_callback(OSyncClientProxy *proxy, change_cb c
 	
 	proxy->change_callback = cb;
 	proxy->change_callback_data = userdata;
+}
+
+void osync_client_proxy_set_uid_update_callback(OSyncClientProxy *proxy, uid_update_cb cb, void *userdata)
+{
+	osync_assert(proxy);
+	
+	proxy->uid_update_callback = cb;
+	proxy->uid_update_callback_data = userdata;
 }
 
 OSyncMember *osync_client_proxy_get_member(OSyncClientProxy *proxy)

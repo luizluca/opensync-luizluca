@@ -1,6 +1,7 @@
 /*
  * libopensync - A synchronization framework
  * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
+ * Copyright (C) 2009       Daniel Gollub <gollub@b1-systems.de>
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,33 +19,21 @@
  * 
  */
 
-#ifndef _OPENSYNC_CONTEXT_PRIVATE_H_
-#define _OPENSYNC_CONTEXT_PRIVATE_H_
+#ifndef _OPENSYNC_CONTEXT_INTERNALS_H
+#define _OPENSYNC_CONTEXT_INTERNALS_H
 
 /**
- * @defgroup OSyncContextPrivate OpenSync Context Private
- * @ingroup OSyncPluginPrivate
+ * @defgroup OSyncContextAPI OpenSync Context
+ * @ingroup OSyncPluginInternals
+ * Internal part of OpenSync Context
  */
 
 /*@{*/
 
-struct OSyncContext {
-	OSyncContextCallbackFn callback_function;
-	OSyncContextCallbackFn warning_function;
-	void *callback_data;
-	OSyncContextChangeFn changes_function;
-	OSyncContextSlowSyncFn slowsync_function;
-	void *slowsync_data;
+typedef void (* OSyncContextUidUpdateFn) (const char *olduid, const char *newuid, OSyncObjTypeSink *sink, void *);
 
-	/* uid_update callback */
-	OSyncContextUidUpdateFn uid_update_function;
-	OSyncObjTypeSink *uid_update_sink;
-	void *uid_update_data;
-
-	void *plugindata;
-	int ref_count;
-};
+OSYNC_TEST_EXPORT void osync_context_set_uid_update_callback(OSyncContext *context, OSyncContextUidUpdateFn uid_update_func, OSyncObjTypeSink *sink, void *userdata);
 
 /*@}*/
 
-#endif /*_OPENSYNC_CONTEXT_PRIVATE_H_*/
+#endif /* _OPENSYNC_CONTEXT_INTERNALS_H */

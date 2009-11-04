@@ -51,6 +51,7 @@ OSYNC_EXPORT void osync_context_report_osyncerror(OSyncContext *context, OSyncEr
 OSYNC_EXPORT void osync_context_report_osyncwarning(OSyncContext *context, OSyncError *error);
 OSYNC_EXPORT void osync_context_report_change(OSyncContext *context, OSyncChange *change);
 OSYNC_EXPORT void osync_context_report_slowsync(OSyncContext *contextr);
+OSYNC_EXPORT void osync_context_report_uid_update(OSyncContext *ctx, const char *olduid, const char *newuid);
 
 /*@}*/
 

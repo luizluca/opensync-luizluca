@@ -25,6 +25,7 @@
 #include "plugin/opensync_plugin_internals.h"
 #include "plugin/opensync_objtype_sink_internals.h"
 #include "plugin/opensync_plugin_info_internals.h"
+#include "plugin/opensync_context_internals.h"
 
 #include "opensync-helper.h"
 #include "helper/opensync_hashtable_internals.h"
@@ -375,6 +376,56 @@ static void _osync_client_change_callback(OSyncChange *change, void *data)
 		goto error;
 
 	if (!osync_marshal_change(message, change, &locerror))
+		goto error_free_message;
+
+	if (!osync_queue_send_message(client->outgoing, NULL, message, &locerror))
+		goto error_free_message;
+	
+	osync_message_unref(message);
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return;
+	
+ error_free_message:
+	osync_message_unref(message);
+ error:
+	_free_baton(baton);
+	osync_client_error_shutdown(client, locerror);
+	osync_error_unref(&locerror);
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return;
+}
+
+static void _osync_client_uid_update_callback(const char *olduid, const char *newuid, OSyncObjTypeSink *sink, void *data)
+{
+	callContext *baton = NULL;
+	OSyncError *locerror = NULL;
+	OSyncClient *client = NULL;
+	OSyncMessage *message = NULL;
+	const char *objtype = NULL;
+
+	client = data;
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %s, %p, %p)", __func__, __NULLSTR(olduid), __NULLSTR(newuid), sink, data);
+
+	objtype = osync_objtype_sink_get_name(sink);
+
+	/* We don't expect main-sink here */
+	osync_assert(objtype);
+	
+	message = osync_message_new(OSYNC_MESSAGE_MAPPING_CHANGED, 0, &locerror);
+	if (!message)
+		goto error;
+
+	/** objtype */
+	if (!osync_message_write_string(message, objtype, &locerror))
+		goto error_free_message;
+
+	/** olduid */
+	if (!osync_message_write_string(message, olduid, &locerror))
+		goto error_free_message;
+
+	/** newuid */
+	if (!osync_message_write_string(message, newuid, &locerror))
 		goto error_free_message;
 
 	if (!osync_queue_send_message(client->outgoing, NULL, message, &locerror))
@@ -1449,6 +1500,8 @@ static osync_bool _osync_client_handle_sync_done(OSyncClient *client, OSyncMessa
 		if (!context)
 			goto error;
 		
+		osync_context_set_uid_update_callback(context, _osync_client_uid_update_callback, sink, client);
+
 		osync_plugin_info_set_sink(client->plugin_info, sink);
 		osync_objtype_sink_sync_done(sink, client->plugin_info, context);
 	

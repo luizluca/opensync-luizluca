@@ -32,6 +32,7 @@ typedef void (* disconnect_cb) (OSyncClientProxy *proxy, void *userdata, OSyncEr
 typedef void (* read_cb) (OSyncClientProxy *proxy, void *userdata, OSyncError *error);
 typedef void (* get_changes_cb) (OSyncClientProxy *proxy, void *userdata, OSyncError *error);
 typedef void (* change_cb) (OSyncClientProxy *proxy, void *userdata, OSyncChange *change);
+typedef void (* uid_update_cb) (OSyncClientProxy *proxy, void *userdata, const char *objtype, const char *olduid, const char *newuid);
 typedef void (* commit_change_cb) (OSyncClientProxy *proxy, void *userdata, const char *uid, OSyncError *error);
 typedef void (* committed_all_cb) (OSyncClientProxy *proxy, void *userdata, OSyncError *error);
 typedef void (* sync_done_cb) (OSyncClientProxy *proxy, void *userdata, OSyncError *error);
@@ -42,6 +43,7 @@ OSYNC_TEST_EXPORT void osync_client_proxy_unref(OSyncClientProxy *proxy);
 
 void osync_client_proxy_set_context(OSyncClientProxy *proxy, GMainContext *ctx);
 void osync_client_proxy_set_change_callback(OSyncClientProxy *proxy, change_cb cb, void *userdata);
+void osync_client_proxy_set_uid_update_callback(OSyncClientProxy *proxy, uid_update_cb cb, void *userdata);
 OSyncMember *osync_client_proxy_get_member(OSyncClientProxy *proxy);
 
 OSYNC_TEST_EXPORT osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type, const char *path, const char* external_command, OSyncError **error);

@@ -24,6 +24,7 @@
 #include "opensync-data.h"
 
 #include "opensync_context.h"
+#include "opensync_context_internals.h"
 #include "opensync_context_private.h"
 
 OSyncContext *osync_context_new(OSyncError **error)
@@ -79,6 +80,14 @@ void osync_context_set_warning_callback(OSyncContext *context, OSyncContextCallb
 {
 	osync_assert(context);
 	context->warning_function = warning;
+}
+
+void osync_context_set_uid_update_callback(OSyncContext *context, OSyncContextUidUpdateFn uid_update_func, OSyncObjTypeSink *sink, void *userdata)
+{
+	osync_assert(context);
+	context->uid_update_function = uid_update_func;
+	context->uid_update_sink = sink;
+	context->uid_update_data = userdata;
 }
 
 void osync_context_report_osyncerror(OSyncContext *context, OSyncError *error)
@@ -165,6 +174,19 @@ void osync_context_report_slowsync(OSyncContext *context)
 
 	context->slowsync_function(context->slowsync_data);
 	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
+void osync_context_report_uid_update(OSyncContext *context, const char *olduid, const char *newuid)
+{
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %s)", __func__, context, __NULLSTR(olduid), __NULLSTR(newuid));
+
+	osync_return_if_fail(context);
+	osync_return_if_fail(olduid);
+	osync_return_if_fail(newuid);
+
+	context->uid_update_function(olduid, newuid, context->uid_update_sink, context->uid_update_data);
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
