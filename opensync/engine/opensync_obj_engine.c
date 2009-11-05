@@ -304,7 +304,7 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 			OSyncCapabilities *caps1 = osync_member_get_capabilities(member1);
 			OSyncCapabilities *caps2 = osync_member_get_capabilities(member2);
 
-			OSyncChange *clone_change1, *clone_change2;
+			OSyncChange *clone_change1 = NULL, *clone_change2 = NULL;
 			OSyncChange *change1 = change;
 			OSyncChange *change2 = mapping_change;
 
