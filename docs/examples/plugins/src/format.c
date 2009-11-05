@@ -90,7 +90,13 @@ static osync_bool conv_format1_to_format2(char *input, unsigned int inpsize, cha
 	 *
 	 */
 
-	return TRUE;
+	/* XXX: your conversion code */
+	/* return TRUE; */
+	
+
+	/* on any conversion error: */
+	osync_error_set(error, OSYNC_ERROR_CONVERT, "Conversion of format1 to format2 failed.");
+	return FALSE;
 }
 
 static osync_bool conv_format2_to_format1(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
@@ -102,7 +108,13 @@ static osync_bool conv_format2_to_format1(char *input, unsigned int inpsize, cha
 	 *
 	 */
 
-	return TRUE;
+	/* XXX: your conversion code */
+	/* return TRUE; */
+	
+
+	/* on any conversion error: */
+	osync_error_set(error, OSYNC_ERROR_CONVERT, "Conversion of format2 to format1 failed.");
+	return FALSE;
 }
 
 static osync_bool destroy_format1(char *input, unsigned int size, void *data, OSyncError **error)
