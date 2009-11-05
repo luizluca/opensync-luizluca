@@ -136,7 +136,7 @@ char *osync_error_print_stack(OSyncError **error)
 		submessage = osync_error_print_stack(&((*error)->child));
 	
 	if (submessage) {
-		message = g_strdup_printf("NEXT ERROR: \"%s\"; %s", (*error)->message, submessage);
+		message = g_strdup_printf("NEXT ERROR: \"%s\"\n%s", (*error)->message, submessage);
 		g_free(submessage);
 	} else
 		message = g_strdup_printf("ROOT CAUSE: \"%s\"", (*error)->message);
