@@ -166,6 +166,10 @@ osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char
 osync_bool osync_archive_flush_ignored_conflict(OSyncArchive *archive, const char *objtype, OSyncError **error);
 
 osync_bool osync_archive_get_mixed_objengines(OSyncArchive *archive, const char *objengine, OSyncList **objengines, OSyncError **error);
+
+
+osync_bool osync_archive_update_change_uid(OSyncArchive *archive, const char *olduid, const char *newuid, long long int memberid, const char *objengine, OSyncError **error);
+
 /*@}*/
 
 #endif /*OPENSYNC_ARCHIVE_INTERNALS_H_*/

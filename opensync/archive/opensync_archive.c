@@ -632,3 +632,45 @@ error:
 	return FALSE;
 }
 
+osync_bool osync_archive_update_change_uid(OSyncArchive *archive, const char *olduid, const char *newuid, long long int memberid, const char *objengine, OSyncError **error)
+{
+	char *query = NULL;
+	char *escaped_newuid = NULL;
+	char *escaped_olduid = NULL;
+	char *escaped_objengine = NULL;
+
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %s, %lli, %s, %p)", __func__, archive, __NULLSTR(olduid), __NULLSTR(newuid), memberid, __NULLSTR(objengine), error);
+	osync_assert(archive);
+	osync_assert(olduid);
+	osync_assert(newuid);
+	osync_assert(objengine);
+
+	escaped_newuid = osync_db_sql_escape(newuid);
+	escaped_olduid = osync_db_sql_escape(olduid);
+	escaped_objengine = osync_db_sql_escape(objengine);
+
+	query = osync_strdup_printf("UPDATE tbl_changes SET uid='%s' WHERE objengine='%s' AND memberid=%lli AND uid='%s'", escaped_newuid, escaped_objengine, memberid, escaped_olduid);
+
+	osync_free(escaped_objengine);
+	osync_free(escaped_olduid);
+	osync_free(escaped_newuid);
+	escaped_objengine = NULL;
+	escaped_olduid = NULL;
+	escaped_newuid = NULL;
+	
+	if (!osync_db_query(archive->db, query, error)) {
+		osync_free(query);
+		goto error;
+	}
+
+	osync_free(query);
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+	
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
+}
+
+
