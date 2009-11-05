@@ -179,7 +179,7 @@ OSyncChange *osync_change_clone(OSyncChange *source, OSyncError **error)
 
 OSyncConvCmpResult osync_change_compare(OSyncChange *leftchange, OSyncChange *rightchange, OSyncError **error)
 {
-	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, leftchange, rightchange, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, leftchange, rightchange, error);
 	osync_assert(rightchange);
 	osync_assert(leftchange);
 

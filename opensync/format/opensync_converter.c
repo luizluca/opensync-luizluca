@@ -190,7 +190,7 @@ osync_bool osync_converter_invoke(OSyncFormatConverter *converter, OSyncData *da
 			osync_assert(converter->convert_func);
 		
 			/* Invoke the converter */
-			osync_trace(TRACE_ENTRY, "Converter function from \"%s\" to \"%s\"", osync_objformat_get_name(converter->source_format), osync_objformat_get_name(converter->target_format));
+			osync_trace(TRACE_ENTRY, "Converter function from \"%s\" to \"%s\" - input_data: %p input_size: %u", osync_objformat_get_name(converter->source_format), osync_objformat_get_name(converter->target_format), input_data, input_size);
 			if (!converter->convert_func(input_data, input_size, &output_data, &output_size, &free_input, config, converter->userdata, error)) {
 
 				osync_trace(TRACE_EXIT_ERROR, "Converter function: %s", osync_error_print(error));
