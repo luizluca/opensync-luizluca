@@ -193,6 +193,11 @@ osync_bool osync_converter_invoke(OSyncFormatConverter *converter, OSyncData *da
 			if (!converter->convert_func(input_data, input_size, &output_data, &output_size, &free_input, config, converter->userdata, error))
 				goto error;
 
+			if (output_size == 0) {
+				osync_error_set(error, OSYNC_ERROR_GENERIC, "Converter Bug (%s -> %s). Conversion result is data with size 0.", osync_objformat_get_name(converter->source_format), osync_objformat_get_name(converter->target_format));
+				goto error;
+			}
+
 			/* Validate if for this objformat are format-plugin validiation-function is provided */
 			if (osync_objformat_must_validate(converter->target_format)) {
 				if (!osync_objformat_validate(converter->target_format, output_data, output_size, error))
