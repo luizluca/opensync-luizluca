@@ -402,15 +402,25 @@ static void _osync_client_uid_update_callback(const char *olduid, const char *ne
 	OSyncError *locerror = NULL;
 	OSyncClient *client = NULL;
 	OSyncMessage *message = NULL;
+	OSyncHashTable *hashtable = NULL;
 	const char *objtype = NULL;
 
 	client = data;
-	osync_trace(TRACE_ENTRY, "%s(%p, %s, %s, %p, %p)", __func__, __NULLSTR(olduid), __NULLSTR(newuid), sink, data);
+	osync_trace(TRACE_ENTRY, "%s(%s, %s, %p, %p)", __func__, __NULLSTR(olduid), __NULLSTR(newuid), sink, data);
 
 	objtype = osync_objtype_sink_get_name(sink);
 
 	/* We don't expect main-sink here */
 	osync_assert(objtype);
+
+
+	/* Update Hashtable, if available, first. */
+	if ((hashtable = osync_objtype_sink_get_hashtable(sink))) {
+
+		if (!osync_hashtable_update_uid(hashtable, olduid, newuid, &locerror))
+			goto error;
+
+	}
 	
 	message = osync_message_new(OSYNC_MESSAGE_MAPPING_CHANGED, 0, &locerror);
 	if (!message)
