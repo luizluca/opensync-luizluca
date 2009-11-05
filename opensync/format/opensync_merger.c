@@ -120,6 +120,16 @@ osync_bool osync_merger_demerge(OSyncMerger *merger, OSyncChange *change, OSyncC
 
 	osync_data_get_data(data, &buffer, &size);
 
+	if (size == 0) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Can't demerge data with 0 size.");
+		goto error;
+	}
+
+	if (buffer == NULL) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "No data to demerge.");
+		goto error;
+	}
+
 	if (!merger->demerge_func(&buffer, &size, caps, NULL /*userdata!*/, error))
 		goto error;
 
