@@ -350,6 +350,10 @@ OSYNC_TESTCASE(objformat objformat_revision)
 OSYNC_TESTCASE(objformat objformat_marshal)
 OSYNC_TESTCASE(objformat objformat_demarshal)
 
+BUILD_CHECK_TEST( context plugin-tests/check_context.c ${TEST_TARGET_LIBRARIES} )
+OSYNC_TESTCASE(context context_new)
+OSYNC_TESTCASE(context context_uid_update)
+
 BUILD_CHECK_TEST( plugin_config plugin-tests/check_plugin_config.c ${TEST_TARGET_LIBRARIES} )
 OSYNC_TESTCASE(plugin_config plugin_config_new)
 OSYNC_TESTCASE(plugin_config plugin_config_new_nomemory)

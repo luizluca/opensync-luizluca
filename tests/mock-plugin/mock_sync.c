@@ -528,6 +528,19 @@ static void mock_sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncC
 	}
 	if (mock_get_error(info->memberid, "SYNC_DONE_TIMEOUT"))
 		return;
+
+	if (mock_get_error(info->memberid, "SYNC_DONE_REPORT_UID_UPDATE")) {
+		unsigned int i, updates = atoi(g_getenv("SYNC_DONE_REPORT_UID_UPDATES"));
+		const char *olduids = g_getenv("SYNC_DONE_REPORT_UID_UPDATES_OLDUIDS");
+		const char *newuids = g_getenv("SYNC_DONE_REPORT_UID_UPDATES_NEWUIDS");
+
+		for (i=0; i < updates; i++) {
+
+			char *olduid = g_strdup_printf("%c", olduids[i]);
+			char *newuid = g_strdup_printf("%c", newuids[i]);
+			osync_context_report_uid_update(ctx, olduid, newuid);
+		}
+	}
 	
 	osync_assert_msg(osync_sink_state_set(state_db, "path", dir->path, NULL), "Not expected to fail!");
 	
