@@ -350,6 +350,45 @@ void osync_hashtable_update_change(OSyncHashTable *table, OSyncChange *change)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
+osync_bool osync_hashtable_update_uid(OSyncHashTable *table, const char *olduid, const char *newuid, OSyncError **error)
+{
+	const char *hash = NULL;
+	char *origkey = NULL;
+
+	osync_assert(table);
+	osync_assert(table->dbhandle);
+
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, table);
+
+
+	/* Get the old hash */
+	hash = osync_hashtable_get_hash(table, olduid);
+
+	if (!g_hash_table_lookup_extended(table->db_entries, olduid, (gpointer *) &origkey, NULL)) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Couldn't found hash with UID \"%s\" which requires an UID update.", olduid);
+		goto error;
+	}
+
+	if (g_hash_table_lookup(table->db_entries, newuid)) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Couldn't update UID in hashtable, UID \"%s\" already exists!", newuid);
+		goto error;
+	}
+
+	g_hash_table_insert(table->db_entries, g_strdup(newuid), g_strdup(hash));
+
+	if (!g_hash_table_remove(table->db_entries, olduid)) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Couldn't remove old hash entry with UID \"%s\".", olduid); 
+		goto error;
+	}
+
+	osync_trace(TRACE_EXIT, "%s", __func__);
+	return TRUE;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
+	return FALSE;
+}
+
 struct callback_data {
 	OSyncList *deleted_entries;
 	OSyncHashTable *table;

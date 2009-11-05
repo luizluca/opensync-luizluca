@@ -105,5 +105,8 @@ OSYNC_TEST_EXPORT osync_bool osync_hashtable_save(OSyncHashTable *table, OSyncEr
  */
 OSYNC_TEST_EXPORT unsigned int osync_hashtable_num_entries(OSyncHashTable *table);
 
+
+OSYNC_TEST_EXPORT osync_bool osync_hashtable_update_uid(OSyncHashTable *table, const char *olduid, const char *newuid, OSyncError **error);
+
 #endif /*_OPENSYNC_HASHTABLE_INTERNALS_H_*/
 
