@@ -190,8 +190,14 @@ osync_bool osync_converter_invoke(OSyncFormatConverter *converter, OSyncData *da
 			osync_assert(converter->convert_func);
 		
 			/* Invoke the converter */
-			if (!converter->convert_func(input_data, input_size, &output_data, &output_size, &free_input, config, converter->userdata, error))
+			osync_trace(TRACE_ENTRY, "Converter function from \"%s\" to \"%s\"", osync_objformat_get_name(converter->source_format), osync_objformat_get_name(converter->target_format));
+			if (!converter->convert_func(input_data, input_size, &output_data, &output_size, &free_input, config, converter->userdata, error)) {
+
+				osync_trace(TRACE_EXIT_ERROR, "Converter function: %s", osync_error_print(error));
 				goto error;
+			}
+
+			osync_trace(TRACE_EXIT, "Converter function");
 
 			if (output_size == 0) {
 				osync_error_set(error, OSYNC_ERROR_GENERIC, "Converter Bug (%s -> %s). Conversion result is data with size 0.", osync_objformat_get_name(converter->source_format), osync_objformat_get_name(converter->target_format));
