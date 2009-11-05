@@ -1504,3 +1504,17 @@ error:
 	return FALSE;
 }
 
+
+osync_bool osync_objengine_uid_update(OSyncObjEngine *engine, OSyncClientProxy *proxy, const char *olduid, const char *newuid, OSyncError **error)
+{
+	long long int memberid = osync_member_get_id(osync_client_proxy_get_member(proxy));
+
+	if (!osync_archive_update_change_uid(engine->archive, olduid, newuid, memberid, engine->objtype, error))
+		goto error;
+
+	return TRUE;
+
+error:
+	return FALSE;
+}
+

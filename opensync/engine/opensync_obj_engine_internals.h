@@ -181,5 +181,8 @@ OSYNC_TEST_EXPORT unsigned int osync_obj_engine_num_members(OSyncObjEngine *engi
  */
 OSYNC_TEST_EXPORT OSyncMember *osync_obj_engine_nth_member(OSyncObjEngine *engine, unsigned int nth);
 
+
+OSYNC_TEST_EXPORT osync_bool osync_objengine_uid_update(OSyncObjEngine *objengine, OSyncClientProxy *proxy, const char *olduid, const char *newuid, OSyncError **error);
+
 #endif /* OPENSYNC_OBJ_ENGINE_INTERNALS_H_ */
 

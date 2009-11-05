@@ -174,7 +174,19 @@ static void _osync_engine_converter_path_unref(gpointer data) {
 
 static void _osync_engine_receive_uid_update(OSyncClientProxy *proxy, void *userdata, const char *objtype, const char *olduid, const char *newuid)
 {
-	printf("OBJTYPE: %s OLDUID: %s NEWUID: %s\n", objtype, olduid, newuid);
+	OSyncError *error = NULL;
+	OSyncEngine *engine = (OSyncEngine *) userdata;
+	OSyncObjEngine *objengine = osync_engine_find_objengine(engine, objtype);
+
+	if (!osync_objengine_uid_update(objengine, proxy, olduid, newuid, &error))
+		goto error;
+
+	return;
+error:
+	osync_engine_set_error(engine, error);
+	osync_error_unref(&error);
+
+	return;
 }
 
 static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata, OSyncChange *change)
