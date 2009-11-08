@@ -30,6 +30,11 @@
 #include "opensync-plugin.h"
 #include "plugin/opensync_objtype_sink_internals.h"
 
+#include "client/opensync_client_internals.h"
+#include "client/opensync_client_proxy_internals.h"
+
+#include "opensync-group.h"
+
 #include "opensync_serializer.h"
 #include "opensync_serializer_internals.h"
 
@@ -484,6 +489,82 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	return TRUE;
 
  error:
+	return FALSE;
+}
+
+osync_bool osync_marshal_objtype_sinks(OSyncMessage *reply, OSyncClient *client, osync_bool only_available, OSyncError **error)
+{
+
+	unsigned int avail = 0;
+	OSyncPluginInfo *plugin_info = osync_client_get_plugin_info(client);
+	OSyncList *list, *objtypesinks = osync_plugin_info_get_objtype_sinks(plugin_info);
+	OSyncObjTypeSink *sink;
+
+	list = objtypesinks;
+	while(list) {
+		sink = (OSyncObjTypeSink*)list->data;
+		if (!only_available || osync_objtype_sink_is_available(sink)) {
+			avail++;
+		}
+		list = list->next;
+	}
+
+	if (!osync_message_write_uint(reply, avail, error))
+		goto error;
+	
+	list = objtypesinks;
+	while(list) {
+		sink = (OSyncObjTypeSink*)list->data;
+		if (!only_available || osync_objtype_sink_is_available(sink)) {
+			if (!osync_marshal_objtype_sink(reply, sink, error))
+				goto error;
+		}
+		list = list->next;
+	}
+	osync_list_free(objtypesinks);
+
+	return TRUE;
+
+error:
+	osync_list_free(objtypesinks);
+	return FALSE;
+}
+
+osync_bool osync_demarshal_objtype_sinks(OSyncMessage *message, OSyncClientProxy *proxy, OSyncError **error)
+{
+	OSyncObjTypeSink *sink, *proxy_sink, *member_sink;
+	unsigned int i, num_sinks;
+	OSyncMember *member;
+
+	if (!osync_message_read_uint(message, &num_sinks, error))
+		goto error;
+
+	osync_trace(TRACE_INTERNAL, "num objs?: %u", num_sinks);
+	
+	for (i = 0; i < num_sinks; i++) {
+		if (!osync_demarshal_objtype_sink(message, &sink, error))
+			goto error;
+
+		/* Update the sink if there already exists one */
+		if ((proxy_sink = osync_client_proxy_find_objtype_sink(proxy, osync_objtype_sink_get_name(sink)))) {
+			osync_bool func_read = osync_objtype_sink_get_function_read(sink);
+			osync_bool func_getchanges = osync_objtype_sink_get_function_getchanges(sink);
+
+			osync_objtype_sink_set_function_read(proxy_sink, func_read);
+			osync_objtype_sink_set_function_getchanges(proxy_sink, func_getchanges);
+		} else {
+			osync_client_proxy_add_objtype_sink(proxy, sink);
+		}
+
+		if ((member = osync_client_proxy_get_member(proxy)) &&
+			!(member_sink = osync_member_find_objtype_sink(member, osync_objtype_sink_get_name(sink)))) {
+			osync_member_add_objtype_sink(member, sink);
+		}
+	}
+
+	return TRUE;
+
+error:
 	return FALSE;
 }
 

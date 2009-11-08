@@ -258,6 +258,10 @@ static void _osync_client_proxy_init_handler(OSyncMessage *message, void *user_d
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, message, user_data);
 	
 	if (osync_message_get_cmd(message) == OSYNC_MESSAGE_REPLY) {
+
+		if (!osync_demarshal_objtype_sinks(message, proxy, &locerror))
+			goto error;
+
 		ctx->init_callback(proxy, ctx->init_callback_data, NULL);
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
 
@@ -431,9 +435,7 @@ static void _osync_client_proxy_discover_handler(OSyncMessage *message, void *us
 	OSyncClientProxy *proxy = ctx->proxy;
 	OSyncError *error = NULL;
 	OSyncError *locerror = NULL;
-	unsigned int num_sinks = 0;
 	unsigned int i = 0;
-	OSyncObjTypeSink *sink = NULL;
 	OSyncMember *member = osync_client_proxy_get_member(proxy);
 	unsigned int num_res = 0;
 	OSyncPluginConfig *config = NULL;
@@ -445,22 +447,12 @@ static void _osync_client_proxy_discover_handler(OSyncMessage *message, void *us
 		
 		osync_message_read_int(message, &proxy->has_main_sink, &locerror);
 		
-		osync_message_read_uint(message, &num_sinks, &locerror);
 
 		if (osync_error_is_set(&locerror))
 			goto error;
 		
-		osync_trace(TRACE_INTERNAL, "main sink?: %i, num objs?: %i", proxy->has_main_sink, num_sinks);
-		
-		for (i = 0; i < num_sinks; i++) {
-			if (!osync_demarshal_objtype_sink(message, &sink, &locerror))
-				goto error;
-
-			proxy->objtypes = g_list_append(proxy->objtypes, sink);
-
-			if (proxy->member)
-				osync_member_add_objtype_sink(proxy->member, sink);
-		}
+		if (!osync_demarshal_objtype_sinks(message, proxy, &locerror))
+			goto error;
 
 		if (!_osync_client_proxy_read_discover_message(proxy, message, &locerror))
 			goto error;
@@ -1286,6 +1278,15 @@ static osync_bool osync_client_proxy_check_resource(OSyncClientProxy *proxy, OSy
 	return TRUE;
 }
 
+void osync_client_proxy_add_objtype_sink(OSyncClientProxy *proxy, OSyncObjTypeSink *sink)
+{
+	osync_return_if_fail(proxy);
+	osync_return_if_fail(sink);
+
+	osync_objtype_sink_ref(sink);
+	proxy->objtypes = g_list_append(proxy->objtypes, sink);
+}
+
 osync_bool osync_client_proxy_initialize(OSyncClientProxy *proxy, initialize_cb callback, void *userdata, const char *formatdir, const char *plugindir, const char *plugin, const char *groupname, const char *configdir, OSyncPluginConfig *config, OSyncError **error)
 {
 	callContext *ctx = NULL;
@@ -1343,8 +1344,7 @@ osync_bool osync_client_proxy_initialize(OSyncClientProxy *proxy, initialize_cb 
 			sink = osync_client_proxy_find_objtype_sink(proxy, objtype);
 			/* TODO: In discovery phase *sink COULD be NULL. Review if this is correct behavior. */
 			if (sink) {
-				osync_objtype_sink_ref(sink);
-				proxy->objtypes = g_list_append(proxy->objtypes, sink);
+				osync_client_proxy_add_objtype_sink(proxy, sink);
 			}
 		}
 	}

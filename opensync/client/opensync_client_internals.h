@@ -31,4 +31,6 @@ OSYNC_TEST_EXPORT osync_bool osync_client_run_external(OSyncClient *client, char
 osync_bool osync_client_setup_pipes(OSyncClient *client, const char *pipe_path, OSyncError **error);
 osync_bool osync_client_connect_pipes(OSyncClient *client, OSyncError **error);
 
+OSyncPluginInfo *osync_client_get_plugin_info(OSyncClient *client);
+
 #endif /*OPENSYNC_CLIENT_INTERNALS_H_*/

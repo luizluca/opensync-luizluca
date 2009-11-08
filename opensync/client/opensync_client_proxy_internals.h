@@ -76,5 +76,7 @@ osync_bool osync_client_proxy_committed_all(OSyncClientProxy *proxy, committed_a
 
 osync_bool osync_client_proxy_sync_done(OSyncClientProxy *proxy, sync_done_cb callback, void *userdata, const char *objtype, OSyncError **error);
 
+void osync_client_proxy_add_objtype_sink(OSyncClientProxy *proxy, OSyncObjTypeSink *sink);
+
 #endif /* OSYNC_CLIENT_PROXY_INTERNALS_H_ */
 

@@ -861,6 +861,10 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 	if (!reply)
 		goto error_finalize;
 
+	/* Marshal available ObjType sinks */
+	if (!osync_marshal_objtype_sinks(reply, client, FALSE, error))
+		goto error_free_message;
+
 	if (!osync_queue_send_message(client->outgoing, NULL, reply, error))
 		goto error_free_message;
 	
@@ -957,12 +961,8 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	OSyncMessage *reply = NULL;
 	OSyncPluginConfig *config = NULL;
 	OSyncList *res = NULL;
-	unsigned int avail = 0;
-	OSyncObjTypeSink *sink = NULL;
 	unsigned int num_res = 0;
 	OSyncPluginResource *resource = NULL;
-	OSyncList *objtypesinks = NULL;
-	OSyncList *list;
 
 	config = osync_plugin_info_get_config(client->plugin_info);
 	res = osync_plugin_config_get_resources(config);
@@ -984,29 +984,9 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	if (osync_error_is_set(error))
 		goto error_free_message;
 
-	objtypesinks = osync_plugin_info_get_objtype_sinks(client->plugin_info);
-	list = objtypesinks;
-	while(list) {
-		sink = (OSyncObjTypeSink*)list->data;
-		if (osync_objtype_sink_is_available(sink)) {
-			avail++;
-		}
-		list = list->next;
-	}
-
-	if (!osync_message_write_uint(reply, avail, error))
+	/* Marshal available ObjType sinks */
+	if (!osync_marshal_objtype_sinks(reply, client, TRUE, error))
 		goto error_free_message;
-	
-	list = objtypesinks;
-	while(list) {
-		sink = (OSyncObjTypeSink*)list->data;
-		if (osync_objtype_sink_is_available(sink)) {
-			if (!osync_marshal_objtype_sink(reply, sink, error))
-				goto error_free_message;
-		}
-		list = list->next;
-	}
-	osync_list_free(objtypesinks);
 
 	if (!_osync_client_handle_capabilities_message(client, reply, error))
 		goto error_free_message;
@@ -1033,7 +1013,6 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	return TRUE;
 	
  error_free_message:
-	osync_list_free(objtypesinks);
 	osync_message_unref(reply);
  error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
@@ -2060,3 +2039,9 @@ void osync_client_error_shutdown(OSyncClient *client, OSyncError *error)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
+
+OSyncPluginInfo *osync_client_get_plugin_info(OSyncClient *client)
+{
+	osync_return_val_if_fail(client, NULL);
+	return client->plugin_info;
+}

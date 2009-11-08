@@ -50,6 +50,9 @@ OSYNC_TEST_EXPORT osync_bool osync_demarshal_pluginconfig(OSyncMessage *message,
 osync_bool osync_marshal_pluginresource(OSyncMessage *message, OSyncPluginResource *res, OSyncError **error);
 osync_bool osync_demarshal_pluginresource(OSyncMessage *message, OSyncPluginResource **res, OSyncError **error);
 
+osync_bool osync_marshal_objtype_sinks(OSyncMessage *reply, OSyncClient *client, osync_bool only_available, OSyncError **error);
+osync_bool osync_demarshal_objtype_sinks(OSyncMessage *message, OSyncClientProxy *proxy, OSyncError **error);
+
 /*@}*/
 
 #endif /* _OPENSYNC_SERIALIZER_INTERNALS_H_ */
