@@ -44,7 +44,7 @@ OSYNC_EXPORT void osync_context_set_changes_callback(OSyncContext *context, OSyn
 OSYNC_EXPORT void osync_context_set_slowsync_callback(OSyncContext *context, OSyncContextSlowSyncFn slowsync_func, void *userdata);
 OSYNC_EXPORT void osync_context_set_warning_callback(OSyncContext *context, OSyncContextCallbackFn warning);
 
-OSYNC_EXPORT void osync_context_report_error(OSyncContext *context, OSyncErrorType type, const char *format, ...);
+OSYNC_EXPORT void osync_context_report_error(OSyncContext *context, OSyncErrorType type, const char *format, ...) GCC_FORMAT_CHECK(3, 4);
 OSYNC_EXPORT void osync_context_report_success(OSyncContext *context);
 OSYNC_EXPORT void osync_context_report_osyncerror(OSyncContext *context, OSyncError *error);
 

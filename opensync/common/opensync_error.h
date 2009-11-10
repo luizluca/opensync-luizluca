@@ -89,7 +89,7 @@ OSYNC_EXPORT osync_bool osync_error_is_set (OSyncError **error);
  * @param format The message
  * 
  */
-OSYNC_EXPORT void osync_error_set(OSyncError **error, OSyncErrorType type, const char *format, ...);
+OSYNC_EXPORT void osync_error_set(OSyncError **error, OSyncErrorType type, const char *format, ...) GCC_FORMAT_CHECK(3, 4);
 
 /** @brief This will return a string describing the type of the error
  * 

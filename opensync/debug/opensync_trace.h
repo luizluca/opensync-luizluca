@@ -67,7 +67,7 @@ OSYNC_EXPORT void osync_trace_reset_indent(void);
  * @param message The message to save
  * 
  */
-OSYNC_EXPORT void osync_trace(OSyncTraceType type, const char *message, ...);
+OSYNC_EXPORT void osync_trace(OSyncTraceType type, const char *message, ...) GCC_FORMAT_CHECK(2, 3);
 
 /*! @brief Disable tracing
  *

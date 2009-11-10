@@ -58,7 +58,7 @@ OSYNC_EXPORT char *osync_strdup(const char *str);
  * @returns The duplicate string, caller is responsible for freeing.
  * 
  */
-OSYNC_EXPORT char *osync_strdup_printf(const char *format, ...);
+OSYNC_EXPORT char *osync_strdup_printf(const char *format, ...) GCC_FORMAT_CHECK(1, 2);
 
 /** @brief Creates a random string
  * 

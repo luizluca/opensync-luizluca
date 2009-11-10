@@ -67,6 +67,12 @@
 #define OSYNC_TEST_EXPORT
 #endif
 
+#if __GNUC__
+#define GCC_FORMAT_CHECK(a,b) __attribute__ ((format(printf, a, b)))
+#else
+#define GCC_FORMAT_CHECK(a,b)
+#endif
+
 OPENSYNC_BEGIN_DECLS
 
 /**
