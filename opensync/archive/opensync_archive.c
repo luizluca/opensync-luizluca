@@ -288,7 +288,7 @@ long long int osync_archive_save_change(OSyncArchive *archive, long long int id,
 	char *escaped_objtype = NULL;
 	char *escaped_objengine = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %lli, %s, %s, %lli, %lli, %p, %s)", __func__, archive, id, uid, objtype, mappingid, memberid, __NULLSTR(objengine), error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %lli, %s, %s, %lli, %lli, %p, %p)", __func__, archive, id, uid, objtype, mappingid, memberid, __NULLSTR(objengine), error);
 	osync_assert(archive);
 	osync_assert(uid);
 	osync_assert(objtype);

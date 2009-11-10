@@ -130,13 +130,13 @@ OPENSYNC_BEGIN_DECLS
 
 #define osync_return_if_fail_and_set_error(condition, error, errortype, format, ...) do {   \
     if (!(condition)) {                                                                     \
-        osync_error_set(error, errortype, format,## __VA_ARGS__, NULL );                            \
+        osync_error_set(error, errortype, format,## __VA_ARGS__);                            \
         return;                                                                             \
     } } while(0)
 
 #define osync_return_val_if_fail_and_set_error(condition, val, error, errortype, format, ...) do { \
     if (!(condition)) {                                                                            \
-        osync_error_set(error, errortype, format,## __VA_ARGS__, NULL );                                   \
+        osync_error_set(error, errortype, format,## __VA_ARGS__);                                   \
         return (val);                                                                              \
     } } while(0)
 

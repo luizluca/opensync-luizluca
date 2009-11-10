@@ -955,7 +955,7 @@ static void _osync_engine_generate_connect_done_event(OSyncEngine *engine)
 osync_bool osync_engine_check_get_changes(OSyncEngine *engine)
 {
 	if (osync_bitcount(engine->proxy_errors | engine->proxy_get_changes) != osync_list_length(engine->proxies)) {
-		osync_trace(TRACE_INTERNAL, "Not yet. main sinks still need to read: %i", osync_bitcount(engine->proxy_errors | engine->proxy_get_changes), osync_list_length(engine->proxies));
+		osync_trace(TRACE_INTERNAL, "Not yet. main sinks still need to read: %i (%u)", osync_bitcount(engine->proxy_errors | engine->proxy_get_changes), osync_list_length(engine->proxies));
 		return FALSE;
 	}
 	

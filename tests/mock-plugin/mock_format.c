@@ -194,7 +194,7 @@ static time_t revision_file(const char *input, unsigned int inpsize, void *user_
 	OSyncFileFormat *file = (OSyncFileFormat *)input;
 	time_t lastmod = file->last_mod;
 	
-	osync_trace(TRACE_EXIT, "%s: %i", __func__, lastmod);
+	osync_trace(TRACE_EXIT, "%s: %li", __func__, lastmod);
 	return lastmod;
 }
 

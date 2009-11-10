@@ -246,7 +246,7 @@ time_t osync_data_get_revision(OSyncData *data, OSyncError **error)
 		return -1;
 	}
 	
-	osync_trace(TRACE_EXIT, "%s: %i", __func__, time);
+	osync_trace(TRACE_EXIT, "%s: %li", __func__, time);
 	return time;
 }
 

@@ -966,7 +966,7 @@ OSyncFilter *osync_group_nth_filter(OSyncGroup *group, unsigned int nth)
 
 void osync_group_set_last_synchronization(OSyncGroup *group, time_t last_sync)
 {
-	osync_trace(TRACE_ENTRY, "%s(%p, %i)", __func__, group, last_sync);
+	osync_trace(TRACE_ENTRY, "%s(%p, %li)", __func__, group, last_sync);
 	osync_assert(group);
 	
 	group->last_sync = last_sync;

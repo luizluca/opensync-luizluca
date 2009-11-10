@@ -479,7 +479,7 @@ int osync_time_timezone_diff(const struct tm *local, OSyncError **error)
 		zonediff += daydiff;
 	}
 
-	osync_trace(TRACE_EXIT, "%s: %i", __func__, zonediff);
+	osync_trace(TRACE_EXIT, "%s: %li", __func__, zonediff);
 	return zonediff;
 error:
 	osync_trace(TRACE_EXIT, "%s", __func__);

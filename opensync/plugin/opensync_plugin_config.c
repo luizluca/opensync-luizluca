@@ -797,7 +797,7 @@ osync_bool osync_plugin_config_file_load(OSyncPluginConfig *config, const char *
 	char *schemafile = NULL;
 	const char *schemapath = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %s, %s, %p)", __func__, config, __NULLSTR(path), error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p, %p)", __func__, config, __NULLSTR(path), path, error);
 
 	schemapath = config->schemadir ? config->schemadir : OPENSYNC_SCHEMASDIR;
 

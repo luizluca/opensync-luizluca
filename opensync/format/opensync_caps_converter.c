@@ -36,7 +36,7 @@
 OSyncCapsConverter *osync_caps_converter_new(const char *sourceformat, const char *targetformat, OSyncCapsConvertFunc convert_func, OSyncError **error)
 {
 	OSyncCapsConverter *converter = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%s, %s, %p, %p)", __func__, __NULLSTR(sourceformat), sourceformat, __NULLSTR(targetformat), targetformat, convert_func, error);
+	osync_trace(TRACE_ENTRY, "%s(%s, %p, %s, %p, %p, %p)", __func__, __NULLSTR(sourceformat), sourceformat, __NULLSTR(targetformat), targetformat, convert_func, error);
 	
 	converter = osync_try_malloc0(sizeof(OSyncCapsConverter), error);
 	if (!converter) {

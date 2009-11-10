@@ -149,7 +149,7 @@ OSyncThread *osync_thread_create(GThreadFunc func, void *userdata, OSyncError **
  error_free_thread:
 	osync_free(thread);
  error:	
-	osync_trace(TRACE_EXIT_ERROR, "%s", __func__, osync_error_print(error));
+	osync_trace(TRACE_EXIT_ERROR, "%s(%s)", __func__, osync_error_print(error));
 	return NULL;
 }
 

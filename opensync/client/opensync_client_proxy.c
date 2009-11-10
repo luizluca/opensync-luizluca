@@ -1296,7 +1296,7 @@ osync_bool osync_client_proxy_initialize(OSyncClientProxy *proxy, initialize_cb 
 	long long int memberid = 0;
 #endif
 	
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %s, %s, %s, %p, %p)", __func__, proxy, callback, userdata, formatdir, plugindir, plugin, groupname, configdir, config, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %s, %s, %s, %s, %p, %p)", __func__, proxy, callback, userdata, formatdir, plugindir, plugin, groupname, configdir, config, error);
 	osync_assert(proxy);
 	
 
@@ -1446,7 +1446,7 @@ osync_bool osync_client_proxy_discover(OSyncClientProxy *proxy, discover_cb call
 	callContext *ctx = NULL;
 	OSyncMessage *message = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, proxy, callback, userdata, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, proxy, callback, userdata, error);
 	
 	ctx = osync_try_malloc0(sizeof(callContext), error);
 	if (!ctx)
