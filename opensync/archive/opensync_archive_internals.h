@@ -136,24 +136,26 @@ osync_bool osync_archive_flush_changes(OSyncArchive *archive, const char *objtyp
  *
  * @param archive The group archive
  * @param objtype Requested object type 
- * @param mappingsids List to store the archive (database) ids of each entry
+ * @param memberids List to store the member ids of each entry
+ * @param mappingsids List to store the mapping ids of each entry
  * @param changetypes List to store the changetypes for each entry
  * @param error Pointer to an error struct
  * @return TRUE on when all changes successfully loaded otherwise FALSE
  */
-osync_bool osync_archive_load_ignored_conflicts(OSyncArchive *archive, const char *objtype, OSyncList **mappingsids, OSyncList **changetypes, OSyncError **error);
+osync_bool osync_archive_load_ignored_conflicts(OSyncArchive *archive, const char *objtype, OSyncList **memberids, OSyncList **mappingsids, OSyncList **changetypes, OSyncError **error);
 
 /**
  * @brief Saves an entry in the ignored conflict list.
  *
  * @param archive The group archive
  * @param objtype Reported object type of entry
+ * @param memberid Member ID of entry 
  * @param mappingid Mapping Entry ID of entry 
  * @param changetype Changetype of entry 
  * @param error Pointer to an error struct
  * @return Returns TRUE on success, FALSE otherwise 
  */
-osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char *objtype, long long int mappingid, OSyncChangeType changetype, OSyncError **error);
+osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char *objtype, long long int memberid, long long int mappingid, OSyncChangeType changetype, OSyncError **error);
 
 /**
  * @brief Deletes all ignored conflict entries of the changelog with the objtype.

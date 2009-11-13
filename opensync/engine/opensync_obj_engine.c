@@ -767,8 +767,8 @@ static osync_bool _create_mapping_engines(OSyncObjEngine *engine, OSyncError **e
 
 static osync_bool _inject_changelog_entries(OSyncObjEngine *engine, OSyncError **error) {
 	OSyncList *ids = NULL;
-	OSyncList *changetypes = NULL;
-	OSyncList *j = NULL, *t = NULL;
+	OSyncList *changetypes = NULL, *memberids = NULL;
+	OSyncList *j = NULL, *t = NULL, *mid = NULL;
 
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, engine);
 
@@ -776,12 +776,13 @@ static osync_bool _inject_changelog_entries(OSyncObjEngine *engine, OSyncError *
 	osync_assert(engine->archive);
 	osync_assert(engine->objtype);
 	
-	if (!osync_archive_load_ignored_conflicts(engine->archive, engine->objtype, &ids, &changetypes, error)) {
+	if (!osync_archive_load_ignored_conflicts(engine->archive, engine->objtype, &memberids, &ids, &changetypes, error)) {
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 		return FALSE;
 	}
 
 	t = changetypes;
+	mid = memberids;
 	for (j = ids; j; j = j->next) {
 		long long int id = (long long int)GPOINTER_TO_INT(j->data);
 
@@ -793,8 +794,10 @@ static osync_bool _inject_changelog_entries(OSyncObjEngine *engine, OSyncError *
 
 			if (mapping_engine->mapping == ignored_mapping) {
 				OSyncList *m;
+
 				for (m = mapping_engine->entries; m; m = m->next) {
-					OSyncMappingEntryEngine *entry = m->data;
+					long long int memberid = (long long int)GPOINTER_TO_INT(mid->data);
+					OSyncMappingEntryEngine *entry = osync_mapping_engine_find_entry_by_memberid(mapping_engine, memberid);
 					OSyncChangeType changetype = (OSyncChangeType) t->data;
 					OSyncChange *ignored_change = osync_change_new(error);
 					OSyncObjFormat *dummyformat = NULL;
@@ -817,6 +820,7 @@ static osync_bool _inject_changelog_entries(OSyncObjEngine *engine, OSyncError *
 		}
 
 		t = t->next;
+		mid = mid->next;
 	}
 
 	osync_list_free(ids);

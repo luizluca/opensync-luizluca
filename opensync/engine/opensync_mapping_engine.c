@@ -126,6 +126,20 @@ void osync_mapping_engine_unref(OSyncMappingEngine *engine)
 	}
 }
 
+OSyncMappingEntryEngine *osync_mapping_engine_find_entry_by_memberid(OSyncMappingEngine *engine, long long int memberid)
+{
+	OSyncList *e;
+	for (e = engine->entries; e; e = e->next) {
+		OSyncMappingEntryEngine *entry = e->data;
+
+		if (osync_mapping_entry_get_member_id(entry->entry) == memberid)
+			return entry;
+	}
+	
+	return NULL;
+}
+
+
 static OSyncMappingEntryEngine *_osync_mapping_engine_find_entry(OSyncMappingEngine *engine, OSyncChange *change)
 {
 	OSyncList *e;
@@ -620,7 +634,7 @@ osync_bool osync_mapping_engine_ignore(OSyncMappingEngine *engine, OSyncError **
 
 	for (c = engine->entries; c; c = c->next) {
 		OSyncMappingEntryEngine *entry = c->data;
-		osync_archive_save_ignored_conflict(archive, objtype, id, osync_change_get_changetype(entry->change), error);
+		osync_archive_save_ignored_conflict(archive, objtype, osync_mapping_entry_get_member_id(entry->entry), id, osync_change_get_changetype(entry->change), error);
 	}
 
 	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_ENGINE_MAPPING_EVENT_SOLVED, NULL);

@@ -65,6 +65,7 @@ osync_bool osync_mapping_engine_multiply(OSyncMappingEngine *engine, OSyncError 
 osync_bool osync_mapping_engine_check_conflict(OSyncMappingEngine *engine);
 
 OSyncMappingEntryEngine *osync_mapping_engine_get_entry(OSyncMappingEngine *engine, OSyncSinkEngine *sinkengine);
+OSyncMappingEntryEngine *osync_mapping_engine_find_entry_by_memberid(OSyncMappingEngine *engine, long long int memberid);
 
 OSYNC_TEST_EXPORT unsigned int osync_mapping_engine_num_changes(OSyncMappingEngine *engine);
 

@@ -94,7 +94,7 @@ static osync_bool osync_archive_create_changelog(OSyncDB *db, const char *objtyp
 		return TRUE;
 	}
 
-	query = "CREATE TABLE tbl_changelog (objtype VARCHAR(64), id INTEGER, entryid INTEGER, changetype INTEGER, PRIMARY KEY (objtype, id) )";
+	query = "CREATE TABLE tbl_changelog (objtype VARCHAR(64) NOT NULL, memberid INTEGER NOT NULL, mappingid INTEGER NOT NULL, changetype INTEGER NOT NULL, PRIMARY KEY (objtype, memberid, mappingid) )";
 	if (!osync_db_query(db, query, error)) {
 		goto error;
 	}
@@ -478,26 +478,27 @@ osync_bool osync_archive_flush_changes(OSyncArchive *archive, const char *objtyp
 	return FALSE;
 }
 
-osync_bool osync_archive_load_ignored_conflicts(OSyncArchive *archive, const char *objtype, OSyncList **ids, OSyncList **changetypes, OSyncError **error)
+osync_bool osync_archive_load_ignored_conflicts(OSyncArchive *archive, const char *objtype, OSyncList **memberids, OSyncList **mappingids, OSyncList **changetypes, OSyncError **error)
 {
 	OSyncList *result = NULL, *row = NULL, *column = NULL;
 	char *query = NULL;
 	char *escaped_objtype = NULL;
-	long long int id = 0;
+	long long int mappingid = 0, memberid = 0;
 	int changetype = 0;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p, %p)", __func__, archive, objtype, ids, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p, %p)", __func__, archive, objtype, mappingids, error);
 
 	osync_assert(archive);
 	osync_assert(objtype);
-	osync_assert(ids);
+	osync_assert(memberids);
+	osync_assert(mappingids);
 	osync_assert(changetypes);
 
 	if (!osync_archive_create_changelog(archive->db, objtype, error))
 		goto error;
 
 	escaped_objtype = osync_db_sql_escape(objtype);
-	query = osync_strdup_printf("SELECT entryid, changetype FROM tbl_changelog WHERE objtype='%s' ORDER BY id", escaped_objtype);
+	query = osync_strdup_printf("SELECT memberid, mappingid, changetype FROM tbl_changelog WHERE objtype='%s' ORDER BY mappingid", escaped_objtype);
 	osync_free(escaped_objtype);
 	escaped_objtype = NULL;
 	result = osync_db_query_table(archive->db, query, error);
@@ -511,13 +512,15 @@ osync_bool osync_archive_load_ignored_conflicts(OSyncArchive *archive, const cha
 	for (row = result; row; row = row->next) { 
 		column = row->data;
 
-		id = g_ascii_strtoull(osync_list_nth_data(column, 0), NULL, 0);
-		changetype = atoi(osync_list_nth_data(column, 1));
+		memberid = g_ascii_strtoull(osync_list_nth_data(column, 0), NULL, 0);
+		mappingid = atoi(osync_list_nth_data(column, 1));
+		changetype = atoi(osync_list_nth_data(column, 2));
 		
-		*ids = osync_list_append((*ids), GINT_TO_POINTER((int)id));
+		*memberids = osync_list_append((*memberids), GINT_TO_POINTER((int)memberid));
+		*mappingids = osync_list_append((*mappingids), GINT_TO_POINTER((int)mappingid));
 		*changetypes = osync_list_append((*changetypes), GINT_TO_POINTER((int)changetype));
 		
-		osync_trace(TRACE_INTERNAL, "Loaded ignored mapping with entryid %lli", id);
+		osync_trace(TRACE_INTERNAL, "Loaded ignored mapping with mappingid %lli", mappingid);
 	}
 
 	osync_db_free_list(result);	
@@ -529,11 +532,11 @@ osync_bool osync_archive_load_ignored_conflicts(OSyncArchive *archive, const cha
 	return FALSE;	
 }
 
-osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char *objtype, long long int id, OSyncChangeType changetype, OSyncError **error)
+osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char *objtype, long long int memberid, long long int mappingid, OSyncChangeType changetype, OSyncError **error)
 {
 	char *query = NULL;
 	char *escaped_objtype = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%p, %s, %lli, %p)", __func__, archive, objtype, id, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %lli, %lli, %p)", __func__, archive, objtype, memberid, mappingid, error);
 
 	osync_assert(archive);
 	osync_assert(objtype);
@@ -542,7 +545,7 @@ osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char
 		goto error;
 	
 	escaped_objtype = osync_db_sql_escape(objtype);
-	query = osync_strdup_printf("INSERT INTO tbl_changelog (objtype, entryid, changetype) VALUES('%s', '%lli', '%i')", escaped_objtype, id, changetype);
+	query = osync_strdup_printf("INSERT INTO tbl_changelog (objtype, memberid, mappingid, changetype) VALUES('%s', '%lli', '%lli', '%i')", escaped_objtype, memberid, mappingid, changetype);
 	osync_free(escaped_objtype);
 	escaped_objtype = NULL;
 	
@@ -553,7 +556,7 @@ osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char
 
 	osync_free(query);
 	
-	osync_trace(TRACE_EXIT, "%s: %lli", __func__, id);
+	osync_trace(TRACE_EXIT, "%s: %lli", __func__, mappingid);
 	return TRUE;
 	
  error:
