@@ -47,6 +47,4 @@ struct OSyncMappingEntry {
 
 /*@}*/
 
-long long int osync_mapping_entry_get_member_id(OSyncMappingEntry *entry);
-
 #endif /*OPENSYNC_MAPPING_ENTRY_INTERNALS_H_*/
