@@ -387,7 +387,7 @@ OSyncLockState osync_group_lock(OSyncGroup *group, OSyncError **error)
 				group->lock_fd = 0;
 			} else {
 				osync_error_set(error, OSYNC_ERROR_IO_ERROR, "error setting lock: %s", g_strerror(errno));
-				osync_trace(TRACE_INTERNAL, osync_error_print(error));
+				osync_trace(TRACE_INTERNAL, "%s", osync_error_print(error));
 			}
 		} else
 #else /* _WIN32 */

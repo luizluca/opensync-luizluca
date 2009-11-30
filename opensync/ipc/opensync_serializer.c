@@ -606,7 +606,7 @@ osync_bool osync_demarshal_error(OSyncMessage *message, OSyncError **marshal_err
 		osync_message_read_int(message, &error_type, error);
 		osync_message_read_string(message, &msg, error);
 		
-		osync_error_set(marshal_error, (OSyncErrorType)error_type, msg);
+		osync_error_set(marshal_error, (OSyncErrorType)error_type, "%s", msg);
 		osync_free(msg);
 	}
 

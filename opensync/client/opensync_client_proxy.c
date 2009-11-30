@@ -1080,7 +1080,7 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 						execlp("./osplugin", "osplugin", "-f", readfd, writefd, NULL);
 					}
 											
-					osync_trace(TRACE_INTERNAL, strerror(errno));
+					osync_trace(TRACE_INTERNAL, "%s", strerror(errno));
 					osync_trace(TRACE_INTERNAL, "Unable to execute osplugin.");
 					exit(1);
 				} else {
