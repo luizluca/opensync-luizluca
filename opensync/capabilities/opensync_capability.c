@@ -361,18 +361,21 @@ OSyncCapabilityParameter *osync_capability_get_parameter(OSyncCapability *capabi
 {
 	osync_assert(capability);
 
-	return capability->parameter;
+	return osync_list_nth_data(capability->parameters, 0);
 }
 
-void osync_capability_set_parameter(OSyncCapability *capability, OSyncCapabilityParameter *parameter)
+void osync_capability_add_parameter(OSyncCapability *capability, OSyncCapabilityParameter *parameter)
 {
 	osync_assert(capability);
 	osync_assert(parameter);
 
-	if (capability->parameter)
-		osync_capability_parameter_unref(capability->parameter);
+	capability->parameters = osync_list_append(capability->parameters, parameter);
+	osync_capability_parameter_ref(parameter);
+}
 
-	capability->parameter = osync_capability_parameter_ref(parameter);
+void osync_capability_set_parameter(OSyncCapability *capability, OSyncCapabilityParameter *parameter)
+{
+	osync_capability_add_parameter(capability, parameter);
 }
 
 OSyncCapabilityType osync_capability_get_type(OSyncCapability *capability)

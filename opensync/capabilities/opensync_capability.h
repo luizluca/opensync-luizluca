@@ -146,14 +146,21 @@ OSYNC_EXPORT void osync_capability_set_min(OSyncCapability *capability, unsigned
  * @param capability The pointer to a capability object
  * @return Pointer to the capability parameter of this capability object
  */
-OSYNC_EXPORT OSyncCapabilityParameter *osync_capability_get_parameter(OSyncCapability *capability);
+OSYNC_EXPORT OSyncCapabilityParameter *osync_capability_get_parameter(OSyncCapability *capability) OSYNC_DEPRECATED;
 
 /**
  * @brief Set the capability parameter of the capability object
  * @param capability The pointer to a capability object
  * @param parameter the parameter to set for the capability object
  */
-OSYNC_EXPORT void osync_capability_set_parameter(OSyncCapability *capability, OSyncCapabilityParameter *parameter);
+OSYNC_EXPORT void osync_capability_set_parameter(OSyncCapability *capability, OSyncCapabilityParameter *parameter) OSYNC_DEPRECATED;
+
+/**
+ * @brief Add a capability parameter to the capability object
+ * @param capability The pointer to a capability object
+ * @param parameter the parameter to add to the capability object
+ */
+OSYNC_EXPORT void osync_capability_add_parameter(OSyncCapability *capability, OSyncCapabilityParameter *parameter);
 
 /**
  * @brief Get capability type of this capability object 

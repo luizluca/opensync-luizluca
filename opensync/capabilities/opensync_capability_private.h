@@ -48,7 +48,7 @@ struct OSyncCapability {
 	/** Name */
 	char *name;
 	/** Parameter */
-	OSyncCapabilityParameter *parameter;
+	OSyncList *parameters; /* OSyncCapabilityParameter * list */
 	/** Type */
 	OSyncCapabilityType type;
 	/** ValEnum */
