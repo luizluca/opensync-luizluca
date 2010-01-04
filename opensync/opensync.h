@@ -67,6 +67,22 @@
 #define OSYNC_TEST_EXPORT
 #endif
 
+/* Mark function as depercated for a more stable API
+ * (Copied from libsyncml)
+ */
+#if __GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 >= 2)
+  /* gcc >= 3.2 */
+# define OSYNC_DEPRECATED __attribute__ ((deprecated))
+#elif defined(_MSC_VER) && (_MSC_VER >= 1300) && (_MSC_VER < 1400)
+  /* msvc >= 7 */
+# define OSYNC_DEPRECATED __declspec(deprecated)
+#elif defined(_MSV_VER) && (_MSC_VER >= 1400)
+  /* MS Visual Studio 2005 */
+# define OSYNC_DEPRECATED
+#else
+# define OSYNC_DEPRECATED
+#endif
+
 #if __GNUC__
 #define GCC_FORMAT_CHECK(a,b) __attribute__ ((format(printf, a, b)))
 #else
