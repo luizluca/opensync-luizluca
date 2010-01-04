@@ -62,10 +62,15 @@ OSyncXMLField *osync_xmlfield_new_xmlfield(OSyncXMLField *parent, xmlNodePtr nod
 	node->_private = xmlfield;
 	
 	if (parent) {
-		xmlfield->prev = parent->child;
-		if (xmlfield->prev)
+		xmlfield->prev = osync_xmlfield_get_last_child(parent);
+
+		if (xmlfield->prev) {
+			osync_assert(xmlfield->prev->next == NULL);
 			xmlfield->prev->next = xmlfield;
-		parent->child = xmlfield;
+		}
+
+		if (parent->child == NULL)
+			parent->child = xmlfield;
 	}
 
 
@@ -295,6 +300,20 @@ OSyncXMLField *osync_xmlfield_get_child(OSyncXMLField *xmlfield)
 {
 	osync_return_val_if_fail(xmlfield, NULL);
 	return xmlfield->child;
+}
+
+OSyncXMLField *osync_xmlfield_get_last_child(OSyncXMLField *xmlfield)
+{
+	OSyncXMLField *last = NULL;
+	osync_return_val_if_fail(xmlfield, NULL);
+	osync_return_val_if_fail(xmlfield->child, NULL);
+
+	last = xmlfield->child;
+
+	while (last->next)
+		last = last->next;
+	
+	return last;
 }
 
 const char *osync_xmlfield_get_value(OSyncXMLField *xmlfield)

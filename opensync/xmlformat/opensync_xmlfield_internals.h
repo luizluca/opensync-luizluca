@@ -72,6 +72,13 @@ int osync_xmlfield_compare_stdlib(const void *xmlfield1, const void *xmlfield2);
  */
 int osync_xmlfield_key_compare_stdlib(const void *key1, const void *key2);
 
+/**
+ * @brief Get the last child xmlfield
+ * @param xmlfield Pointer to the xmlfield object
+ * @return A pointer to the last child xmlfield or NULL if there is no child xmlfield
+ */
+OSYNC_TEST_EXPORT OSyncXMLField *osync_xmlfield_get_last_child(OSyncXMLField *xmlfield);
+
 /*@}*/
 
 #endif /*OPENSYNC_XMLFIELD_INTERNALS_H_*/
