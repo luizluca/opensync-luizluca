@@ -736,7 +736,7 @@ osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, O
 			OSyncList *e = NULL;
 			OSyncChange *change = NULL;
 			OSyncMappingEntryEngine *entry = NULL;
-			OSyncConvCmpResult cmpret;
+			OSyncConvCmpResult cmpret = OSYNC_CONV_DATA_UNKNOWN;
 			mapping = m->data;
 			
 			/* Get the first change of the mapping to test. Compare the given change with this change.
