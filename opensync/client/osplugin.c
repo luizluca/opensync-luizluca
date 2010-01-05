@@ -22,7 +22,9 @@
 #include "opensync_internals.h"
 
 #include "opensync-ipc.h"
+
 #include "opensync-client.h"
+#include "opensync_client_internals.h"
 
 static void usage (int ecode)
 {
@@ -99,10 +101,12 @@ int main(int argc, char **argv)
 		if (!osync_client_set_incoming_queue(client, incoming, &error))
 			goto error;
 
-		osync_queue_unref(incoming);
 		if (!osync_client_set_outgoing_queue(client, outgoing, &error))
 			goto error;
 
+		osync_queue_cross_link(incoming, outgoing);
+
+		osync_queue_unref(incoming);
 		osync_queue_unref(outgoing);
 	} else {
 		/* Create connection pipes **/

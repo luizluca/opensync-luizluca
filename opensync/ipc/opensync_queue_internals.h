@@ -90,20 +90,6 @@ OSYNC_TEST_EXPORT osync_bool osync_queue_is_connected(OSyncQueue *queue);
 OSYNC_TEST_EXPORT void osync_queue_set_message_handler(OSyncQueue *queue, OSyncMessageHandler handler, gpointer user_data);
 
 /**
- * @brief Cross links command queue and reply queue
- * 
- * Stores the queue used for replies in the command queue object so
- * that timeout responses can be sent if necessary.
- * And stores the command queue in the reply queue object so that
- * replies can remove pending messages before they time out.
- * 
- * @param cmd_queue The command queue used to receive incoming commands
- * @param reply_queue The queue used to send replies 
- * 
- */
-OSYNC_TEST_EXPORT void osync_queue_cross_link(OSyncQueue *cmd_queue, OSyncQueue *reply_queue);
-
-/**
  * @brief Remove cross links between command queues and reply queues
  * 
  * Removes the cross-links from this queue and all queues linked

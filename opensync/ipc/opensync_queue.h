@@ -120,6 +120,20 @@ OSYNC_EXPORT osync_bool osync_queue_connect(OSyncQueue *queue, OSyncQueueType ty
  */
 OSYNC_EXPORT osync_bool osync_queue_disconnect(OSyncQueue *queue, OSyncError **error);
 
+/**
+ * @brief Cross links command queue and reply queue
+ * 
+ * Stores the queue used for replies in the command queue object so
+ * that timeout responses can be sent if necessary.
+ * And stores the command queue in the reply queue object so that
+ * replies can remove pending messages before they time out.
+ * 
+ * @param cmd_queue The command queue used to receive incoming commands
+ * @param reply_queue The queue used to send replies 
+ * 
+ */
+OSYNC_EXPORT void osync_queue_cross_link(OSyncQueue *cmd_queue, OSyncQueue *reply_queue);
+
 /*@}*/
 #endif /* _OPENSYNC_QUEUE_H */
 

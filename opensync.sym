@@ -655,6 +655,7 @@ osync_plugin_set_start_type
 osync_plugin_unref
 osync_queue_connect
 osync_queue_create
+osync_queue_cross_link
 osync_queue_disconnect
 osync_queue_new
 osync_queue_new_from_fd
