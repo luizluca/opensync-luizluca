@@ -8,6 +8,7 @@ osync_capabilities_objtype_unref
 osync_capabilities_ref
 osync_capabilities_unref
 osync_capability_add_child
+osync_capability_add_parameter
 osync_capability_get_childs
 osync_capability_get_displayname
 osync_capability_get_max
