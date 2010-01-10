@@ -670,6 +670,7 @@ error:
 
 osync_bool osync_objtype_sink_load_hashtable(OSyncObjTypeSink *sink, OSyncPluginInfo *plugin_info, OSyncError **error)
 {
+	osync_bool new_hashtable;
 	char *hashtablepath;
 
 	osync_assert(sink);
@@ -688,9 +689,14 @@ osync_bool osync_objtype_sink_load_hashtable(OSyncObjTypeSink *sink, OSyncPlugin
 			osync_plugin_info_get_configdir(plugin_info),
 			G_DIR_SEPARATOR);
 
-	sink->hashtable = osync_hashtable_new(hashtablepath, sink->objtype, error);
+	sink->hashtable = osync_hashtable_new(hashtablepath, sink->objtype, &new_hashtable, error);
 	if (!sink->hashtable)
 		goto error;
+
+	if (new_hashtable && osync_objtype_sink_get_slowsync(sink) == FALSE) {
+		osync_objtype_sink_set_slowsync(sink, TRUE);
+		osync_trace(TRACE_INTERNAL, "SLOWSYNC: new_hashtable got created, maybe it got deleted or malformed?!");
+	}
 
 	if (!osync_hashtable_load(sink->hashtable, error))
 		goto error_free_hashtable;
