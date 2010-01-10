@@ -1900,8 +1900,14 @@ osync_bool osync_client_proxy_sync_done(OSyncClientProxy *proxy, sync_done_cb ca
 		goto error;
 
 	sink = osync_client_proxy_find_objtype_sink(proxy, objtype);
-	if (sink)
+	if (sink) {
 		timeout = osync_objtype_sink_get_syncdone_timeout_or_default(sink); 
+
+		/* Reset the slow-sync state in the client-proxy OSyncObjTypeSink object, since finalize might
+		 * not get called in a multi-sync
+		 */
+		osync_objtype_sink_set_slowsync(sink, FALSE);
+	}
 
 	ctx->proxy = proxy;
 	ctx->sync_done_callback = callback;

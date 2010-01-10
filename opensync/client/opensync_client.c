@@ -1071,14 +1071,9 @@ static osync_bool _osync_client_handle_connect(OSyncClient *client, OSyncMessage
 		
 		osync_message_unref(reply);
 	} else {
-               /* set slowsync.
-                        otherwise disable slowsync - to avoid slowsyncs every time with the same initiliazed engine
-                        without finalizing the engine the next sync with the same engine would be again a slow-sync.
-                        (unittest: sync - testcases: sync_easy_new_del, sync_easy_new_mapping) */
+               /* set slowsync. but never disable it */
                if (slowsync)
                        osync_objtype_sink_set_slowsync(sink, TRUE);
-               else
-                       osync_objtype_sink_set_slowsync(sink, FALSE);
 
 		context = _create_context(client, message, _osync_client_connect_callback, NULL, error);
 		if (!context)
@@ -1148,11 +1143,10 @@ static osync_bool _osync_client_handle_connect_done(OSyncClient *client, OSyncMe
 			goto error;
 
 		/* set slowsync (again) if the slow-sync got requested during the connect() call
-			 of a member - and not during frontend/engine itself (e.g. anchor mismatch). */
+			 of a member - and not during frontend/engine itself (e.g. anchor mismatch).
+			 Never disable a slowsync.*/
 		if (slowsync)
 			osync_objtype_sink_set_slowsync(sink, TRUE);
-		else
-			osync_objtype_sink_set_slowsync(sink, FALSE);
 		
 		osync_plugin_info_set_sink(client->plugin_info, sink);
 		osync_objtype_sink_connect_done(sink, client->plugin_info, context);
@@ -1498,6 +1492,10 @@ static osync_bool _osync_client_handle_sync_done(OSyncClient *client, OSyncMessa
 
 		if (!osync_objtype_sink_save_hashtable(sink, error))
 			goto error;
+
+		/* Reset slow-sync state. The sink is here over.
+		 * Reset is requried for a multi-sync, without finalization.*/
+		osync_objtype_sink_set_slowsync(sink, FALSE);
 	}
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
