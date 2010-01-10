@@ -421,11 +421,6 @@ OSyncConvCmpResult osync_xml_compare(xmlDoc *leftinpdoc, xmlDoc *rightinpdoc, OS
 	return OSYNC_CONV_DATA_MISMATCH;
 }
 
-/**
- * @brief Dumps the XML tree to a string 
- * @param doc the XML doc value 
- * @return String of XML the tree (the caller is responsible for freeing) 
- */
 char *osync_xml_write_to_string(xmlDoc *doc)
 {
 	xmlChar *temp = NULL;
@@ -474,11 +469,6 @@ osync_bool osync_xml_validate_document(xmlDocPtr doc, char *schemafilepath)
 	return TRUE;
 }
 
-/**
- * @brief Help method which return the content of a xmlNode
- * @param node The pointer to a xmlNode
- * @return The value of the xmlNode or a empty string
- */
 xmlChar *osync_xml_node_get_content(xmlNodePtr node)
 {
 	if(node->children && node->children->content)
@@ -487,11 +477,6 @@ xmlChar *osync_xml_node_get_content(xmlNodePtr node)
 	return (xmlChar *)"";
 }
 
-/**
- * @brief Help method which return the content of a xmlAttr
- * @param node The pointer to a xmlAttr
- * @return The value of the xmlAttr or a empty string
- */
 xmlChar *osync_xml_attr_get_content(xmlAttrPtr node)
 {
 	if(node->children && node->children->content)
@@ -500,18 +485,6 @@ xmlChar *osync_xml_attr_get_content(xmlAttrPtr node)
 	return (xmlChar *)"";
 }
 
-/*! @brief Opens a xml document
- * 
- * Opens a xml document
- * 
- * @param doc Pointer to a xmldoc
- * @param cur The pointer to the first node
- * @param path The path of the document
- * @param topentry the name of the top node
- * @param error Pointer to a error struct
- * @returns TRUE if successful, FALSE otherwise
- * 
- */
 osync_bool osync_xml_open_file(xmlDocPtr *doc, xmlNodePtr *cur, const char *path, const char *topentry, OSyncError **error)
 {
 	if (!g_file_test(path, G_FILE_TEST_EXISTS)) {
