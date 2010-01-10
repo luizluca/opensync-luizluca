@@ -459,8 +459,6 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 		goto error;
 
 	osync_objtype_sink_set_slowsync(*sink, slowsync);
-	if (slowsync)
-		printf("SLOWSYNC marshled!\n");
 
 	/* timeouts */
 	if (!osync_message_read_int(message, &timeout, error))
