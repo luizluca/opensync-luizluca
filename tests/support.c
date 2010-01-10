@@ -299,7 +299,7 @@ void validate_mapping_table(const char *testbed, unsigned int num_members, const
 OSyncHashTable *hashtable_load(const char *path, const char *objtype, unsigned int entries)
 {
 	OSyncError *error = NULL;
-	OSyncHashTable *table = osync_hashtable_new(path, objtype, &error);
+	OSyncHashTable *table = osync_hashtable_new(path, objtype, NULL, &error);
 	fail_unless(table != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 
