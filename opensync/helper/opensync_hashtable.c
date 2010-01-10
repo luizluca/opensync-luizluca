@@ -123,11 +123,14 @@ static void _osync_hashtable_prepare_insert_query(const char *uid, const char *h
 
 /* end private api */
 
-OSyncHashTable *osync_hashtable_new(const char *path, const char *objtype, OSyncError **error)
+OSyncHashTable *osync_hashtable_new(const char *path, const char *objtype, osync_bool *new_hashtable, OSyncError **error)
 {
 	OSyncHashTable *table = NULL;
 	int ret = 0;
 	osync_trace(TRACE_ENTRY, "%s(%s, %p)", __func__, path, error);
+
+	if (new_hashtable)
+		*new_hashtable = FALSE;
 
 	table = osync_try_malloc0(sizeof(OSyncHashTable), error);
 	if (!table)
@@ -153,10 +156,14 @@ OSyncHashTable *osync_hashtable_new(const char *path, const char *objtype, OSync
 
 	if (ret < 0)
 		goto error;
-	else if (ret == 0)
+	else if (ret == 0) {
 		/* if ret == 0 then table does not exist yet. contiune and create one. */
 		if (!osync_hashtable_create(table, error))
 			goto error;
+
+		if (new_hashtable)
+			*new_hashtable = TRUE;
+	}
 
 
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, table);

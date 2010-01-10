@@ -52,11 +52,12 @@ struct OSyncHashTable {
  *
  * @param path the full path and file name of the hashtable .db file to load from or create
  * @param objtype the object type of the hashtable
+ * @param new_hashtable pointer to a bool, which get set to TRUE if a new hashtable got created (e.g. first sync, got deleted, malformed, ...). Otherwise got set to FALSE.
  * @param error Pointer to an error struct
  * @returns A new hashtable, or NULL if an error occurred.
  *
  */
-OSYNC_TEST_EXPORT OSyncHashTable *osync_hashtable_new(const char *path, const char *objtype, OSyncError **error);
+OSYNC_TEST_EXPORT OSyncHashTable *osync_hashtable_new(const char *path, const char *objtype, osync_bool *new_hashtable, OSyncError **error);
 
 /** @brief Increase the reference count of a hashtable object.
  *

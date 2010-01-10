@@ -21,13 +21,17 @@ START_TEST (hashtable_new)
 	OSyncError *error = NULL;
 	char *testbed = setup_testbed(NULL);
 
+
+	osync_bool new_hashtable = FALSE;
+
 	reset_hashtable_counters();
 
 	char *hashpath = g_strdup_printf("%s%chashtable.db", testbed, G_DIR_SEPARATOR);
-	OSyncHashTable *table = osync_hashtable_new(hashpath, "contact", &error);
+	OSyncHashTable *table = osync_hashtable_new(hashpath, "contact", &new_hashtable, &error);
 	g_free(hashpath);
 	fail_unless(!error, NULL);
 	fail_unless(table != NULL, NULL);
+	fail_unless(new_hashtable != FALSE, NULL); /* Expecting a fresh/new hashtable */
 
 	/***** load */
 	fail_unless(osync_hashtable_load(table, &error), NULL);
@@ -69,12 +73,15 @@ START_TEST (hashtable_reload)
 	OSyncError *error = NULL;
 	char *testbed = setup_testbed(NULL);
 
+	osync_bool new_hashtable = FALSE;
+
 	reset_hashtable_counters();
 
 	char *hashpath = g_strdup_printf("%s%chashtable.db", testbed, G_DIR_SEPARATOR);
-	OSyncHashTable *table = osync_hashtable_new(hashpath, "contact", &error);
+	OSyncHashTable *table = osync_hashtable_new(hashpath, "contact", &new_hashtable, &error);
 	fail_unless(!error, NULL);
 	fail_unless(table != NULL, NULL);
+	fail_unless(new_hashtable != FALSE, NULL); /* Expecting a new/fresh hastable */
 
 	/***** load */
 	fail_unless(osync_hashtable_load(table, &error), NULL);
@@ -100,9 +107,10 @@ START_TEST (hashtable_reload)
 	table = NULL;
 
 	/** reload the hashtable */
-	OSyncHashTable *newtable = osync_hashtable_new(hashpath, "contact", &error);
+	OSyncHashTable *newtable = osync_hashtable_new(hashpath, "contact", &new_hashtable, &error);
 	fail_unless(!error, NULL);
 	fail_unless(newtable != NULL, NULL);
+	fail_unless(new_hashtable != TRUE, NULL); /* We expect here no new hashtable */
 
 	/* 0 entries - since not loaded! */
 	fail_unless(osync_hashtable_num_entries(newtable) == 0, NULL);
@@ -137,7 +145,7 @@ START_TEST (hashtable_stress)
 	reset_hashtable_counters();
 
 	char *hashpath = g_strdup_printf("%s%chashtable.db", testbed, G_DIR_SEPARATOR);
-	OSyncHashTable *table = osync_hashtable_new(hashpath, "contact", &error);
+ 	OSyncHashTable *table = osync_hashtable_new(hashpath, "contact", NULL, &error);
 	fail_unless(!error, NULL);
 	fail_unless(table != NULL, NULL);
 
@@ -171,7 +179,7 @@ START_TEST (hashtable_stress)
 	table = NULL;
 
 	/** reload the hashtable */
-	OSyncHashTable *newtable = osync_hashtable_new(hashpath, "contact", &error);
+	OSyncHashTable *newtable = osync_hashtable_new(hashpath, "contact", NULL, &error);
 	fail_unless(!error, NULL);
 	fail_unless(newtable != NULL, NULL);
 
