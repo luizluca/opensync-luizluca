@@ -1,1 +1,14 @@
-This file will hold the default configuration options of your plugin.
+<?xml version="1.0"?>
+<config version="1.0">
+<Resources>
+  <Resource>
+    <Enabled>1</Enabled>
+    <Formats>
+      <Format>
+        <Name>&lt;objformat&gt;</Name> <!-- example: vcard21 -->
+      </Format>
+    </Formats>
+    <ObjType>&lt;objtype&gt;</ObjType> <!-- example: contact -->
+  </Resource>
+</Resources>
+</config>
