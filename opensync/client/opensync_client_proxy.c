@@ -1243,18 +1243,6 @@ osync_bool osync_client_proxy_shutdown(OSyncClientProxy *proxy, OSyncError **err
 	return FALSE;
 }
 
-/**
- * @brief Check if passed resource is valid.
- * 
- *	This check looks for:
- *	 - are all format plugins in the format-sinks available
- *	 - ... 
- *
- * @param proxy Pointer to OSyncClientProxy
- * @param resource Pointer to resource to check
- * @param error The error which will hold the info of an invalid resource 
- * @return TRUE if valid, FALSE otherwise.
- */
 static osync_bool osync_client_proxy_check_resource(OSyncClientProxy *proxy, OSyncPluginResource *resource, OSyncError **error)
 {
 	OSyncList *format_sinks = osync_plugin_resource_get_objformat_sinks(resource);

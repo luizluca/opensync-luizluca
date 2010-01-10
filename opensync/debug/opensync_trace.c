@@ -23,6 +23,8 @@
 #include "opensync.h"
 #include "opensync_internals.h"
 
+#include "opensync_trace_private.h"
+
 GPrivate* current_tabs = NULL;
 GPrivate* thread_id = NULL;
 GPrivate* trace_disabled = NULL;
@@ -68,9 +70,6 @@ osync_bool osync_trace_is_enabled(void)
 
 
 #ifdef OPENSYNC_TRACE
-/*! @brief Initailize tracing 
- *
- */
 static void _osync_trace_init()
 {
 	const char *noprivacy;

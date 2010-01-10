@@ -153,6 +153,15 @@ typedef struct OSyncPendingMessage {
  * */
 static long long int opensync_queue_gen_id(const GTimeVal *tv);
 
+/** @brief Flush all message of the Queue 
+ * 
+ * Flush all message inside the Queue and dereference the messages.
+ *
+ * @param queue The queue to flush 
+ * 
+ */
+static void _osync_queue_flush_messages(GAsyncQueue *queue);
+
 /*@}*/
 
 #endif /* _OPENSYNC_QUEUE_PRIVATE_H */

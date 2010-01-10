@@ -774,13 +774,6 @@ void osync_member_add_objtype_sink(OSyncMember *member, OSyncObjTypeSink *sink)
 	osync_objtype_sink_ref(sink);
 }
 
-// FIXME this procedure does not seem to be referred to anywhere...
-/** @brief Remove an OSyncObjTypeSink object to the member list of supported object types of this member
- * 
- * @param member The member pointer
- * @param sink The OSyncObjTypeSink object to add 
- * 
- */
 void osync_member_remove_objtype_sink(OSyncMember *member, OSyncObjTypeSink *sink)
 {
 	osync_assert(member);

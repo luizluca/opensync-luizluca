@@ -31,6 +31,21 @@ OSYNC_TEST_EXPORT inline struct tm* gmtime_r (const time_t *clock, struct tm *re
 OSYNC_TEST_EXPORT inline struct tm* localtime_r (const time_t *clock, struct tm *result);
 #endif /* _WIN32 */
 
+#if 0
+/*! @brief Function sets the time of vtime timestamp to the given time parameter
+ * 
+ * If vtime only stores date (without THHMMSS[Z]) parameter time will
+ * appended. The is_utc append a Z (Zulu) for UTC if not present. 
+ *
+ * Mainly used for workarounds.
+ *
+ * @param vtime The original data-timestamp which gets modified
+ * @param time The time which should be set
+ * @param is_utc If the given time is UTC is_utc have to be TRUE
+ * @returns data-timestamp in UTC if is_utc TRUE
+ */
+char *osync_time_set_vtime(const char *vtime, const char *time, osync_bool is_utc);
+#endif /* 0 */
 
 #endif /* _OPENSYNC_TIME_INTERNALS_H_ */
 

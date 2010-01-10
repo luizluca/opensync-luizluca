@@ -81,4 +81,18 @@
 
 void osync_client_proxy_set_error(OSyncClientProxy *proxy, OSyncError *error);
 
+/**
+ * @brief Check if passed resource is valid.
+ * 
+ *	This check looks for:
+ *	 - are all format plugins in the format-sinks available
+ *	 - ... 
+ *
+ * @param proxy Pointer to OSyncClientProxy
+ * @param resource Pointer to resource to check
+ * @param error The error which will hold the info of an invalid resource 
+ * @return TRUE if valid, FALSE otherwise.
+ */
+static osync_bool osync_client_proxy_check_resource(OSyncClientProxy *proxy, OSyncPluginResource *resource, OSyncError **error);
+
 #endif /*OSYNC_CLIENT_PROXY_PRIVATE_H_*/
