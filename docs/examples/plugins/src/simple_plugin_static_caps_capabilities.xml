@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<Caps Version="1.0" CapsFormat="<fill in capsformat>">
+  <ObjType Name="<fill in objtype>" ObjFormat="<fill in objformat>">
+    <Cap>
+      <Name>CapabilityName1</Name>
+    </Cap>
+    <Cap>
+      <Name>CAP2</Name>
+    </Cap>
+    <Cap>
+      <Name>Name</Name>
+    </Cap>
+    <Cap>
+      <Name>Telephone</Name>
+    </Cap>
+  </ObjType>
+</Caps>

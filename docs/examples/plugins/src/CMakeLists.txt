@@ -6,6 +6,14 @@ OPENSYNC_PLUGIN_ADD( example_simple_plugin simple_plugin.c )
 TARGET_LINK_LIBRARIES( example_simple_plugin ${OPENSYNC_LIBRARIES} )
 OPENSYNC_PLUGIN_INSTALL( example_simple_plugin )
 
+### Simple Synchronization Plugin with Static Capabilities ########
+OPENSYNC_PLUGIN_ADD( example_simple_plugin_static_caps simple_plugin_static_caps.c )
+TARGET_LINK_LIBRARIES( example_simple_plugin_static_caps ${OPENSYNC_LIBRARIES} )
+OPENSYNC_PLUGIN_INSTALL( example_simple_plugin_static_caps )
+
+OPENSYNC_PLUGIN_CAPABILITIES( simple_plugin_static_caps_capabilities.xml ) # install capabilites file
+OPENSYNC_PLUGIN_DESCRIPTIONS( simple_plugin_static_caps_description.xml ) # install description file
+
 ### Advanced Synchronization Plugin ######
 OPENSYNC_PLUGIN_ADD( example_plugin plugin.c )
 TARGET_LINK_LIBRARIES( example_plugin ${OPENSYNC_LIBRARIES} )
