@@ -253,10 +253,10 @@ static osync_bool mock_write(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyn
 			osync_assert(osync_file_write(filename, file->data, file->size, file->mode, &error));
 			break;
 		case OSYNC_CHANGE_TYPE_UNMODIFIED:
-			fail("Unmodified in a change function?!");
+			osync_assert_msg(FALSE, "Unmodified in a change function?!");
 			break;
 		case OSYNC_CHANGE_TYPE_UNKNOWN:
-			fail("Unknown Change Type");
+			osync_assert_msg(FALSE, "Unknown Change Type");
 			break;
 	}
 	
