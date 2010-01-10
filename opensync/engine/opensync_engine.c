@@ -1845,7 +1845,14 @@ void osync_engine_command(OSyncEngine *engine, OSyncEngineCommand *command)
 	switch (command->cmd) {
 	case OSYNC_ENGINE_COMMAND_CONNECT:
 
-		/* We first tell all object engines to connect */
+		/* First we connect the main sinks */
+		for (o = engine->proxies; o; o = o->next) {
+			OSyncClientProxy *proxy = o->data;
+			if (!osync_client_proxy_connect(proxy, _osync_engine_connect_callback, engine, NULL, FALSE, &locerror))
+				goto error;
+		}
+
+		/* Then we tell all object engines to connect */
 		for (o = engine->object_engines; o; o = o->next) {
 			OSyncObjEngine *objengine = o->data;
 
@@ -1856,12 +1863,6 @@ void osync_engine_command(OSyncEngine *engine, OSyncEngineCommand *command)
 				goto error;
 		}
 			
-		/* Then we connect the main sinks */
-		for (o = engine->proxies; o; o = o->next) {
-			OSyncClientProxy *proxy = o->data;
-			if (!osync_client_proxy_connect(proxy, _osync_engine_connect_callback, engine, NULL, FALSE, &locerror))
-				goto error;
-		}
 		break;
 	case OSYNC_ENGINE_COMMAND_CONNECT_DONE:
 	case OSYNC_ENGINE_COMMAND_READ:

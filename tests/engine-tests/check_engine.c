@@ -378,7 +378,7 @@ static void connect2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext
 	osync_assert(env->num_connect < 3);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 0);
-	osync_assert(env->main_connect == 0);
+	osync_assert(env->main_connect == 1);
 	osync_assert(env->main_disconnect == 0);
 	osync_assert(env->main_get_changes == 0);
 	
@@ -435,7 +435,7 @@ static void main_connect2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCo
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
 	osync_assert(env);
-	osync_assert(env->num_connect == 3);
+	osync_assert(env->num_connect == 0);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 0);
 	osync_assert(env->main_connect == 0);
@@ -700,12 +700,12 @@ static void connect3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncContext
 	osync_assert(env->num_connect < 3);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 0);
-	osync_assert(env->main_connect == 0);
+	osync_assert(env->main_connect == 1);
 	osync_assert(env->main_disconnect == 0);
 	osync_assert(env->main_get_changes == 0);
 	
 	env->ctx[env->num_connect] = ctx;
-	osync_context_ref(ctx);
+	osync_context_report_success(ctx);
 	
 	g_atomic_int_inc(&(env->num_connect));
 	
@@ -785,7 +785,7 @@ static void main_connect3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCo
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, ctx);
 	
 	osync_assert(env);
-	osync_assert(env->num_connect == 3);
+	osync_assert(env->num_connect == 0);
 	osync_assert(env->num_disconnect == 0);
 	osync_assert(env->num_get_changes == 0);
 	osync_assert(env->main_connect == 0);
@@ -795,13 +795,6 @@ static void main_connect3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCo
 	g_atomic_int_inc(&(env->main_connect));
 	
 	osync_context_report_success(ctx);
-	osync_context_report_success(env->ctx[0]);
-	osync_context_report_success(env->ctx[1]);
-	osync_context_report_success(env->ctx[2]);
-	
-	osync_context_unref(env->ctx[0]);
-	osync_context_unref(env->ctx[1]);
-	osync_context_unref(env->ctx[2]);
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
