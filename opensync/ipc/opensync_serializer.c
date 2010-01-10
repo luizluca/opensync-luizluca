@@ -355,6 +355,9 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 	/* enabled */
 	osync_message_write_int(message, osync_objtype_sink_is_enabled(sink), error);
 
+	/* slowsync */
+	osync_message_write_int(message, osync_objtype_sink_get_slowsync(sink), error);
+
 	/* timeouts */
 	osync_message_write_int(message, osync_objtype_sink_get_connect_timeout(sink), error);
 	osync_message_write_int(message, osync_objtype_sink_get_disconnect_timeout(sink), error);
@@ -381,7 +384,7 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	char *name = NULL;
 	char *preferred_format = NULL;
 	int num_formats = 0;
-	int enabled = 0, timeout = 0;
+	int enabled = 0, timeout = 0, slowsync = 0;
 	int read = 0, get_changes = 0;
 	int i = 0;
 
@@ -396,6 +399,7 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	 * number of format sinks 
 	 * format sink list (format sinks)
 	 * enabled (int)
+	 * slowsync (bool)
 	 * timeout connect (int)
 	 * timeout disconnect (int)
 	 * timeout get_changes (int)
@@ -449,6 +453,14 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 		goto error;
 
 	osync_objtype_sink_set_enabled(*sink, enabled);
+
+	/* slowsync */
+	if (!osync_message_read_int(message, &slowsync, error))
+		goto error;
+
+	osync_objtype_sink_set_slowsync(*sink, slowsync);
+	if (slowsync)
+		printf("SLOWSYNC marshled!\n");
 
 	/* timeouts */
 	if (!osync_message_read_int(message, &timeout, error))
