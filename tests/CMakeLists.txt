@@ -332,6 +332,7 @@ OSYNC_TESTCASE( sync sync_detect_obj2)
 OSYNC_TESTCASE( sync sync_slowsync_connect)
 OSYNC_TESTCASE( sync sync_slowsync_mainsink_connect)
 OSYNC_TESTCASE( sync sync_initial_slow_sync)
+OSYNC_TESTCASE( sync sync_hashtable_deleted_slowsync)
 
 BUILD_CHECK_TEST( sync-error sync-tests/check_sync_error.c ${TEST_TARGET_LIBRARIES} )
 OSYNC_TESTCASE(sync-error sync_error_single_init_error_noerror)
