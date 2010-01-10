@@ -599,6 +599,11 @@ osync_bool osync_mapping_engine_solve(OSyncMappingEngine *engine, OSyncChange *c
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, change);
 	
 	entry = _osync_mapping_engine_find_entry(engine, change);
+	if (!entry) {
+		osync_trace(TRACE_ERROR, "%s(): ERROR: _osync_mapping_engine_find_entry() didn't find any entry. engine = %p, change = %p", __func__, engine, change);
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Couldn't find mapping entry for change \"%s\"", osync_change_get_uid(change));
+		goto error;
+	}
 	engine->conflict = FALSE;
 	osync_mapping_engine_set_master(engine, entry);
 	osync_status_update_mapping(engine->parent->parent, engine, OSYNC_ENGINE_MAPPING_EVENT_SOLVED, NULL);
