@@ -278,9 +278,9 @@ typedef struct {} FormatEnv;
 	__oldinit = __init__
 	def __init__(self, *args):
 		self.__oldinit(*args)
-                /*
-		self.filters = _ListWrapper(self.num_filters, self.nth_filter)
-                */
+                
+		# self.filters = _ListWrapper(self.num_filters, self.nth_filter)
+                
 %}
 }
 

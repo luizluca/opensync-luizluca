@@ -250,7 +250,7 @@ typedef struct {} Engine;
 
 
 %pythoncode %{
-	group = property(get_group)
+	# group = property(get_group)
 	# archive = property(get_archive)
 %}
 }

@@ -4,6 +4,13 @@ typedef enum {} ConfigurationType;
 %constant int PLUGIN_OPTIONAL_CONFIGURATION = OSYNC_PLUGIN_OPTIONAL_CONFIGURATION;
 %constant int PLUGIN_NEEDS_CONFIGURATION = OSYNC_PLUGIN_NEEDS_CONFIGURATION;
 
+typedef enum {} StartType;
+
+%constant int START_TYPE_UNKNOWN = OSYNC_START_TYPE_UNKNOWN;
+%constant int START_TYPE_PROCESS = OSYNC_START_TYPE_PROCESS;
+%constant int START_TYPE_THREAD = OSYNC_START_TYPE_THREAD;
+%constant int START_TYPE_EXTERNAL = OSYNC_START_TYPE_EXTERNAL;
+
 
 typedef struct {} Plugin;
 %extend Plugin {
@@ -123,7 +130,9 @@ typedef struct {} PluginEnv;
 
 	int num_plugins() {
 		OSyncList *plugins = osync_plugin_env_get_plugins(self);
-		return osync_list_length(plugins);
+		unsigned int num = osync_list_length(plugins);
+		osync_list_free(plugins);
+		return num;
 	}
 
 	Plugin *nth_plugin(int nth) {
@@ -132,6 +141,7 @@ typedef struct {} PluginEnv;
 		Plugin *plugin = (OSyncPlugin*)osync_list_nth_data(plugins, nth);
 		if (plugin)
 			osync_plugin_ref(plugin);
+		osync_list_free(plugins);
 		return plugin;
 	}
 
@@ -270,7 +280,7 @@ typedef struct {} PluginInfo;
 	config = property(get_config, set_config)
 	main_sink = property(get_main_sink, set_main_sink)
 	format_env = property(get_format_env, set_format_env)
-	sink = property(get_sink, set_sink)
+	# sink = property(get_sink, set_sink)
 	groupname = property(get_groupname, set_groupname)
 	version = property(get_version, set_version)
 	capabilities = property(get_capabilities, set_capabilities)
@@ -411,7 +421,7 @@ typedef struct {} ObjTypeSink;
 	void committed_all(PluginInfo *info, Context *ctx) {
 		osync_objtype_sink_committed_all(self, info, ctx);
 	}
-
+	*/
 	bool is_enabled() {
 		return osync_objtype_sink_is_enabled(self);
 	}
@@ -443,7 +453,24 @@ typedef struct {} ObjTypeSink;
 	void set_read(bool read) {
 		osync_objtype_sink_set_read(self, read);
 	}
-	
+
+	unsigned int num_objformatsinks() {
+		OSyncList *objformatsinks = osync_objtype_sink_get_objformat_sinks(self);
+		unsigned int num = osync_list_length(objformatsinks);
+		osync_list_free(objformatsinks);
+		return num;
+	}
+
+	ObjFormatSink *nth_objformatsink(int nth) {
+		OSyncList *objformatsinks = osync_objtype_sink_get_objformat_sinks(self);
+		ObjFormatSink *ret = (ObjFormatSink*)osync_list_nth_data(objformatsinks, nth);
+		if (ret)
+			osync_objformat_sink_ref(ret);
+		osync_list_free(objformatsinks);
+		return ret;
+	}
+
+	/*	
 	void set_slowsync(bool slowsync) {
 		osync_objtype_sink_set_slowsync(self, slowsync);
 	}
@@ -463,14 +490,14 @@ typedef struct {} ObjTypeSink;
 	available = property(is_available, set_available)
 	write = property(get_write, set_write)
 	read = property(get_read, set_read)
-	slowsync = property(get_slowsync, set_slowsync)
-	callback_obj = property(get_callback_obj)
+	#slowsync = property(get_slowsync, set_slowsync)
+	#callback_obj = property(get_callback_obj)
 	
 	# extend the SWIG-generated constructor, so that we can setup our list-wrapper classes
 	__oldinit = __init__
 	def __init__(self, *args):
 		self.__oldinit(*args)
-		self.objformats = _ListWrapper(self.num_objformats, self.nth_objformat)
+		self.objformats = _ListWrapper(self.num_objformatsinks, self.nth_objformatsink)
 %}
 }
 

@@ -99,13 +99,13 @@ typedef struct {} Version;
 	}
 
 %pythoncode %{
-	plugin = property(get_plugin, set_plugin)
-	priority = property(get_priority, set_priority)
-	vendor = property(get_vendor, set_vendor)
-	modelversion = property(get_modelversion, set_modelversion)
-	firmwareversion = property(get_firmwareversion, set_firmwareversion)
-	softwareversion = property(get_softwareversion, set_softwareversion)
-	hardwareversion = property(get_hardwareversion, set_hardwareversion)
-	identifier = property(get_identifier, set_identifier)
+#	plugin = property(get_plugin, set_plugin)
+#	priority = property(get_priority, set_priority)
+#	vendor = property(get_vendor, set_vendor)
+#	modelversion = property(get_modelversion, set_modelversion)
+#	firmwareversion = property(get_firmwareversion, set_firmwareversion)
+#	softwareversion = property(get_softwareversion, set_softwareversion)
+#	hardwareversion = property(get_hardwareversion, set_hardwareversion)
+#	identifier = property(get_identifier, set_identifier)
 %}
 };

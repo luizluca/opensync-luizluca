@@ -38,11 +38,29 @@ typedef struct {} GroupEnv;
 		osync_group_env_remove_group(self, group);
 	}
 
+	int num_groups() {
+		OSyncList *groups = osync_group_env_get_groups(self);
+		unsigned int num = osync_list_length(groups);
+		osync_list_free(groups);
+		return num;
+	}
+
+	Group *nth_group(int nth) {
+		OSyncList *groups = osync_group_env_get_groups(self);
+		
+		Group *group = (OSyncGroup*)osync_list_nth_data(groups, nth);
+		if (group)
+			osync_group_ref(group);
+		osync_list_free(groups);
+		return group;
+	}
+
 %pythoncode %{
 	# extend the SWIG-generated constructor, so that we can setup our list-wrapper classes
 	__oldinit = __init__
 	def __init__(self, *args):
 		self.__oldinit(*args)
+		self.groups = _ListWrapper(self.num_groups, self.nth_group)
 %}
 }
 
@@ -132,7 +150,24 @@ typedef struct {} Group;
 		Member *member = osync_group_find_member(self, id);
 		if (member)
 			osync_member_ref(member);
-        return member;
+		return member;
+	}
+
+	int num_members() {
+		OSyncList *members = osync_group_get_members(self);
+		unsigned int num = osync_list_length(members);
+		osync_list_free(members);
+		return num;
+	}
+
+	Member *nth_member(int nth) {
+		OSyncList *members = osync_group_get_members(self);
+		
+		Member *member = (Member*)osync_list_nth_data(members, nth);
+		if (member)
+			osync_member_ref(member);
+		osync_list_free(members);
+		return member;
 	}
 
 	const char *get_configdir() {
@@ -141,6 +176,21 @@ typedef struct {} Group;
 
 	void set_configdir(const char *directory) {
 		osync_group_set_configdir(self, directory);
+	}
+
+	int num_objtypes() {
+		OSyncList *objtypes = osync_group_get_objtypes(self);
+		unsigned int num = osync_list_length(objtypes);
+		osync_list_free(objtypes);
+		return num;
+	}
+
+	const char *nth_objtype(int nth) {
+		OSyncList *objtypes = osync_group_get_objtypes(self);
+		
+		const char *objtype = (const char*)osync_list_nth_data(objtypes, nth);
+		osync_list_free(objtypes);
+		return objtype;
 	}
 
 	void set_objtype_enabled(const char *objtype, bool enabled) {
@@ -205,7 +255,7 @@ typedef struct {} Group;
 %pythoncode %{
 	name = property(get_name, set_name)
 	configdir = property(get_configdir, set_configdir)
-	last_synchronization = property(get_last_synchronization, set_last_synchronization)
+	last_synchronization = property(get_last_synchronization)
 	merger_enabled = property(get_merger_enabled, set_merger_enabled)
 	converter_enabled = property(get_converter_enabled, set_converter_enabled)
 	
@@ -213,19 +263,12 @@ typedef struct {} Group;
 	__oldinit = __init__
 	def __init__(self, *args):
 		self.__oldinit(*args)
-                /*
-		self.filters = _ListWrapper(self.num_filters, self.nth_filter)
-                */
+                
+		self.members = _ListWrapper(self.num_members, self.nth_member)
+		self.objtypes = _ListWrapper(self.num_objtypes, self.nth_objtype)
+		# self.filters = _ListWrapper(self.num_filters, self.nth_filter)
 %}
 }
-
-
-typedef enum {} StartType;
-
-%constant int START_TYPE_UNKNOWN = OSYNC_START_TYPE_UNKNOWN;
-%constant int START_TYPE_PROCESS = OSYNC_START_TYPE_PROCESS;
-%constant int START_TYPE_THREAD = OSYNC_START_TYPE_THREAD;
-%constant int START_TYPE_EXTERNAL = OSYNC_START_TYPE_EXTERNAL;
 
 
 typedef struct {} Member;

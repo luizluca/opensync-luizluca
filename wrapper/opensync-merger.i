@@ -130,6 +130,10 @@ typedef struct {} XMLFormat;
 			return;
 	}
 
+	const char *get_objtype() {
+		return osync_xmlformat_get_objtype(self);
+	}
+
 %pythoncode %{
 	objtype = property(get_objtype)
 %}

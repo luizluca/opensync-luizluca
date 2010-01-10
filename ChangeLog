@@ -1,3 +1,8 @@
+2010-01-10  Mark Ellis  <mark@mpellis.org.uk>
+
+	* wrapper/opensync-{engine,format,group,merger,plugin,version}.i: modifications due to API
+	changes, sufficient to allow a clean import into python
+
 2009-02-04  Graham Cobb  <g+770@cobb.uk.net>
 
 	* opensync/group/opensync_member.c (osync_member_load): Use osync_member_add_objtype_sink
