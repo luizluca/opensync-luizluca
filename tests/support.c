@@ -524,6 +524,24 @@ void mapping_status(OSyncEngineMappingUpdate *status, void *user_data)
 	}
 }
 
+
+void conflict_handler_choose_member(OSyncEngine *engine, OSyncMappingEngine *mapping, void *user_data)
+{
+	OSyncChange *change = NULL;
+	OSyncError *error = NULL;
+
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, engine, mapping, user_data);
+	
+	num_mapping_conflicts++;
+	fail_unless(num_engine_end_conflicts == 0, NULL);
+
+	change = osync_mapping_engine_member_change(mapping, GPOINTER_TO_UINT(user_data));
+	osync_assert(osync_engine_mapping_solve(engine, mapping, change, &error));
+	osync_assert(error == NULL);
+	
+	osync_trace(TRACE_EXIT, "%s", __func__);
+}
+
 void conflict_handler_choose_first(OSyncEngine *engine, OSyncMappingEngine *mapping, void *user_data)
 {
 	OSyncChange *change = NULL;

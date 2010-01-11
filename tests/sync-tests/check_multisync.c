@@ -1037,15 +1037,15 @@ END_TEST
 
 /* Sync from data1/testdata to all
  * remove data1 and change data2 to newdata2 and data3 to newdata
- * conflict_handler_choose_modified picks the first modified so should get newdata2
- * everywhere.
+ * conflict_handler_choose_member chooses the change of member2 (which owns data2/ directory).
+ * So newdata2 should get synced everywhere.
  */
 START_TEST (multisync_conflict_hybrid_choose)
 {
 	char *testbed = setup_testbed("multisync_conflict_changetype_choose");
 	OSyncError *error = NULL;
 	OSyncEngine *engine = setup_engine(testbed);
-	osync_engine_set_conflict_callback(engine, conflict_handler_choose_modified, GINT_TO_POINTER(3));
+	osync_engine_set_conflict_callback(engine, conflict_handler_choose_member, GINT_TO_POINTER(2));
 
 	fail_unless(osync_engine_initialize(engine, &error), NULL);
 	fail_unless(error == NULL, NULL);	

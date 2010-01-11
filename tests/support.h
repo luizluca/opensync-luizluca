@@ -123,6 +123,7 @@ void engine_status(OSyncEngineUpdate *status, void *user_data);
 void mapping_status(OSyncEngineMappingUpdate *status, void *user_data);
 
 /* Conflict handlers */
+void conflict_handler_choose_member(OSyncEngine *engine, OSyncMappingEngine *mapping, void *user_data);
 void conflict_handler_choose_first(OSyncEngine *engine, OSyncMappingEngine *mapping, void *user_data);
 void conflict_handler_choose_deleted(OSyncEngine *engine, OSyncMappingEngine *mapping, void *user_data);
 void conflict_handler_choose_modified(OSyncEngine *engine, OSyncMappingEngine *mapping, void *user_data);
