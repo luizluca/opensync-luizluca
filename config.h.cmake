@@ -19,7 +19,6 @@
 #cmakedefine OPENSYNC_TRACE
 
 #cmakedefine HAVE_FLOCK
-#cmakedefine HAVE_GLIB_GREGEX_H
 #cmakedefine HAVE_SOLARIS
 
 #define OPENSYNC_TESTDATA "${CMAKE_CURRENT_SOURCE_DIR}/tests/data"

@@ -1,3 +1,8 @@
+2010-01-13  Mark Ellis  <mark@mpellis.org.uk>
+
+	* config.h.cmake,opensync/{common/opensync_list.c,version/opensync_version.c}: glib has
+	deprecated individual includes, replaced with glib.h and check for GRegex by version
+
 2010-01-10  Mark Ellis  <mark@mpellis.org.uk>
 
 	* wrapper/opensync-{engine,format,group,merger,plugin,version}.i: modifications due to API

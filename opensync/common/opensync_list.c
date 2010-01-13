@@ -30,7 +30,7 @@
  * MT safe
  */
 
-#include <glib/gmem.h>
+#include <glib.h>
 #include "opensync_list.h"
 #include "opensync_internals.h"
 
