@@ -219,7 +219,14 @@ osync_bool osync_entry_engine_convert(OSyncMappingEntryEngine *entry_engine, OSy
 	OSyncChange *change = entry_engine->change;
 	OSyncFormatConverterPath *path;
 
-	osync_trace(TRACE_INTERNAL, "Starting to convert from objtype %s and format %s", osync_change_get_objtype(entry_engine->change), osync_objformat_get_name(osync_change_get_objformat(entry_engine->change)));
+	osync_trace(TRACE_INTERNAL, "Starting to convert change(%p:%s)/entry(uid:%s/id:%llu) from objtype %s and format %s",
+			entry_engine->change,
+			__NULLSTR(osync_change_get_uid(entry_engine->change)),
+			osync_change_get_uid(entry_engine->change),
+			osync_mapping_entry_get_id(entry_engine->entry),
+			osync_change_get_objtype(entry_engine->change),
+			osync_objformat_get_name(osync_change_get_objformat(entry_engine->change)));
+
 	/* We have to save the objtype of the change so that it does not get
 	 * overwritten by the conversion */
 	objtype = osync_strdup(osync_change_get_objtype(change));
