@@ -197,7 +197,7 @@ osync_bool osync_converter_invoke(OSyncFormatConverter *converter, OSyncData *da
 				goto error;
 			}
 
-			osync_trace(TRACE_EXIT, "Converter function");
+			osync_trace(TRACE_EXIT, "Converter function. output_size: %u, output_data: %p", output_size, output_data);
 
 			if (output_size == 0) {
 				osync_error_set(error, OSYNC_ERROR_GENERIC, "Converter Bug (%s -> %s). Conversion result is data with size 0.", osync_objformat_get_name(converter->source_format), osync_objformat_get_name(converter->target_format));
