@@ -1003,7 +1003,7 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 	char *writefd = NULL;
 	char *name = NULL;
 	
-	osync_trace(TRACE_ENTRY, "%s(%p, %i, %s, %s, %p)", __func__, proxy, type, path, __NULLSTR(external_command), error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %i, %s, %s, %p)", __func__, proxy, type, __NULLSTR(path), __NULLSTR(external_command), error);
 	osync_assert(proxy);
 	osync_assert(type != OSYNC_START_TYPE_UNKNOWN);
 		
@@ -1284,7 +1284,7 @@ osync_bool osync_client_proxy_initialize(OSyncClientProxy *proxy, initialize_cb 
 	long long int memberid = 0;
 #endif
 	
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %s, %s, %s, %s, %p, %p)", __func__, proxy, callback, userdata, formatdir, plugindir, plugin, groupname, configdir, config, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %s, %s, %s, %s, %p, %p)", __func__, proxy, callback, userdata, __NULLSTR(formatdir), __NULLSTR(plugindir), __NULLSTR(plugin), __NULLSTR(groupname), __NULLSTR(configdir), config, error);
 	osync_assert(proxy);
 	
 
@@ -1520,7 +1520,7 @@ osync_bool osync_client_proxy_connect(OSyncClientProxy *proxy, connect_cb callba
 	OSyncObjTypeSink *sink = NULL;
 	OSyncMessage *message = NULL;
 	
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %i, %p)", __func__, proxy, callback, userdata, objtype, slowsync, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %i, %p)", __func__, proxy, callback, userdata, __NULLSTR(objtype), slowsync, error);
 	
 	timeout = OSYNC_CLIENT_PROXY_TIMEOUT_CONNECT;
 
@@ -1572,7 +1572,7 @@ osync_bool osync_client_proxy_connect_done(OSyncClientProxy *proxy, sync_done_cb
 	OSyncObjTypeSink *sink = NULL;
 	OSyncMessage *message = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %p)", __func__, proxy, callback, userdata, objtype, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %p)", __func__, proxy, callback, userdata, __NULLSTR(objtype), error);
 	osync_assert(proxy);
 
 	timeout = OSYNC_CLIENT_PROXY_TIMEOUT_CONNECTDONE;
@@ -1625,7 +1625,7 @@ osync_bool osync_client_proxy_disconnect(OSyncClientProxy *proxy, disconnect_cb 
 	OSyncObjTypeSink *sink = NULL;
 	OSyncMessage *message = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %p)", __func__, proxy, callback, userdata, objtype, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %p)", __func__, proxy, callback, userdata, __NULLSTR(objtype), error);
 
 	timeout = OSYNC_CLIENT_PROXY_TIMEOUT_DISCONNECT;
 
@@ -1723,7 +1723,7 @@ osync_bool osync_client_proxy_get_changes(OSyncClientProxy *proxy, get_changes_c
 	OSyncObjTypeSink *sink = NULL;
 	OSyncMessage *message = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %i, %p)", __func__, proxy, callback, userdata, objtype, slowsync, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %i, %p)", __func__, proxy, callback, userdata, __NULLSTR(objtype), slowsync, error);
 	
 	timeout = OSYNC_CLIENT_PROXY_TIMEOUT_GETCHANGES;
 
@@ -1826,7 +1826,7 @@ osync_bool osync_client_proxy_committed_all(OSyncClientProxy *proxy, committed_a
 	OSyncObjTypeSink *sink = NULL;
 	OSyncMessage *message = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %p)", __func__, proxy, callback, userdata, objtype, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %p)", __func__, proxy, callback, userdata, __NULLSTR(objtype), error);
 	osync_assert(proxy);
 
 	timeout = OSYNC_CLIENT_PROXY_TIMEOUT_COMMITTEDALL;
@@ -1878,7 +1878,7 @@ osync_bool osync_client_proxy_sync_done(OSyncClientProxy *proxy, sync_done_cb ca
 	OSyncObjTypeSink *sink = NULL;
 	OSyncMessage *message = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %p)", __func__, proxy, callback, userdata, objtype, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %p)", __func__, proxy, callback, userdata, __NULLSTR(objtype), error);
 	osync_assert(proxy);
 
 	timeout = OSYNC_CLIENT_PROXY_TIMEOUT_SYNCDONE;
