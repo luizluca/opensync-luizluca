@@ -281,6 +281,11 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 	for (m=mapping_engines; m && (result != OSYNC_CONV_DATA_SAME); m=m->next) {
 		OSyncMappingEngine *tmp_mapping_engine = m->data;
 
+		OSyncObjEngine *engine = tmp_mapping_engine->parent;
+		OSyncGroup *group = osync_engine_get_group(engine->parent); 
+
+		osync_bool merger_enabled = osync_group_get_merger_enabled(group);
+
 		/* Go through the already existing mapping entries. We only consider mappings
 		 * which dont have a entry on our side and where the data comparsion does not
 		 * return MISMATCH */
@@ -300,9 +305,13 @@ static OSyncConvCmpResult _osync_obj_engine_mapping_find(OSyncList *mapping_engi
 			OSyncMember *member1 = osync_client_proxy_get_member(sinkengine->proxy);
 			OSyncMember *member2 = osync_client_proxy_get_member(entry_engine->sink_engine->proxy);
 
+			OSyncCapabilities *caps1 = NULL;
+			OSyncCapabilities *caps2 = NULL;
 
-			OSyncCapabilities *caps1 = osync_member_get_capabilities(member1);
-			OSyncCapabilities *caps2 = osync_member_get_capabilities(member2);
+			if (merger_enabled) {
+				caps1 = osync_member_get_capabilities(member1);
+				caps2 = osync_member_get_capabilities(member2);
+			}
 
 			OSyncChange *clone_change1 = NULL, *clone_change2 = NULL;
 			OSyncChange *change1 = change;
