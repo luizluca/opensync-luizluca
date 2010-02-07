@@ -964,11 +964,11 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	unsigned int num_res = 0;
 	OSyncPluginResource *resource = NULL;
 
+	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
+
 	config = osync_plugin_info_get_config(client->plugin_info);
 	res = osync_plugin_config_get_resources(config);
 	
-	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
-
 	if (!osync_plugin_discover(client->plugin, client->plugin_data, client->plugin_info, error))
 		goto error;
 
