@@ -296,6 +296,7 @@ BUILD_CHECK_TEST( multisync sync-tests/check_multisync.c ${TEST_TARGET_LIBRARIES
 OSYNC_TESTCASE( multisync multisync_easy_new)
 OSYNC_TESTCASE( multisync multisync_dual_new)
 OSYNC_TESTCASE( multisync multisync_triple_new)
+OSYNC_TESTCASE( multisync multisync_easy_same)
 OSYNC_TESTCASE( multisync multisync_easy_mod)
 OSYNC_TESTCASE( multisync multisync_dual_mod)
 OSYNC_TESTCASE( multisync multisync_triple_mod)

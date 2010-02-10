@@ -190,6 +190,11 @@ osync_bool osync_sink_engine_convert_to_dest(OSyncSinkEngine *engine, OSyncForma
 		if (entry_engine->change == NULL)
 			continue;
 
+		/* If change not meant to get written (change shared among multiple "same" mapping
+		   entry engines), prevents conversions see #1207 */
+		if (!osync_entry_engine_is_dirty(entry_engine))
+			continue;
+
 		if (osync_change_get_changetype(entry_engine->change) == OSYNC_CHANGE_TYPE_DELETED)
 			continue;
 

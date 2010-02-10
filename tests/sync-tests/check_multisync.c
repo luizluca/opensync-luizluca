@@ -471,6 +471,47 @@ void destroy_engine(OSyncEngine *engine)
 	osync_engine_unref(engine);
 }
 
+/* Synchronize slow sync with two same data .
+It ends up with two entry_engines pointing to the same change.
+Which could lead to double conversion of the change pointed to.
+This also lead to wrong conversion path cached if this shared change
+appears first. This is the latter that I use to detect the bug.
+*/
+START_TEST (multisync_easy_same)
+{
+	char *testbed = setup_testbed("multisync_multiformats");
+	OSyncError *error = NULL;
+	OSyncEngine *engine = setup_engine(testbed);
+	fail_unless(osync_engine_initialize(engine, &error), NULL);
+	fail_unless(error == NULL, NULL);
+
+	osync_testing_system_abort("cp data1/testdata data4/");
+
+	mark_point();
+
+	synchronize_once(engine, NULL);
+
+	fail_unless(num_change_read == 5, NULL);
+	fail_unless(num_change_written == 3, NULL);
+	fail_unless(num_change_error == 0, NULL);
+
+	fail_unless(num_mapping_conflicts == 0, NULL);
+
+	fail_unless(num_engine_connected == 1, NULL);
+	fail_unless(num_engine_read == 1, NULL);
+	fail_unless(num_engine_written == 1, NULL);
+	fail_unless(num_engine_disconnected == 1, NULL);
+	fail_unless(num_engine_end_conflicts = 1, NULL);
+		
+	fail_unless(osync_testing_diff("data1", "data4"));
+	fail_unless(osync_testing_diff("data2", "data3"));
+
+	destroy_engine(engine);
+
+	destroy_testbed(testbed);
+}
+END_TEST
+
 /* Sync the single item testdata from data 1 to data2 and data3
  * then change testdata in data3 */
 START_TEST (multisync_easy_mod)
@@ -1967,6 +2008,8 @@ OSYNC_TESTCASE_START("multisync")
 OSYNC_TESTCASE_ADD(multisync_easy_new)
 OSYNC_TESTCASE_ADD(multisync_dual_new)
 OSYNC_TESTCASE_ADD(multisync_triple_new)
+
+OSYNC_TESTCASE_ADD(multisync_easy_same)
 
 OSYNC_TESTCASE_ADD(multisync_easy_mod)
 OSYNC_TESTCASE_ADD(multisync_dual_mod)
