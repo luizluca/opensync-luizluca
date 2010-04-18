@@ -1358,6 +1358,7 @@ osync_bool osync_demarshal_pluginlocalization(OSyncMessage *message, OSyncPlugin
 	return FALSE;
 }
 
+#define MARSHAL_PLUGINAUTEHNTICATION_USERNAME  (1 << 0)
 #define MARSHAL_PLUGINAUTEHNTICATION_PASSWORD  (1 << 1)
 #define MARSHAL_PLUGINAUTEHNTICATION_REFERENCE (1 << 2)
 
@@ -1382,11 +1383,19 @@ osync_bool osync_marshal_pluginauthentication(OSyncMessage *message, OSyncPlugin
 	 *
 	 */
 
-	username = osync_plugin_authentication_get_username(auth);
-	password = osync_plugin_authentication_get_password(auth);
-	reference = osync_plugin_authentication_get_reference(auth);
+	if (osync_plugin_authentication_option_is_supported(auth, OSYNC_PLUGIN_AUTHENTICATION_USERNAME))
+		username = osync_plugin_authentication_get_username(auth);
+
+	if (osync_plugin_authentication_option_is_supported(auth, OSYNC_PLUGIN_AUTHENTICATION_PASSWORD))
+		password = osync_plugin_authentication_get_password(auth);
+
+	if (osync_plugin_authentication_option_is_supported(auth, OSYNC_PLUGIN_AUTHENTICATION_REFERENCE))
+		reference = osync_plugin_authentication_get_reference(auth);
 
 	osync_assert(username);
+
+	if (username)
+		available_fields |= MARSHAL_PLUGINAUTEHNTICATION_USERNAME; 
 
 	if (password)
 		available_fields |= MARSHAL_PLUGINAUTEHNTICATION_PASSWORD; 
@@ -1396,7 +1405,8 @@ osync_bool osync_marshal_pluginauthentication(OSyncMessage *message, OSyncPlugin
 
 	osync_message_write_uint(message, available_fields, error);
 
-	osync_message_write_string(message, username, error);
+	if (username)
+		osync_message_write_string(message, username, error);
 
 	if (password)
 		osync_message_write_string(message, password, error);
@@ -1420,6 +1430,9 @@ osync_bool osync_demarshal_pluginauthentication(OSyncMessage *message, OSyncPlug
 	char *password = NULL;
 	char *reference = NULL;
 
+	// Supported options by default : none
+	OSyncPluginAuthenticationOptionSupportedFlags supported_options = 0;
+
 	osync_assert(message);
 
 	/*
@@ -1440,16 +1453,20 @@ osync_bool osync_demarshal_pluginauthentication(OSyncMessage *message, OSyncPlug
 	if (!osync_message_read_uint(message, &available_fields, error))
 		goto error;
 
-	if (!osync_message_read_string(message, &username, error))
-		goto error;
+	if (available_fields & MARSHAL_PLUGINAUTEHNTICATION_USERNAME) {
+		if (!osync_message_read_string(message, &username, error))
+			goto error;
 
-	osync_plugin_authentication_set_username(*auth, username);
-	osync_free(username);
+		supported_options |= OSYNC_PLUGIN_AUTHENTICATION_USERNAME;
+		osync_plugin_authentication_set_username(*auth, username);
+		osync_free(username);
+	}
 
 	if (available_fields & MARSHAL_PLUGINAUTEHNTICATION_PASSWORD) {
 		if (!osync_message_read_string(message, &password, error))
 			goto error;
 
+		supported_options |= OSYNC_PLUGIN_AUTHENTICATION_PASSWORD;
 		osync_plugin_authentication_set_password(*auth, password);
 		osync_free(password);
 	}
@@ -1458,9 +1475,12 @@ osync_bool osync_demarshal_pluginauthentication(OSyncMessage *message, OSyncPlug
 		if (!osync_message_read_string(message, &reference, error))
 			goto error;
 
+		supported_options |= OSYNC_PLUGIN_AUTHENTICATION_REFERENCE;
 		osync_plugin_authentication_set_reference(*auth, reference);
 		osync_free(reference);
 	}
+
+	osync_plugin_authentication_option_set_supported(*auth, supported_options);
 
 	return TRUE;
 error:
