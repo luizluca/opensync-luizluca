@@ -294,6 +294,7 @@ OSyncPluginConfig *osync_member_get_config_or_default(OSyncMember *member, OSync
 		goto error_free_config;
 		
 	osync_member_set_config(member, config);
+	osync_plugin_config_unref(config);
 
 	osync_free(filename);
 
