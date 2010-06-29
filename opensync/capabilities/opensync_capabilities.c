@@ -74,6 +74,7 @@ void osync_capabilities_unref(OSyncCapabilities *capabilities)
 			/* TODO unlink from list */
 		}
 		osync_xml_free_doc(capabilities->doc);
+		osync_free(capabilities->format);
 		osync_free(capabilities);
 	}
 }
