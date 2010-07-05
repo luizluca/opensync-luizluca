@@ -195,7 +195,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 	OSyncError *error = NULL;
 	osync_bool found = FALSE;
 	OSyncMember *member = NULL;
-	long long int memberid = 0;
+	osync_memberid memberid = 0;
 	const char *uid = NULL;
 	OSyncChangeType changetype = 0;
 	const char *format = NULL;
@@ -217,7 +217,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 
 	objtype_sink = osync_member_find_objtype_sink(member, objtype);
 
-	osync_trace(TRACE_INTERNAL, "Received change %s, changetype %i, format %s, objtype %s from member %lli", uid, changetype, format, objtype, memberid);
+	osync_trace(TRACE_INTERNAL, "Received change %s, changetype %i, format %s, objtype %s from member %i", uid, changetype, format, objtype, memberid);
 
 	data = osync_change_get_data(change);
 
@@ -233,7 +233,7 @@ static void _osync_engine_receive_change(OSyncClientProxy *proxy, void *userdata
 		objtype = osync_objformat_get_objtype(detected_format);
 	}
 	
-	member_objtype = osync_strdup_printf("%lli_%s", memberid, objtype); 
+	member_objtype = osync_strdup_printf("%i_%s", memberid, objtype); 
 
 	/* Convert the format to the internal format */
 	internalFormat = _osync_engine_get_internal_format(engine, objtype);
@@ -1127,7 +1127,7 @@ void osync_engine_trace_multiply_summary(OSyncEngine *engine)
 {
 	OSyncList *o;
 	unsigned int added, modified, deleted, unmodified, unknown, total, n;
-	long long int memberid;
+	osync_memberid memberid;
 
 	if (!osync_trace_is_enabled())
 		return;
@@ -1176,7 +1176,7 @@ void osync_engine_trace_multiply_summary(OSyncEngine *engine)
 				}
 			}
 
-			osync_trace(TRACE_INTERNAL, "\tMember: %lli "
+			osync_trace(TRACE_INTERNAL, "\tMember: %i "
 					"added:%u modified:%u deleted:%u "
 					"(unmodified:%u unknown:%u)",
 					memberid, added, modified, deleted, unmodified, unknown);

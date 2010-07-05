@@ -87,13 +87,13 @@ unsigned int osync_message_get_timeout(OSyncMessage *message)
 	return message->timeout;
 }
 
-void osync_message_set_id(OSyncMessage *message, long long int id)
+void osync_message_set_id(OSyncMessage *message, osync_messageid id)
 {
 	osync_assert(message);
 	message->id = id;
 }
 
-long long int osync_message_get_id(OSyncMessage *message)
+osync_messageid osync_message_get_id(OSyncMessage *message)
 {
 	osync_assert(message);
 	return message->id;

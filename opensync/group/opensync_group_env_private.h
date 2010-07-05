@@ -37,7 +37,7 @@
  * @returns The next free number
  * 
  */
-static long long int osync_group_env_create_group_id(OSyncGroupEnv *env);
+static osync_groupid osync_group_env_create_group_id(OSyncGroupEnv *env);
 
 /*@}*/
 

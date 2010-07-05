@@ -394,8 +394,8 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 		 * the current sinkengine, since there will be only one entry (for the current sinkengine) so there
 		 * is no need to compare */
 
-		long long int memberid = osync_member_get_id(osync_client_proxy_get_member(sinkengine->proxy));
-		osync_trace(TRACE_INTERNAL, "Sinkengine of member %lli", memberid);
+		osync_memberid memberid = osync_member_get_id(osync_client_proxy_get_member(sinkengine->proxy));
+		osync_trace(TRACE_INTERNAL, "Sinkengine of member %i", memberid);
 
 		unmapped_mappings = osync_list_copy(new_mappings);
 		
@@ -403,7 +403,7 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 		while (sinkengine->unmapped) {
 			OSyncChange *change = sinkengine->unmapped->data;
 			
-			osync_trace(TRACE_INTERNAL, "Looking for mapping for change %s, changetype %i from member %lli", osync_change_get_uid(change), osync_change_get_changetype(change), memberid);
+			osync_trace(TRACE_INTERNAL, "Looking for mapping for change %s, changetype %i from member %i", osync_change_get_uid(change), osync_change_get_changetype(change), memberid);
 	
 			/* See if there is an exisiting mapping, which fits the unmapped change */
 			result = _osync_obj_engine_mapping_find(unmapped_mappings, change, sinkengine, &mapping_engine, error);
@@ -414,7 +414,7 @@ osync_bool osync_obj_engine_map_changes(OSyncObjEngine *engine, OSyncError **err
 					if (!mapping_engine)
 						goto error;
 					
-					osync_trace(TRACE_INTERNAL, "Unable to find mapping. Creating new mapping with id %lli", osync_mapping_get_id(mapping_engine->mapping));
+					osync_trace(TRACE_INTERNAL, "Unable to find mapping. Creating new mapping with id %i", osync_mapping_get_id(mapping_engine->mapping));
 					/* TODO: what about _prepend (O(1)) instead of _append (O(n))? Order doesn't matter here - right? */
 					new_mappings = osync_list_append(new_mappings, mapping_engine);
 					unmapped_mappings = osync_list_append(unmapped_mappings, mapping_engine);
@@ -643,7 +643,7 @@ void osync_obj_engine_commit_change_callback(OSyncClientProxy *proxy, void *user
 	OSyncMappingEntry *entry = NULL;
 	const char *objtype = NULL;
 	const char *objengine_objtype = NULL;
-	long long int id = 0;
+	osync_mappingid id = 0;
 
 	objengine_objtype = osync_obj_engine_get_objtype(engine);
 	
@@ -793,7 +793,7 @@ static osync_bool _inject_changelog_entries(OSyncObjEngine *engine, OSyncError *
 	t = changetypes;
 	mid = memberids;
 	for (j = ids; j; j = j->next) {
-		long long int id = (long long int)GPOINTER_TO_INT(j->data);
+		osync_archiveid id = GPOINTER_TO_INT(j->data);
 
 		OSyncMapping *ignored_mapping = osync_mapping_table_find_mapping(engine->mapping_table, id);
 

@@ -232,7 +232,7 @@ typedef struct {} Group;
 
 	%apply ConflictResolution *OUTPUT { ConflictResolution *res, int *num };
 	%apply int *OUTPUT { ConflictResolution *res, int *num };
-	void get_conflict_resolution(ConflictResolution *res, long long int *winner) {
+	void get_conflict_resolution(ConflictResolution *res, osync_memberid *winner) {
 		osync_group_get_conflict_resolution(self, res, winner);
 	}
 
@@ -357,7 +357,7 @@ typedef struct {} Member;
 			wrapper_exception("osync_member_delete failed but did not set error code");
 	}
 
-	long long int get_id() {
+	osync_memberid get_id() {
 		return osync_member_get_id(self);
 	}
 

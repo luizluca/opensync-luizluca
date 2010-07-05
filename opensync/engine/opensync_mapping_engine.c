@@ -284,7 +284,7 @@ osync_bool osync_mapping_engine_multiply(OSyncMappingEngine *engine, OSyncError 
 	osync_assert(engine);
 	osync_assert(engine->mapping);
 	
-	osync_trace(TRACE_ENTRY, "%s(%p(%lli), %p)", __func__, engine, osync_mapping_get_id(engine->mapping), error);
+	osync_trace(TRACE_ENTRY, "%s(%p(%i), %p)", __func__, engine, osync_mapping_get_id(engine->mapping), error);
 		
 	if (engine->synced) {
 		osync_trace(TRACE_EXIT, "%s: No need to multiply. Already synced", __func__);
@@ -578,7 +578,7 @@ OSyncChange *osync_mapping_engine_nth_change(OSyncMappingEngine *engine, unsigne
 	return NULL;
 }
 
-OSyncChange *osync_mapping_engine_member_change(OSyncMappingEngine *engine, long long int memberid)
+OSyncChange *osync_mapping_engine_member_change(OSyncMappingEngine *engine, osync_memberid memberid)
 {
 	OSyncList *e = NULL;
 	osync_assert(engine);
@@ -625,7 +625,7 @@ osync_bool osync_mapping_engine_ignore(OSyncMappingEngine *engine, OSyncError **
 	OSyncObjEngine *objengine = NULL;
 	OSyncArchive *archive = NULL;
 	char *objtype = NULL;
-	long long int id = 0;
+	osync_mappingid id = 0;
 	OSyncList *c = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
 	
@@ -710,15 +710,15 @@ osync_bool osync_mapping_engine_duplicate(OSyncMappingEngine *existingMapping, O
 		OSyncMappingEntryEngine *entry = e->data;
 		if (entry->change) {
 			if (osync_change_get_changetype(entry->change) == OSYNC_CHANGE_TYPE_MODIFIED || osync_change_get_changetype(entry->change) == OSYNC_CHANGE_TYPE_ADDED) {
-				osync_trace(TRACE_INTERNAL, "Appending entry %s, changetype %i from member %lli", osync_change_get_uid(entry->change), osync_change_get_changetype(entry->change), osync_member_get_id(osync_client_proxy_get_member(entry->sink_engine->proxy)));
+				osync_trace(TRACE_INTERNAL, "Appending entry %s, changetype %i from member %i", osync_change_get_uid(entry->change), osync_change_get_changetype(entry->change), osync_member_get_id(osync_client_proxy_get_member(entry->sink_engine->proxy)));
 		
 				entries = osync_list_append(entries, entry);
 			} else {
-				osync_trace(TRACE_INTERNAL, "Removing entry %s, changetype %i from member %lli", osync_change_get_uid(entry->change), osync_change_get_changetype(entry->change), osync_member_get_id(osync_client_proxy_get_member(entry->sink_engine->proxy)));
+				osync_trace(TRACE_INTERNAL, "Removing entry %s, changetype %i from member %i", osync_change_get_uid(entry->change), osync_change_get_changetype(entry->change), osync_member_get_id(osync_client_proxy_get_member(entry->sink_engine->proxy)));
 				osync_entry_engine_update(entry, NULL);
 			}
 		} else {
-			osync_trace(TRACE_INTERNAL, "member %lli does not have a entry", osync_member_get_id(osync_client_proxy_get_member(entry->sink_engine->proxy)));
+			osync_trace(TRACE_INTERNAL, "member %i does not have a entry", osync_member_get_id(osync_client_proxy_get_member(entry->sink_engine->proxy)));
 		}
 	}
 	

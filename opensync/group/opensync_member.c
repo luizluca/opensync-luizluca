@@ -541,7 +541,7 @@ osync_bool osync_member_save(OSyncMember *member, OSyncError **error)
 		 * member_configdir_deep_path
 		 */
 		if (g_mkdir_with_parents(member->configdir, 0700)) {
-			osync_error_set(error, OSYNC_ERROR_IO_ERROR, "Unable to create directory for member %lli\n", member->id);
+			osync_error_set(error, OSYNC_ERROR_IO_ERROR, "Unable to create directory for member %i\n", member->id);
 			goto error;
 		}
 	}
@@ -630,7 +630,7 @@ osync_bool osync_member_delete(OSyncMember *member, OSyncError **error)
 	return TRUE;
 }
 
-long long int osync_member_get_id(OSyncMember *member)
+osync_memberid osync_member_get_id(OSyncMember *member)
 {
 	osync_assert(member);
 	return member->id;

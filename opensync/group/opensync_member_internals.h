@@ -31,7 +31,7 @@
 
 /** @brief A member of a group which represent a single device */
 struct OSyncMember {
-	long long int id;
+	osync_memberid id;
 	char *configdir;
 	
 	OSyncPluginConfig *config;

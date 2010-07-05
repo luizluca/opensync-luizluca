@@ -68,13 +68,13 @@ void osync_mapping_unref(OSyncMapping *mapping)
 	}
 }
 
-long long int osync_mapping_get_id(OSyncMapping *mapping)
+osync_mappingid osync_mapping_get_id(OSyncMapping *mapping)
 {
 	osync_assert(mapping);
 	return mapping->id;
 }
 
-void osync_mapping_set_id(OSyncMapping *mapping, long long int id)
+void osync_mapping_set_id(OSyncMapping *mapping, osync_mappingid id)
 {
 	osync_assert(mapping);
 	mapping->id = id;
@@ -109,7 +109,7 @@ void osync_mapping_remove_entry(OSyncMapping *mapping, OSyncMappingEntry *entry)
 	return NULL;
 	}*/
 
-OSyncMappingEntry *osync_mapping_find_entry_by_member_id(OSyncMapping *mapping, long long int memberid)
+OSyncMappingEntry *osync_mapping_find_entry_by_member_id(OSyncMapping *mapping, osync_memberid memberid)
 {
 	OSyncList *e;
 	for (e = mapping->entries; e; e = e->next) {

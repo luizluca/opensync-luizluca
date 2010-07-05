@@ -1068,7 +1068,7 @@ osync_bool osync_client_proxy_spawn(OSyncClientProxy *proxy, OSyncStartType type
 					osync_queue_disconnect(read2, error);
 						
 					osync_trace(TRACE_INTERNAL, "About to exec osplugin");
-					//char *memberstring = g_strdup_printf("%lli", osync_member_get_id(proxy->member));
+					//char *memberstring = g_strdup_printf("%i", osync_member_get_id(proxy->member));
 					//execlp("osplugin", "osplugin", osync_group_get_configdir(osync_member_get_group(osync_proxy_get_member(proxy)), memberstring, NULL);
 					readfd = osync_strdup_printf("%i", osync_queue_get_fd(read1));
 					writefd = osync_strdup_printf("%i", osync_queue_get_fd(write2));
@@ -1281,7 +1281,7 @@ osync_bool osync_client_proxy_initialize(OSyncClientProxy *proxy, initialize_cb 
 	int haspluginconfig = config ? TRUE : FALSE;
 	OSyncMessage *message = NULL;
 #ifdef OPENSYNC_UNITTESTS
-	long long int memberid = 0;
+	osync_memberid memberid = 0;
 #endif
 	
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %s, %s, %s, %s, %s, %p, %p)", __func__, proxy, callback, userdata, __NULLSTR(formatdir), __NULLSTR(plugindir), __NULLSTR(plugin), __NULLSTR(groupname), __NULLSTR(configdir), config, error);
@@ -1343,7 +1343,7 @@ osync_bool osync_client_proxy_initialize(OSyncClientProxy *proxy, initialize_cb 
 	if (proxy->member)
 		memberid = osync_member_get_id(proxy->member);
 
-	osync_message_write_long_long_int(message, memberid, error);
+	osync_message_write_int(message, memberid, error);
 #endif	
 	
 	osync_message_set_handler(message, _osync_client_proxy_init_handler, ctx);

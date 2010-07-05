@@ -191,7 +191,7 @@ OSYNC_EXPORT osync_bool osync_member_delete(OSyncMember *member, OSyncError **er
  * @returns The id of the member thats unique in its group
  * 
  */
-OSYNC_EXPORT long long int osync_member_get_id(OSyncMember *member);
+OSYNC_EXPORT osync_memberid osync_member_get_id(OSyncMember *member);
 
 /**
  * @brief Returns a OSyncList that contains the objtypes of this member

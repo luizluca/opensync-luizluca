@@ -40,9 +40,9 @@ struct OSyncMappingEntry {
 	char *uid;
 	
 	/** uniquely identifies the member */
-	long long int member_id;
+	osync_memberid member_id;
 	/** uniquely identifies the mapping table entry */
-	long long int id;
+	osync_mappingid id;
 };
 
 /*@}*/

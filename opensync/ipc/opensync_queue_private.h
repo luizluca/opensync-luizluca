@@ -134,7 +134,7 @@ typedef struct OSyncTimeoutInfo {
  */
 typedef struct OSyncPendingMessage {
 	/** ID of the expected Message */
-	long long int id;
+	osync_messageid id;
 	/** Where should the reply be received? */
 	OSyncMessageHandler callback;
 	/** The user data */
@@ -151,7 +151,7 @@ typedef struct OSyncPendingMessage {
  * the lower 2 bytes are a random number
  * 
  * */
-static long long int opensync_queue_gen_id(const GTimeVal *tv);
+static osync_messageid opensync_queue_gen_id(const GTimeVal *tv);
 
 /** @brief Flush all message of the Queue 
  * 

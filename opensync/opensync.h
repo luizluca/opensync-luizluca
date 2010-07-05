@@ -157,6 +157,11 @@ OPENSYNC_BEGIN_DECLS
     } } while(0)
 
 typedef int osync_bool;
+typedef int osync_memberid;
+typedef int osync_mappingid;
+typedef int osync_groupid;
+typedef long long int osync_archiveid;
+typedef long long int osync_messageid;
 
 /**************************************************************
  * Enums

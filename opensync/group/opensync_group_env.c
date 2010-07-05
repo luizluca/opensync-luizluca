@@ -26,15 +26,15 @@
 #include "opensync_group_env_internals.h"
 #include "opensync_group_env_private.h"
 
-static long long int osync_group_env_create_group_id(OSyncGroupEnv *env)
+static osync_groupid osync_group_env_create_group_id(OSyncGroupEnv *env)
 {
 	char *filename = NULL;
-	long long int i = 0;
+	osync_groupid i = 0;
 	do {
 		i++;
 		if (filename)
 			osync_free(filename);
-		filename = osync_strdup_printf("%s%cgroup%lli", env->groupsdir, G_DIR_SEPARATOR, i);
+		filename = osync_strdup_printf("%s%cgroup%i", env->groupsdir, G_DIR_SEPARATOR, i);
 	} while (g_file_test(filename, G_FILE_TEST_EXISTS));
 	osync_free(filename);
 	return i;
@@ -409,7 +409,7 @@ osync_bool osync_group_env_add_group(OSyncGroupEnv *env, OSyncGroup *group, OSyn
 	}
 	
 	if (!osync_group_get_configdir(group)) {
-		char *configdir = osync_strdup_printf("%s%cgroup%lli", env->groupsdir, G_DIR_SEPARATOR, osync_group_env_create_group_id(env));
+		char *configdir = osync_strdup_printf("%s%cgroup%i", env->groupsdir, G_DIR_SEPARATOR, osync_group_env_create_group_id(env));
 		osync_group_set_configdir(group, configdir);
 		osync_free(configdir);
 	}

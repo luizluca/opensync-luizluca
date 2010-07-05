@@ -62,14 +62,14 @@ OSYNC_EXPORT void osync_mapping_unref(OSyncMapping *mapping);
  * @param mapping Pointer to a mapping object
  * @returns the mapping ID
  */
-OSYNC_EXPORT long long int osync_mapping_get_id(OSyncMapping *mapping);
+OSYNC_EXPORT osync_mappingid osync_mapping_get_id(OSyncMapping *mapping);
 
 /**
  * @brief Set the ID of a mapping object
  * @param mapping Pointer to a mapping object
  * @param id the mapping ID to set
  */
-OSYNC_EXPORT void osync_mapping_set_id(OSyncMapping *mapping, long long int id);
+OSYNC_EXPORT void osync_mapping_set_id(OSyncMapping *mapping, osync_mappingid id);
 
 /**
  * @brief Returns a OSyncList that contains the OSyncMappingEntries of this mapping
@@ -103,7 +103,7 @@ OSYNC_EXPORT void osync_mapping_remove_entry(OSyncMapping *mapping, OSyncMapping
  * @param memberid The ID of the member
  * @returns the entry with the specified member ID or NULL if not found
  */
-OSYNC_EXPORT OSyncMappingEntry *osync_mapping_find_entry_by_member_id(OSyncMapping *mapping, long long int memberid);
+OSYNC_EXPORT OSyncMappingEntry *osync_mapping_find_entry_by_member_id(OSyncMapping *mapping, osync_memberid memberid);
 
 /*@}*/
 

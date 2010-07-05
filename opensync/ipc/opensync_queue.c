@@ -689,7 +689,7 @@ static gboolean _source_dispatch(GSource *source, GSourceFunc callback, gpointer
 	do {
 		int size = 0;
 		int cmd = 0, timeout = 0;
-		long long int id = 0;
+		osync_messageid id = 0;
 		char *buffer = NULL;
 		
 		/* The size of the buffer */
@@ -1367,7 +1367,7 @@ OSyncMessage *osync_queue_get_message(OSyncQueue *queue)
 	return g_async_queue_pop(queue->incoming);
 }
 
-static long long int opensync_queue_gen_id(const GTimeVal *tv)
+static osync_messageid opensync_queue_gen_id(const GTimeVal *tv)
 {
 	long long int now = (tv->tv_sec * 1000000 + tv->tv_usec) << 16;
 	long long int rnd = ((long long int)g_random_int()) & 0xFFFF;
@@ -1400,7 +1400,7 @@ osync_bool osync_queue_send_message_with_timeout(OSyncQueue *queue, OSyncQueue *
 	if (osync_message_get_handler(message)) {
 		OSyncPendingMessage *pending = NULL;
 		GTimeVal current_time;
-		long long int id = 0;
+		osync_messageid id = 0;
 		osync_assert(replyqueue);
 
 		g_mutex_lock(replyqueue->pendingLock);

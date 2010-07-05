@@ -39,7 +39,7 @@ struct OSyncMessage {
 	/** The type of this message */
 	OSyncMessageCommand cmd;
 	/** The name of the message*/
-	long long int id;
+	osync_messageid id;
 	/** Where should the reply be received? */
 	OSyncMessageHandler callback;
 	/** The user data */

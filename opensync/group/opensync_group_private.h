@@ -36,7 +36,7 @@
  * @returns A new unique member id
  *
  */
-static long long int osync_group_create_member_id(OSyncGroup *group);
+static osync_memberid osync_group_create_member_id(OSyncGroup *group);
 
 /** @brief Loads all members of a group
  *

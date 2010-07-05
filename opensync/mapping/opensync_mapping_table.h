@@ -90,7 +90,7 @@ OSYNC_EXPORT void osync_mapping_table_close(OSyncMappingTable *table);
  * @param id The mapping id to search for
  * @return Returns Mapping object or NULL if no mapping matched the mapping id
  */ 
-OSYNC_EXPORT OSyncMapping *osync_mapping_table_find_mapping(OSyncMappingTable *table, long long int id);
+OSYNC_EXPORT OSyncMapping *osync_mapping_table_find_mapping(OSyncMappingTable *table, osync_mappingid id);
 
 /**
  * @brief Add a mapping to the mapping table 
@@ -125,7 +125,7 @@ OSYNC_EXPORT OSyncList *osync_mapping_table_get_mappings(OSyncMappingTable *tabl
  * @param table The mapping table object
  * @return Next free mapping id of mapping table
  */ 
-OSYNC_EXPORT long long int osync_mapping_table_get_next_id(OSyncMappingTable *table);
+OSYNC_EXPORT osync_mappingid osync_mapping_table_get_next_id(OSyncMappingTable *table);
 
 /*@}*/
 

@@ -204,12 +204,12 @@ void osync_archive_unref(OSyncArchive *archive)
 	}
 }
 
-osync_bool osync_archive_save_data(OSyncArchive *archive, long long int id, const char *objtype, const char *data, unsigned int size, OSyncError **error)
+osync_bool osync_archive_save_data(OSyncArchive *archive, osync_mappingid id, const char *objtype, const char *data, unsigned int size, OSyncError **error)
 {
 	char *query = NULL;
 	char *escaped_objtype = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %lli, %s, %p, %u, %p)", __func__, archive, id, objtype, data, size, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %i, %s, %p, %u, %p)", __func__, archive, id, objtype, data, size, error);
 	osync_assert(archive);
 	osync_assert(data);
 	osync_assert(size);
@@ -219,7 +219,7 @@ osync_bool osync_archive_save_data(OSyncArchive *archive, long long int id, cons
 
 	// FIXME: Avoid subselect - this query needs up to 0.5s
 	escaped_objtype = osync_db_sql_escape(objtype);
-	query = osync_strdup_printf("REPLACE INTO tbl_archive (objtype, mappingid, data) VALUES('%s', %lli, ?)", escaped_objtype, id);
+	query = osync_strdup_printf("REPLACE INTO tbl_archive (objtype, mappingid, data) VALUES('%s', %i, ?)", escaped_objtype, id);
 	osync_free(escaped_objtype);
 	escaped_objtype = NULL;
 	
@@ -281,14 +281,14 @@ int osync_archive_load_data(OSyncArchive *archive, const char *uid, const char *
 	return -1;
 }
 
-long long int osync_archive_save_change(OSyncArchive *archive, long long int id, const char *uid, const char *objtype, long long int mappingid, long long int memberid, const char *objengine, OSyncError **error)
+osync_archiveid osync_archive_save_change(OSyncArchive *archive, osync_archiveid id, const char *uid, const char *objtype, osync_mappingid mappingid, osync_memberid memberid, const char *objengine, OSyncError **error)
 {
 	char *query = NULL;
 	char *escaped_uid = NULL;
 	char *escaped_objtype = NULL;
 	char *escaped_objengine = NULL;
 
-	osync_trace(TRACE_ENTRY, "%s(%p, %lli, %s, %s, %lli, %lli, %p, %p)", __func__, archive, id, uid, objtype, mappingid, memberid, __NULLSTR(objengine), error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %lli, %s, %s, %i, %i, %p, %p)", __func__, archive, id, uid, objtype, mappingid, memberid, __NULLSTR(objengine), error);
 	osync_assert(archive);
 	osync_assert(uid);
 	osync_assert(objtype);
@@ -302,9 +302,9 @@ long long int osync_archive_save_change(OSyncArchive *archive, long long int id,
 	escaped_objengine = osync_db_sql_escape(objengine);
 
 	if (!id) {
-		query = osync_strdup_printf("INSERT INTO tbl_changes (objtype, uid, mappingid, memberid, objengine) VALUES('%s', '%s', '%lli', '%lli', '%s')", escaped_objtype, escaped_uid, mappingid, memberid, objengine);
+		query = osync_strdup_printf("INSERT INTO tbl_changes (objtype, uid, mappingid, memberid, objengine) VALUES('%s', '%s', '%i', '%i', '%s')", escaped_objtype, escaped_uid, mappingid, memberid, objengine);
 	} else {
-		query = osync_strdup_printf("UPDATE tbl_changes SET uid='%s', mappingid='%lli', memberid='%lli', objengine='%s' WHERE objtype='%s' AND id=%lli", escaped_uid, mappingid, memberid, escaped_objengine, escaped_objtype, id);
+		query = osync_strdup_printf("UPDATE tbl_changes SET uid='%s', mappingid='%i', memberid='%i', objengine='%s' WHERE objtype='%s' AND id=%lli", escaped_uid, mappingid, memberid, escaped_objengine, escaped_objtype, id);
 	}
 	osync_free(escaped_objengine);
 	osync_free(escaped_objtype);
@@ -331,7 +331,7 @@ long long int osync_archive_save_change(OSyncArchive *archive, long long int id,
 	return 0;
 }
 
-osync_bool osync_archive_delete_change(OSyncArchive *archive, long long int id, const char *objtype, OSyncError **error)
+osync_bool osync_archive_delete_change(OSyncArchive *archive, osync_archiveid id, const char *objtype, OSyncError **error)
 {
 	char *query = NULL;
 	char *escaped_objtype = NULL;
@@ -366,7 +366,9 @@ osync_bool osync_archive_load_changes(OSyncArchive *archive, const char *objtype
 	char *query = NULL;
 	char *escaped_objtype = NULL;
 	OSyncList *result = NULL, *row = NULL, *column = NULL;
-	long long int id = 0, mappingid = 0, memberid = 0;
+	osync_archiveid id = 0;
+	osync_mappingid mappingid = 0;
+	osync_memberid memberid = 0;
 	const char *uid = NULL;
 	const char *value_str = NULL;
 
@@ -420,21 +422,23 @@ osync_bool osync_archive_load_changes(OSyncArchive *archive, const char *objtype
 			osync_error_set(error, OSYNC_ERROR_GENERIC, "Database table tbl_changes corrupt, mappingid is NULL");
 			goto error;
 		}
-		mappingid = g_ascii_strtoull(value_str, NULL, 0);
+		mappingid = strtoul(value_str, NULL, 0);
 
 		value_str = osync_list_nth_data(column, 3);
 		if (!value_str) {
 			osync_error_set(error, OSYNC_ERROR_GENERIC, "Database table tbl_changes corrupt, memberid is NULL");
 			goto error;
 		}
-		memberid = g_ascii_strtoull(value_str, NULL, 0);
+		memberid = strtoul(value_str, NULL, 0);
 		
+		// FIXME - this (int) cast throws away part of the id's 64 bits
+		// and these 64 bits are governed by the DB layer's row ID
 		*ids = osync_list_append((*ids), GINT_TO_POINTER((int)id));
 		*uids = osync_list_append((*uids), osync_strdup(uid));
-		*mappingids = osync_list_append((*mappingids), GINT_TO_POINTER((int)mappingid));
-		*memberids = osync_list_append((*memberids), GINT_TO_POINTER((int)memberid));
+		*mappingids = osync_list_append((*mappingids), GINT_TO_POINTER(mappingid));
+		*memberids = osync_list_append((*memberids), GINT_TO_POINTER(memberid));
 		
-		osync_trace(TRACE_INTERNAL, "Loaded change with uid %s, mappingid %lli from member %lli", uid, mappingid, memberid);
+		osync_trace(TRACE_INTERNAL, "Loaded change with uid %s, mappingid %i from member %i", uid, mappingid, memberid);
 	}
 
 	osync_db_free_list(result);	
@@ -483,7 +487,8 @@ osync_bool osync_archive_load_ignored_conflicts(OSyncArchive *archive, const cha
 	OSyncList *result = NULL, *row = NULL, *column = NULL;
 	char *query = NULL;
 	char *escaped_objtype = NULL;
-	long long int mappingid = 0, memberid = 0;
+	osync_mappingid mappingid = 0;
+	osync_memberid memberid = 0;
 	int changetype = 0;
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %s, %p, %p)", __func__, archive, objtype, mappingids, error);
@@ -516,11 +521,11 @@ osync_bool osync_archive_load_ignored_conflicts(OSyncArchive *archive, const cha
 		mappingid = atoi(osync_list_nth_data(column, 1));
 		changetype = atoi(osync_list_nth_data(column, 2));
 		
-		*memberids = osync_list_append((*memberids), GINT_TO_POINTER((int)memberid));
-		*mappingids = osync_list_append((*mappingids), GINT_TO_POINTER((int)mappingid));
-		*changetypes = osync_list_append((*changetypes), GINT_TO_POINTER((int)changetype));
+		*memberids = osync_list_append((*memberids), GINT_TO_POINTER(memberid));
+		*mappingids = osync_list_append((*mappingids), GINT_TO_POINTER(mappingid));
+		*changetypes = osync_list_append((*changetypes), GINT_TO_POINTER(changetype));
 		
-		osync_trace(TRACE_INTERNAL, "Loaded ignored mapping with mappingid %lli", mappingid);
+		osync_trace(TRACE_INTERNAL, "Loaded ignored mapping with mappingid %i", mappingid);
 	}
 
 	osync_db_free_list(result);	
@@ -532,11 +537,11 @@ osync_bool osync_archive_load_ignored_conflicts(OSyncArchive *archive, const cha
 	return FALSE;	
 }
 
-osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char *objtype, long long int memberid, long long int mappingid, OSyncChangeType changetype, OSyncError **error)
+osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char *objtype, osync_memberid memberid, osync_mappingid mappingid, OSyncChangeType changetype, OSyncError **error)
 {
 	char *query = NULL;
 	char *escaped_objtype = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%p, %s, %lli, %lli, %p)", __func__, archive, objtype, memberid, mappingid, error);
+	osync_trace(TRACE_ENTRY, "%s(%p, %s, %i, %i, %p)", __func__, archive, objtype, memberid, mappingid, error);
 
 	osync_assert(archive);
 	osync_assert(objtype);
@@ -545,7 +550,7 @@ osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char
 		goto error;
 	
 	escaped_objtype = osync_db_sql_escape(objtype);
-	query = osync_strdup_printf("INSERT INTO tbl_changelog (objtype, memberid, mappingid, changetype) VALUES('%s', '%lli', '%lli', '%i')", escaped_objtype, memberid, mappingid, changetype);
+	query = osync_strdup_printf("INSERT INTO tbl_changelog (objtype, memberid, mappingid, changetype) VALUES('%s', '%i', '%i', '%i')", escaped_objtype, memberid, mappingid, changetype);
 	osync_free(escaped_objtype);
 	escaped_objtype = NULL;
 	
@@ -556,7 +561,7 @@ osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char
 
 	osync_free(query);
 	
-	osync_trace(TRACE_EXIT, "%s: %lli", __func__, mappingid);
+	osync_trace(TRACE_EXIT, "%s: %i", __func__, mappingid);
 	return TRUE;
 	
  error:

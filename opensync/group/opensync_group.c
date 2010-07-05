@@ -76,16 +76,16 @@ static int flock(int fd, int operation)
 #endif //not defined _WIN32
 
 
-static long long int osync_group_create_member_id(OSyncGroup *group)
+static osync_memberid osync_group_create_member_id(OSyncGroup *group)
 {
 	char *filename = NULL;
-	long long int i = 0;
+	osync_memberid i = 0;
 	
 	do {
 		i++;
 		if (filename)
 			osync_free(filename);
-		filename = osync_strdup_printf("%s%c%lli", group->configdir, G_DIR_SEPARATOR, i);
+		filename = osync_strdup_printf("%s%c%i", group->configdir, G_DIR_SEPARATOR, i);
 	} while (g_file_test(filename, G_FILE_TEST_EXISTS));
 	
 	osync_free(filename);
@@ -778,7 +778,7 @@ void osync_group_add_member(OSyncGroup *group, OSyncMember *member)
 	
 	if (!osync_member_get_configdir(member)) {
 		member->id = osync_group_create_member_id(group);
-		char *configdir = osync_strdup_printf("%s%c%lli", group->configdir, G_DIR_SEPARATOR, member->id);
+		char *configdir = osync_strdup_printf("%s%c%i", group->configdir, G_DIR_SEPARATOR, member->id);
 		osync_member_set_configdir(member, configdir);
 		osync_free(configdir);
 	}
@@ -794,7 +794,7 @@ void osync_group_remove_member(OSyncGroup *group, OSyncMember *member)
 	osync_member_unref(member);
 }
 
-OSyncMember *osync_group_find_member(OSyncGroup *group, long long int id)
+OSyncMember *osync_group_find_member(OSyncGroup *group, osync_memberid id)
 {
 	OSyncList *m = NULL;
 	for (m = group->members; m; m = m->next) {
@@ -980,14 +980,14 @@ time_t osync_group_get_last_synchronization(OSyncGroup *group)
 	return group->last_sync;
 }
 
-void osync_group_set_conflict_resolution(OSyncGroup *group, OSyncConflictResolution res, long long int winner)
+void osync_group_set_conflict_resolution(OSyncGroup *group, OSyncConflictResolution res, osync_memberid winner)
 {
 	osync_assert(group);
 	group->conflict_resolution = res;
 	group->conflict_winner = winner;
 }
 
-void osync_group_get_conflict_resolution(OSyncGroup *group, OSyncConflictResolution *res, long long int *winner)
+void osync_group_get_conflict_resolution(OSyncGroup *group, OSyncConflictResolution *res, osync_memberid *winner)
 {
 	osync_assert(group);
 	osync_assert(res);

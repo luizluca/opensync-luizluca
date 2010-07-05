@@ -52,7 +52,7 @@ struct OSyncGroup {
 	/** The defined resolution for this group */
 	OSyncConflictResolution conflict_resolution;
 	/** The winning side if the select resolution is choosen */
-	long long int conflict_winner;
+	osync_memberid conflict_winner;
 	/** The configured merger status of this group */
 	osync_bool merger_enabled;
 	/** The configured converter status of this group */

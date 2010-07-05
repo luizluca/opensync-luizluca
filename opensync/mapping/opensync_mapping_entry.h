@@ -98,14 +98,14 @@ OSYNC_EXPORT const char *osync_mapping_entry_get_uid(OSyncMappingEntry *entry);
  * @param entry Pointer to a mapping entry object
  * @returns the entry's member ID
  */
-OSYNC_EXPORT long long int osync_mapping_entry_get_member_id(OSyncMappingEntry *entry);
+OSYNC_EXPORT osync_memberid osync_mapping_entry_get_member_id(OSyncMappingEntry *entry);
 
 /**
  * @brief Set the member ID of the entry
  * @param entry Pointer to a mapping entry object
  * @param id the member ID to set
  */
-OSYNC_EXPORT void osync_mapping_entry_set_member_id(OSyncMappingEntry *entry, long long int id);
+OSYNC_EXPORT void osync_mapping_entry_set_member_id(OSyncMappingEntry *entry, osync_memberid id);
 
 
 /**
@@ -113,14 +113,14 @@ OSYNC_EXPORT void osync_mapping_entry_set_member_id(OSyncMappingEntry *entry, lo
  * @param entry Pointer to a mapping entry object
  * @returns the entry's ID
  */
-OSYNC_EXPORT long long int osync_mapping_entry_get_id(OSyncMappingEntry *entry);
+OSYNC_EXPORT osync_mappingid osync_mapping_entry_get_id(OSyncMappingEntry *entry);
 
 /**
  * @brief Set the ID of the entry
  * @param entry Pointer to a mapping entry object
  * @param id the ID to set
  */
-OSYNC_EXPORT void osync_mapping_entry_set_id(OSyncMappingEntry *entry, long long int id);
+OSYNC_EXPORT void osync_mapping_entry_set_id(OSyncMappingEntry *entry, osync_mappingid id);
 
 /*@}*/
 

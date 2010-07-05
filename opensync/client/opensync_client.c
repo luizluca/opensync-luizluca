@@ -783,8 +783,8 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 	
 #ifdef OPENSYNC_UNITTESTS
 	{
-		long long int memberid;
-		if (!osync_message_read_long_long_int(message, &memberid, error)) // Introduced (only) for testing/debugging purpose (mock-sync)
+		osync_memberid memberid;
+		if (!osync_message_read_int(message, &memberid, error)) // Introduced (only) for testing/debugging purpose (mock-sync)
 			goto error;
 
 		client->plugin_info->memberid = memberid;

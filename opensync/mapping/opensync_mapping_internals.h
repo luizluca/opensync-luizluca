@@ -38,7 +38,7 @@ struct OSyncMapping {
 	/** Reference Counter */
 	int ref_count;
 	/** ID of the mapping */
-	long long int id;
+	osync_mappingid id;
 	/** list of entries */
 	OSyncList *entries;
 };

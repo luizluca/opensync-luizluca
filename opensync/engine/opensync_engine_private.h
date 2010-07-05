@@ -176,7 +176,7 @@ struct OSyncEngineMappingUpdate {
 	/** The type of the status update */
 	OSyncEngineMappingEvent type;
 	/** If the mapping was already solved, this will have the id if the winning entry */
-	long long int winner;
+	osync_memberid winner;
 	/** The mapping for which the status update is */
 	OSyncMapping *mapping;
 	/** If the status was a error, this error will be set */

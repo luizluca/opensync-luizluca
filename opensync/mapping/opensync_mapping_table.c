@@ -88,10 +88,12 @@ osync_bool osync_mapping_table_load(OSyncMappingTable *table, OSyncArchive *arch
 	i = memberids;
 	
 	for (u = uids; u; u = u->next) {
-		long long int id = (long long int)GPOINTER_TO_INT(d->data);
+		// FIXME - GPOINTER_TO_INT() only guarantees 32bits of data,
+		// while long long int is 64bits.
+		osync_archiveid id = GPOINTER_TO_INT(d->data);
 		char *uid = u->data;
-		long long int memberid = (long long int)GPOINTER_TO_INT(i->data);
-		long long int mappingid = (long long int)GPOINTER_TO_INT(m->data);
+		osync_memberid memberid = GPOINTER_TO_INT(i->data);
+		osync_mappingid mappingid = GPOINTER_TO_INT(m->data);
 		
 		entry = osync_mapping_entry_new(error);
 		if (!entry)
@@ -171,7 +173,7 @@ void osync_mapping_table_close(OSyncMappingTable *table)
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-OSyncMapping *osync_mapping_table_find_mapping(OSyncMappingTable *table, long long int id)
+OSyncMapping *osync_mapping_table_find_mapping(OSyncMappingTable *table, osync_mappingid id)
 {
 	OSyncList *m;
 	osync_assert(table);
@@ -214,9 +216,9 @@ OSyncMapping *osync_mapping_table_nth_mapping(OSyncMappingTable *table, unsigned
 	return osync_list_nth_data(table->mappings, nth);
 }
 
-long long int osync_mapping_table_get_next_id(OSyncMappingTable *table)
+osync_mappingid osync_mapping_table_get_next_id(OSyncMappingTable *table)
 {
-	long long int new_id = 1;
+	osync_mappingid new_id = 1;
 	OSyncList *m;
 	for (m = table->mappings; m; m = m->next) {
 		OSyncMapping *mapping = m->data;

@@ -80,7 +80,7 @@ OSYNC_TEST_EXPORT osync_bool osync_archive_load_changes(OSyncArchive *archive, c
  * @param error Pointer to an error struct
  * @return Returns TRUE on success otherwise FALSE
  */
-OSYNC_TEST_EXPORT osync_bool osync_archive_save_data(OSyncArchive *archive, long long int id, const char *objtype, const char *data, unsigned int size, OSyncError **error);
+OSYNC_TEST_EXPORT osync_bool osync_archive_save_data(OSyncArchive *archive, osync_mappingid id, const char *objtype, const char *data, unsigned int size, OSyncError **error);
 
 /**
  * @brief Loads data of an entry which is stored in the group archive database (blob).
@@ -108,7 +108,7 @@ OSYNC_TEST_EXPORT int osync_archive_load_data(OSyncArchive *archive, const char 
  * @param error Pointer to an error struct
  * @return Returns number of entries in archive group database. 0 on error. 
  */
-OSYNC_TEST_EXPORT long long int osync_archive_save_change(OSyncArchive *archive, long long int id, const char *uid, const char *objtype, long long int mappingid, long long int memberid, const char *objengine, OSyncError **error);
+OSYNC_TEST_EXPORT osync_archiveid osync_archive_save_change(OSyncArchive *archive, osync_archiveid id, const char *uid, const char *objtype, osync_mappingid mappingid, osync_memberid memberid, const char *objengine, OSyncError **error);
 
 /**
  * @brief Deletes an entry from a group archive.
@@ -119,7 +119,7 @@ OSYNC_TEST_EXPORT long long int osync_archive_save_change(OSyncArchive *archive,
  * @param error Pointer to an error struct
  * @return TRUE if the specified change was deleted successfully, otherwise FALSE
  */
-osync_bool osync_archive_delete_change(OSyncArchive *archive, long long int id, const char *objtype, OSyncError **error);
+osync_bool osync_archive_delete_change(OSyncArchive *archive, osync_archiveid id, const char *objtype, OSyncError **error);
 
 /**
  * @brief Delete all changes from group archive for a certain object type.
@@ -155,7 +155,7 @@ osync_bool osync_archive_load_ignored_conflicts(OSyncArchive *archive, const cha
  * @param error Pointer to an error struct
  * @return Returns TRUE on success, FALSE otherwise 
  */
-osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char *objtype, long long int memberid, long long int mappingid, OSyncChangeType changetype, OSyncError **error);
+osync_bool osync_archive_save_ignored_conflict(OSyncArchive *archive, const char *objtype, osync_memberid memberid, osync_mappingid mappingid, OSyncChangeType changetype, OSyncError **error);
 
 /**
  * @brief Deletes all ignored conflict entries of the changelog with the objtype.

@@ -149,7 +149,7 @@ OSYNC_TEST_EXPORT OSyncMessageCommand osync_message_get_cmd(OSyncMessage *messag
  * @param id The ID which get set for supplied message object 
  * 
  */
-OSYNC_TEST_EXPORT void osync_message_set_id(OSyncMessage *message, long long int id);
+OSYNC_TEST_EXPORT void osync_message_set_id(OSyncMessage *message, osync_messageid id);
 
 /** @brief Get message ID of supplied message object
  * 
@@ -157,7 +157,7 @@ OSYNC_TEST_EXPORT void osync_message_set_id(OSyncMessage *message, long long int
  * @returns The message ID of supplied message
  * 
  */
-OSYNC_TEST_EXPORT long long int osync_message_get_id(OSyncMessage *message);
+OSYNC_TEST_EXPORT osync_messageid osync_message_get_id(OSyncMessage *message);
 
 /** @brief Get marshal object of supplied message object
  * 

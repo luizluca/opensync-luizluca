@@ -124,25 +124,25 @@ const char *osync_mapping_entry_get_uid(OSyncMappingEntry *entry)
 	return entry->uid;
 }
 
-long long int osync_mapping_entry_get_member_id(OSyncMappingEntry *entry)
+osync_memberid osync_mapping_entry_get_member_id(OSyncMappingEntry *entry)
 {
 	osync_assert(entry);
 	return entry->member_id;
 }
 
-void osync_mapping_entry_set_member_id(OSyncMappingEntry *entry, long long int id)
+void osync_mapping_entry_set_member_id(OSyncMappingEntry *entry, osync_memberid id)
 {
 	osync_assert(entry);
 	entry->member_id = id;
 }
 
-long long int osync_mapping_entry_get_id(OSyncMappingEntry *entry)
+osync_mappingid osync_mapping_entry_get_id(OSyncMappingEntry *entry)
 {
 	osync_assert(entry);
 	return entry->id;
 }
 
-void osync_mapping_entry_set_id(OSyncMappingEntry *entry, long long int id)
+void osync_mapping_entry_set_id(OSyncMappingEntry *entry, osync_mappingid id)
 {
 	osync_assert(entry);
 	entry->id = id;

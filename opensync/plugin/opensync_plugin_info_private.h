@@ -49,7 +49,7 @@ struct OSyncPluginInfo {
 	OSyncCapabilities *capabilities;
 
 #ifdef OPENSYNC_UNITTESTS
-	long long int memberid; // introduced only for testing purpose (mock-sync)
+	osync_memberid memberid; // introduced only for testing purpose (mock-sync)
 #endif	
 };
 

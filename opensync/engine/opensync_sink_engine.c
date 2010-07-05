@@ -235,7 +235,7 @@ osync_bool osync_sink_engine_write(OSyncSinkEngine *engine, OSyncArchive *archiv
 			OSyncChange *change = osync_entry_engine_get_change(entry_engine);
 			osync_assert(change);
 				
-			osync_trace(TRACE_INTERNAL, "Writing change %s, changetype %i, format %s , objtype %s from member %lli", 
+			osync_trace(TRACE_INTERNAL, "Writing change %s, changetype %i, format %s , objtype %s from member %i", 
 					osync_change_get_uid(change), 
 					osync_change_get_changetype(change), 
 					osync_objformat_get_name(osync_change_get_objformat(change)), 

@@ -28,7 +28,7 @@
  * @param memberid The member id of the request change.
  * @returns The pointer to the change of the member. NULL if member doesn't have an entry in this mapping.
  */
-OSYNC_EXPORT OSyncChange *osync_mapping_engine_member_change(OSyncMappingEngine *engine, long long int memberid);
+OSYNC_EXPORT OSyncChange *osync_mapping_engine_member_change(OSyncMappingEngine *engine, osync_memberid memberid);
 
 OSYNC_EXPORT OSyncMember *osync_mapping_engine_change_find_member(OSyncMappingEngine *engine, OSyncChange *change);
 
