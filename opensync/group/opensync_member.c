@@ -411,6 +411,7 @@ osync_bool osync_member_load(OSyncMember *member, const char *path, OSyncError *
 					goto error_free_doc;
 
 				osync_member_add_objtype_sink(member, sink);
+				osync_objtype_sink_unref(sink);
 			} else if (!xmlStrcmp(cur->name, (const xmlChar *)"timeout")) {
 				/* Sink Function Timeout settings for main sink */
 				if (!member->main_sink)
