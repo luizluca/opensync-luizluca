@@ -277,10 +277,12 @@ OSyncPluginConfig *osync_member_get_config_or_default(OSyncMember *member, OSync
 		osync_free(filename);
 #ifdef OPENSYNC_UNITTESTS
 		filename = osync_strdup_printf("%s"G_DIR_SEPARATOR_S"%s",
-				member->default_configdir ? member->default_configdir : OPENSYNC_CONFIGDIR,
+				member->default_configdir ? member->default_configdir : osync_plugin_get_default_configdir(),
 				member->pluginname);
 #else
-		filename = osync_strdup_printf(OPENSYNC_CONFIGDIR G_DIR_SEPARATOR_S"%s", member->pluginname);
+		filename = osync_strdup_printf("%s%s",
+			osync_plugin_get_default_configdir(),
+			member->pluginname);
 #endif		
 		osync_trace(TRACE_INTERNAL, "Reading default %s", filename);
 	}

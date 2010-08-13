@@ -57,6 +57,20 @@ typedef enum {
  **/
 typedef unsigned int OSyncPluginConfigSupportedFlags;
 
+/** @brief Returns the built-in default plugin configuration directory
+ *
+ * Returns a string containing the build-time directory where
+ * default plugin config files are stored, including trailing directory
+ * separator character.  (Usually "/usr/share/libopensync1/defaults/")
+ *
+ * Note that this is only really necessary if your plugin stores additional
+ * config files in the defaults directory that it needs to access later.
+ *
+ * @returns String with directory
+ *
+ */
+OSYNC_EXPORT const char *osync_plugin_get_default_configdir(void);
+
 /** @brief Create a new plugin config object
  *
  * @param error Pointer to and error struct

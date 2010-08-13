@@ -1338,6 +1338,11 @@ static osync_bool _osync_plugin_config_assemble_advancedoptions(xmlNode *cur, OS
 	return FALSE;
 }
 
+const char *osync_plugin_get_default_configdir(void)
+{
+	return OPENSYNC_CONFIGDIR G_DIR_SEPARATOR_S;
+}
+
 OSyncPluginConfig *osync_plugin_config_new(OSyncError **error)
 {
 	OSyncPluginConfig *config = osync_try_malloc0(sizeof(OSyncPluginConfig), error);
