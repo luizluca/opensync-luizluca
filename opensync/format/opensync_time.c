@@ -139,6 +139,8 @@ osync_bool osync_time_isdate(const char *vtime)
 
 osync_bool osync_time_isutc(const char *vtime)
 {
+	// use strstr() here so that if there are milliseconds in the
+	// timestamp, the Z still gets found
 	if (!strstr(vtime, "Z"))
 		return FALSE;
 
@@ -542,7 +544,7 @@ char *osync_time_vtime2utc(const char* localtime, int offset, OSyncError **error
 	struct tm *tm_local = NULL, *tm_utc = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%s,%i)", __func__, localtime, offset);
 
-	if (strstr(localtime, "Z")) {
+	if (osync_time_isutc(localtime)) {
 		utc = g_strdup(localtime);
 		goto end;
 	}
@@ -582,7 +584,7 @@ char *osync_time_vtime2localtime(const char* utc, int offset, OSyncError **error
 	struct tm *tm_local = NULL, *tm_utc = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%s,%i)", __func__, utc, offset);
 
-	if (!strstr(utc, "Z")) {
+	if (!osync_time_isutc(utc)) {
 		localtime = g_strdup(utc);
 		return localtime;
 	}
