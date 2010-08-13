@@ -166,7 +166,8 @@ struct tm *osync_time_vtime2tm(const char *vtime, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%s)", __func__, vtime);
 	struct tm *utime = g_try_malloc0(sizeof(struct tm));
-	
+	char *plainvtime = NULL;
+
 	if (!utime) {
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "Could not allocate memory for time stuct.");
 		goto error;
@@ -179,7 +180,10 @@ struct tm *osync_time_vtime2tm(const char *vtime, OSyncError **error)
 	utime->tm_min = 0;
 	utime->tm_sec = 0;
 
-	sscanf(vtime, "%04d%02d%02dT%02d%02d%02d%*01c",
+	// make sure vtime is in format: YYYYMMDDTHHMMSS...
+	plainvtime = osync_time_timestamp_remove_dash(vtime);
+
+	sscanf(plainvtime, "%04d%02d%02dT%02d%02d%02d%*01c",
 	       &(utime->tm_year), &(utime->tm_mon), &(utime->tm_mday),
 	       &(utime->tm_hour), &(utime->tm_min), &(utime->tm_sec));
 
@@ -192,6 +196,7 @@ struct tm *osync_time_vtime2tm(const char *vtime, OSyncError **error)
 	/* ask C library to clean up any anomalies */
 	mktime(utime);
 
+	free(plainvtime);
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return utime;
 error:
