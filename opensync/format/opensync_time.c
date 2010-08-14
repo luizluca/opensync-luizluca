@@ -71,13 +71,16 @@ inline struct tm* gmtime_r (const time_t *clock, struct tm *result)
 
 static char *osync_time_timestamp_remove_dash(const char *timestamp)
 {
-	int i, len;
+	int i, len, date;
 	GString *str = g_string_new("");
 
 	len = strlen(timestamp);
 
-	for (i=0; i < len; i++) {
-		if (timestamp[i] == '-')
+	for (i=0, date=1; i < len; i++) {
+		if (timestamp[i] == 'T')
+			date = 0;
+
+		if (date && timestamp[i] == '-')
 			continue;
 
 		if (timestamp[i] == ':')
