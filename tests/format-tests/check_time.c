@@ -296,11 +296,24 @@ START_TEST (time_utc_offset)
 }
 END_TEST
 
+START_TEST(time_timestamp)
+{
+	char *result = osync_time_timestamp("2010-08-10T11:15:22.234-03:00");
+	int match = strcmp(result, "20100810T141522Z");
+	fail_unless(match == 0, NULL);
+
+	result = osync_time_timestamp("2010-08-10T11:15:22.234-03:0");
+	match = strcmp(result, "20100810T111522.234-030");
+	fail_unless(match == 0, NULL);
+}
+END_TEST
+
 OSYNC_TESTCASE_START("time")
 OSYNC_TESTCASE_ADD(time_timezone_diff)
 OSYNC_TESTCASE_ADD(time_parse_iso_timezone_diff)
 OSYNC_TESTCASE_ADD(time_relative2tm)
 OSYNC_TESTCASE_ADD(time_unix_converters)
 OSYNC_TESTCASE_ADD(time_utc_offset)
+OSYNC_TESTCASE_ADD(time_timestamp)
 OSYNC_TESTCASE_END
 

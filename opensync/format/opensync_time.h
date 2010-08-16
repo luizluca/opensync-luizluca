@@ -43,6 +43,9 @@
  */
 
 /** @brief Function returns a date-timestamp in OSyncTime Spec format
+ *	OSyncTime Spec format is YYYYMMDDTHHMMSSZ with Z optional.
+ *	Input format can be in ISO 8601, including dashes and timezone
+ *	offsets, and the returned timestamp will adjust it to UTC.
  * 
  * @param vtime The timestamp which gets converted to a valid osync date-timestamp
  * @returns vtime date-timestring (the caller is responsible for freeing)

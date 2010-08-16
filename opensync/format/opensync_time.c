@@ -95,11 +95,39 @@ static char *osync_time_timestamp_remove_dash(const char *timestamp)
  
 char *osync_time_timestamp(const char *vtime)
 {
-	char *timestamp;
+	char *timestamp = NULL;
+	int found, offset;
+	OSyncError *error = NULL;
 	osync_trace(TRACE_ENTRY, "%s(%s)", __func__, vtime);
 
-	timestamp = osync_time_timestamp_remove_dash(vtime);
+	// check for ISO 8601 timezone offset
+	// YYYY-MM-DDTHH:MM:SS.uuu-HH:MM
+	offset = osync_time_parse_iso_timezone_diff(vtime, &found, &error);
+	if( error )
+		osync_error_unref(&error);
+	if( found ) {
+		time_t utc = osync_time_vtime2unix(vtime, offset, &error);
+		if( error ) {
+			osync_error_unref(&error);
+		}
+		else {
+			timestamp = osync_time_unix2vtime(&utc, &error);
+			if( error ) {
+				osync_error_unref(&error);
+				if( timestamp ) {
+					free(timestamp);
+					timestamp = NULL;
+				}
+			}
+		}
+	}
 
+	// timezone and unix conversion didn't work... fallback to dash removal
+	if( timestamp == NULL ) {
+		timestamp = osync_time_timestamp_remove_dash(vtime);
+	}
+
+	// return timestamp in YYYYMMDDTHHMMSSZ
 	osync_trace(TRACE_EXIT, "%s: %s", __func__, timestamp);
 	return timestamp;
 }
