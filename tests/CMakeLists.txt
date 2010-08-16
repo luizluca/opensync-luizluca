@@ -392,6 +392,7 @@ OSYNC_TESTCASE(time time_timezone_diff)
 OSYNC_TESTCASE(time time_parse_iso_timezone_diff)
 OSYNC_TESTCASE(time time_relative2tm)
 OSYNC_TESTCASE(time time_unix_converters)
+OSYNC_TESTCASE(time time_utc_offset)
 
 BUILD_CHECK_TEST( version version-tests/check_version.c ${TEST_TARGET_LIBRARIES} )
 OSYNC_TESTCASE(version version_new)
