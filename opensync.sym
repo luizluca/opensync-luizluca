@@ -676,6 +676,7 @@ osync_time_datestamp
 osync_time_isdate
 osync_time_isutc
 osync_time_localtm2unix
+osync_time_parse_iso_timezone_diff
 osync_time_relative2tm
 osync_time_sec2alarmdu
 osync_time_str2wday

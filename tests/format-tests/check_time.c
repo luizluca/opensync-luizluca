@@ -60,6 +60,56 @@ START_TEST (time_timezone_diff)
 }
 END_TEST
 
+START_TEST (time_parse_iso_timezone_diff)
+{
+	OSyncError *error = NULL;
+	int offset, found;
+
+	// Not found
+	offset = osync_time_parse_iso_timezone_diff(
+		"20100810T001500Z", &found, &error);
+	fail_unless(offset == 0 && found == 0 && error == NULL, NULL);
+
+	// Not found with dashes
+	offset = osync_time_parse_iso_timezone_diff(
+		"2010-08-10T00:15:00Z", &found, &error);
+	fail_unless(offset == 0 && found == 0 && error == NULL, NULL);
+
+	// Found, with no separators
+	offset = osync_time_parse_iso_timezone_diff(
+		"20100810T001500-0300", &found, &error);
+	fail_unless(offset == -3*60*60 && found == 1 && error == NULL, NULL);
+
+	// Found, with separators
+	offset = osync_time_parse_iso_timezone_diff(
+		"2010-08-10T00:15:00-03:00", &found, &error);
+	fail_unless(offset == -3*60*60 && found == 1 && error == NULL, NULL);
+
+	// Found, positive offset, full ISO 8601 separaors
+	offset = osync_time_parse_iso_timezone_diff(
+		"2010-08-10T00:15:00.000+04:30", &found, &error);
+	fail_unless(offset == 4*60*60+30*60 && found == 1 && error == NULL, NULL);
+
+	// Error: incomplete offset
+	offset = osync_time_parse_iso_timezone_diff(
+		"2010-08-10T00:15:00+04:3", &found, &error);
+	fail_unless(offset == 0 && found == 0 && error != NULL, NULL);
+	osync_error_unref(&error);
+
+	// Error: too much offset
+	offset = osync_time_parse_iso_timezone_diff(
+		"2010-08-10T00:15:00+04:300", &found, &error);
+	fail_unless(offset == 0 && found == 0 && error != NULL, NULL);
+	osync_error_unref(&error);
+
+	// No error, not found: offset without a time (no T found)
+	offset = osync_time_parse_iso_timezone_diff(
+		"2010-08-10+04:30", &found, &error);
+	fail_unless(offset == 0 && found == 0 && error == NULL, NULL);
+	osync_error_unref(&error);
+}
+END_TEST
+
 static int test_relative2tm(const char *byday, int month, int year,
 	int expected_day, int expected_wday)
 {
@@ -248,6 +298,7 @@ END_TEST
 
 OSYNC_TESTCASE_START("time")
 OSYNC_TESTCASE_ADD(time_timezone_diff)
+OSYNC_TESTCASE_ADD(time_parse_iso_timezone_diff)
 OSYNC_TESTCASE_ADD(time_relative2tm)
 OSYNC_TESTCASE_ADD(time_unix_converters)
 OSYNC_TESTCASE_ADD(time_utc_offset)

@@ -215,6 +215,25 @@ OSYNC_EXPORT struct tm *osync_time_unix2utctm(const time_t *timestamp, OSyncErro
  */
 OSYNC_EXPORT int osync_time_timezone_diff(const struct tm *local, OSyncError **error);
 
+/** @brief Parse an ISO 8601 timestamp string, and if a timezone offset
+ *	exists, return an offset suitable for feeding into vtime2unix().
+ *	(seconds east of UTC.. i.e. east is positive, west is negative)
+ *
+ * @param iso_vtime String containing an ISO 8601 timestamp string, in the
+ *	format of YYYYMMDDTHHMMSS-HHMM or YYYY-MM-DDTHH:MM:SS-HH:MM.
+ * @param found Pointer to an int.  Will be set to 1 if a valid offset was
+ *	found, or 0 if not.  Not all timestamps have a timezone offset.
+ *	If not found, 0 will also be returned as the offset.
+ * @param error An OSyncError struct.  Always check if error is set using
+ *	osync_error_is_set(error) before using the return value.  A non-
+ *	existing timezone offset is not an error, but a mal-formed one,
+ *	like "-03:0" is an error.
+ * @return Seconds of timezone offset.  On error, sets the error parameter,
+ *	and the return value will be zero.  If no offset is found in the
+ *	string, return is zero.
+ */
+OSYNC_EXPORT int osync_time_parse_iso_timezone_diff(const char *iso_vtime, int *found, OSyncError **error);
+
 /** @brief Function converts (struct tm) ltime from localtime to UTC.
  *         Paramter offset is used as UTC offset.  Note that _only_ the
  *         following fields can be relied upon in the result:

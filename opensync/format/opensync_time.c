@@ -487,6 +487,47 @@ error:
 	return 0;
 }
  
+int osync_time_parse_iso_timezone_diff(const char *iso_vtime, int *found, OSyncError **error)
+{
+	char *zonepart = NULL, *plainzone = NULL;
+	int hour, min, scanned, offset;
+
+	char *timepart = strchr(iso_vtime, 'T');
+	if( timepart == NULL ) {
+		*found = 0;
+		return 0;
+	}
+
+	zonepart = strchr(timepart, '-');
+	if( zonepart == NULL ) {
+		zonepart = strchr(timepart, '+');
+		if( zonepart == NULL ) {
+			*found = 0;
+			return 0;
+		}
+	}
+
+	plainzone = osync_time_timestamp_remove_dash(zonepart+1);
+	scanned = sscanf(plainzone, "%02d%02d", &hour, &min);
+	if( strlen(plainzone) != 4 || scanned != 2 ) {
+		*found = 0;
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Invalid timezone offset in ISO timestamp.");
+		return 0;
+	}
+
+	*found = 1;
+	offset = (hour * 60 + min) * 60;
+
+	// timezone offset is the same as the ISO format indicates...
+	// negative values are west of UTC (like Canada) and positive
+	// values are east of UTC (like Germany)
+	if( zonepart[0] == '-' ) {
+		offset *= -1;
+	}
+
+	return offset;
+}
+
 struct tm *osync_time_tm2utc(const struct tm *ltime, int offset, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %i)", __func__, ltime, offset);
