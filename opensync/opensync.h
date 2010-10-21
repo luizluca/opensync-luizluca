@@ -45,11 +45,11 @@
 #define __func__ __FUNCTION__
 #define OSYNC_EXPORT __declspec(dllexport)
 
-#elif __GNUC__ 
+#elif defined(__GNUC__) 
 #include <unistd.h>
 #define OSYNC_EXPORT __attribute__ ((visibility("default")))
 
-#elif __sun 
+#elif defined(__sun) 
 #include <unistd.h>
 #define OSYNC_EXPORT __global 
 
