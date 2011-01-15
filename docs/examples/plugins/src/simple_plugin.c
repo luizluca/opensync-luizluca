@@ -211,8 +211,6 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 	if (!env)
 		goto error;
 
-	osync_trace(TRACE_INTERNAL, "The config: %s", osync_plugin_info_get_config(info));
-
 	/* 
 	 * Process the config here and set the options on your environment
 	*/
