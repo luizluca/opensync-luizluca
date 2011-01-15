@@ -40,10 +40,20 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	OSyncList *sinks, *s;
+	OSyncPluginConfig *config;
 
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, info, error);
 
 	printf("[EXTERNAL-DEMO]: %s\n", __func__);
+
+	/*
+	 * get the config
+	 */
+	config = osync_plugin_info_get_config(info);
+	if (!config) {
+		osync_error_set(error, OSYNC_ERROR_GENERIC, "Unable to get config.");
+		goto error;
+	}
 
 	sinks = osync_plugin_info_get_objtype_sinks(info);
 	for (s = sinks; s; s = s->next) {
