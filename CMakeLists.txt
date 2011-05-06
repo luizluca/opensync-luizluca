@@ -140,11 +140,6 @@ IF ( APPLE )
 	SET( OPENSYNC_PREVENT_CLIENT_SHUTDOWN "1" )
 ENDIF ( APPLE )
 
-# add uninstall target
-CONFIGURE_FILE(	"${CMAKE_SOURCE_DIR}/cmake/modules/cmake_uninstall.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake" IMMEDIATE @ONLY)
-
-ADD_CUSTOM_TARGET(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
-
 CONFIGURE_FILE( "config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/config.h" )
 CONFIGURE_FILE( "libopensync1.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/libopensync1.pc" )
 
