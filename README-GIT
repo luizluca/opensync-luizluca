@@ -1,0 +1,22 @@
+This is the git tree fork of the OpenSync SVN tree.  The aim is to
+include the pertinent changes seen on the SVN tree, but changes to
+this tree may not necessarily get pushed back to SVN.
+
+Git does not have the same concept as SVN externals, so the cmake
+modules are not included automatically, as done for SVN.
+
+To build the git trees, clone the cmake-modules-cdf tree with:
+
+	git clone git://repo.or.cz/opensync/cmake-modules-cdf.git
+
+Then add the following option to your cmake command when building opensync:
+
+	-DCMAKE_MODULE_PATH=/path/to/cmake-modules-cdf
+
+You will need to do this for all plugins that you compile from git.
+
+
+opensync git fork maintainer
+Chris Frey <cdfrey@foursquare.net>
+2011/05/06
+
