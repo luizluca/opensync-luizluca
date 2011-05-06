@@ -2,9 +2,6 @@ PROJECT( libopensync-plugin-example )
 
 SET( VERSION "0.40" )
 
-# Look for 3rd Party CMake modules
-SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules" )
-
 cmake_minimum_required(VERSION 2.4.4)
 
 FIND_PACKAGE( OpenSync REQUIRED )
