@@ -141,7 +141,7 @@ IF ( APPLE )
 ENDIF ( APPLE )
 
 CONFIGURE_FILE( "config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/config.h" )
-CONFIGURE_FILE( "libopensync1.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/libopensync1.pc" )
+CONFIGURE_FILE( "libopensync1.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/libopensync1.pc" @ONLY )
 
 ########## INSTALL ##############################
 	
