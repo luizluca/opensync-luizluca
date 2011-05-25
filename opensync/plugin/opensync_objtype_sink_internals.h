@@ -243,16 +243,6 @@ unsigned int osync_objtype_sink_get_read_timeout_or_default(OSyncObjTypeSink *si
  */
 unsigned int osync_objtype_sink_get_read_timeout(OSyncObjTypeSink *sink);
 
-/** @brief Gets the user data from a sink
- * 
- * Gets the user data from a sink, as previously set by osync_objtype_sink_set_functions()
- *
- * @param sink Pointer to the sink
- * @returns the sink-specific user data
- * 
- */
-void *osync_objtype_sink_get_userdata(OSyncObjTypeSink *sink);
-
 /** @brief Checks if slow-sync has been requested
  * 
  * When slow-sync is requested, OpenSync synchronizes all entries rather than

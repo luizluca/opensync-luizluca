@@ -610,6 +610,16 @@ OSYNC_EXPORT osync_bool osync_objtype_sink_load_hashtable(OSyncObjTypeSink *sink
 OSYNC_EXPORT osync_bool osync_objtype_sink_save_hashtable(OSyncObjTypeSink *sink, OSyncError **error);
 
 
+/** @brief Gets the user data from a sink
+ * 
+ * Gets the user data from a sink, as previously set by osync_objtype_sink_set_functions()
+ *
+ * @param sink Pointer to the sink
+ * @returns the sink-specific user data
+ * 
+ */
+OSYNC_EXPORT void *osync_objtype_sink_get_userdata(OSyncObjTypeSink *sink);
+
 OSYNC_EXPORT void osync_objtype_sink_set_userdata(OSyncObjTypeSink *sink, void *userdata);
 
 OSYNC_EXPORT void osync_objtype_sink_set_connect_func(OSyncObjTypeSink *sink, OSyncSinkConnectFn connect_func);

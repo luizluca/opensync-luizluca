@@ -217,6 +217,8 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 
 	/* ObjTypeSink port - functions and userdata never got set! */
 	osync_objtype_sink_set_userdata(sink, env);
+	if (osync_objtype_sink_get_userdata(sink) != env)
+		goto error;
 
 	osync_plugin_info_add_objtype(info, sink);
 	osync_objtype_sink_unref(sink);
