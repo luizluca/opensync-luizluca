@@ -210,8 +210,8 @@ static OSyncDebugGroup *_create_group5(char *testbed)
 	osync_plugin_set_start_type(debug->plugin, OSYNC_START_TYPE_EXTERNAL);
 	osync_plugin_set_config_type(debug->plugin, OSYNC_PLUGIN_NO_CONFIGURATION);
 	
-	osync_plugin_set_initialize(debug->plugin, initialize_connect_error);
-	osync_plugin_set_finalize(debug->plugin, finalize);
+	osync_plugin_set_initialize_func(debug->plugin, initialize_connect_error);
+	osync_plugin_set_finalize_func(debug->plugin, finalize);
 	
 	
 	debug->plugin2 = osync_plugin_new(&error);
@@ -223,8 +223,8 @@ static OSyncDebugGroup *_create_group5(char *testbed)
 	osync_plugin_set_description(debug->plugin2, "This is a pseudo plugin");
 	osync_plugin_set_start_type(debug->plugin2, OSYNC_START_TYPE_EXTERNAL);
 	
-	osync_plugin_set_initialize(debug->plugin2, initialize_connect_error);
-	osync_plugin_set_finalize(debug->plugin2, finalize);
+	osync_plugin_set_initialize_func(debug->plugin2, initialize_connect_error);
+	osync_plugin_set_finalize_func(debug->plugin2, finalize);
 	
 	
 	debug->client1 = osync_client_new(&error);

@@ -210,7 +210,7 @@ OSYNC_EXPORT void osync_plugin_set_description(OSyncPlugin *plugin, const char *
  * @param plugin Pointer to the plugin
  * @param init The initialize function for the plugin
  */
-OSYNC_EXPORT void osync_plugin_set_initialize(OSyncPlugin *plugin, initialize_fn init);
+OSYNC_EXPORT void osync_plugin_set_initialize_func(OSyncPlugin *plugin, initialize_fn init);
 
 /** @brief Sets the finalize function for a plugin
  *
@@ -220,7 +220,7 @@ OSYNC_EXPORT void osync_plugin_set_initialize(OSyncPlugin *plugin, initialize_fn
  * @param plugin Pointer to the plugin
  * @param fin The finalize function for the plugin
  */
-OSYNC_EXPORT void osync_plugin_set_finalize(OSyncPlugin *plugin, finalize_fn fin);
+OSYNC_EXPORT void osync_plugin_set_finalize_func(OSyncPlugin *plugin, finalize_fn fin);
 
 /** @brief Sets the optional discover function for a plugin
  *
@@ -234,7 +234,7 @@ OSYNC_EXPORT void osync_plugin_set_finalize(OSyncPlugin *plugin, finalize_fn fin
  * @param plugin Pointer to the plugin
  * @param discover The discover function for the plugin
  */
-OSYNC_EXPORT void osync_plugin_set_discover(OSyncPlugin *plugin, discover_fn discover);
+OSYNC_EXPORT void osync_plugin_set_discover_func(OSyncPlugin *plugin, discover_fn discover);
 
 
 /** @brief Returns the plugin_info data, set by the plugin

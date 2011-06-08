@@ -795,9 +795,9 @@ osync_bool get_sync_info(OSyncPluginEnv *env, OSyncError **error)
 	osync_plugin_set_description(plugin, "Plugin to synchronize files on the local filesystem for unit tests");
 	osync_plugin_set_start_type(plugin, OSYNC_START_TYPE_EXTERNAL);
 	
-	osync_plugin_set_initialize(plugin, mock_initialize);
-	osync_plugin_set_finalize(plugin, mock_finalize);
-	osync_plugin_set_discover(plugin, mock_discover);
+	osync_plugin_set_initialize_func(plugin, mock_initialize);
+	osync_plugin_set_finalize_func(plugin, mock_finalize);
+	osync_plugin_set_discover_func(plugin, mock_discover);
 	
 	if (!osync_plugin_env_register_plugin(env, plugin, error))
 		goto error;
