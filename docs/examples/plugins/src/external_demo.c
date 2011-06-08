@@ -122,9 +122,9 @@ int main(int argc, char **argv)
 	if (!plugin)
 		goto error;
 
-	osync_plugin_set_initialize(plugin, initialize);
-	osync_plugin_set_finalize(plugin, finalize);
-	osync_plugin_set_discover(plugin, discover);
+	osync_plugin_set_initialize_func(plugin, initialize);
+	osync_plugin_set_finalize_func(plugin, finalize);
+	osync_plugin_set_discover_func(plugin, discover);
 
 
 	/** Client */

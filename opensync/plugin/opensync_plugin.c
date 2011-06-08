@@ -165,20 +165,20 @@ void osync_plugin_set_start_type(OSyncPlugin *plugin, OSyncStartType start_type)
 	plugin->start_type = start_type;
 }
 
-void osync_plugin_set_initialize(OSyncPlugin *plugin, initialize_fn init)
+void osync_plugin_set_initialize_func(OSyncPlugin *plugin, initialize_fn init)
 {
 	osync_assert(plugin);
 	plugin->initialize = init;
 }
 
-void osync_plugin_set_finalize(OSyncPlugin *plugin, finalize_fn fin)
+void osync_plugin_set_finalize_func(OSyncPlugin *plugin, finalize_fn fin)
 {
 	osync_assert(plugin);
 	
 	plugin->finalize = fin;
 }
 
-void osync_plugin_set_discover(OSyncPlugin *plugin, discover_fn discover)
+void osync_plugin_set_discover_func(OSyncPlugin *plugin, discover_fn discover)
 {
 	osync_assert(plugin);
 	plugin->discover = discover;

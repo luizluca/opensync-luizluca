@@ -289,8 +289,8 @@ static OSyncDebugGroup *_create_group(char *testbed)
 	osync_plugin_set_start_type(debug->plugin, OSYNC_START_TYPE_EXTERNAL);
 	osync_plugin_set_config_type(debug->plugin, OSYNC_PLUGIN_NO_CONFIGURATION);
 	
-	osync_plugin_set_initialize(debug->plugin, initialize);
-	osync_plugin_set_finalize(debug->plugin, finalize);
+	osync_plugin_set_initialize_func(debug->plugin, initialize);
+	osync_plugin_set_finalize_func(debug->plugin, finalize);
 	
 	debug->client1 = osync_client_new(&error);
 	fail_unless(debug->client1 != NULL, NULL);
@@ -636,8 +636,8 @@ static OSyncDebugGroup *_create_group2(char *testbed)
 	osync_plugin_set_start_type(debug->plugin, OSYNC_START_TYPE_EXTERNAL);
 	osync_plugin_set_config_type(debug->plugin, OSYNC_PLUGIN_NO_CONFIGURATION);
 	
-	osync_plugin_set_initialize(debug->plugin, initialize_multi);
-	osync_plugin_set_finalize(debug->plugin, finalize_multi);
+	osync_plugin_set_initialize_func(debug->plugin, initialize_multi);
+	osync_plugin_set_finalize_func(debug->plugin, finalize_multi);
 	
 	debug->client1 = osync_client_new(&error);
 	fail_unless(debug->client1 != NULL, NULL);
@@ -1037,8 +1037,8 @@ static OSyncDebugGroup *_create_group3(char *testbed)
 	osync_plugin_set_start_type(debug->plugin, OSYNC_START_TYPE_EXTERNAL);
 	osync_plugin_set_config_type(debug->plugin, OSYNC_PLUGIN_NO_CONFIGURATION);
 	
-	osync_plugin_set_initialize(debug->plugin, initialize_order);
-	osync_plugin_set_finalize(debug->plugin, finalize_order);
+	osync_plugin_set_initialize_func(debug->plugin, initialize_order);
+	osync_plugin_set_finalize_func(debug->plugin, finalize_order);
 
 	
 	debug->client1 = osync_client_new(&error);
@@ -1271,8 +1271,8 @@ static OSyncDebugGroup *_create_group4(char *testbed)
 	osync_plugin_set_start_type(debug->plugin, OSYNC_START_TYPE_EXTERNAL);
 	osync_plugin_set_config_type(debug->plugin, OSYNC_PLUGIN_NO_CONFIGURATION);
 
-	osync_plugin_set_initialize(debug->plugin, initialize_reuse);
-	osync_plugin_set_finalize(debug->plugin, finalize_reuse);
+	osync_plugin_set_initialize_func(debug->plugin, initialize_reuse);
+	osync_plugin_set_finalize_func(debug->plugin, finalize_reuse);
 	
 	debug->client1 = osync_client_new(&error);
 	fail_unless(debug->client1 != NULL, NULL);
@@ -1550,8 +1550,8 @@ static OSyncDebugGroup *_create_group5(char *testbed)
 	osync_plugin_set_start_type(debug->plugin, OSYNC_START_TYPE_EXTERNAL);
 	osync_plugin_set_config_type(debug->plugin, OSYNC_PLUGIN_NO_CONFIGURATION);
 	
-	osync_plugin_set_initialize(debug->plugin, initialize5);
-	osync_plugin_set_finalize(debug->plugin, finalize5);
+	osync_plugin_set_initialize_func(debug->plugin, initialize5);
+	osync_plugin_set_finalize_func(debug->plugin, finalize5);
 	
 	debug->client1 = osync_client_new(&error);
 	fail_unless(debug->client1 != NULL, NULL);
@@ -1758,8 +1758,8 @@ static OSyncDebugGroup *_create_group6(char *testbed)
 	osync_plugin_set_start_type(debug->plugin, OSYNC_START_TYPE_EXTERNAL);
 	osync_plugin_set_config_type(debug->plugin, OSYNC_PLUGIN_NO_CONFIGURATION);
 	
-	osync_plugin_set_initialize(debug->plugin, initialize6);
-	osync_plugin_set_finalize(debug->plugin, finalize6);
+	osync_plugin_set_initialize_func(debug->plugin, initialize6);
+	osync_plugin_set_finalize_func(debug->plugin, finalize6);
 	
 	debug->client1 = osync_client_new(&error);
 	fail_unless(debug->client1 != NULL, NULL);
@@ -1961,8 +1961,8 @@ static OSyncDebugGroup *_create_group7(char *testbed)
 	osync_plugin_set_start_type(debug->plugin, OSYNC_START_TYPE_EXTERNAL);
 	osync_plugin_set_config_type(debug->plugin, OSYNC_PLUGIN_NO_CONFIGURATION);
 	
-	osync_plugin_set_initialize(debug->plugin, initialize7);
-	osync_plugin_set_finalize(debug->plugin, finalize7);
+	osync_plugin_set_initialize_func(debug->plugin, initialize7);
+	osync_plugin_set_finalize_func(debug->plugin, finalize7);
 	
 	debug->client1 = osync_client_new(&error);
 	fail_unless(debug->client1 != NULL, NULL);
