@@ -193,7 +193,7 @@ static void finalize(void *userdata)
 }
 
 
-static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
+static void initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	/*
 	 * get the config
@@ -273,12 +273,11 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 
 	osync_list_free(list);
 	
-	//Now your return your struct.
-	return (void *) env;
-
+	//Now save your struct.
+	osync_plugin_set_data(plugin, env);
+	return;
 error:
-	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-	return NULL;
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));	
 }
 
 /* Here we actually tell opensync which sinks are available. */

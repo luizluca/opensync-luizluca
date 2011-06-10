@@ -186,7 +186,6 @@ void osync_plugin_set_discover(OSyncPlugin *plugin, discover_fn discover)
 
 osync_bool osync_plugin_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
-	void *data;
 	osync_assert(plugin);
 	
 	osync_return_val_if_fail_and_set_error(plugin, FALSE, error, OSYNC_ERROR_PARAMETER, "osync_plugin_initialize: plugin is null");
@@ -194,12 +193,11 @@ osync_bool osync_plugin_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, O
 	/* Just return with FALSE, if no initialize function is registered */ 
 	osync_return_val_if_fail_and_set_error(plugin->initialize, FALSE, error, OSYNC_ERROR_INITIALIZATION, "plugin %s has no plugin initialize function", osync_plugin_get_name(plugin) );
 	
-	data = plugin->initialize(plugin, info, error);
+	plugin->initialize(plugin, info, error);
 	if (osync_error_is_set(error)) { 
 		return FALSE;
 	}
 	
-	osync_plugin_set_data(plugin, data);	
 	return TRUE;
 }
 

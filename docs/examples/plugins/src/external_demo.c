@@ -37,7 +37,7 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 	osync_context_report_success(ctx);
 }
 
-static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
+static void initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	OSyncList *sinks, *s;
 	OSyncPluginConfig *config;
@@ -71,11 +71,10 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 	}
 
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, NULL);
-	return (void *) NULL;
+	return;
 
 error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-	return NULL;
 }
 
 static void finalize(void *data)

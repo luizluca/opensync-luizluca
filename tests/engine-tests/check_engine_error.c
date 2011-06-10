@@ -124,7 +124,7 @@ error:
 }
 */
 
-static void *initialize_connect_error(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
+static void initialize_connect_error(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, info, error);
 
@@ -149,7 +149,8 @@ static void *initialize_connect_error(OSyncPlugin *plugin, OSyncPluginInfo *info
 
 	osync_list_free(objtypesinks);
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
-	return (void *)env;
+	
+	osync_plugin_set_data(plugin,env);
 }
 
 static void finalize(OSyncPlugin *plugin)

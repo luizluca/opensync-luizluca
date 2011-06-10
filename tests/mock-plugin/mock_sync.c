@@ -551,19 +551,19 @@ static void mock_sync_done(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncC
 
 /* In initialize, we get the config for the plugin. Here we also must register
  * all _possible_ objtype sinks. */
-static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
+static void mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, plugin, info, error);
 
 	if (mock_get_error(info->memberid, "INIT_NULL_NOERROR")) {
 		osync_trace(TRACE_EXIT, "%s: %s", __func__, "Everything is fine. I don't need plugin userdata.");
-		return NULL;
+		return;
 	}
 
 	if (mock_get_error(info->memberid, "INIT_NULL")) {
 		osync_error_set(error, OSYNC_ERROR_EXPECTED, "Triggering INIT_NULL error");
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-		return NULL;
+		return;
 	}
 
 	mock_env *env = osync_try_malloc0(sizeof(mock_env), error);
@@ -695,7 +695,7 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 	}
 	osync_list_free(objtypesinks);
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
-	return (void *)env;
+	osync_plugin_set_data(plugin,env);	
 }
 
 static void mock_finalize(OSyncPlugin *plugin)

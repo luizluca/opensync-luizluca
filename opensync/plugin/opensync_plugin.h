@@ -44,7 +44,7 @@
  * @param error An OSyncError struct that should be used to set an error
  * @return The plugin specific data that is passed to the other plugin functions
  */
-typedef void * (* initialize_fn) (OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error);
+typedef void (* initialize_fn) (OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error);
 
 /**
  * @brief Prototype of the plugin finalize function

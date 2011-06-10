@@ -195,7 +195,7 @@ static void get_changes(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCont
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
+static void initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, info, error);
 
@@ -224,11 +224,11 @@ static void *initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError *
 	osync_objtype_sink_unref(sink);
 
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
-	return (void *)env;
-
+	osync_plugin_set_data(plugin, env);
+	
+	return;
 error:
-	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-	return NULL;
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));	
 }
 
 static void finalize(OSyncPlugin *plugin)
@@ -491,7 +491,7 @@ static void main_get_changes2(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSy
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void *initialize_multi(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
+static void initialize_multi(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, info, error);
 
@@ -566,11 +566,11 @@ static void *initialize_multi(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	osync_objtype_sink_unref(sink);
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
-	return (void *)env;
-
+	
+	osync_plugin_set_data(plugin,env);
+	return;
 error:
-	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-	return NULL;
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));	
 }
 
 static void finalize_multi(OSyncPlugin *plugin)
@@ -888,7 +888,7 @@ static void main_sync_done3(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSync
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void *initialize_order(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
+static void initialize_order(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, info, error);
 
@@ -966,11 +966,11 @@ static void *initialize_order(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	osync_objtype_sink_unref(sink);
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
-	return (void *)env;
 
+	osync_plugin_set_data(plugin, env);
+	return;
 error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-	return NULL;
 }
 
 static void finalize_order(OSyncPlugin *plugin)
@@ -1130,7 +1130,7 @@ static void main_disconnect4(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyn
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void *initialize_reuse(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
+static void initialize_reuse(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, info, error);
 
@@ -1208,11 +1208,11 @@ static void *initialize_reuse(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncE
 	osync_objtype_sink_unref(sink);
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
-	return (void *)env;
 
+	osync_plugin_set_data(plugin,env);
+	return;
 error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-	return NULL;
 }
 
 static void finalize_reuse(OSyncPlugin *plugin)
@@ -1457,7 +1457,7 @@ static void commit_change5(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncC
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void *initialize5(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
+static void initialize5(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, info, error);
 
@@ -1484,11 +1484,11 @@ static void *initialize5(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError 
 	osync_objtype_sink_unref(sink);
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
-	return (void *)env;
-
+	
+	osync_plugin_set_data(plugin,env);
+	return;
 error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-	return NULL;
 }
 
 static void finalize5(OSyncPlugin *plugin)
@@ -1663,7 +1663,7 @@ static void get_changes6(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCon
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void *initialize6(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
+static void initialize6(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, info, error);
 
@@ -1690,11 +1690,11 @@ static void *initialize6(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError 
 	osync_objtype_sink_unref(sink);
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
-	return (void *)env;
 
+	osync_plugin_set_data(plugin,env);
+	return;
 error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-	return NULL;
 }
 
 static void finalize6(OSyncPlugin *plugin)
@@ -1867,7 +1867,7 @@ static void get_changes7(OSyncObjTypeSink *sink, OSyncPluginInfo *info, OSyncCon
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-static void *initialize7(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
+static void initialize7(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, info, error);
 
@@ -1894,11 +1894,11 @@ static void *initialize7(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError 
 	osync_objtype_sink_unref(sink);
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, env);
-	return (void *)env;
-
+	
+	osync_plugin_set_data(plugin,env);
+	return;
 error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
-	return NULL;
 }
 
 static void finalize7(OSyncPlugin *plugin)
