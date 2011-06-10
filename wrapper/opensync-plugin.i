@@ -66,20 +66,20 @@ typedef struct {} Plugin;
 		osync_plugin_set_config_type(self, config_type);
 	}
 
-	osync_bool initialize(PluginInfo *info, void **plugin_data) {
+	osync_bool initialize(PluginInfo *info) {
 		Error *err = NULL;
-		osync_bool ret = osync_plugin_initialize(self, plugin_data, info, &err);
+		osync_bool ret = osync_plugin_initialize(self, info, &err);
 		raise_exception_on_error(err);
 		return ret;
 	}
 
-	void finalize(void *data) {
-		osync_plugin_finalize(self, data);
+	void finalize() {
+		osync_plugin_finalize(self);
 	}
 
-	void discover(void *data, PluginInfo *info) {
+	void discover(PluginInfo *info) {
 		Error *err = NULL;
-		bool ret = osync_plugin_discover(self, data, info, &err);
+		bool ret = osync_plugin_discover(self, info, &err);
 		if (!raise_exception_on_error(err) && !ret)
 			wrapper_exception("osync_plugin_discover failed but did not set error code");
 	}

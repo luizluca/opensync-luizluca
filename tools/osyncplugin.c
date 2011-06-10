@@ -442,7 +442,7 @@ static void *plugin_initialize(OSyncError **error)
 	OSyncList *objtypesinks = NULL;
 	void *plugin_data;
 	osync_bool couldinit;
-	couldinit = osync_plugin_initialize(plugin, &(plugin_data), plugin_info, error);
+	couldinit = osync_plugin_initialize(plugin, plugin_info, error);
 	if (!couldinit)
 		goto error;
 
@@ -472,7 +472,7 @@ static void finalize_plugin(void **plugin_data)
 	if (!*plugin_data)
 		return;
 
-	osync_plugin_finalize(plugin, *plugin_data);
+	osync_plugin_finalize(plugin);
 	*plugin_data = NULL;
 }
 

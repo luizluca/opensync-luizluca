@@ -32,7 +32,6 @@ struct OSyncClient {
 	OSyncPluginInfo *plugin_info;
 	OSyncPluginEnv *plugin_env;
 	OSyncFormatEnv *format_env;
-	void *plugin_data;
 	OSyncThread *thread;
 
 	/* pipe path for the queue */

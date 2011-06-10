@@ -827,7 +827,7 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 		osync_list_free(objformats);
 	}
 	
-	couldinit = osync_plugin_initialize(client->plugin, &(client->plugin_data), client->plugin_info, error);
+	couldinit = osync_plugin_initialize(client->plugin, client->plugin_info, error);
 	if (!couldinit) {
 		if (!osync_error_is_set(error))
 			osync_error_set(error, OSYNC_ERROR_GENERIC, "Plugin \"%s\" failed to initialize but gave no reason", pluginname);
@@ -887,7 +887,7 @@ static osync_bool _osync_client_handle_initialize(OSyncClient *client, OSyncMess
 	osync_message_unref(reply);
  error_finalize:
 	osync_list_free(objtypesinks);
-	osync_plugin_finalize(client->plugin, client->plugin_data);
+	osync_plugin_finalize(client->plugin);
  error:
 	osync_free(enginepipe);
 	osync_free(pluginname);
@@ -909,9 +909,7 @@ static osync_bool _osync_client_handle_finalize(OSyncClient *client, OSyncMessag
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, client, message, error);
 	
 	if (client->plugin) {
-		if (client->plugin_data)
-			osync_plugin_finalize(client->plugin, client->plugin_data);
-		
+		osync_plugin_finalize(client->plugin);		
 		osync_plugin_unref(client->plugin);
 		client->plugin = NULL;
 	}
@@ -969,7 +967,7 @@ static osync_bool _osync_client_handle_discover(OSyncClient *client, OSyncMessag
 	config = osync_plugin_info_get_config(client->plugin_info);
 	res = osync_plugin_config_get_resources(config);
 	
-	if (!osync_plugin_discover(client->plugin, client->plugin_data, client->plugin_info, error))
+	if (!osync_plugin_discover(client->plugin, client->plugin_info, error))
 		goto error;
 
 	reply = osync_message_new_reply(message, error);

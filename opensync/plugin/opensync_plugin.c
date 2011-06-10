@@ -132,13 +132,13 @@ void osync_plugin_set_external_command(OSyncPlugin *plugin, const char *external
 void *osync_plugin_get_data(OSyncPlugin *plugin)
 {
 	osync_assert(plugin);
-	return plugin->plugin_data;
+	return plugin->data;
 }
 
 void osync_plugin_set_data(OSyncPlugin *plugin, void *data)
 {
 	osync_assert(plugin);
-	plugin->plugin_data = data;
+	plugin->data = data;
 }
 
 OSyncPluginConfigurationType osync_plugin_get_config_type(OSyncPlugin *plugin)
@@ -184,39 +184,38 @@ void osync_plugin_set_discover(OSyncPlugin *plugin, discover_fn discover)
 	plugin->discover = discover;
 }
 
-osync_bool osync_plugin_initialize(OSyncPlugin *plugin, void **plugin_data, OSyncPluginInfo *info, OSyncError **error)
+osync_bool osync_plugin_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
+	void *data;
 	osync_assert(plugin);
-	osync_assert(plugin_data);
 	
 	osync_return_val_if_fail_and_set_error(plugin, FALSE, error, OSYNC_ERROR_PARAMETER, "osync_plugin_initialize: plugin is null");
-	osync_return_val_if_fail_and_set_error(plugin_data, FALSE, error, OSYNC_ERROR_PARAMETER, "osync_plugin_initialize: plugin_data is null");
 	
 	/* Just return with FALSE, if no initialize function is registered */ 
 	osync_return_val_if_fail_and_set_error(plugin->initialize, FALSE, error, OSYNC_ERROR_INITIALIZATION, "plugin %s has no plugin initialize function", osync_plugin_get_name(plugin) );
 	
-	void *data = plugin->initialize(plugin, info, error);
+	data = plugin->initialize(plugin, info, error);
 	if (osync_error_is_set(error)) { 
 		return FALSE;
 	}
-	*plugin_data = data;
 	
+	osync_plugin_set_data(plugin, data);	
 	return TRUE;
 }
 
-void osync_plugin_finalize(OSyncPlugin *plugin, void *data)
+void osync_plugin_finalize(OSyncPlugin *plugin)
 {
 	osync_assert(plugin);
-	plugin->finalize(data);
+	plugin->finalize(plugin);
 }
 
-osync_bool osync_plugin_discover(OSyncPlugin *plugin, void *data, OSyncPluginInfo *info, OSyncError **error)
+osync_bool osync_plugin_discover(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error)
 {
 	osync_assert(plugin);
 	if (!plugin->discover)
 		return TRUE;
 		
-	return plugin->discover(info, data, error);
+	return plugin->discover(plugin, info, error);
 }
 
 osync_bool osync_plugin_is_usable(OSyncPlugin *plugin, OSyncError **error)

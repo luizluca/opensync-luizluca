@@ -78,7 +78,7 @@ struct OSyncPlugin {
 	 * Can be used when a single module registers many plugins,
 	 * such as the python-module plugin
 	 */
-	void *plugin_data;
+	void *data;
 	int ref_count;
 };
 

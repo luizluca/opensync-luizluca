@@ -231,9 +231,9 @@ error:
 	return NULL;
 }
 
-static void finalize(void *data)
+static void finalize(OSyncPlugin *plugin)
 {
-	mock_env *env = data;
+	mock_env *env = osync_plugin_get_data(plugin);
 	
 	osync_assert(env);
 	osync_assert(env->num_connect == 1);
@@ -573,9 +573,9 @@ error:
 	return NULL;
 }
 
-static void finalize_multi(void *data)
+static void finalize_multi(OSyncPlugin *plugin)
 {
-	mock_env *env = data;
+	mock_env *env = osync_plugin_get_data(plugin);
 	
 	osync_assert(env);
 	osync_assert(env->num_connect == 3);
@@ -973,9 +973,9 @@ error:
 	return NULL;
 }
 
-static void finalize_order(void *data)
+static void finalize_order(OSyncPlugin *plugin)
 {
-	mock_env *env = data;
+	mock_env *env = osync_plugin_get_data(plugin);
 	
 	osync_assert(env->num_connect == 3);
 	osync_assert(env->num_disconnect == 3);
@@ -1215,9 +1215,9 @@ error:
 	return NULL;
 }
 
-static void finalize_reuse(void *data)
+static void finalize_reuse(OSyncPlugin *plugin)
 {
-	mock_env *env = data;
+	mock_env *env = osync_plugin_get_data(plugin);
 	
 	g_free(env);
 }
@@ -1491,9 +1491,9 @@ error:
 	return NULL;
 }
 
-static void finalize5(void *data)
+static void finalize5(OSyncPlugin *plugin)
 {
-	mock_env *env = data;
+	mock_env *env = osync_plugin_get_data(plugin);
 	
 	osync_assert(env->num_connect == 1);
 	osync_assert(env->num_disconnect == 1);
@@ -1697,9 +1697,9 @@ error:
 	return NULL;
 }
 
-static void finalize6(void *data)
+static void finalize6(OSyncPlugin *plugin)
 {
-	mock_env *env = data;
+	mock_env *env = osync_plugin_get_data(plugin);
 	
 	osync_assert(env->num_connect == 1);
 	osync_assert(env->num_disconnect == 1);
@@ -1901,9 +1901,9 @@ error:
 	return NULL;
 }
 
-static void finalize7(void *data)
+static void finalize7(OSyncPlugin *plugin)
 {
-	mock_env *env = data;
+	mock_env *env = osync_plugin_get_data(plugin);
 	
 	osync_assert(env->num_connect == 1);
 	osync_assert(env->num_disconnect == 1);

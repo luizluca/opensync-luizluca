@@ -39,7 +39,7 @@
  * In this function a plugin should initialize and allocate 
  * all plugin specific data which is required in the other plugin
  * functions. This data could be e.g. connections, directories, ...
- * @param plugin
+ * @param plugin the plugin initializing
  * @param info the OSyncPluginInfo
  * @param error An OSyncError struct that should be used to set an error
  * @return The plugin specific data that is passed to the other plugin functions
@@ -51,20 +51,20 @@ typedef void * (* initialize_fn) (OSyncPlugin *plugin, OSyncPluginInfo *info, OS
  * 
  * This plugin function is called to give a plugin the possibility
  * to free all allocated data.
- * @param plugin_data Plugin specific data that was returned by the initialize function
+ * @param plugin the plugin finalizing
  */
-typedef void (* finalize_fn) (void * plugin_data);
+typedef void (* finalize_fn) (OSyncPlugin *plugin);
 
 /**
  * @brief Prototype of the plugin discovery function
  * 
  * TODO Add detailed description
+ * @param plugin the plugin 
  * @param info the OSyncPluginInfo
- * @param plugin_data Plugin specific data that was returned in the plugin initialize function
  * @param error An OSyncError struct that should be used to set an error
  * @return TRUE if discovery was successful
  */
-typedef osync_bool (* discover_fn) (OSyncPluginInfo *info, void * plugin_data, OSyncError **error);
+typedef osync_bool (* discover_fn) (OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error);
 
 /** @brief Gives information about wether the plugin
  * has to be configured or not
@@ -240,7 +240,7 @@ OSYNC_EXPORT void osync_plugin_set_discover(OSyncPlugin *plugin, discover_fn dis
 /** @brief Returns the plugin_info data, set by the plugin
  *
  * @param plugin Pointer to the plugin
- * @returns The void pointer set on plugin->info.plugin_data
+ * @returns The void pointer set on plugin->data
  */
 OSYNC_EXPORT void *osync_plugin_get_data(OSyncPlugin *plugin);
 
@@ -283,14 +283,14 @@ OSYNC_EXPORT void osync_plugin_set_finalize_timeout(OSyncPlugin *plugin, unsigne
  * @param error Pointer to error-struct
  * @return TREU if successful, FALSE otherwise
  */
-OSYNC_EXPORT osync_bool osync_plugin_initialize(OSyncPlugin *plugin, void **plugin_data, OSyncPluginInfo *info, OSyncError **error);
+OSYNC_EXPORT osync_bool osync_plugin_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error);
 
 /** @brief Finalize a Plugin 
  *
  * @param plugin Pointer to the plugin
  * @param data Pointer to userdata which got returned by plugin initialize function
  */
-OSYNC_EXPORT void osync_plugin_finalize(OSyncPlugin *plugin, void *data);
+OSYNC_EXPORT void osync_plugin_finalize(OSyncPlugin *plugin);
 
 /** @brief Call plugin discovery
  *
@@ -300,7 +300,7 @@ OSYNC_EXPORT void osync_plugin_finalize(OSyncPlugin *plugin, void *data);
  * @param error Pointer to error-struct
  * @return TRUE on success, FALSE otherwise 
  */
-OSYNC_EXPORT osync_bool osync_plugin_discover(OSyncPlugin *plugin, void *data, OSyncPluginInfo *info, OSyncError **error);
+OSYNC_EXPORT osync_bool osync_plugin_discover(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncError **error);
 
 /*@}*/
 
