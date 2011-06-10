@@ -100,7 +100,7 @@ osync_bool osync_objformat_initialize(OSyncObjFormat *format, OSyncError **error
 	/* Just return, if no initialize_func is registered */
 	osync_return_val_if_fail(format->initialize_func, TRUE);
 
-	format->user_data = format->initialize_func(error);
+	format->user_data = format->initialize_func(format, error);
 
 	if (osync_error_is_set(error))
 		return FALSE;
@@ -118,7 +118,7 @@ osync_bool osync_objformat_finalize(OSyncObjFormat *format, OSyncError **error)
 {
 	osync_return_val_if_fail(format, TRUE);
 	osync_return_val_if_fail(format->finalize_func, TRUE);
-	return format->finalize_func(format->user_data, error);
+	return format->finalize_func(format, error);
 }
 
 void osync_objformat_set_compare_func(OSyncObjFormat *format, OSyncFormatCompareFunc cmp_func)
