@@ -51,20 +51,23 @@ typedef void * (* initialize_fn) (OSyncPlugin *plugin, OSyncPluginInfo *info, OS
  * 
  * This plugin function is called to give a plugin the possibility
  * to free all allocated data.
+ * @param plugn
  * @param plugin_data Plugin specific data that was returned by the initialize function
  */
-typedef void (* finalize_fn) (void * plugin_data);
+typedef void (* finalize_fn) (OSyncPlugin *plugin, void * plugin_data);
 
 /**
  * @brief Prototype of the plugin discovery function
  * 
  * TODO Add detailed description
+ * @param plugin
  * @param info the OSyncPluginInfo
  * @param plugin_data Plugin specific data that was returned in the plugin initialize function
  * @param error An OSyncError struct that should be used to set an error
  * @return TRUE if discovery was successful
  */
-typedef osync_bool (* discover_fn) (OSyncPluginInfo *info, void * plugin_data, OSyncError **error);
+typedef osync_bool (* discover_fn) (OSyncPlugin *plugin, OSyncPluginInfo *info, void * plugin_data, OSyncError **error);
+
 
 /** @brief Gives information about wether the plugin
  * has to be configured or not
