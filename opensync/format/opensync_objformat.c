@@ -118,7 +118,7 @@ osync_bool osync_objformat_finalize(OSyncObjFormat *format, OSyncError **error)
 {
 	osync_return_val_if_fail(format, TRUE);
 	osync_return_val_if_fail(format->finalize_func, TRUE);
-	return format->finalize_func(format, error);
+	return format->finalize_func(format, format->user_data, error);
 }
 
 void osync_objformat_set_compare_func(OSyncObjFormat *format, OSyncFormatCompareFunc cmp_func)

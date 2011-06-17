@@ -31,7 +31,7 @@
 /*@{*/
 
 typedef void * (* OSyncFormatInitializeFunc) (OSyncObjFormat *format, OSyncError **error);
-typedef osync_bool (* OSyncFormatFinalizeFunc) (OSyncObjFormat *format, OSyncError **error);
+typedef osync_bool (* OSyncFormatFinalizeFunc) (OSyncObjFormat *format, void *user_data, OSyncError **error);
 
 typedef OSyncConvCmpResult (* OSyncFormatCompareFunc) (OSyncObjFormat *format, const char *leftdata, unsigned int leftsize, const char *rightdata, unsigned int rightsize, void *user_data, OSyncError **error);
 typedef osync_bool (* OSyncFormatCopyFunc) (OSyncObjFormat *format, const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, void *user_data, OSyncError **error);
