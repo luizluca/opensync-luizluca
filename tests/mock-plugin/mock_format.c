@@ -1,23 +1,23 @@
 /*
  * opensync - A plugin for file objects for the opensync framework
  * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * 
+ *
  */
- 
+
 #include <opensync/opensync.h>
 #include <opensync/opensync_internals.h>
 #include <opensync/opensync-serializer.h>
@@ -50,16 +50,16 @@ static OSyncConvCmpResult compare_file(const char *leftdata, unsigned int leftsi
 	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p, %i)", __func__, leftdata, leftsize, rightdata, rightsize);
 	osync_assert(leftdata);
 	osync_assert(rightdata);
-	
+
 	OSyncFileFormat *leftfile = (OSyncFileFormat *)leftdata;
 	OSyncFileFormat *rightfile = (OSyncFileFormat *)rightdata;
-	
+
 	osync_assert(rightfile->path);
 	osync_assert(leftfile->path);
-	
+
 	osync_trace(TRACE_INTERNAL, "Comparing %s and %s", leftfile->path, rightfile->path);
-			
-	
+
+
 	if (mock_format_get_error("MOCK_FORMAT_PATH_COMPARE_NO") || !strcmp(leftfile->path, rightfile->path)) {
 		if (leftfile->size == rightfile->size) {
 			if (leftfile->size == 0 || !memcmp(leftfile->data, rightfile->data, rightfile->size)) {
@@ -67,19 +67,19 @@ static OSyncConvCmpResult compare_file(const char *leftdata, unsigned int leftsi
 				return OSYNC_CONV_DATA_SAME;
 			}
 		}
-		
+
 		osync_trace(TRACE_EXIT, "%s: Similar", __func__);
 		return OSYNC_CONV_DATA_SIMILAR;
 	}
-	
+
 	osync_trace(TRACE_EXIT, "%s: Mismatch", __func__);
 	return OSYNC_CONV_DATA_MISMATCH;
 }
 
-static osync_bool conv_mockformat1_to_mockformat2(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
+static osync_bool conv_mockformat1_to_mockformat2(OSyncFormatConverter *conv, char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
 {
 	osync_trace(TRACE_INTERNAL, "Converting file to plain");
-	
+
 	*free_input = TRUE;
 	OSyncFileFormat *file = (OSyncFileFormat *)input;
 
@@ -87,35 +87,35 @@ static osync_bool conv_mockformat1_to_mockformat2(char *input, unsigned int inps
 	char *plaindata = osync_try_malloc0(file->size + 1, error);
 	memcpy(plaindata, file->data, file->size);
 
-	*output = plaindata; 
+	*output = plaindata;
 	*outpsize = file->size + 1;
 
 	return TRUE;
 }
 
-static osync_bool conv_mockformat2_to_mockformat1(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
+static osync_bool conv_mockformat2_to_mockformat1(OSyncFormatConverter *conv, char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
 {
 	osync_trace(TRACE_INTERNAL, "Converting plain to file");
-	
+
 	*free_input = FALSE;
 	OSyncFileFormat *file = osync_try_malloc0(sizeof(OSyncFileFormat), error);
 	osync_assert(file);
 
 	file->path = osync_rand_str(g_random_int_range(1, 100), error);
 	osync_assert(*error == NULL);
-	
+
 	file->data = input;
 	file->size = inpsize - 1;
-	
+
 	*output = (char *)file;
 	*outpsize = sizeof(OSyncFileFormat);
 	return TRUE;
 }
 
-static osync_bool conv_mockformat1a_to_mockformat1(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
+static osync_bool conv_mockformat1a_to_mockformat1(OSyncFormatConverter *conv, char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
 {
 	osync_trace(TRACE_INTERNAL, "Converting fileA to file");
-	
+
 	*free_input = FALSE;
 	OSyncFileFormat *fileA = (OSyncFileFormat *)input;
 	OSyncFileFormat *file = osync_try_malloc0(sizeof(OSyncFileFormat), error);
@@ -126,7 +126,7 @@ static osync_bool conv_mockformat1a_to_mockformat1(char *input, unsigned int inp
 
 	file->path = fileA->path;
 	osync_assert(*error == NULL);
-	
+
 	file->data = filedata;
 	file->size = fileA->size - 2;
 
@@ -135,10 +135,10 @@ static osync_bool conv_mockformat1a_to_mockformat1(char *input, unsigned int inp
 	return TRUE;
 }
 
-static osync_bool conv_mockformat1_to_mockformat1a(char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
+static osync_bool conv_mockformat1_to_mockformat1a(OSyncFormatConverter *conv, char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error)
 {
 	osync_trace(TRACE_INTERNAL, "Converting file to fileA");
-	
+
 	*free_input = FALSE;
 	char *identifier = " ";
 
@@ -152,10 +152,10 @@ static osync_bool conv_mockformat1_to_mockformat1a(char *input, unsigned int inp
 
 	fileA->path = file->path;
 	osync_assert(*error == NULL);
-	
+
 	fileA->data = filedata;
 	fileA->size = file->size + 2;
-	
+
 	*output = (char *)fileA;
 	*outpsize = sizeof(OSyncFileFormat);
 
@@ -166,13 +166,13 @@ static osync_bool destroy_file(char *input, unsigned int inpsize, void *user_dat
 {
 	OSyncFileFormat *file = (OSyncFileFormat *)input;
 	osync_assert(sizeof(OSyncFileFormat) == inpsize);
-	
+
 	if (file->data)
 		g_free(file->data);
-		
+
 	if (file->path)
 		g_free(file->path);
-	
+
 	g_free(file);
 
 	return TRUE;
@@ -191,7 +191,7 @@ static osync_bool destroy_mockformat2(char *input, unsigned int inpsize, void *u
 static osync_bool duplicate_file(const char *uid, const char *input, unsigned int insize, char **newuid, char **output, unsigned int *outsize, osync_bool *dirty, void *user_data, OSyncError **error)
 {
 	OSyncFileFormat *file = (OSyncFileFormat *)input;
-	
+
 	char *newpath = g_strdup_printf ("%s-dupe", file->path);
 	g_free(file->path);
 	file->path = newpath;
@@ -203,18 +203,18 @@ static osync_bool duplicate_file(const char *uid, const char *input, unsigned in
 static osync_bool copy_file(const char *input, unsigned int inpsize, char **output, unsigned int *outpsize, void *user_data, OSyncError **error)
 {
 	OSyncFileFormat *inpfile = (OSyncFileFormat *)input;
-	
+
 	OSyncFileFormat *outfile = osync_try_malloc0(sizeof(OSyncFileFormat), error);
 	osync_assert(outfile);
-	
+
 	if (inpfile->data) {
 		outfile->data = g_malloc0(inpfile->size);
 		memcpy(outfile->data, inpfile->data, inpfile->size);
 		outfile->size = inpfile->size;
 	}
-	
+
 	outfile->path = g_strdup(inpfile->path);
-	
+
 	*output = (char *)outfile;
 	*outpsize = sizeof(OSyncFileFormat);
 	return TRUE;
@@ -223,14 +223,14 @@ static osync_bool copy_file(const char *input, unsigned int inpsize, char **outp
 static osync_bool create_file(char **buffer, unsigned int *size, void *user_data, OSyncError **error)
 {
 	OSyncFileFormat *outfile = osync_try_malloc0(sizeof(OSyncFileFormat), NULL);
-	
+
 	outfile->path = osync_rand_str(g_random_int_range(1, 100), error);
 	osync_assert(*error == NULL);
-	
+
 	outfile->data = osync_rand_str(g_random_int_range(1, 100), error);
 	osync_assert(*error == NULL);
 	outfile->size = strlen(outfile->data);
-	
+
 	*buffer = (char *)outfile;
 	*size = sizeof(OSyncFileFormat);
 
@@ -240,10 +240,10 @@ static osync_bool create_file(char **buffer, unsigned int *size, void *user_data
 static time_t revision_file(const char *input, unsigned int inpsize, void *user_data, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p)", __func__, input, inpsize, error);
-	
+
 	OSyncFileFormat *file = (OSyncFileFormat *)input;
 	time_t lastmod = file->last_mod;
-	
+
 	osync_trace(TRACE_EXIT, "%s: %li", __func__, lastmod);
 	return lastmod;
 }
@@ -251,7 +251,7 @@ static time_t revision_file(const char *input, unsigned int inpsize, void *user_
 static char *print_file(const char *data, unsigned int size, void *user_data, OSyncError **error)
 {
 	OSyncFileFormat *file = (OSyncFileFormat *)data;
-	
+
 	char *printable = g_strdup_printf ("File %s: size: %i", file->path, file->size);
 	return printable;
 }
@@ -259,14 +259,14 @@ static char *print_file(const char *data, unsigned int size, void *user_data, OS
 static osync_bool marshal_file(const char *input, unsigned int inpsize, OSyncMarshal *marshal, void *user_data, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %i, %p, %p)", __func__, input, inpsize, marshal, error);
-	
+
 	OSyncFileFormat *file = (OSyncFileFormat *)input;
 
 	if (!osync_marshal_write_string(marshal, file->path, error))
 		goto error;
 	if (!osync_marshal_write_buffer(marshal, file->data, file->size, error))
 		goto error;
-	
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
 
@@ -278,19 +278,19 @@ error:
 static osync_bool demarshal_file(OSyncMarshal *marshal, char **output, unsigned int *outpsize, void *user_data, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p, %p)", __func__, marshal, output, outpsize, error);
-	
+
 	OSyncFileFormat *file = osync_try_malloc0(sizeof(OSyncFileFormat), error);
 	osync_assert(file);
-	
+
 	if (!osync_marshal_read_string(marshal, &(file->path), error))
 		goto error;
 
 	if (!osync_marshal_read_buffer(marshal, (void *)&(file->data), &(file->size), error))
 		goto error;
-	
+
 	*output = (char *)file;
 	*outpsize = sizeof(OSyncFileFormat);
-	
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
 
@@ -308,7 +308,7 @@ static void _format_set_functions(OSyncObjFormat *format)
 	osync_objformat_set_revision_func(format, revision_file);
 	osync_objformat_set_copy_func(format, copy_file);
 	osync_objformat_set_create_func(format, create_file);
-	
+
 	/* TODO ... marshal function is only valid for mockformat1 not mockformat2! */
 	osync_objformat_set_marshal_func(format, marshal_file);
 	osync_objformat_set_demarshal_func(format, demarshal_file);
@@ -365,34 +365,34 @@ osync_bool get_conversion_info(OSyncFormatEnv *env, OSyncError **error)
 	/* mock converter */
 	OSyncObjFormat *mockformat1 = osync_format_env_find_objformat(env, "mockformat1");
 	osync_assert(mockformat1);
-	
+
 	OSyncObjFormat *mockformat2 = osync_format_env_find_objformat(env, "mockformat2");
 	osync_assert(mockformat2);
-	
+
 	OSyncObjFormat *mockformat1a = osync_format_env_find_objformat(env, "mockformat1a");
 	osync_assert(mockformat1a);
-	
+
 	conv = osync_converter_new(OSYNC_CONVERTER_ENCAP, mockformat1, mockformat2, conv_mockformat1_to_mockformat2, error);
 	osync_assert(conv);
-	
+
 	osync_format_env_register_converter(env, conv, error);
 	osync_converter_unref(conv);
-	
+
 	conv = osync_converter_new(OSYNC_CONVERTER_DECAP, mockformat2, mockformat1, conv_mockformat2_to_mockformat1, error);
 	osync_assert(conv);
-	
+
 	osync_format_env_register_converter(env, conv, error);
 	osync_converter_unref(conv);
 
 	conv = osync_converter_new(OSYNC_CONVERTER_ENCAP, mockformat1, mockformat1a, conv_mockformat1_to_mockformat1a, error);
 	osync_assert(conv);
-	
+
 	osync_format_env_register_converter(env, conv, error);
 	osync_converter_unref(conv);
-	
+
 	conv = osync_converter_new(OSYNC_CONVERTER_DECAP, mockformat1a, mockformat1, conv_mockformat1a_to_mockformat1, error);
 	osync_assert(conv);
-	
+
 	osync_format_env_register_converter(env, conv, error);
 	osync_converter_unref(conv);
 
