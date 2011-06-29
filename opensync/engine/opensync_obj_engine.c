@@ -930,8 +930,17 @@ static int _osync_obj_engine_num_write_sinks(OSyncObjEngine *objengine) {
 	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, objengine);
 
 	for (p = objengine->sink_engines; p; p = p->next) {
-		sink = p->data;
+		OSyncMember *member = NULL;
+		OSyncObjTypeSink *objtype_sink = NULL;
 
+		sink = p->data;
+		member = osync_client_proxy_get_member(sink->proxy);
+		objtype_sink = osync_member_find_objtype_sink(member, objengine->objtype);
+
+		/* Is the objtype_sink writable? */
+		if (objtype_sink && osync_objtype_sink_get_write(objtype_sink)) {
+			num++;
+		}
 
 	}
 
