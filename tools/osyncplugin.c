@@ -443,6 +443,8 @@ static void *plugin_initialize(OSyncError **error)
 	void *plugin_data;
 	osync_bool couldinit;
 	couldinit = osync_plugin_initialize(plugin, &(plugin_data), plugin_info, error);
+	if (!couldinit)
+		goto error;
 
 	objtypesinks = osync_plugin_info_get_objtype_sinks(plugin_info);
 	list = objtypesinks;
