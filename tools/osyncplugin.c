@@ -659,12 +659,13 @@ static void _osyncplugin_ctx_callback_connect(void *user_data, OSyncError *error
 {
 	OSyncError *locerror = NULL;
 	Command *cmd = NULL;
-	OSyncObjTypeSink *sink = NULL;
+	//OSyncObjTypeSink *sink = NULL;
 
 	assert(user_data);
 
 	cmd = (Command *) user_data;		
-	sink = cmd->sink;
+	// unused, but valid, if sink is needed:
+	//sink = cmd->sink;
 
 	if (error) {
 		osync_error_set_from_error(&locerror, &error);
