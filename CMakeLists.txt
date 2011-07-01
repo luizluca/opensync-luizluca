@@ -74,6 +74,7 @@ FIND_PACKAGE( LibXslt REQUIRED )
 FIND_PACKAGE( LibExslt REQUIRED )
 FIND_PACKAGE( SWIG )	
 FIND_PACKAGE( PythonLibs )
+FIND_PACKAGE( PythonInterp )
 FIND_PACKAGE( Check )
 
 # test configuration
