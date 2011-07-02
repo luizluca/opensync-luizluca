@@ -214,6 +214,7 @@ Standard instructions:
 
     -Wall
     -Werror
+    -O2
 
     Recomended but not mandatory (for now):
     -W
