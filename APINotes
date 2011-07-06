@@ -1,0 +1,14 @@
+Changes to the API since version 0.39:
+======================================
+
+API Additions:
+--------------
+	- exposed osync_objtype_sink_get_userdata() as public API call
+
+API Removals:
+-------------
+
+
+API Changes:
+------------
+
