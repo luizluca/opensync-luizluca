@@ -1,0 +1,47 @@
+CMake variables that may be of interest
+=======================================
+
+CMAKE_MODULE_PATH
+
+	Specifies the path where cmake can find the additional
+	modules that the OpenSync build process requires.
+	You can download the modules here:
+		http://repo.or.cz/w/opensync/cmake-modules-cdf.git
+
+CMAKE_INSTALL_PREFIX
+
+	Specifies where 'make install' will install the resulting
+	libraries, binaries, and header files.
+
+CMAKE_C_COMPILER:STRING=/usr/local/bin/ccache_gcc
+
+	Specifies the path to find your desired C compiler
+
+CMAKE_CXX_COMPILER:STRING=/usr/local/bin/ccache_g++
+
+	Specifies the path to find your desired C++ compiler
+
+CMAKE_C_FLAGS:STRING="-Wall -Werror -O0 -fno-strict-aliasing"
+
+	Specifies C compiler flags
+
+CMAKE_CXX_FLAGS:STRING="-Wall -Werror -O0 -fno-strict-aliasing"
+
+	Specifies C++ compiler flags
+
+CMAKE_C_FLAGS_RELWITHDEBINFO:STRING="-g"
+
+	Enable debug info in (release?) builds.
+
+CMAKE_VERBOSE_MAKEFILE:BOOL=TRUE
+
+	Enables verbose makefile messages
+
+CMAKE_SKIP_RPATH:BOOL=TRUE
+
+	Turns off RPATH from all resulting binaries.
+
+BUILD_DOCUMENTATION:BOOL=ON
+
+	When on, it adds an extra make target: make DoxygenDoc
+
