@@ -223,7 +223,6 @@ osync_bool osync_converter_invoke(OSyncFormatConverter *converter, OSyncData *da
 	}
 	
 	osync_data_set_objformat(data, converter->target_format);
-	osync_data_set_objtype(data, osync_objformat_get_objtype(converter->target_format));
 	
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;

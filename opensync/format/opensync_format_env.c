@@ -1272,7 +1272,6 @@ osync_bool osync_format_env_convert(OSyncFormatEnv *env, OSyncFormatConverterPat
 		 * the data */
 		OSyncFormatConverter *converter = osync_converter_path_nth_edge(path, length - 1);
 		osync_data_set_objformat(data, osync_converter_get_targetformat(converter));
-		osync_data_set_objtype(data, osync_objformat_get_objtype(osync_converter_get_targetformat(converter)));
 	} else {
 		/* Otherwise we go through the conversion path
 		 * and call all converters along the way */
