@@ -57,19 +57,24 @@ struct OSyncObjEngine {
 	/** Pointer to format enviornment */
 	OSyncFormatEnv *formatenv;
 	
-	/** Total number of Sink Engine errors */
+	/* Note that by "bit count total", we mean that the status of each
+	 * sink_engine is represented by its corresponding bit.  That is,
+	 * the first sink engine in the above list will have its state
+	 * represented by bit 0 in the following variables. */
+
+	/** Bit count total number of Sink Engine errors */
 	int sink_errors;
-	/** Total number of initiated connections */
+	/** Bit count total number of initiated connections */
 	int sink_connects;
-	/** Total number of finalized connections */
+	/** Bit count total number of finalized connections */
 	int sink_connect_done;
-	/** Total number of disconnects */
+	/** Bit count total number of disconnects */
 	int sink_disconnects;
-	/** Total number of get latest changes/all recores calls */
+	/** Bit count total number of get latest changes/all records calls */
 	int sink_get_changes;
-	/** Total number of completed synchronization */
+	/** Bit count total number of completed synchronization */
 	int sink_sync_done;
-	/** Total number of completed write-/commit-phases */
+	/** Bit count total number of completed write-/commit-phases */
 	int sink_written;
 	
 	/** Callback to give feedback to (parent) OSyncEngine */ 
