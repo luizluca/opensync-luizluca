@@ -416,34 +416,34 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 		goto error;
 
 	if (!osync_message_read_string(message, &name, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_name(*sink, name);
 	osync_free(name);
 
 	if (!osync_message_read_int(message, &read, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_function_read(*sink, read);
 
 	if (!osync_message_read_int(message, &get_changes, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_function_getchanges(*sink, get_changes);
 
 	if (!osync_message_read_string(message, &preferred_format, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_preferred_format(*sink, preferred_format);
 	osync_free(preferred_format);
 
 	if (!osync_message_read_int(message, &num_formats, error))
-		goto error;
+		goto free;
 
 	for (i = 0; i < num_formats; i++) {
 		OSyncObjFormatSink *formatsink;
 		if (!osync_demarshal_objformat_sink(message, &formatsink, error))
-			goto error;
+			goto free;
 
 		osync_objtype_sink_add_objformat_sink(*sink, formatsink);
 		osync_objformat_sink_unref(formatsink);
@@ -451,54 +451,55 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 
 	/* enabled */
 	if (!osync_message_read_int(message, &enabled, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_enabled(*sink, enabled);
 
 	/* slowsync */
 	if (!osync_message_read_int(message, &slowsync, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_slowsync(*sink, slowsync);
 
 	/* timeouts */
 	if (!osync_message_read_int(message, &timeout, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_connect_timeout(*sink, timeout);
 
 	if (!osync_message_read_int(message, &timeout, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_disconnect_timeout(*sink, timeout);
 
 	if (!osync_message_read_int(message, &timeout, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_getchanges_timeout(*sink, timeout);
 
 	if (!osync_message_read_int(message, &timeout, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_commit_timeout(*sink, timeout);
 
 	if (!osync_message_read_int(message, &timeout, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_committedall_timeout(*sink, timeout);
 
 	if (!osync_message_read_int(message, &timeout, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_syncdone_timeout(*sink, timeout);
 
 	if (!osync_message_read_int(message, &timeout, error))
-		goto error;
+		goto free;
 
 	osync_objtype_sink_set_read_timeout(*sink, timeout);
 
 	return TRUE;
-
+ free:
+	osync_objtype_sink_unref(*sink);
  error:
 	return FALSE;
 }
@@ -571,6 +572,8 @@ osync_bool osync_demarshal_objtype_sinks(OSyncMessage *message, OSyncClientProxy
 			!(member_sink = osync_member_find_objtype_sink(member, osync_objtype_sink_get_name(sink)))) {
 			osync_member_add_objtype_sink(member, sink);
 		}
+
+		osync_objtype_sink_unref(sink);
 	}
 
 	return TRUE;
