@@ -1,23 +1,23 @@
 /*
  * libosengine - A synchronization engine for the opensync framework
  * Copyright (C) 2004-2005  Armin Bauer <armin.bauer@opensync.org>
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
- * 
+ *
  */
- 
+
 #include "opensync.h"
 #include "opensync_internals.h"
 
@@ -45,7 +45,7 @@ osync_bool osync_marshal_data(OSyncMessage *message, OSyncData *data, OSyncError
 	unsigned int input_size = 0;
 
 	/* Order:
-	 * 
+	 *
 	 * format
 	 * objtype
 	 * size
@@ -53,10 +53,10 @@ osync_bool osync_marshal_data(OSyncMessage *message, OSyncData *data, OSyncError
 
 	osync_assert(message);
 	osync_assert(data);
-	
+
 	/* Find the format */
 	objformat = osync_data_get_objformat(data);
-	
+
 	/* Write the format and objtype first */
 	osync_message_write_string(message, osync_objformat_get_name(objformat), error);
 	osync_message_write_string(message, osync_data_get_objtype(data), error);
@@ -66,11 +66,11 @@ osync_bool osync_marshal_data(OSyncMessage *message, OSyncData *data, OSyncError
 
 	/* Now we get the pointer to the data */
 	osync_data_get_data(data, &input_data, &input_size);
-	
+
 	if (input_size > 0) {
 		if (!osync_message_write_int(message, 1, error))
 			goto error;
-		
+
 		/* If the format must be marshalled, we call the marshal function
 		 * and the send the marshalled data. Otherwise we send the unmarshalled data */
 		if (osync_objformat_must_marshal(objformat) == TRUE) {
@@ -90,7 +90,7 @@ osync_bool osync_marshal_data(OSyncMessage *message, OSyncData *data, OSyncError
 		if (!osync_message_write_int(message, 0, error))
 			goto error;
 	}
-	
+
 	return TRUE;
 
  error:
@@ -110,19 +110,19 @@ osync_bool osync_demarshal_data(OSyncMessage *message, OSyncData **data, OSyncFo
 	osync_assert(env);
 
 	/* Order:
-	 * 
+	 *
 	 * format
 	 * objtype
 	 * size
 	 * data */
-	
+
 	/* Get the objtype and format */
 	osync_message_read_string(message, &objformat, error);
 	osync_message_read_string(message, &objtype, error);
 
 	if (osync_error_is_set(error))
 		goto error;
-	
+
 	/* Search for the format */
 	format = osync_format_env_find_objformat(env, objformat);
 	if (!format) {
@@ -132,7 +132,7 @@ osync_bool osync_demarshal_data(OSyncMessage *message, OSyncData **data, OSyncFo
 
 	if (!osync_message_read_int(message, &has_data, error))
 		goto error;
-	
+
 	if (has_data) {
 		if (osync_objformat_must_marshal(format) == TRUE) {
 			OSyncMarshal *marshal = osync_message_get_marshal(message);
@@ -143,23 +143,23 @@ osync_bool osync_demarshal_data(OSyncMessage *message, OSyncData **data, OSyncFo
 				goto error;
 
 			/* If the format is a plain, then we have to remove
-			 * one from the input_size, since once one was added by 
+			 * one from the input_size, since once one was added by
 			 * osync_marshall_data() for trailing newline.
 			 */
 			input_size--;
 		}
 	}
-	
+
 	osync_trace(TRACE_INTERNAL, "Data is: %p, %i", input_data, input_size);
-	
+
 	*data = osync_data_new(input_data, input_size, format, error);
 	if (!*data)
 		goto error;
-	
+
 	osync_data_set_objtype(*data, objtype);
 	osync_free(objtype);
 	osync_free(objformat);
-	
+
 	return TRUE;
 
  error:
@@ -175,23 +175,23 @@ osync_bool osync_marshal_change(OSyncMessage *message, OSyncChange *change, OSyn
 	osync_assert(change);
 
 	/* Order:
-	 * 
+	 *
 	 * uid
 	 * hash
 	 * changetype
 	 * data */
-	
+
 	osync_message_write_string(message, osync_change_get_uid(change), error);
 	osync_message_write_string(message, osync_change_get_hash(change), error);
 	osync_message_write_int(message, osync_change_get_changetype(change), error);
 
 	if (osync_error_is_set(error))
 		goto error;
-	
+
 	data = osync_change_get_data(change);
 	if (!osync_marshal_data(message, data, error))
 		goto error;
-	
+
 	return TRUE;
 
  error:
@@ -209,12 +209,12 @@ osync_bool osync_demarshal_change(OSyncMessage *message, OSyncChange **change, O
 	osync_assert(env);
 
 	/* Order:
-	 * 
+	 *
 	 * uid
 	 * hash
 	 * changetype
 	 * data */
-	
+
 	*change = osync_change_new(error);
 	if (!*change)
 		goto error;
@@ -228,13 +228,13 @@ osync_bool osync_demarshal_change(OSyncMessage *message, OSyncChange **change, O
 
 	if (!osync_demarshal_data(message, &data, env, error))
 		goto error_free_change;
-	
+
 	osync_change_set_uid(*change, uid);
 	osync_free(uid);
-	
+
 	osync_change_set_hash(*change, hash);
 	osync_free(hash);
-	
+
 	osync_change_set_changetype(*change, change_type);
 	osync_change_set_data(*change, data);
 	osync_data_unref(data);
@@ -252,7 +252,7 @@ osync_bool osync_demarshal_change(OSyncMessage *message, OSyncChange **change, O
 osync_bool osync_marshal_objformat_sink(OSyncMessage *message, OSyncObjFormatSink *sink, OSyncError **error)
 {
 	/* Order:
-	 * 
+	 *
 	 * objformat name
 	 * objformat sink config
 	 */
@@ -260,12 +260,12 @@ osync_bool osync_marshal_objformat_sink(OSyncMessage *message, OSyncObjFormatSin
 	const char *objformat_name = osync_objformat_sink_get_objformat(sink);
 	const char *objformat_sink_config = osync_objformat_sink_get_config(sink);
 
-	osync_message_write_string(message, objformat_name, error); 
-	osync_message_write_string(message, objformat_sink_config, error); 
+	osync_message_write_string(message, objformat_name, error);
+	osync_message_write_string(message, objformat_sink_config, error);
 
 	if (osync_error_is_set(error))
 		goto error;
-	
+
 	return TRUE;
 
 error:
@@ -280,15 +280,15 @@ osync_bool osync_demarshal_objformat_sink(OSyncMessage *message, OSyncObjFormatS
 	osync_assert(message);
 
 	/* Order:
-	 * 
+	 *
 	 * objformat name
 	 * objformat sink config
 	 */
-	
+
 	/* Get the objtype and format */
 	if (!osync_message_read_string(message, &objformat_name, error))
 		goto error;
-	
+
 	*sink = osync_objformat_sink_new(objformat_name, error);
 	if (!*sink)
 		goto error;
@@ -315,12 +315,12 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 	osync_assert(sink);
 
 	/* Order:
-	 * 
+	 *
 	 * name
 	 * read function (bool)
 	 * get_changes function (bool)
-	 * preferred_format (string) 
-	 * number of format sinks 
+	 * preferred_format (string)
+	 * number of format sinks
 	 * format sink list (format sinks)
 	 * enabled (int)
 	 * timeout connect (int)
@@ -330,9 +330,9 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 	 * timeout committed_all (int)
 	 * timeout sync_done (int)
 	 * timeout read (int)
-	 * 
+	 *
 	 */
-	
+
 	num = osync_objtype_sink_num_objformat_sinks(sink);
 	osync_message_write_string(message, osync_objtype_sink_get_name(sink), error);
 
@@ -342,16 +342,16 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 	osync_message_write_string(message, osync_objtype_sink_get_preferred_format(sink), error);
 
 	osync_message_write_int(message, num, error);
-	
+
 	if (osync_error_is_set(error))
 		goto error;
 
 	for (i = 0; i < num; i++) {
 		OSyncObjFormatSink *formatsink = osync_objtype_sink_nth_objformat_sink(sink, i);
-		if (!osync_marshal_objformat_sink(message, formatsink, error)) 
+		if (!osync_marshal_objformat_sink(message, formatsink, error))
 			goto error;
 	}
-	
+
 	/* enabled */
 	osync_message_write_int(message, osync_objtype_sink_is_enabled(sink), error);
 
@@ -372,7 +372,7 @@ osync_bool osync_marshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink *s
 	if (osync_error_is_set(error))
 		goto error;
 
-	
+
 	return TRUE;
 
  error:
@@ -391,12 +391,12 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	osync_assert(message);
 
 	/* Order:
-	 * 
+	 *
 	 * name
 	 * read function (bool)
 	 * get_changes function (bool)
-	 * preferred_format (string) 
-	 * number of format sinks 
+	 * preferred_format (string)
+	 * number of format sinks
 	 * format sink list (format sinks)
 	 * enabled (int)
 	 * slowsync (bool)
@@ -407,19 +407,19 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 	 * timeout committed_all (int)
 	 * timeout sync_done (int)
 	 * timeout read (int)
-	 * 
+	 *
 	 */
-	
+
 	*sink = osync_objtype_sink_new(NULL, error);
 	if (!*sink)
 		goto error;
-	
+
 	if (!osync_message_read_string(message, &name, error))
 		goto error;
 
 	osync_objtype_sink_set_name(*sink, name);
 	osync_free(name);
- 	
+
 	if (!osync_message_read_int(message, &read, error))
 		goto error;
 
@@ -441,7 +441,7 @@ osync_bool osync_demarshal_objtype_sink(OSyncMessage *message, OSyncObjTypeSink 
 
 	for (i = 0; i < num_formats; i++) {
 		OSyncObjFormatSink *formatsink;
-		if (!osync_demarshal_objformat_sink(message, &formatsink, error)) 
+		if (!osync_demarshal_objformat_sink(message, &formatsink, error))
 			goto error;
 
 		osync_objtype_sink_add_objformat_sink(*sink, formatsink);
@@ -521,7 +521,7 @@ osync_bool osync_marshal_objtype_sinks(OSyncMessage *reply, OSyncClient *client,
 
 	if (!osync_message_write_uint(reply, avail, error))
 		goto error;
-	
+
 	list = objtypesinks;
 	while(list) {
 		sink = (OSyncObjTypeSink*)list->data;
@@ -550,7 +550,7 @@ osync_bool osync_demarshal_objtype_sinks(OSyncMessage *message, OSyncClientProxy
 		goto error;
 
 	osync_trace(TRACE_INTERNAL, "num objs?: %u", num_sinks);
-	
+
 	for (i = 0; i < num_sinks; i++) {
 		if (!osync_demarshal_objtype_sink(message, &sink, error))
 			goto error;
@@ -608,14 +608,14 @@ osync_bool osync_demarshal_error(OSyncMessage *message, OSyncError **marshal_err
 
 	if (!osync_message_read_int(message, &hasError, error))
 		goto error;
-	
+
 	if (hasError) {
 		char *msg = NULL;
 		int error_type = OSYNC_NO_ERROR;
-		
+
 		osync_message_read_int(message, &error_type, error);
 		osync_message_read_string(message, &msg, error);
-		
+
 		osync_error_set(marshal_error, (OSyncErrorType)error_type, "%s", msg);
 		osync_free(msg);
 	}
@@ -636,7 +636,7 @@ osync_bool osync_marshal_pluginconnection(OSyncMessage *message, OSyncPluginConn
 	osync_assert(conn);
 
 	/* Order:
-	 * 
+	 *
 	 * type (int)
 	 *
 	 * (following are depending on type)
@@ -656,7 +656,7 @@ osync_bool osync_marshal_pluginconnection(OSyncMessage *message, OSyncPluginConn
 	 *
 	 * serial_speed (uint)
 	 * serial_devicenode (char*)
-	 * 
+	 *
 	 * irda_service (char *)
 	 */
 
@@ -694,7 +694,7 @@ osync_bool osync_marshal_pluginconnection(OSyncMessage *message, OSyncPluginConn
 
 	if (osync_error_is_set(error))
 		goto error;
-	
+
 	return TRUE;
 
 error:
@@ -703,13 +703,13 @@ error:
 
 osync_bool osync_demarshal_pluginconnection(OSyncMessage *message, OSyncPluginConnection **conn, OSyncError **error)
 {
-	int type; 
+	int type;
 
 	char *bt_address, *bt_sdpuuid;
 	unsigned int bt_channel;
 
 	char *usb_vendorid, *usb_productid;
-	unsigned int usb_interface; 
+	unsigned int usb_interface;
 
 	unsigned int net_port;
 	char *net_address, *net_protocol, *net_dnssd;
@@ -722,7 +722,7 @@ osync_bool osync_demarshal_pluginconnection(OSyncMessage *message, OSyncPluginCo
 	/* Order:
 	 *
 	 * type (int)
-	 * 
+	 *
 	 * (following are depending on type)
 	 *
 	 * bt_address (char*)
@@ -740,7 +740,7 @@ osync_bool osync_demarshal_pluginconnection(OSyncMessage *message, OSyncPluginCo
 	 *
 	 * serial_speed (uint)
 	 * serial_devicenode (char*)
-	 * 
+	 *
 	 * irda_service (char *)
 	 */
 
@@ -789,7 +789,7 @@ osync_bool osync_demarshal_pluginconnection(OSyncMessage *message, OSyncPluginCo
 
 		osync_message_read_string(message, &net_dnssd, error);
 		osync_plugin_connection_net_set_dnssd(*conn, net_dnssd);
-			
+
 		osync_free(net_address);
 		osync_free(net_protocol);
 		osync_free(net_dnssd);
@@ -838,7 +838,7 @@ osync_bool osync_marshal_objformatsink(OSyncMessage *message, OSyncObjFormatSink
 	 * name (string)
 	 *
 	 * available_settings (uint)
-	 * 
+	 *
 	 * (optional)
 	 * config (string)
 	 */
@@ -849,7 +849,7 @@ osync_bool osync_marshal_objformatsink(OSyncMessage *message, OSyncObjFormatSink
 	osync_assert(name);
 	if (!osync_message_write_string(message, name, error))
 		goto error;
-	
+
 	if (config)
 		available_settings |= MARSHAL_OBJFORMATSINK_CONFIG;
 
@@ -879,7 +879,7 @@ osync_bool osync_demarshal_objformatsink(OSyncMessage *message, OSyncObjFormatSi
 	 * name (string)
 	 *
 	 * available_settings (uint)
-	 * 
+	 *
 	 * (optional)
 	 * config (string)
 	 */
@@ -976,7 +976,7 @@ osync_bool osync_marshal_pluginadvancedoption_param(OSyncMessage *message, OSync
 			goto error;
 	}
 	osync_list_free(valenum);
-	
+
 	return TRUE;
 
 error:
@@ -1066,7 +1066,7 @@ osync_bool osync_marshal_pluginadvancedoption(OSyncMessage *message, OSyncPlugin
 			goto error;
 	}
 	osync_list_free(parameters);
-	
+
 	valenum = osync_plugin_advancedoption_get_valenums(opt);
 	num_valenum = osync_list_length(valenum);
 	if (!osync_message_write_uint(message, num_valenum, error))
@@ -1078,7 +1078,7 @@ osync_bool osync_marshal_pluginadvancedoption(OSyncMessage *message, OSyncPlugin
 			goto error;
 	}
 	osync_list_free(valenum);
-	
+
 	return TRUE;
 
 error:
@@ -1342,8 +1342,8 @@ osync_bool osync_demarshal_pluginlocalization(OSyncMessage *message, OSyncPlugin
 		osync_plugin_localization_set_encoding(*local, timezone);
 		osync_free(timezone);
 	}
-	
-	
+
+
 	if (available_fields & MARSHAL_PLUGINLOCALIZATION_LANGUAGE) {
 		if (!osync_message_read_string(message, &language, error))
 			goto error;
@@ -1395,10 +1395,10 @@ osync_bool osync_marshal_pluginauthentication(OSyncMessage *message, OSyncPlugin
 	osync_assert(username);
 
 	if (username)
-		available_fields |= MARSHAL_PLUGINAUTEHNTICATION_USERNAME; 
+		available_fields |= MARSHAL_PLUGINAUTEHNTICATION_USERNAME;
 
 	if (password)
-		available_fields |= MARSHAL_PLUGINAUTEHNTICATION_PASSWORD; 
+		available_fields |= MARSHAL_PLUGINAUTEHNTICATION_PASSWORD;
 
 	if (reference)
 		available_fields |= MARSHAL_PLUGINAUTEHNTICATION_REFERENCE;
@@ -1518,7 +1518,7 @@ osync_bool osync_marshal_pluginresource(OSyncMessage *message, OSyncPluginResour
 	 * sinks (OSyncObjFormatSink)
 	 *
 	 * available_settings (uint)
-	 * 
+	 *
 	 * (optional)
 	 * name (string)
 	 * mime (string)
@@ -1591,7 +1591,7 @@ osync_bool osync_marshal_pluginresource(OSyncMessage *message, OSyncPluginResour
 
 	if (osync_error_is_set(error))
 		goto error;
-	
+
 	return TRUE;
 
  error:
@@ -1608,7 +1608,7 @@ osync_bool osync_demarshal_pluginresource(OSyncMessage *message, OSyncPluginReso
 	 * sinks (OSyncObjFormatSink)
 	 *
 	 * available_settings (uint)
-	 * 
+	 *
 	 * (optional)
 	 * preferred_format (string)
 	 * name (string)
@@ -1722,7 +1722,7 @@ osync_bool osync_marshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig *
 	osync_assert(config);
 
 	/* Order:
-	 * 
+	 *
 	 * $available subconfigs
 	 *
 	 * $connection         (optional)
@@ -1740,7 +1740,7 @@ osync_bool osync_marshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig *
 
 	if (conn)
 		available_subconfigs |= MARSHAL_PLUGINCONFIG_CONNECTION;
-		
+
 	if (auth)
 		available_subconfigs |= MARSHAL_PLUGINCONFIG_AUTHENTICATION;
 
@@ -1781,7 +1781,7 @@ osync_bool osync_marshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig *
 		}
 	}
 	osync_list_free(options);
-	
+
 	return TRUE;
 
  error:
@@ -1791,7 +1791,7 @@ osync_bool osync_marshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig *
 osync_bool osync_demarshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig **config, OSyncError **error)
 {
 	/* Order:
-	 * 
+	 *
 	 * $available subconfigs
 	 *
 	 * $connection            (optional)
@@ -1809,7 +1809,7 @@ osync_bool osync_demarshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig
 	OSyncPluginLocalization *local = NULL;
 	unsigned int available_subconfigs = 0;
 	unsigned int i, num_resources = 0, num_advancedoptions = 0;
-	
+
 	*config = osync_plugin_config_new(error);
 	if (!*config)
 		goto error;
@@ -1861,7 +1861,7 @@ osync_bool osync_demarshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig
 
 	if (!osync_message_read_uint(message, &num_advancedoptions, error))
 		goto error;
-	
+
 	/* number of advancedoptions */
 	for (i=0; i < num_advancedoptions; i++) {
 		OSyncPluginAdvancedOption *opt;
