@@ -99,10 +99,10 @@ static void _osync_obj_engine_connect_callback(OSyncClientProxy *proxy, void *us
 	if (error) {
 		osync_trace(TRACE_INTERNAL, "Obj Engine received connect error: %s", osync_error_print(&error));
 		osync_obj_engine_set_error(engine, error);
-		engine->sink_errors = engine->sink_errors | (0x1 << sinkengine->position);
+		engine->sink_errors |= 1 << sinkengine->position;
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, engine->objtype, error);
 	} else {
-		engine->sink_connects = engine->sink_connects | (0x1 << sinkengine->position);
+		engine->sink_connects |= 1 << sinkengine->position;
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_CONNECTED, engine->objtype, NULL);
 	}
 
@@ -135,10 +135,10 @@ static void _osync_obj_engine_connect_done_callback(OSyncClientProxy *proxy, voi
 	
 	if (error) {
 		osync_obj_engine_set_error(engine, error);
-		engine->sink_errors = engine->sink_errors | (0x1 << sinkengine->position);
+		engine->sink_errors |= 1 << sinkengine->position;
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, engine->objtype, error);
 	} else {
-		engine->sink_connect_done = engine->sink_connect_done | (0x1 << sinkengine->position);
+		engine->sink_connect_done |= 1 << sinkengine->position;
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_CONNECT_DONE, engine->objtype, NULL);
 	}
 			
@@ -187,10 +187,10 @@ static void _osync_obj_engine_disconnect_callback(OSyncClientProxy *proxy, void 
 	
 	if (error) {
 		osync_obj_engine_set_error(engine, error);
-		engine->sink_errors = engine->sink_errors | (0x1 << sinkengine->position);
+		engine->sink_errors |= 1 << sinkengine->position;
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, engine->objtype, error);
 	} else {
-		engine->sink_disconnects = engine->sink_disconnects | (0x1 << sinkengine->position);
+		engine->sink_disconnects |= 1 << sinkengine->position;
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_DISCONNECTED, engine->objtype, NULL);
 	}
 	
@@ -498,10 +498,10 @@ static void _osync_obj_engine_read_callback(OSyncClientProxy *proxy, void *userd
 	
 	if (error) {
 		osync_obj_engine_set_error(engine, error);
-		engine->sink_errors = engine->sink_errors | (0x1 << sinkengine->position);
+		engine->sink_errors |= 1 << sinkengine->position;
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, engine->objtype, error);
 	} else {
-		engine->sink_get_changes = engine->sink_get_changes | (0x1 << sinkengine->position);
+		engine->sink_get_changes |= 1 << sinkengine->position;
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_READ, engine->objtype, NULL);
 	}
 	
@@ -665,7 +665,7 @@ void osync_obj_engine_commit_change_callback(OSyncClientProxy *proxy, void *user
 		osync_status_update_mapping(engine->parent, entry_engine->mapping_engine, OSYNC_ENGINE_MAPPING_EVENT_ERROR, error);
 
 		osync_obj_engine_set_error(engine, error);
-		engine->sink_errors = engine->sink_errors | (0x1 << sinkengine->position);
+		engine->sink_errors |= 1 << sinkengine->position;
 		goto error;
 	}
 	
@@ -704,10 +704,10 @@ void osync_obj_engine_written_callback(OSyncClientProxy *proxy, void *userdata, 
 	
 	if (error) {
 		osync_obj_engine_set_error(engine, error);
-		engine->sink_errors = engine->sink_errors | (0x1 << sinkengine->position);
+		engine->sink_errors |= 1 << sinkengine->position;
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, engine->objtype, error);
 	} else {
-		engine->sink_written = engine->sink_written | (0x1 << sinkengine->position);
+		engine->sink_written |= 1 << sinkengine->position;
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_WRITTEN, engine->objtype, NULL);
 	}
 			
@@ -726,10 +726,10 @@ static void _osync_obj_engine_sync_done_callback(OSyncClientProxy *proxy, void *
 	
 	if (error) {
 		osync_obj_engine_set_error(engine, error);
-		engine->sink_errors = engine->sink_errors | (0x1 << sinkengine->position);
+		engine->sink_errors |= 1 << sinkengine->position;
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_ERROR, engine->objtype, error);
 	} else {
-		engine->sink_sync_done = engine->sink_sync_done | (0x1 << sinkengine->position);
+		engine->sink_sync_done |= 1 << sinkengine->position;
 		osync_status_update_member(engine->parent, osync_client_proxy_get_member(proxy), OSYNC_ENGINE_MEMBER_EVENT_SYNC_DONE, engine->objtype, NULL);
 	}
 			
