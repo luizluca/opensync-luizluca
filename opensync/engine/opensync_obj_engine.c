@@ -1149,6 +1149,7 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 
 			/* Is there at least one other writeable sink? */
 			if (objtype_sink && osync_objtype_sink_get_write(objtype_sink) && write_sinks) {
+				osync_sink_engine_ref(sinkengine); // Note that read callback has a reference
 				_osync_obj_engine_read_callback(sinkengine->proxy, sinkengine, *error);
 				osync_trace(TRACE_INTERNAL, "no other writable sinks .... SKIP");
 				continue;
