@@ -29,8 +29,10 @@
 /*@{*/
 
 struct OSyncPluginEnv {
+	/** List of OSyncPlugin objects */
 	OSyncList *plugins;
 	
+	/** List of OSyncModule objects */
 	OSyncList *modules;
 	
 	GModule *current_module;

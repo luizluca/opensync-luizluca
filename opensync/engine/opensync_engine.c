@@ -1715,6 +1715,10 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 		goto error;
 	
 	osync_trace(TRACE_INTERNAL, "Running the main loop");
+	/* Plugins are loaded in this call, unless loaded previously.
+	 * The engine->pluginenv pointer is still NULL at this point,
+	 * unless you call osync_plugin_env_load(engine->pluginenv...)
+	 * before you call osync_engine_initialize(). - CDF */
 	if (!_osync_engine_start(engine, error))
 		goto error_finalize;
 		

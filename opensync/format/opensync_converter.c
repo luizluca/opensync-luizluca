@@ -145,9 +145,9 @@ OSyncObjFormat *osync_converter_detect(OSyncFormatConverter *detector, OSyncData
 	
 	sourceformat = osync_data_get_objformat(data);
 	
-	/* First, we check if this is a "inverse" detection. So we check if our targetformat
-	 * is the sourceformat of the data. There must always be a detector capable of converting
-	 * this case */
+	/* First, we check if this is a "inverse" detection. So we check if
+	 * our targetformat is the sourceformat of the data. There must
+	 * always be a detector capable of converting this case */
 	if (osync_objformat_is_equal(detector->target_format, sourceformat)) {
 		osync_trace(TRACE_EXIT, "%s: %p", __func__, detector->source_format);
 		return detector->source_format;
@@ -159,6 +159,9 @@ OSyncObjFormat *osync_converter_detect(OSyncFormatConverter *detector, OSyncData
 	}
 	
 	osync_data_get_data(data, &buffer, &size);
+	/* I think a null detect_func in a DETECTOR converter means
+	 * automatic success... hence the odd if stmt here.  Not sure,
+	 * though.  - cdf */
 	if (!detector->detect_func || detector->detect_func(buffer, size, detector->userdata)) {
 		/* Successfully detected the data */
 		osync_trace(TRACE_EXIT, "%s: %p", __func__, detector->target_format);
