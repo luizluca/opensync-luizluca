@@ -290,6 +290,7 @@ osync_bool osync_demarshal_objformat_sink(OSyncMessage *message, OSyncObjFormatS
 		goto error;
 
 	*sink = osync_objformat_sink_new(objformat_name, error);
+	osync_free(objformat_name);
 	if (!*sink)
 		goto error;
 
