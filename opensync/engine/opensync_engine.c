@@ -1693,7 +1693,7 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 	/* Check if this is the first Synchronization.
 	 * On the first synchronization a Slow-Sync is required for all (ObjType)Sinks!
 	 */
-	if (osync_group_get_last_synchronization(engine->group) == 0) {
+	if (osync_group_get_last_synchronization(group) == 0) {
 		osync_trace(TRACE_INTERNAL, "Last Sync timestamp is 0. First Sync!");
 		first_sync = TRUE;
 	}
