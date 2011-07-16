@@ -763,8 +763,9 @@ OSyncList *osync_member_get_all_objformats(OSyncMember *member)
 		const char *objformat;
 		objformat = osync_objformat_sink_get_objformat(format_sink);
 
-		list = osync_list_prepend(list, osync_strdup(objformat));
+		list = osync_list_prepend(list, (void*)objformat);
 	}
+	osync_list_free(format_sinks);
 
 	return list;
 }

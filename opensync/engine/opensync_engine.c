@@ -1672,7 +1672,7 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 {
 	osync_bool prev_sync_unclean = FALSE, first_sync = FALSE;
 	OSyncGroup *group = NULL;
-	OSyncList *o, *supported_objtypes;
+	OSyncList *o, *supported_objtypes = NULL;
 	unsigned int i;
 	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, engine, error);
 
@@ -1760,6 +1760,7 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
 		if (prev_sync_unclean || first_sync)
 			osync_obj_engine_set_slowsync(objengine, TRUE);
 	}
+	osync_list_free(supported_objtypes);
 
 	if (osync_list_length(engine->object_engines) == 0) {
 		osync_error_set(error, OSYNC_ERROR_GENERIC, "No synchronizable Object Engine available");
@@ -1774,6 +1775,8 @@ osync_bool osync_engine_initialize(OSyncEngine *engine, OSyncError **error)
  error_finalize:
 	osync_engine_finalize(engine, NULL);
 	osync_group_unlock(engine->group);
+	if (supported_objtypes)
+		osync_list_free(supported_objtypes);
  error:
 	engine->state = OSYNC_ENGINE_STATE_UNINITIALIZED;
  error_no_state_reset:

@@ -239,6 +239,7 @@ OSyncList *osync_group_get_supported_objtypes_mixed(OSyncGroup *group, OSyncForm
 
 	g_hash_table_foreach(table, osync_group_build_mixed_list, &ret);
 	g_hash_table_destroy(table);
+	osync_list_free(targetformats);
 
 	return ret;
 }
