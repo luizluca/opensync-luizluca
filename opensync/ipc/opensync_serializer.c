@@ -876,6 +876,9 @@ osync_bool osync_demarshal_objformatsink(OSyncMessage *message, OSyncObjFormatSi
 	char *config = NULL;
 	unsigned int available_settings = 0;
 
+	/* make sure we start with nothing, to handle errors easier */
+	*sink = NULL;
+
 	osync_assert(message);
 
 	/* Order:
@@ -916,6 +919,10 @@ osync_bool osync_demarshal_objformatsink(OSyncMessage *message, OSyncObjFormatSi
  error:
 	if (name)
 		osync_free(name);
+	if (config)
+		osync_free(config);
+	if (*sink)
+		osync_objformat_sink_unref(*sink);
 	return FALSE;
 }
 
