@@ -767,27 +767,50 @@ void osync_format_env_unref(OSyncFormatEnv *env)
 			osync_objformat_unref(env->objformats->data);
 			env->objformats = osync_list_remove(env->objformats, env->objformats->data);
 		}
-	
+
+		/* Finalize the converters */
 		osync_format_env_converter_finalize(env);
-	
+
 		/* Free the converters */
 		while (env->converters) {
 			osync_converter_unref(env->converters->data);
 			env->converters = osync_list_remove(env->converters, env->converters->data);
 		}
-	
+
+		/* Finalize the caps_converters */
+		/* FIXME - there doesn't seem to be any initializer calls
+		 * happening, so no finalize either... but is this correct? */
+		//osync_format_env_caps_converter_finalize(env);
+
+		/* Free the caps_converters */
+		while (env->caps_converters) {
+			osync_caps_converter_unref(env->caps_converters->data);
+			env->caps_converters = osync_list_remove(env->caps_converters, env->caps_converters->data);
+		}
+
 		/* Free the filters */
 		while (env->custom_filters) {
 			osync_custom_filter_unref(env->custom_filters->data);
 			env->custom_filters = osync_list_remove(env->custom_filters, env->custom_filters->data);
 		}
-	
+
+		/* FIXME - osync_merger_set_finalize_func exists, but
+		 * where is the _finalize() call?  Do we need to add it here?
+		 * There does not appear to be any initialize calls either.
+		 */
+
+		/* Free the mergers */
+		while (env->mergers) {
+			osync_merger_unref(env->mergers->data);
+			env->mergers = osync_list_remove(env->mergers, env->mergers->data);
+		}
+
 		/* Free the modules */
 		while (env->modules) {
 			osync_module_unref(env->modules->data);
 			env->modules = osync_list_remove(env->modules, env->modules->data);
 		}
-	
+
 		osync_free(env);
 	}
 
