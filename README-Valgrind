@@ -1,0 +1,8 @@
+Note that opensync uses glib libraries, which use g_slice for memory
+management.  When debugging memory leaks with valgrind, this interferes.
+
+To disable g_slice temporarily during debugging, set the following
+environment variable:
+
+	export G_SLICE=always-malloc
+
