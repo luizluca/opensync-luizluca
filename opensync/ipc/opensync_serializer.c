@@ -1861,7 +1861,7 @@ osync_bool osync_demarshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig
 
 	/* number of resources */
 	for (i = 0; i < num_resources; i++) {
-		OSyncPluginResource *res;
+		OSyncPluginResource *res = NULL;
 		if (!osync_demarshal_pluginresource(message, &res, error))
 			goto error_free_config;
 

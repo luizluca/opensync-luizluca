@@ -329,8 +329,8 @@ static void _osync_queue_remove_pending_reply(OSyncQueue *queue, OSyncMessage *r
 	osync_trace(TRACE_EXIT, "%s", __func__);
 }
 
-/* This function is called from the master thread. The function dispatched incoming data from
- * the remote end */
+/* This function is called from the master thread. The function dispatches
+ * incoming data from the remote end */
 static gboolean _incoming_dispatch(GSource *source, GSourceFunc callback, gpointer user_data)
 {
 	OSyncQueue *queue = user_data;
