@@ -48,13 +48,19 @@ static const char *osync_error_name_from_type(OSyncErrorType type)
 void osync_error_set_vargs(OSyncError **error, OSyncErrorType type, const char *format, va_list args)
 {
 	osync_return_if_fail(error);
-	osync_return_if_fail(osync_error_is_set(error) == FALSE);
 	osync_return_if_fail(format);
 
+	// save any existing error, in case it needs to be added as a child
+	OSyncError *old_error = *error;
+
+	// create new error object in user's pointer variable
 	*error = g_malloc0(sizeof(OSyncError));
 	(*error)->message = g_strdup_vprintf(format, args);
 	(*error)->type = type;
 	(*error)->ref_count = 1;
+
+	// tack on the old error as the child
+	(*error)->child = old_error;
 
 	osync_trace(TRACE_ERROR, "%s", (*error)->message);
 	
