@@ -47,12 +47,6 @@ osync_bool osync_capability_assemble(OSyncCapability *cap, xmlNodePtr node, OSyn
 OSyncCapability *osync_capability_parse_child(OSyncCapability *cap, xmlNodePtr node, OSyncError **error);
 
 /**
- * @brief Frees a capability object 
- * @param capability The pointer to a capability object
- */
-void osync_capability_free(OSyncCapability *capability);
-
-/**
  * @brief Compare the names of two capabilities (for stdlib)
  *
  * 1st and 2nd pointer get dereferneced, to fit the needs of e.g. qsort()
