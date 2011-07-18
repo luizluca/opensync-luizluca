@@ -48,10 +48,11 @@ error:
 	return NULL;
 }
 
-OSyncCapabilitiesObjType *osync_capabilities_objtype_parse(OSyncCapabilities *capabilities, xmlNode *node, OSyncError **error)
+OSyncCapabilitiesObjType *osync_capabilities_objtype_parse_and_add(OSyncCapabilities *capabilities, xmlNode *node, OSyncError **error)
 {
 	xmlChar *objtype;
 	xmlNode *cur;
+	OSyncCapability *cap = NULL;
 	OSyncCapabilitiesObjType *capobjtype = NULL;
 	osync_assert(capabilities);
 	osync_assert(node);
@@ -71,12 +72,16 @@ OSyncCapabilitiesObjType *osync_capabilities_objtype_parse(OSyncCapabilities *ca
 		if (cur->type != XML_ELEMENT_NODE)
 			continue;
 
-		if (!osync_capability_parse(capobjtype, cur, error))
+		if (!(cap = osync_capability_parse_and_add(capobjtype, cur, error))) {
 			goto error;
+		}
+		else {
+			// we don't need our copy of the capability
+			osync_capability_unref(cap);
+		}
 	}
 
 	osync_capabilities_add_objtype(capabilities, capobjtype);
-	osync_capabilities_objtype_unref(capobjtype);
 
 	return capobjtype;
 

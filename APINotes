@@ -26,4 +26,6 @@ API Changes:
 	- changed behaviour only of osync_capabilities_add_objtype() and
 		osync_capabilities_objtype_add_capability(), which
 		now ref the objects as they add them to the list
+	- changed capability-related _parse() and _parse_and_add() functions,
+		to behaviour consistently, returning ref'd objects now.
 

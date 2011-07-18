@@ -114,10 +114,14 @@ OSyncCapabilities *osync_capabilities_parse(const char *buffer, unsigned int siz
 		if (cur->type != XML_ELEMENT_NODE)
 			continue;
 
-		OSyncCapabilitiesObjType *capabilitiesobjtype = osync_capabilities_objtype_parse(capabilities, cur, error);
+		OSyncCapabilitiesObjType *capabilitiesobjtype = osync_capabilities_objtype_parse_and_add(capabilities, cur, error);
 		if (!capabilitiesobjtype) {
 			osync_capabilities_unref(capabilities);
 			goto error;
+		}
+		else {
+			// we don't need our copy of the capabilitiesobjtype
+			osync_capabilities_objtype_unref(capabilitiesobjtype);
 		}
 	}
 
@@ -236,7 +240,7 @@ OSyncCapabilities *osync_capabilities_load(const char *file, OSyncError **error)
 		osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
 		return NULL;
 	}
-	
+
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, capabilities);
 	return capabilities;
 }

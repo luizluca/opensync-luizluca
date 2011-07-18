@@ -38,18 +38,18 @@ void osync_capability_param_unref(OSyncCapabilityParameter *capparam);
 /**
  * @brief Creates a new capability object which will be added to the end of capabilities of the capabilities object.
  *  The returned object is owned by the OSyncCapabilitiesObjType objtype and
- *  will be freed with it.  You do not need to unref the returned pointer.
+ *  will be unref'd with it.  You still need to unref the returned pointer,
+ *  though.
  * @param objtype The pointer to a capabilitiesobjtype object
  * @param node The node must be already inserted at the end of childs of the objtype xml node
  * @param error The error which will hold the info in case of an error
  * @return The pointer to the newly allocated capability object or NULL in case of error
  */
-OSyncCapability *osync_capability_parse(OSyncCapabilitiesObjType *objtype, xmlNodePtr node, OSyncError **error);
+OSyncCapability *osync_capability_parse_and_add(OSyncCapabilitiesObjType *objtype, xmlNodePtr node, OSyncError **error);
 
 
 /* TODO - Doxygen */
 osync_bool osync_capability_assemble(OSyncCapability *cap, xmlNodePtr node, OSyncError **error);
-OSyncCapability *osync_capability_parse_child(OSyncCapability *cap, xmlNodePtr node, OSyncError **error);
 
 /**
  * @brief Compare the names of two capabilities (for stdlib)

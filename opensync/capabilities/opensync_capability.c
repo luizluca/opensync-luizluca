@@ -82,6 +82,8 @@ void osync_capability_param_unref(OSyncCapabilityParameter *capparam)
 ///////////////////////////////////////////////////////////////////////////////
 // Capability
 
+static osync_bool osync_capability_parse_child_recursive(OSyncCapability *cap, xmlNodePtr node, OSyncError **error);
+
 int osync_capability_compare_stdlib(const void *capability1, const void *capability2)
 {
 	return strcmp(osync_capability_get_name(*(OSyncCapability **)capability1), osync_capability_get_name(*(OSyncCapability **)capability2));
@@ -92,7 +94,7 @@ int osync_capability_compare(const void *capability1, const void *capability2)
 	return strcmp(osync_capability_get_name((OSyncCapability *)capability1), osync_capability_get_name((OSyncCapability *)capability2));
 }
 
-OSyncCapability *osync_capability_parse_child(OSyncCapability *cap, xmlNodePtr node, OSyncError **error)
+static osync_bool osync_capability_parse_child_recursive(OSyncCapability *cap, xmlNodePtr node, OSyncError **error)
 {
 	xmlNode *cur;
 	osync_assert(cap);
@@ -112,7 +114,7 @@ OSyncCapability *osync_capability_parse_child(OSyncCapability *cap, xmlNodePtr n
 			if (!child)
 				goto error;
 
-			osync_capability_parse_child(child, cur, error);
+			osync_capability_parse_child_recursive(child, cur, error);
 
 			continue;
 		}
@@ -143,15 +145,15 @@ OSyncCapability *osync_capability_parse_child(OSyncCapability *cap, xmlNodePtr n
 		osync_xml_free(str);
 	}
 	
-	return cap;
+	return TRUE;
 
 error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
-	return NULL;
+	return FALSE;
 }
 
 
-OSyncCapability *osync_capability_parse(OSyncCapabilitiesObjType *capabilitiesobjtype, xmlNodePtr node, OSyncError **error)
+OSyncCapability *osync_capability_parse_and_add(OSyncCapabilitiesObjType *capabilitiesobjtype, xmlNodePtr node, OSyncError **error)
 {
 	OSyncCapability *cap = NULL;
 	osync_assert(capabilitiesobjtype);
@@ -161,12 +163,11 @@ OSyncCapability *osync_capability_parse(OSyncCapabilitiesObjType *capabilitiesob
 	if (!cap)
 		goto error;
 
-	if (!osync_capability_parse_child(cap, node, error))
+	if (!osync_capability_parse_child_recursive(cap, node, error))
 		goto error;
 
 	osync_capabilities_objtype_add_capability(capabilitiesobjtype, cap);
-	osync_capability_unref(cap); // caller does not own a copy
-	return cap;	// caller assumes capobjtype will free for us
+	return cap;
 
 error:
 	if (cap)

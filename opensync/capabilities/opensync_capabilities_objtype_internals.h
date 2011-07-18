@@ -34,15 +34,15 @@
 
 /**
  * @brief Creates a new capabilitiesobjtype object and adds it to the
- *        capabilities object.  The capabilities object owns the returned
- *        object and will free it automatically.  You do not have to unref()
- *        the returned pointer.
+ *        capabilities object.  The capabilities object owns a ref'd
+ *        copy of the object.  The returned object you must still unref()
+ *        as usual.
  * @param capabilities The pointer to a capabilities object
  * @param node The ObjType XML node
  * @param error The error which will hold the info in case of an error
- * @return The pointer to the newly added capabilitiesobjtype object or NULL in case of error
+ * @return The pointer to the newly allocated capabilitiesobjtype object or NULL in case of error
  */
-OSYNC_TEST_EXPORT OSyncCapabilitiesObjType *osync_capabilities_objtype_parse(OSyncCapabilities *capabilities, xmlNode *node, OSyncError **error);
+OSYNC_TEST_EXPORT OSyncCapabilitiesObjType *osync_capabilities_objtype_parse_and_add(OSyncCapabilities *capabilities, xmlNode *node, OSyncError **error);
 
 /**
  * @brief Get name of objtype from capabilities object type object
