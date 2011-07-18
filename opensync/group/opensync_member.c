@@ -179,8 +179,8 @@ void osync_member_unref(OSyncMember *member)
 		if (member->config)
 			osync_plugin_config_unref(member->config);
 			
-		if (osync_member_get_capabilities(member))
-			osync_capabilities_unref(osync_member_get_capabilities(member));
+		if (member->capabilities)
+			osync_capabilities_unref(member->capabilities);
 
 		if (member->alternative_objtype_table)
 			g_hash_table_destroy(member->alternative_objtype_table);
