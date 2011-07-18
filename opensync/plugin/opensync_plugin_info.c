@@ -54,7 +54,7 @@ void osync_plugin_info_unref(OSyncPluginInfo *info)
 	
 	if (g_atomic_int_dec_and_test(&(info->ref_count))) {
 		if (info->config)
-			osync_free(info->config);
+			osync_plugin_config_unref(info->config);
 		
 		if (info->configdir)
 			osync_free(info->configdir);
