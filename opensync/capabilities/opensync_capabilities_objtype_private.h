@@ -42,7 +42,7 @@ struct OSyncCapabilitiesObjType {
 	/** Name of ObjType */
 	char *name;
 	/** Capability List */
-	OSyncList *capabilities; /* OSyncCapapbility */
+	OSyncList *capabilities; /* OSyncCapability */
 
 };
 
