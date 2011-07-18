@@ -1886,7 +1886,8 @@ osync_bool osync_demarshal_pluginconfig(OSyncMessage *message, OSyncPluginConfig
 	return TRUE;
 
  error_free_config:
-	osync_plugin_config_unref(*config);
+	if (*config)
+		osync_plugin_config_unref(*config);
  error:
 	return FALSE;
 }
