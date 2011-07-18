@@ -35,6 +35,37 @@
 
 /**
  * @brief Represent a Capabilities object
+ *
+ * This is the top level Capabilities object, which contains a list of
+ * lists of capability objects for each objtype.
+ *
+ * For example, if your device has a set of capabilities, you could call the
+ * set "foodevice-caps".  This would be the Capabilities format name.
+ * This format name could contain different capability lists for each
+ * objtype supported, for example "contact" or "event" or both.
+ *
+ * The names of the capabilities do not have to match anything else, but
+ * if they do not match something opensync knows about, it will need a
+ * caps-converter (capabilities converter) to translate your list of
+ * capability objects for, say, "contact" into something it knows, say,
+ * "xmlformat-contact".
+ *
+ *   foodevice-caps
+ *      contact
+ *         name
+ *         address1
+ *         phonenumber
+ *      event
+ *         date
+ *         location
+ *
+ * I don't know if multiple objtypes are ever useful, but they are possible,
+ * given the 3 structures: OSyncCapabilities, OSyncCapabilitiesObjType,
+ * and finally OSyncCapability.
+ *
+ * Note that OSyncCapability is a hierarchical list, having its own children.
+ * It also has a list of OSyncCapabilityParameter objects.
+ *
  */
 struct OSyncCapabilities {
 	/** The reference counter for this object */
