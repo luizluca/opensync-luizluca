@@ -43,9 +43,10 @@ static gboolean _osync_queue_generate_error(OSyncQueue *queue, OSyncMessageComma
 	}
 	osync_trace(TRACE_INTERNAL, "Generating incoming error message %p(%s), id= %lli", message, osync_message_get_commandstr(message), osync_message_get_id(message));
 	
-	osync_message_ref(message);
-
 	g_async_queue_push(queue->incoming, message);
+	// we don't ref this, since _new() above already gives us the ref
+	// and we are giving that ref away to the queue
+	//osync_message_ref(message);
 	
 	if (queue->incomingContext)
 		g_main_context_wakeup(queue->incomingContext);
