@@ -305,6 +305,7 @@ OSyncCapability *osync_capability_new_child(OSyncCapability *parent, OSyncError 
 		goto error;
 
 	osync_capability_add_child(parent, capability);
+	osync_capability_unref(capability);
 	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, capability);
 	return capability;
@@ -468,6 +469,7 @@ void osync_capability_add_child(OSyncCapability *capability, OSyncCapability *ch
 	osync_assert(child);
 
 	capability->childs = osync_list_append(capability->childs, child);
+	osync_capability_ref(child);
 }
 
 OSyncCapabilityParameter *osync_capability_parameter_new(OSyncError **error)

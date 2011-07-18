@@ -187,7 +187,20 @@ OSYNC_EXPORT OSyncList *osync_capability_get_valenums(OSyncCapability *capabilit
 
 /** TODO Doxygen */
 OSYNC_EXPORT OSyncList *osync_capability_get_childs(OSyncCapability *capability); /* OSyncCapability* list */
+
+/**
+ * @brief Adds child to capability's childs list and refs child.
+ */
 OSYNC_EXPORT void osync_capability_add_child(OSyncCapability *capability, OSyncCapability *child);
+
+/**
+ * @brief Create new OSyncCapability and add it to the childs list in parent.
+ *  You do not need to unref the returned pointer, as parent will own the
+ *  returned object.  If you want to keep a copy for yourself, ref it.
+ *
+ * @param parent The capability object to add a child to
+ * @return Returns pointer to freshly added child capability object.
+ */
 OSYNC_EXPORT OSyncCapability *osync_capability_new_child(OSyncCapability *parent, OSyncError **error);
 
 /*@}*/
