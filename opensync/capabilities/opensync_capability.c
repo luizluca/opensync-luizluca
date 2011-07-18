@@ -325,13 +325,33 @@ OSyncCapability *osync_capability_ref(OSyncCapability *capability)
 	return capability;
 }
 
-void osync_capability_unref(OSyncCapability *capability)
+void osync_capability_unref(OSyncCapability *cap)
 {
-	osync_assert(capability);
+	osync_assert(cap);
 			
-	if (g_atomic_int_dec_and_test(&(capability->ref_count))) {
-		/* TODO free struct members */
-		osync_free(capability);
+	if (g_atomic_int_dec_and_test(&(cap->ref_count))) {
+		/* FIXME - unref the parent? */
+		// osync_capabilities_objtype_unref(cap->capobjtype);
+
+		osync_free(cap->displayname);
+		osync_free(cap->name);
+
+		while (cap->parameters) {
+			osync_capability_param_unref(cap->parameters->data);
+			cap->parameters = osync_list_remove(cap->parameters, cap->parameters->data);
+		}
+
+		while (cap->valenum) {
+			osync_free(cap->valenum->data);
+			cap->valenum = osync_list_remove(cap->valenum, cap->valenum->data);
+		}
+
+		while (cap->childs) {
+			osync_capability_unref(cap->childs->data);
+			cap->childs = osync_list_remove(cap->childs, cap->childs->data);
+		}
+
+		osync_free(cap);
 	}
 }
 
