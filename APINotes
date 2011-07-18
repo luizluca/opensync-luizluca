@@ -11,4 +11,7 @@ API Removals:
 
 API Changes:
 ------------
+	- changed behaviour only of osync_capabilities_add_objtype() and
+		osync_capabilities_objtype_add_capability(), which
+		now ref the objects as they add them to the list
 

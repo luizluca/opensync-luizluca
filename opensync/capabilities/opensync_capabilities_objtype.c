@@ -162,6 +162,7 @@ void osync_capabilities_objtype_add_capability(OSyncCapabilitiesObjType *capsobj
 {
         osync_assert(capsobjtype);
         capsobjtype->capabilities = osync_list_append(capsobjtype->capabilities, capability);
+	osync_capability_ref(capability);
 }
 
 void osync_capabilities_objtype_sort(OSyncCapabilitiesObjType *capsobjtype)

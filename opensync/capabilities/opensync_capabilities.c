@@ -307,6 +307,7 @@ void osync_capabilities_add_objtype(OSyncCapabilities *capabilities, OSyncCapabi
 
 	
 	capabilities->objtypes = osync_list_append(capabilities->objtypes, capabilitiesobjtype);
+	osync_capabilities_objtype_ref(capabilitiesobjtype);
 }
 
 void osync_capabilities_sort(OSyncCapabilities *capabilities)
