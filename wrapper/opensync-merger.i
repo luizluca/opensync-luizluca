@@ -1,3 +1,6 @@
+/* FIXME - this needs to be overhauled, since a Capability is of no use
+   unless it is one that is connected to the Capabilities hierarchy.
+
 typedef struct {} Capability;
 %extend Capability {
 	Capability() {
@@ -26,6 +29,7 @@ typedef struct {} Capability;
 		self.__oldinit(*args)
 %}
 }
+*/
 
 typedef struct {} Capabilities;
 %extend Capabilities {

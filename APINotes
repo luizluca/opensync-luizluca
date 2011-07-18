@@ -3,29 +3,30 @@ Changes to the API since version 0.39:
 
 API Additions:
 --------------
-	- exposed osync_objtype_sink_get_userdata() as public API call
+	- exposed as public API call
+		- osync_objtype_sink_get_userdata()
+	- added:
+		osync_capabilities_add_new_objtype
+		osync_capabilities_add_new_capability
+
 
 API Removals:
 -------------
+	- hid following as internal functions, and they all have consistent
+	  _new() style behaviour
+		- osync_capabilities_objtype_new
+		- osync_capabilities_objtype_ref
+		- osync_capabilities_objtype_unref
+		- osync_capability_new
+		- osync_capability_ref
+		- osync_capability_unref
 
 
 API Changes:
 ------------
-	- changed behaviour and prototype of osync_capability_new(),
-		which now does not add itself to an OSyncCapabilitiesObjType
-		automatically, and must be unref() by the caller as usual
-		for _new() functions
-		Note that this does not have much impact on usage, since
-		capabilities are usually accessed through _parse(), which
-		will do the OSyncCapabilitiesObjType add instead.
-	- changed behaviour and prototype of osync_capabilities_objtype_new()
-		similar to osync_capability_new().  It now behaves like
-		other _new() calls, and must be _unref()'d manually, and
-		does not add the new object to the capabilities object.
-		Use the _parse() function for that.
 	- changed behaviour only of osync_capabilities_add_objtype() and
 		osync_capabilities_objtype_add_capability(), which
 		now ref the objects as they add them to the list
-	- changed capability-related _parse() and _parse_and_add() functions,
-		to behaviour consistently, returning ref'd objects now.
+	- [internal] changed capability-related _parse() and _parse_and_add()
+		functions, to behave consistently, returning ref'd objects now.
 

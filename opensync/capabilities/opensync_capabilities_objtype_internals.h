@@ -32,6 +32,21 @@
  */
 /*@{*/
 
+/* Note: the new/ref/unref functions are internal, since OSyncCapabilities
+ *       is intended to own all the memory and free it.  For the user
+ *       API to capabilities, for fewer headaches, see opensync_capabilities.h.
+ */
+
+/**
+ * @brief Creates a new capabilities object type object
+ * @param error The error which will hold the info in case of an error
+ * @return The pointer to the newly allocated capabilities object type object or NULL in case of error
+ */
+OSYNC_TEST_EXPORT OSyncCapabilitiesObjType *osync_capabilities_objtype_new(const char *objtype, OSyncError **error);
+
+OSYNC_TEST_EXPORT OSyncCapabilitiesObjType *osync_capabilities_objtype_ref(OSyncCapabilitiesObjType *capsobjtype);
+OSYNC_TEST_EXPORT void osync_capabilities_objtype_unref(OSyncCapabilitiesObjType *capsobjtype);
+
 /**
  * @brief Creates a new capabilitiesobjtype object and adds it to the
  *        capabilities object.  The capabilities object owns a ref'd

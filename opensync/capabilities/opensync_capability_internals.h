@@ -31,9 +31,26 @@
  */
 /*@{*/
 
-OSyncCapabilityParameter *osync_capability_param_new(OSyncError **error);
-OSyncCapabilityParameter *osync_capability_param_ref(OSyncCapabilityParameter *capparam);
-void osync_capability_param_unref(OSyncCapabilityParameter *capparam);
+OSYNC_TEST_EXPORT OSyncCapabilityParameter *osync_capability_param_new(OSyncError **error);
+OSYNC_TEST_EXPORT OSyncCapabilityParameter *osync_capability_param_ref(OSyncCapabilityParameter *capparam);
+OSYNC_TEST_EXPORT void osync_capability_param_unref(OSyncCapabilityParameter *capparam);
+
+
+/* Note: the new/ref/unref functions are internal, since OSyncCapabilitiesObjType
+ *       is intended to own all the memory and free it.  For the user
+ *       API to capabilities, for fewer headaches, see opensync_capabilities.h.
+ */
+
+/**
+ * @brief Creates a new capability object
+ * @param capobjtype The pointer to a capabilities objtype object
+ * @param error The error which will hold the info in case of an error
+ * @return The pointer to the newly allocated capability object or NULL in case of error
+ */
+OSYNC_TEST_EXPORT OSyncCapability *osync_capability_new(OSyncError **error);
+
+OSYNC_TEST_EXPORT OSyncCapability *osync_capability_ref(OSyncCapability *capability);
+OSYNC_TEST_EXPORT void osync_capability_unref(OSyncCapability *capability);
 
 /**
  * @brief Creates a new capability object which will be added to the end of capabilities of the capabilities object.

@@ -32,18 +32,10 @@
  */
 /*@{*/
 
-
 /**
- * @brief Creates a new capabilities object type object
- * @param error The error which will hold the info in case of an error
- * @return The pointer to the newly allocated capabilities object type object or NULL in case of error
+ * @brief Returns OSyncList of OSyncCapability objects.  You do not need to
+ *        free the list.
  */
-
-OSYNC_EXPORT OSyncCapabilitiesObjType *osync_capabilities_objtype_new(const char *objtype, OSyncError **error);
-
-OSYNC_EXPORT OSyncCapabilitiesObjType *osync_capabilities_objtype_ref(OSyncCapabilitiesObjType *capsobjtype);
-OSYNC_EXPORT void osync_capabilities_objtype_unref(OSyncCapabilitiesObjType *capsobjtype);
-
 OSYNC_EXPORT OSyncList *osync_capabilities_objtype_get_caps(OSyncCapabilitiesObjType *capsobjtype);
 
 /*@}*/

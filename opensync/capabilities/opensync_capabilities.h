@@ -56,6 +56,21 @@ OSYNC_EXPORT OSyncCapabilities *osync_capabilities_ref(OSyncCapabilities *capabi
 OSYNC_EXPORT void osync_capabilities_unref(OSyncCapabilities *capabilities);
 
 /**
+ * @brief Wrapper API that creates new OSyncCapabilitiesObjType, and adds
+ *        it to the given capabilities object.  The returned pointer must
+ *        does not need to be unref'd, since capabilities owns it.
+ */
+OSYNC_EXPORT OSyncCapabilitiesObjType *osync_capabilities_add_new_objtype(OSyncCapabilities *capabilities, const char *objtype, OSyncError **error);
+
+/**
+ * @brief Wrapper API that creates a new OSyncCapability object and adds it
+ *        to the given OSyncCapabilitiesObjType object.  The returned pointer
+ *        does not need to be unref'd, since, since the capabilities / objtype
+ *        hierarchy owns it.
+ */
+OSYNC_EXPORT OSyncCapability *osync_capabilities_add_new_capability(OSyncCapabilitiesObjType *capsobjtype, OSyncError **error);
+
+/**
  * @brief Get the first capabilitiesobjtype for a given objtype from the capabilities
  * @param capabilities The pointer to a capabilities object
  * @param objtype The name of the objtype (e.g.: contact)

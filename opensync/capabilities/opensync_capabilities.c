@@ -284,6 +284,55 @@ void osync_capabilities_set_format(OSyncCapabilities *capabilities, const char *
 	capabilities->format = osync_strdup(capsformat);
 }
 
+OSyncCapabilitiesObjType *osync_capabilities_add_new_objtype(OSyncCapabilities *capabilities, const char *objtype, OSyncError **error)
+{
+	OSyncCapabilitiesObjType *capsobjtype = NULL;
+	osync_trace(TRACE_ENTRY, "%s: %p %p", __func__, capabilities, objtype);
+
+	osync_assert(capabilities);
+	osync_assert(objtype);
+
+	capsobjtype = osync_capabilities_objtype_new(objtype, error);
+	if (!capsobjtype)
+		goto error;
+
+	osync_capabilities_add_objtype(capabilities, capsobjtype);
+	osync_capabilities_objtype_unref(capsobjtype);
+
+	return capsobjtype;
+
+error:
+	if (capsobjtype)
+		osync_capabilities_objtype_unref(capsobjtype);
+
+	osync_trace(TRACE_EXIT, "%s: %p %p", __func__, capabilities, objtype);
+	return NULL;
+}
+
+OSyncCapability *osync_capabilities_add_new_capability(OSyncCapabilitiesObjType *capsobjtype, OSyncError **error)
+{
+	OSyncCapability *cap = NULL;
+	osync_trace(TRACE_ENTRY, "%s: %p", __func__, capsobjtype);
+
+	osync_assert(capsobjtype);
+
+	cap = osync_capability_new(error);
+	if (!cap)
+		goto error;
+
+	osync_capabilities_objtype_add_capability(capsobjtype, cap);
+	osync_capability_unref(cap);
+
+	return cap;
+
+error:
+	if (cap)
+		osync_capability_unref(cap);
+
+	osync_trace(TRACE_EXIT, "%s: %p", __func__, capsobjtype);
+	return NULL;
+}
+
 OSyncCapabilitiesObjType *osync_capabilities_get_objtype(OSyncCapabilities *capabilities, const char *objtype)
 {
 	OSyncList *l = NULL;
