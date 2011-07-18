@@ -101,13 +101,14 @@ void osync_capabilities_objtype_unref(OSyncCapabilitiesObjType *capsobjtype)
 	osync_assert(capsobjtype);
 			
 	if (g_atomic_int_dec_and_test(&(capsobjtype->ref_count))) {
-		OSyncList *l;
-		for (l = capsobjtype->capabilities; l; l = l->next) {
-			OSyncCapability *capability;
-			capability = (OSyncCapability *) l->data;
-			osync_capability_unref(capability);
-			/* TODO unlink from list */
+
+		while (capsobjtype->capabilities) {
+			osync_capability_unref(capsobjtype->capabilities->data);
+			capsobjtype->capabilities = osync_list_remove(capsobjtype->capabilities, capsobjtype->capabilities->data);
 		}
+
+		osync_free(capsobjtype->name);
+
 		osync_free(capsobjtype);
 	}
 }
