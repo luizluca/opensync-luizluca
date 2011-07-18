@@ -31,6 +31,22 @@
 
 /*@{*/
 
+struct OSyncCapabilityParameter {
+	/** DisplayName */
+	char *displayname;
+	/** Name */
+	char *name;
+	/** Type */
+	OSyncCapabilityType type;
+	/** ValEnum */
+	OSyncList *valenum; /* char* */
+	/** Value */
+	char *value;
+
+	/** Reference counting */
+	int ref_count;
+};
+
 /**
  * @brief Represents a Capability object
  */
@@ -57,24 +73,8 @@ struct OSyncCapability {
 	char *value;
 
 	/** Childs */
-	OSyncList *childs; /* OSYncCapability * list */
+	OSyncList *childs; /* OSyncCapability * list */
 
-
-	/** Reference counting */
-	int ref_count;
-};
-
-struct OSyncCapabilityParameter {
-	/** DisplayName */
-	char *displayname;
-	/** Name */
-	char *name;
-	/** Type */
-	OSyncCapabilityType type;
-	/** ValEnum */
-	OSyncList *valenum; /* char* */
-	/** Value */
-	char *value;
 
 	/** Reference counting */
 	int ref_count;
