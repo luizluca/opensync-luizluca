@@ -198,6 +198,9 @@ OSYNC_EXPORT void osync_capability_add_child(OSyncCapability *capability, OSyncC
  *  You do not need to unref the returned pointer, as parent will own the
  *  returned object.  If you want to keep a copy for yourself, ref it.
  *
+ * This is equivalent to calling _new(), _add_child(), and _unref(),
+ * in that order.
+ *
  * @param parent The capability object to add a child to
  * @return Returns pointer to freshly added child capability object.
  */
