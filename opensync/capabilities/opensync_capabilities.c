@@ -60,22 +60,20 @@ OSyncCapabilities *osync_capabilities_ref(OSyncCapabilities *capabilities)
 	return capabilities;
 }
 
-void osync_capabilities_unref(OSyncCapabilities *capabilities)
+void osync_capabilities_unref(OSyncCapabilities *caps)
 {
-	osync_assert(capabilities);
+	osync_assert(caps);
 			
-	if (g_atomic_int_dec_and_test(&(capabilities->ref_count))) {
-		OSyncList *l;
-		for (l = capabilities->objtypes; l; l = l->next) {
-			OSyncCapabilitiesObjType *objtype;
-			objtype = (OSyncCapabilitiesObjType *) l->data;
-			capabilities->objtypes = osync_list_remove(capabilities->objtypes, objtype);
-			osync_capabilities_objtype_unref(objtype);
-			/* TODO unlink from list */
+	if (g_atomic_int_dec_and_test(&(caps->ref_count))) {
+		while (caps->objtypes) {
+			osync_capabilities_objtype_unref(caps->objtypes->data);
+			caps->objtypes = osync_list_remove(caps->objtypes, caps->objtypes->data);
 		}
-		osync_xml_free_doc(capabilities->doc);
-		osync_free(capabilities->format);
-		osync_free(capabilities);
+
+		osync_free(caps->format);
+		osync_xml_free_doc(caps->doc);
+
+		osync_free(caps);
 	}
 }
 
