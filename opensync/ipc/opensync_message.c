@@ -40,8 +40,10 @@ OSyncMessage *osync_message_new(OSyncMessageCommand cmd, unsigned int size, OSyn
 	message->refCount = 1;
 
 	message->marshal = osync_marshal_sized_new(size, error);
-	if (!message->marshal)
+	if (!message->marshal) {
+		osync_free(message);
 		return NULL;
+	}
 
 	return message;
 }
