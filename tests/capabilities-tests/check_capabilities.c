@@ -53,10 +53,12 @@ START_TEST (capabilities_parse)
 	fail_unless(error == NULL, NULL);
 
 
-	OSyncCapabilitiesObjType *capsobjtype = osync_capabilities_objtype_new(capabilities, "contact", &error);
+	OSyncCapabilitiesObjType *capsobjtype = osync_capabilities_objtype_new("contact", &error);
 	fail_unless(capsobjtype != NULL, NULL);
 	fail_unless(error == NULL, NULL);
-	
+	osync_capabilities_add_objtype(capabilities, capsobjtype);
+	osync_capabilities_objtype_unref(capsobjtype);
+
 	/** capmock1 */
 	capability = osync_capability_new(&error);
 	fail_unless(capability != NULL, NULL);

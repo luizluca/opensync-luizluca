@@ -18,6 +18,11 @@ API Changes:
 		Note that this does not have much impact on usage, since
 		capabilities are usually accessed through _parse(), which
 		will do the OSyncCapabilitiesObjType add instead.
+	- changed behaviour and prototype of osync_capabilities_objtype_new()
+		similar to osync_capability_new().  It now behaves like
+		other _new() calls, and must be _unref()'d manually, and
+		does not add the new object to the capabilities object.
+		Use the _parse() function for that.
 	- changed behaviour only of osync_capabilities_add_objtype() and
 		osync_capabilities_objtype_add_capability(), which
 		now ref the objects as they add them to the list

@@ -39,7 +39,7 @@
  * @return The pointer to the newly allocated capabilities object type object or NULL in case of error
  */
 
-OSYNC_EXPORT OSyncCapabilitiesObjType *osync_capabilities_objtype_new(OSyncCapabilities *capabilities, const char *objtype, OSyncError **error);
+OSYNC_EXPORT OSyncCapabilitiesObjType *osync_capabilities_objtype_new(const char *objtype, OSyncError **error);
 
 OSYNC_EXPORT OSyncCapabilitiesObjType *osync_capabilities_objtype_ref(OSyncCapabilitiesObjType *capsobjtype);
 OSYNC_EXPORT void osync_capabilities_objtype_unref(OSyncCapabilitiesObjType *capsobjtype);

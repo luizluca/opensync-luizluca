@@ -29,10 +29,9 @@
 #include "opensync_capabilities_objtype_internals.h"
 #include "opensync_capabilities_objtype_private.h"
 
-OSyncCapabilitiesObjType *osync_capabilities_objtype_new(OSyncCapabilities *capabilities, const char *objtype, OSyncError **error)
+OSyncCapabilitiesObjType *osync_capabilities_objtype_new(const char *objtype, OSyncError **error)
 {
 	OSyncCapabilitiesObjType *capobjtype = NULL;
-	osync_assert(capabilities);
 	osync_assert(objtype);
 	
 	capobjtype = osync_try_malloc0(sizeof(OSyncCapabilitiesObjType), error);
@@ -41,8 +40,6 @@ OSyncCapabilitiesObjType *osync_capabilities_objtype_new(OSyncCapabilities *capa
 
 	capobjtype->name = osync_strdup(objtype);
 	capobjtype->ref_count = 1;
-
-	osync_capabilities_add_objtype(capabilities, capobjtype);
 
 	return capobjtype;
 
@@ -63,7 +60,7 @@ OSyncCapabilitiesObjType *osync_capabilities_objtype_parse(OSyncCapabilities *ca
 	objtype = xmlGetProp(node, (const xmlChar *)"Name");
 
 	/* XXX: Bad cast from unsigned char* to const char* - is there a better way? */
-	if (!(capobjtype = osync_capabilities_objtype_new(capabilities, (const char *) objtype, error)))
+	if (!(capobjtype = osync_capabilities_objtype_new((const char *) objtype, error)))
 		goto error;
 
 	osync_xml_free(objtype);
@@ -77,6 +74,9 @@ OSyncCapabilitiesObjType *osync_capabilities_objtype_parse(OSyncCapabilities *ca
 		if (!osync_capability_parse(capobjtype, cur, error))
 			goto error;
 	}
+
+	osync_capabilities_add_objtype(capabilities, capobjtype);
+	osync_capabilities_objtype_unref(capobjtype);
 
 	return capobjtype;
 
