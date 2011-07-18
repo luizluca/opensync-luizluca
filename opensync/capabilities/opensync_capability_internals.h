@@ -31,6 +31,10 @@
  */
 /*@{*/
 
+OSyncCapabilityParameter *osync_capability_param_new(OSyncError **error);
+OSyncCapabilityParameter *osync_capability_param_ref(OSyncCapabilityParameter *capparam);
+void osync_capability_param_unref(OSyncCapabilityParameter *capparam);
+
 /**
  * @brief Creates a new capability object which will be added to the end of capabilities of the capabilities object.
  *  The returned object will be freed with the capabilities object.

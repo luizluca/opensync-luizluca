@@ -30,6 +30,58 @@
 
 #include "opensync_capability_private.h"
 
+///////////////////////////////////////////////////////////////////////////////
+// OSyncCapabilityParameter
+
+OSyncCapabilityParameter *osync_capability_param_new(OSyncError **error)
+{
+	OSyncCapabilityParameter *cp = NULL;
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, error);
+
+	cp = osync_try_malloc0(sizeof(OSyncCapabilityParameter), error);
+	if(!cp)
+		goto error;
+
+	cp->ref_count = 1;
+
+	osync_trace(TRACE_EXIT, "%s: %p", __func__, cp);
+	return cp;
+
+error:
+	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
+	return NULL;
+}
+
+OSyncCapabilityParameter *osync_capability_param_ref(OSyncCapabilityParameter *capparam)
+{
+	osync_assert(capparam);
+	
+	g_atomic_int_inc(&(capparam->ref_count));
+
+	return capparam;
+}
+
+void osync_capability_param_unref(OSyncCapabilityParameter *capparam)
+{
+	osync_assert(capparam);
+
+	if (g_atomic_int_dec_and_test(&(capparam->ref_count))) {
+
+		osync_free(capparam->displayname);
+		osync_free(capparam->name);
+
+		while (capparam->valenum) {
+			osync_free(capparam->valenum->data);
+			capparam->valenum = osync_list_remove(capparam->valenum, capparam->valenum->data);
+		}
+
+		osync_free(capparam);
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Capability
+
 int osync_capability_compare_stdlib(const void *capability1, const void *capability2)
 {
 	return strcmp(osync_capability_get_name(*(OSyncCapability **)capability1), osync_capability_get_name(*(OSyncCapability **)capability2));
