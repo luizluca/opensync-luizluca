@@ -157,16 +157,20 @@ OSyncCapability *osync_capability_parse(OSyncCapabilitiesObjType *capabilitiesob
 	osync_assert(capabilitiesobjtype);
 	osync_assert(node);
 
-	cap = osync_capability_new(capabilitiesobjtype, error);
+	cap = osync_capability_new(error);
 	if (!cap)
 		goto error;
 
 	if (!osync_capability_parse_child(cap, node, error))
 		goto error;
 
-	return cap;
+	osync_capabilities_objtype_add_capability(capabilitiesobjtype, cap);
+	osync_capability_unref(cap); // caller does not own a copy
+	return cap;	// caller assumes capobjtype will free for us
 
 error:
+	if (cap)
+		osync_capability_unref(cap);
 	return NULL;
 }
 
@@ -261,6 +265,8 @@ OSyncCapability *osync_capability_new_internal(OSyncError **error)
 	if(!capability)
 		goto error;
 
+	capability->ref_count = 1;
+
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, capability);
 	return capability;
 
@@ -270,17 +276,15 @@ error:
 
 }
 
-OSyncCapability *osync_capability_new(OSyncCapabilitiesObjType *capobjtype, OSyncError **error)
+OSyncCapability *osync_capability_new(OSyncError **error)
 {
 	OSyncCapability *capability = NULL;
-	osync_trace(TRACE_ENTRY, "%s(%p, %p)", __func__, capobjtype, error);
+	osync_trace(TRACE_ENTRY, "%s(%p)", __func__, error);
 
 	capability = osync_capability_new_internal(error);
 	if (!capability)
 		goto error;
 
-	osync_capabilities_objtype_add_capability(capobjtype, capability);
-	
 	osync_trace(TRACE_EXIT, "%s: %p", __func__, capability);
 	return capability;
 

@@ -26,21 +26,14 @@ START_TEST (capability_new)
 	char *testbed = setup_testbed("capabilities");
 
 	OSyncError *error = NULL;
-	OSyncCapabilities *capabilities = osync_capabilities_new("testformat", &error);
-	fail_unless(capabilities != NULL, NULL);
-	fail_unless(error == NULL, NULL);
 
-	OSyncCapabilitiesObjType *capsobjtype = osync_capabilities_objtype_new(capabilities, "contact", &error);
-	fail_unless(capsobjtype != NULL, NULL);
-	fail_unless(error == NULL, NULL);
-	
-	OSyncCapability *capability = osync_capability_new(capsobjtype, &error);
+	OSyncCapability *capability = osync_capability_new(&error);
 	fail_unless(capability != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 
 	osync_capability_set_name(capability, "Name");
 	
-	osync_capabilities_unref(capabilities);
+	osync_capability_unref(capability);
 
 	destroy_testbed(testbed);
 }
@@ -65,25 +58,31 @@ START_TEST (capabilities_parse)
 	fail_unless(error == NULL, NULL);
 	
 	/** capmock1 */
-	capability = osync_capability_new(capsobjtype, &error);
+	capability = osync_capability_new(&error);
 	fail_unless(capability != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 
 	osync_capability_set_name(capability, "capmock1");
+	osync_capabilities_objtype_add_capability(capsobjtype, capability);
+	osync_capability_unref(capability);
 
 	/** capmock2 */
-	capability = osync_capability_new(capsobjtype, &error);
+	capability = osync_capability_new(&error);
 	fail_unless(capability != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 
 	osync_capability_set_name(capability, "capmock2");
+	osync_capabilities_objtype_add_capability(capsobjtype, capability);
+	osync_capability_unref(capability);
 
 	/** capmock3 */
-	capability = osync_capability_new(capsobjtype, &error);
+	capability = osync_capability_new(&error);
 	fail_unless(capability != NULL, NULL);
 	fail_unless(error == NULL, NULL);
 
 	osync_capability_set_name(capability, "capmock3");
+	osync_capabilities_objtype_add_capability(capsobjtype, capability);
+	osync_capability_unref(capability);
 
 	/** capmock4 as child */
 	capability = osync_capability_new_child(capability, &error);

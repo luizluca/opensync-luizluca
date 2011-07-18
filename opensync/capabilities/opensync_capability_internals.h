@@ -37,7 +37,8 @@ void osync_capability_param_unref(OSyncCapabilityParameter *capparam);
 
 /**
  * @brief Creates a new capability object which will be added to the end of capabilities of the capabilities object.
- *  The returned object will be freed with the capabilities object.
+ *  The returned object is owned by the OSyncCapabilitiesObjType objtype and
+ *  will be freed with it.  You do not need to unref the returned pointer.
  * @param objtype The pointer to a capabilitiesobjtype object
  * @param node The node must be already inserted at the end of childs of the objtype xml node
  * @param error The error which will hold the info in case of an error

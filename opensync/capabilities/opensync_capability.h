@@ -60,13 +60,12 @@ typedef enum {
 } OSyncCapabilityType;
 
 /**
- * @brief Creates a new capability object which will be added to the end of capabilities of the capabilities object.
- *  The returned object will be freed with the capabilities object.
+ * @brief Creates a new capability object
  * @param capobjtype The pointer to a capabilities objtype object
  * @param error The error which will hold the info in case of an error
  * @return The pointer to the newly allocated capability object or NULL in case of error
  */
-OSYNC_EXPORT OSyncCapability *osync_capability_new(OSyncCapabilitiesObjType* capobjtype, OSyncError **error);
+OSYNC_EXPORT OSyncCapability *osync_capability_new(OSyncError **error);
 
 OSYNC_EXPORT OSyncCapability *osync_capability_ref(OSyncCapability *capability);
 OSYNC_EXPORT void osync_capability_unref(OSyncCapability *capability);

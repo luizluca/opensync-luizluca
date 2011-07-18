@@ -40,6 +40,7 @@ OSyncCapabilitiesObjType *osync_capabilities_objtype_new(OSyncCapabilities *capa
 		goto error;
 
 	capobjtype->name = osync_strdup(objtype);
+	capobjtype->ref_count = 1;
 
 	osync_capabilities_add_objtype(capabilities, capobjtype);
 
@@ -54,7 +55,6 @@ OSyncCapabilitiesObjType *osync_capabilities_objtype_parse(OSyncCapabilities *ca
 {
 	xmlChar *objtype;
 	xmlNode *cur;
-	OSyncCapability *capability;
 	OSyncCapabilitiesObjType *capobjtype = NULL;
 	osync_assert(capabilities);
 	osync_assert(node);
@@ -74,7 +74,7 @@ OSyncCapabilitiesObjType *osync_capabilities_objtype_parse(OSyncCapabilities *ca
 		if (cur->type != XML_ELEMENT_NODE)
 			continue;
 
-		if (!(capability = osync_capability_parse(capobjtype, cur, error)))
+		if (!osync_capability_parse(capobjtype, cur, error))
 			goto error;
 	}
 
@@ -82,6 +82,8 @@ OSyncCapabilitiesObjType *osync_capabilities_objtype_parse(OSyncCapabilities *ca
 
 error:
 	osync_xml_free(objtype);
+	if (capobjtype)
+		osync_capabilities_objtype_unref(capobjtype);
 
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s" , __func__, osync_error_print(error));
 	return NULL;

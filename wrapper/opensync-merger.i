@@ -1,8 +1,8 @@
 typedef struct {} Capability;
 %extend Capability {
-	Capability(OSyncCapabilitiesObjType *capobjtype) {
+	Capability() {
 		Error *err = NULL;
-		Capability *cap = osync_capability_new(capobjtype, &err);
+		Capability *cap = osync_capability_new(&err);
 		if (raise_exception_on_error(err))
 			return NULL;
 		else
@@ -10,7 +10,7 @@ typedef struct {} Capability;
 	}
 
 	~Capability() {
-		/* FIXME: no way to free a capability??? */
+                osync_capability_unref(self);
 	}
 
 	const char *get_name() {
