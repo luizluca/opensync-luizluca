@@ -5,6 +5,28 @@ listed in their respective files and can be considered an adendum to
 this document.
 
 
+CODE ORGANIZATION
+---------------------------------------------------------------------
+
+What is the difference between _private.h and _internal.h headers?
+
+Both are meant to contain only structs and functions that are available
+for internal library use.  Whereas _internal.h headers can be included
+from any other module, _private.h headers are meant to only be included
+by the module that it pertains to.
+
+Therefore, structs are usually in _private.h, with an API to access
+those structs in _internal.h.
+
+For example:
+	opensync_xmlfield.h is the public API
+	opensync_xmlfield_internal.h is the internal library API
+	opensync_xmlfield_private.h contains the structs
+
+Therefore, the header opensync_xmlfield_private.h may be included from
+opensync_xmlfield.c, but should not be included from opensync_xmlformat.c.
+
+
 CODING STYLE
 ---------------------------------------------------------------------
 See linux/Documentation/CodingStyle.
