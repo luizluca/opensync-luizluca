@@ -2598,7 +2598,7 @@ const char *osync_engine_get_cmdstr(OSyncEngineCmd cmd)
 
 	switch (cmd) {
 		case OSYNC_ENGINE_COMMAND_CONNECT:
-			cmdstr = "CONNECTED";
+			cmdstr = "CONNECT";
 			break;
 		case OSYNC_ENGINE_COMMAND_CONNECT_DONE:
 			cmdstr = "CONNECT_DONE";
