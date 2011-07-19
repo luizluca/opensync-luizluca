@@ -1148,10 +1148,10 @@ osync_bool osync_obj_engine_command(OSyncObjEngine *engine, OSyncEngineCmd cmd, 
 			objtype_sink = osync_member_find_objtype_sink(member, engine->objtype);
 
 			/* Is there at least one other writeable sink? */
-			if (objtype_sink && osync_objtype_sink_get_write(objtype_sink) && write_sinks) {
+			if (((objtype_sink && osync_objtype_sink_get_write(objtype_sink)) && write_sinks == 1) || write_sinks == 0) {
 				osync_sink_engine_ref(sinkengine); // Note that read callback has a reference
 				_osync_obj_engine_read_callback(sinkengine->proxy, sinkengine, *error);
-				osync_trace(TRACE_INTERNAL, "no other writable sinks .... SKIP");
+				osync_trace(TRACE_INTERNAL, "no other writable sinks (write_sinks = %d) .... SKIP", write_sinks);
 				continue;
 			}
 
