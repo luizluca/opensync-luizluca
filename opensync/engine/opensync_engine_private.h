@@ -129,7 +129,7 @@ struct OSyncEngine {
 	int obj_written;
 	int obj_sync_done;
 	
-	osync_bool busy;
+	volatile osync_bool busy;
 	
 	GHashTable *internalFormats;
 	GHashTable *internalSchemas;
