@@ -832,6 +832,7 @@ static osync_bool _inject_changelog_entries(OSyncObjEngine *engine, OSyncError *
 		mid = mid->next;
 	}
 
+	osync_list_free(memberids);
 	osync_list_free(ids);
 	osync_list_free(changetypes);
 
