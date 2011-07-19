@@ -299,13 +299,14 @@ OSyncCapabilitiesObjType *osync_capabilities_add_new_objtype(OSyncCapabilities *
 	osync_capabilities_add_objtype(capabilities, capsobjtype);
 	osync_capabilities_objtype_unref(capsobjtype);
 
+	osync_trace(TRACE_EXIT, "%s: %p", __func__, capsobjtype);
 	return capsobjtype;
 
 error:
 	if (capsobjtype)
 		osync_capabilities_objtype_unref(capsobjtype);
 
-	osync_trace(TRACE_EXIT, "%s: %p %p", __func__, capabilities, objtype);
+	osync_trace(TRACE_EXIT, "%s: %s", __func__, osync_error_print(error));
 	return NULL;
 }
 
@@ -323,13 +324,14 @@ OSyncCapability *osync_capabilities_add_new_capability(OSyncCapabilitiesObjType 
 	osync_capabilities_objtype_add_capability(capsobjtype, cap);
 	osync_capability_unref(cap);
 
+	osync_trace(TRACE_EXIT, "%s: %p", __func__, cap);
 	return cap;
 
 error:
 	if (cap)
 		osync_capability_unref(cap);
 
-	osync_trace(TRACE_EXIT, "%s: %p", __func__, capsobjtype);
+	osync_trace(TRACE_EXIT, "%s: %s", __func__, osync_error_print(error));
 	return NULL;
 }
 
