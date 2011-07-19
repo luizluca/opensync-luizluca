@@ -238,7 +238,7 @@ osync_bool osync_hashtable_load(OSyncHashTable *table, OSyncError **error)
 
 		g_hash_table_insert(table->db_entries, uid, hash);
 	}
-	osync_list_free(result);
+	osync_db_free_list(result);
 
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;

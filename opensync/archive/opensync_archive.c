@@ -446,6 +446,9 @@ osync_bool osync_archive_load_changes(OSyncArchive *archive, const char *objtype
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
  error:
+ 	if (result)
+		osync_db_free_list(result);
+
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;	
 }
@@ -603,7 +606,7 @@ osync_bool osync_archive_flush_ignored_conflict(OSyncArchive *archive, const cha
 osync_bool osync_archive_get_mixed_objengines(OSyncArchive *archive, const char *objengine, OSyncList **objengines, OSyncError **error)
 {
 	char *query = NULL, *escaped_objengine, *objengine_name;
-	OSyncList *result, *row, *column;
+	OSyncList *result = NULL, *row, *column;
 
 	osync_assert(archive);
 	osync_assert(objengine);
@@ -637,6 +640,9 @@ osync_bool osync_archive_get_mixed_objengines(OSyncArchive *archive, const char 
 
 	return TRUE;
 error:
+	if (result)
+		osync_db_free_list(result);
+
 	return FALSE;
 }
 
