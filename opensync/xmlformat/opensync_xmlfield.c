@@ -153,8 +153,10 @@ error:
 void osync_xmlfield_free(OSyncXMLField *xmlfield)
 {
 	osync_assert(xmlfield);
-	
-	xmlFreeNode(xmlfield->node);
+
+	if (xmlfield->node)
+		xmlFreeNode(xmlfield->node);
+
 	g_free(xmlfield);
 }
 
@@ -186,7 +188,31 @@ int osync_xmlfield_key_compare_stdlib(const void *key1, const void *key2)
 
 void osync_xmlfield_delete(OSyncXMLField *xmlfield)
 {
+	OSyncXMLField *child = NULL;
+
 	osync_assert(xmlfield);
+
+	// unlink and free our children first
+	//
+	// if we unlink ourselves (and therefore all the children)
+	// then osync_xmlfield_free() will leak, since it doesn't know children
+	//
+	// if we code free to know children, then, as it cycles through the
+	// OSyncXMLField children, it won't know how to tell whether each
+	// child's node needs to be freed, or whether it has been freed
+	// at the top level node.
+	//
+	// really, it's just easier and safer with this inefficient method :-(
+	// I tried doing it in _free() and couldn't get it to work well. - CDF
+	//
+	for (child = xmlfield->child; child; ) {
+		OSyncXMLField *next = child->next;
+
+		osync_xmlfield_unlink(child);
+		osync_xmlfield_free(child);
+
+		child = next;
+	}
 
 	osync_xmlfield_unlink(xmlfield);
 	osync_xmlfield_free(xmlfield);

@@ -132,6 +132,7 @@ void osync_xmlformat_unref(OSyncXMLFormat *xmlformat)
 	osync_assert(xmlformat);
 	
 	if (g_atomic_int_dec_and_test(&(xmlformat->ref_count))) {
+		// free the children
 		OSyncXMLField *cur, *tmp;
 		cur = xmlformat->first_child;
 		while(cur != NULL)
@@ -140,8 +141,19 @@ void osync_xmlformat_unref(OSyncXMLFormat *xmlformat)
 				osync_xmlfield_delete(cur);
 				cur = tmp;
 			}
+
+		// free the root OSyncXMLField, but NOT the actual node,
+		// which is part of the above tree and already freed
+		//
+		// blank the node pointer (already freed above)
+		xmlformat->xmlfield->node = NULL;
+		// free the OSyncXMLField object
+		osync_xmlfield_free(xmlformat->xmlfield);
+
+		// free the XML document, which frees the xml Doc tree
 		osync_xml_free_doc(xmlformat->doc);
-		g_free(xmlformat);
+
+		osync_free(xmlformat);
 	}
 }
 
