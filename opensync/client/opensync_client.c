@@ -1331,12 +1331,17 @@ static osync_bool _osync_client_handle_read_change(OSyncClient *client, OSyncMes
 		osync_context_unref(context);
 	}
 
+	osync_change_unref(change);
+
 	osync_trace(TRACE_EXIT, "%s", __func__);
 	return TRUE;
 
  error_free_reply:
 	osync_message_unref(reply);
  error:
+	if (change)
+		osync_change_unref(change);
+
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
 	return FALSE;
 }
