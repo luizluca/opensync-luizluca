@@ -1143,19 +1143,26 @@ osync_bool osync_queue_disconnect(OSyncQueue *queue, OSyncError **error)
 			osync_error_set(&huperr, OSYNC_ERROR_IO_ERROR, "Disconnect.");
 			errormsg = osync_message_new_errorreply(NULL, huperr, &error);
 			osync_error_unref(&huperr);
-			osync_message_set_id(errormsg, pending->id);
-			
-			/* Unlock the pending lock during the callback */
-			g_mutex_unlock(queue->pendingLock);
-			
-			osync_trace(TRACE_INTERNAL, "%s: Reporting disconnect error for message %lli", __func__, pending->id);
 
-			pending->callback(errormsg, pending->user_data);
-			if (errormsg != NULL)
+			if (errormsg) {
+
+				osync_message_set_id(errormsg, pending->id);
+
+				osync_trace(TRACE_INTERNAL, "%s: Reporting disconnect error for message %lli", __func__, pending->id);
+
+				/* Unlock the pending lock during the callback */
+				g_mutex_unlock(queue->pendingLock);
+
+				pending->callback(errormsg, pending->user_data);
+
+				/* Lock again */
+				g_mutex_lock(queue->pendingLock);
+
 				osync_message_unref(errormsg);
-		
-			/* Lock again */
-			g_mutex_lock(queue->pendingLock);
+			}
+			else {
+				osync_trace(TRACE_ERROR, "%s: could not process finalizing error replies!", __func__);
+			}
 		}
 		
 		// TODO: Refcounting for OSyncPendingMessage
