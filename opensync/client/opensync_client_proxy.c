@@ -301,7 +301,7 @@ static void _osync_client_proxy_fin_handler(OSyncMessage *message, void *user_da
 		ctx->fin_callback(proxy, ctx->fin_callback_data, NULL);
 	} else if (osync_message_get_cmd(message) == OSYNC_MESSAGE_ERRORREPLY) {
 
-		if (osync_demarshal_error(message, &error, &locerror))
+		if (!osync_demarshal_error(message, &error, &locerror))
 			goto error;
 
 		ctx->fin_callback(proxy, ctx->fin_callback_data, error);
@@ -317,6 +317,9 @@ static void _osync_client_proxy_fin_handler(OSyncMessage *message, void *user_da
 	return;
 	
  error:
+	if (error)
+		osync_error_unref(&error);
+
 	ctx->fin_callback(proxy, ctx->fin_callback_data, locerror);
 	osync_free(ctx);
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(&locerror));
