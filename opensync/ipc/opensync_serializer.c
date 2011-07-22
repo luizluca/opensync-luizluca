@@ -215,19 +215,18 @@ osync_bool osync_demarshal_change(OSyncMessage *message, OSyncChange **change, O
 	 * changetype
 	 * data */
 
-	*change = osync_change_new(error);
-	if (!*change)
-		goto error;
-
 	osync_message_read_string(message, &uid, error);
 	osync_message_read_string(message, &hash, error);
 	osync_message_read_int(message, &change_type, error);
-
 	if (osync_error_is_set(error))
-		goto error;
+		goto error_free;
 
 	if (!osync_demarshal_data(message, &data, env, error))
-		goto error_free_change;
+		goto error_free;
+
+	*change = osync_change_new(error);
+	if (!*change)
+		goto error_free;
 
 	osync_change_set_uid(*change, uid);
 	osync_free(uid);
@@ -236,16 +235,18 @@ osync_bool osync_demarshal_change(OSyncMessage *message, OSyncChange **change, O
 	osync_free(hash);
 
 	osync_change_set_changetype(*change, change_type);
+
 	osync_change_set_data(*change, data);
 	osync_data_unref(data);
 
 	return TRUE;
 
- error_free_change:
+ error_free:
 	osync_free(uid);
 	osync_free(hash);
-	osync_change_unref(*change);
- error:
+	if (data)
+		osync_data_unref(data);
+
 	return FALSE;
 }
 
