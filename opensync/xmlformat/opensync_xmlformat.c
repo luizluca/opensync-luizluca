@@ -259,12 +259,29 @@ OSyncXMLFieldList *osync_xmlformat_search_field(OSyncXMLFormat *xmlformat, const
 
 osync_bool osync_xmlformat_assemble(OSyncXMLFormat *xmlformat, char **buffer, unsigned int *size, OSyncError **error)
 {
+	xmlChar *locbuffer = NULL;
+	int locsize = 0;
+
 	osync_assert(xmlformat);
 	osync_assert(buffer);
 	osync_assert(size);
-	
-	xmlDocDumpFormatMemoryEnc(xmlformat->doc, (xmlChar **)buffer, (int *)size, NULL, 1);
+
+	xmlDocDumpFormatMemoryEnc(xmlformat->doc, &locbuffer, &locsize, NULL, 1);
+
+	if (!locbuffer || locsize < 0)
+		goto error;
+
+	// convert buffer into osync memory, so the caller can free it
+	// with osync_free instead of xmlFree
+	*buffer = osync_strdup((char*)locbuffer);
+	*size = locsize;
+
+	xmlFree(locbuffer);
+
 	return TRUE;
+
+error:
+	return FALSE;
 }
 
 osync_bool osync_xmlformat_sort(OSyncXMLFormat *xmlformat, OSyncError **error)

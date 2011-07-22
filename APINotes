@@ -24,9 +24,19 @@ API Removals:
 
 API Changes:
 ------------
+
+
+API Behavioural Changes:
+------------------------
 	- changed behaviour only of osync_capabilities_add_objtype() and
 		osync_capabilities_objtype_add_capability(), which
 		now ref the objects as they add them to the list
 	- [internal] changed capability-related _parse() and _parse_and_add()
 		functions, to behave consistently, returning ref'd objects now.
+	- osync_xmlformat_assemble() used to return a buffer allocated with
+		libxml2's memory functions, and therefore expected to be
+		freed with xmlFree().  This has been changed to return a
+		buffer allocated with osync_strdup(), so the caller can
+		free it with osync_free() as expected.  Indeed most of the
+		code that I saw assumed this already.
 
