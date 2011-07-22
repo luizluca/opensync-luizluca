@@ -808,19 +808,22 @@ static osync_bool _inject_changelog_entries(OSyncObjEngine *engine, OSyncError *
 					long long int memberid = (long long int)GPOINTER_TO_INT(mid->data);
 					OSyncMappingEntryEngine *entry = osync_mapping_engine_find_entry_by_memberid(mapping_engine, memberid);
 					OSyncChangeType changetype = (OSyncChangeType) t->data;
-					OSyncChange *ignored_change = osync_change_new(error);
 					OSyncObjFormat *dummyformat = NULL;
 					OSyncData *data = NULL;
+					OSyncChange *ignored_change = osync_change_new(error);
 
 					osync_change_set_changetype(ignored_change, changetype); 
-					osync_entry_engine_update(entry, ignored_change);
 
 					dummyformat = osync_objformat_new("plain", engine->objtype, NULL);
 					data = osync_data_new(NULL, 0, dummyformat, NULL);
-					osync_change_set_data(ignored_change, data);
 					osync_objformat_unref(dummyformat);
+					osync_change_set_data(ignored_change, data);
+					osync_data_unref(data);
 
 					osync_change_set_uid(ignored_change, osync_mapping_entry_get_uid(entry->entry));
+
+					osync_entry_engine_update(entry, ignored_change);
+					osync_change_unref(ignored_change);
 
 					osync_trace(TRACE_INTERNAL, "CHANGE: %p", entry->change);
 				}
