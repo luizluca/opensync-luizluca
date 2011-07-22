@@ -95,7 +95,7 @@ OSYNC_EXPORT OSyncXMLFieldList *osync_xmlformat_search_field(OSyncXMLFormat *xml
  * @brief Dump the xmlformat into a buffer.
  * @param xmlformat The pointer to the xmlformat object
  * @param buffer The pointer to the buffer which will hold the xml document. It is up
- *  to the caller to free this buffer.
+ *  to the caller to free this buffer with osync_free().
  * @param size The pointer to the buffer which will hold the size of the xml document
  * @param error The error which will hold the info in case of an error
  * @return TRUE on success, FALSE on any error
