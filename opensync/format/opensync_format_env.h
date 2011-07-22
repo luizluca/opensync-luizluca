@@ -265,7 +265,7 @@ OSYNC_EXPORT OSyncFormatConverterPath *osync_format_env_find_path_formats(OSyncF
  * @param targetformat The target format to be converted to
  * @param preferred_format Format that should be preferred to build the conversion path
  * @param error The error-return location
- * @return The appropriate conversion path, or NULL if an error occurred.
+ * @return The appropriate conversion path, or NULL if an error occurred.  The caller must free, with osync_converter_path_unref()
  * 
  */
 OSYNC_EXPORT OSyncFormatConverterPath *osync_format_env_find_path_with_detectors(OSyncFormatEnv *env, OSyncData *sourcedata, OSyncObjFormat *targetformat, const char *preferred_format, OSyncError **error);
