@@ -596,7 +596,10 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 		if (target_fn(fndata, current->format)) {
 			osync_trace(TRACE_INTERNAL, "Target %s found", osync_objformat_get_name(current->format));
 			/* Done. return the result */
+			if (result)
+				osync_format_converter_path_vertice_unref(result);
 			result = current;
+			current = NULL;
 			break;
 		}
 		
@@ -606,6 +609,7 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 		if (last_converter_fn(fndata, tree)) {
 			osync_trace(TRACE_INTERNAL, "Last converter for target format reached: %s.", (result)?osync_objformat_get_name(result->format):"null");
 			osync_format_converter_path_vertice_unref(current);
+			current = NULL;
 			break;
 		}
 		/* Check if saved result is equal to current regarding losses, objtype_changes
@@ -613,20 +617,48 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 		if (result) {
 			if (result->losses <= current->losses && result->objtype_changes <= current->objtype_changes && result->conversions <= current->conversions) {
 				osync_trace(TRACE_INTERNAL, "Target %s found in queue", osync_objformat_get_name(result->format));
-				tree->search = osync_list_remove(tree->search, result);
+
+				/* We have to deal with a tricky situation
+				 * here... result can be set above, as well
+				 * as below in the neighbour loop... if set
+				 * above, result does not exist in the list,
+				 * and the remove is a noop.  If set below,
+				 * then it does exist in the search list, and
+				 * has been ref'd both for result itself and
+				 * for the list, and therefore must be unref'd
+				 * here.  sigh
+				 */
+				if (osync_list_find(tree->search, result)) {
+					tree->search = osync_list_remove(tree->search, result);
+					// unref for the list... there's still
+					// a ref for result and result is still
+					// valid!
+					osync_format_converter_path_vertice_unref(result);
+				}
 				break;
 			} else {
+				/* unref result... the list will be unref'd
+				 * separately in the tree_free call
+				 */
+				osync_format_converter_path_vertice_unref(result);
 				result = NULL;
 			}
 		}
 
 
 		/*
-		 * If we dont have reached a target, we look at our neighbours 
+		 * At this point, current holds something, but result is
+		 * always null. (see break above)
+		 */
+
+		/*
+		 * If we haven't reached a target, we look at our neighbours
 		 */
 		osync_trace(TRACE_INTERNAL, "Looking at %s's neighbours.", osync_objformat_get_name(current->format));
 
 		/* Convert the "current" data to the last edge found in the "current" conversion path */
+		if (current->data)
+			osync_data_unref(current->data);
 		current->data = osync_data_clone(sourcedata, error);
 		path_tmp = osync_converter_path_new(error);
 		if (!path_tmp)
@@ -637,11 +669,13 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 		}
 		if (!(osync_format_env_convert(env, path_tmp, current->data, error))) {
 			osync_trace(TRACE_INTERNAL, "osync format env convert on this path failed - skipping the conversion");
+			osync_converter_path_unref(path_tmp);
 			continue;
 		}
 		osync_converter_path_unref(path_tmp);
 
 		/* Find all the neighboors or "current" at its current conversion point */
+		/* (neighbour is a new object that must be unref'd) */
 		while ((neighbour = osync_format_converter_path_vertice_get_next_vertice_neighbour(env, tree, current, error))) {
 			GString *string2 = g_string_new("");
 			guint size2 = osync_list_length(neighbour->path);
@@ -681,16 +715,26 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 			 * We found a possible target. Save it. */
 			if (target_fn(fndata, neighbour->format)) {
 				osync_trace(TRACE_INTERNAL, "Possible target found.");
+
+				/* since while(neighbour...) is a loop,
+				 * result may have been set from a previous
+				 * iteration, even though result started out
+				 * as null when we started the neighbour loop,
+				 * so we must do housekeeping here.
+				 */
+				if (result)
+					osync_format_converter_path_vertice_unref(result);
 				result = neighbour;
-				osync_format_converter_path_vertice_ref(result);
+				osync_format_converter_path_vertice_ref(result); // there's a ref for result and the tree->search list now
 			}
 		}
 
-		if (osync_error_is_set(error))
-			goto error_free_tree;
-		
 		/* Done, drop the reference to the OSyncFormatConverterPathVertice */
 		osync_format_converter_path_vertice_unref(current);
+
+		/* Check for error along the way */
+		if (osync_error_is_set(error))
+			goto error_free_tree;
 	}
 			
 	if (!result) {
@@ -718,6 +762,9 @@ static OSyncFormatConverterPath *osync_format_env_find_path_fn(OSyncFormatEnv *e
 	return path;
 
  error_free_tree:
+	if (result)
+		osync_format_converter_path_vertice_unref(result);
+
 	osync_converter_tree_free(tree);
  error:
 	osync_trace(TRACE_EXIT_ERROR, "%s: %s", __func__, osync_error_print(error));
