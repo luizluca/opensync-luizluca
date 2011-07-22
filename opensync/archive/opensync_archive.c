@@ -605,7 +605,7 @@ osync_bool osync_archive_flush_ignored_conflict(OSyncArchive *archive, const cha
 
 osync_bool osync_archive_get_mixed_objengines(OSyncArchive *archive, const char *objengine, OSyncList **objengines, OSyncError **error)
 {
-	char *query = NULL, *escaped_objengine, *objengine_name;
+	char *query = NULL, *escaped_objengine = NULL, *objengine_name;
 	OSyncList *result = NULL, *row, *column;
 
 	osync_assert(archive);
@@ -635,13 +635,15 @@ osync_bool osync_archive_get_mixed_objengines(OSyncArchive *archive, const char 
 		*objengines = osync_list_append((*objengines), osync_strdup(objengine_name));
 	}
 
+	osync_free(escaped_objengine);
 	osync_db_free_list(result);	
-
 
 	return TRUE;
 error:
 	if (result)
 		osync_db_free_list(result);
+	if (escaped_objengine)
+		osync_free(escaped_objengine);
 
 	return FALSE;
 }
