@@ -719,6 +719,7 @@ OSyncList *osync_member_get_objformat_sinks_all(OSyncMember *member)
 
 OSyncObjFormat *osync_member_support_targetformat(OSyncMember *member, OSyncFormatEnv *formatenv, OSyncObjFormat *targetformat)
 {
+	OSyncError *error = NULL;
 	GList *o;
 
 	for (o = member->objtypes; o; o = o->next) {
@@ -730,8 +731,7 @@ OSyncObjFormat *osync_member_support_targetformat(OSyncMember *member, OSyncForm
 			const char *objformat_name = osync_objformat_sink_get_objformat(format_sink);
 			OSyncObjFormat *sourceformat = osync_format_env_find_objformat(formatenv, objformat_name);
 
-			/** TODO error handling */
-			OSyncFormatConverterPath *path = osync_format_env_find_path(formatenv, sourceformat, targetformat, NULL);
+			OSyncFormatConverterPath *path = osync_format_env_find_path(formatenv, sourceformat, targetformat, &error);
 			if (path) {
 				/* unref right away, since only using pointer as
 				 * success flag */
@@ -739,6 +739,11 @@ OSyncObjFormat *osync_member_support_targetformat(OSyncMember *member, OSyncForm
 
 				osync_list_free(format_sinks);
 				return sourceformat;
+			}
+			else {
+				/* TODO error handling */
+				/* log it for now? */
+				osync_trace(TRACE_ERROR, "%s", osync_error_print(&error));
 			}
 		}
 		osync_list_free(format_sinks);
