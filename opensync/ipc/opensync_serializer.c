@@ -619,6 +619,13 @@ osync_bool osync_demarshal_error(OSyncMessage *message, OSyncError **marshal_err
 		int error_type = OSYNC_NO_ERROR;
 
 		osync_message_read_int(message, &error_type, error);
+		if (error_type <= OSYNC_NO_ERROR || error_type > OSYNC_ERROR_MAX) {
+			/* odd... this almost seems like an error in itself,
+			 * so let's log it just in case
+			 */
+			osync_trace(TRACE_ERROR, "%s: demarshaled invalid error type: %d", __func__, error_type);
+		}
+
 		osync_message_read_string(message, &msg, error);
 
 		osync_error_set(marshal_error, (OSyncErrorType)error_type, "%s", msg);
