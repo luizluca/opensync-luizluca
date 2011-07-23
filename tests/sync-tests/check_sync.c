@@ -994,7 +994,7 @@ START_TEST (sync_conflict_duplicate)
 	check_hash(table, "testdata-dupe-dupe");
 	osync_hashtable_close(table);
 	
-	fail_unless(!system("rm -f data1/testdata-dupe data2/testdata-dupe-dupe"), NULL);
+	fail_unless(!osync_system("rm -f data1/testdata-dupe data2/testdata-dupe-dupe"), NULL);
 
 	
 	synchronize_once(engine, NULL);

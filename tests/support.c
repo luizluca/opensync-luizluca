@@ -12,6 +12,18 @@
 char *olddir = NULL;
 
 
+int osync_system(const char *command)
+{
+	int status = system(command);
+	if (WIFEXITED(status))
+		return WEXITSTATUS(status);
+	else {
+		printf("system() failed while executing: '%s' result: %d, errno: %d, %s\n",
+			command, status, (errno), strerror(errno));
+		return -1;
+	}
+}
+
 void osync_testsuite_all(Suite *s, struct osync_testcase_s *tc)
 {
 	unsigned int i;
@@ -124,7 +136,7 @@ char *setup_testbed(const char *fkt_name)
 			abort();
 		}
 		command = g_strdup_printf("cp -R %s/* %s", dirname, testbed);
-		if (system(command))
+		if (osync_system(command))
 			abort();
 		g_free(command);
 
@@ -181,23 +193,23 @@ char *setup_testbed(const char *fkt_name)
 	g_free(dirname);
 	
 	command = g_strdup_printf("cp ./mock-plugin/mock-sync.%s %s/plugins", G_MODULE_SUFFIX, testbed);
-	if (system(command))
+	if (osync_system(command))
 		abort();
 	g_free(command);
 	
 	command = g_strdup_printf("cp ./mock-plugin/mock-format.%s %s/formats", G_MODULE_SUFFIX, testbed);
-	if (system(command))
+	if (osync_system(command))
 		abort();
 	g_free(command);
 
 	command = g_strdup_printf("cp -R %s/../../misc/schemas/*.xsd %s", OPENSYNC_TESTDATA, testbed);
-	if (system(command))
+	if (osync_system(command))
 		abort();
 	g_free(command);
 
 #ifndef _WIN32	/* chmod is useless on windows system */
 	command = g_strdup_printf("chmod -R 700 %s", testbed);
-	if (system(command))
+	if (osync_system(command))
 		abort();
 	g_free(command);
 #endif
@@ -225,7 +237,7 @@ void destroy_testbed(char *path)
 			abort();
 		g_free(olddir);
 	}
-	if (system(command))
+	if (osync_system(command))
 		abort();
 
 	g_free(command);
@@ -861,7 +873,7 @@ osync_bool osync_testing_diff(const char *file1, const char *file2)
 	osync_assert(file2);
 
 	cmd = g_strdup_printf(DIFF " -x \".*\" %s %s", file1, file2);
-	ret = system(cmd);
+	ret = osync_system(cmd);
 	g_free(cmd);
 
 	return !ret;
@@ -875,7 +887,7 @@ osync_bool osync_testing_directory_is_empty(const char *dirname)
 	gchar *cmd;
 	int ret;
 	cmd = g_strdup_printf("ls %s | grep \".*\"", dirname);
-	ret = system(cmd);
+	ret = osync_system(cmd);
 	return (ret != 0);
 }
 
@@ -952,7 +964,7 @@ OSyncEngine *osync_testing_create_engine_dummy(unsigned int member_size)
 
 void osync_testing_system_abort(const char *command)
 {
-	if (system(command))
+	if (osync_system(command))
 		abort();
 }
 

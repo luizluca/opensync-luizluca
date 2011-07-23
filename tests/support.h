@@ -39,6 +39,7 @@ struct osync_testcase_s {
 };
 
 
+int osync_system(const char *command);
 int osync_testsuite(int argc, char **argv, const char *unittest,
 		struct osync_testcase_s *tc);
 

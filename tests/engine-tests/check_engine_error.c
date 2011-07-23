@@ -550,7 +550,7 @@ START_TEST (engine_error_one_of_two_connect_error)
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
 	char *plugindir = g_strdup_printf("%s/plugins", testbed);
 	
-	if (system("cp testdata data1/testdata"))
+	if (osync_system("cp testdata data1/testdata"))
 		abort();
 	
 	g_setenv("CONNECT_ERROR", "1", TRUE);
@@ -873,7 +873,7 @@ START_TEST (engine_error_single_connect_timeout)
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
 	char *plugindir = g_strdup_printf("%s/plugins", testbed);
 	
-	if (system("cp testdata data1/testdata"))
+	if (osync_system("cp testdata data1/testdata"))
 		abort();
 	
 	g_setenv("CONNECT_TIMEOUT", "2", TRUE);
@@ -932,7 +932,7 @@ START_TEST (engine_error_dual_connect_timeout)
 	char *formatdir = g_strdup_printf("%s/formats", testbed);
 	char *plugindir = g_strdup_printf("%s/plugins", testbed);
 	
-	if (system("cp testdata data1/testdata"))
+	if (osync_system("cp testdata data1/testdata"))
 		abort();
 	
 	g_setenv("CONNECT_TIMEOUT", "3", TRUE);
@@ -1949,7 +1949,7 @@ START_TEST (engine_error_commit_error_modify)
 
 	g_usleep(2*G_USEC_PER_SEC);
 	
-	if (system("cp newdata2 data1/testdata"))
+	if (osync_system("cp newdata2 data1/testdata"))
 		abort();
 	
 	fail_unless(!synchronize_once(engine, &error), NULL);
@@ -2023,7 +2023,7 @@ START_TEST (engine_error_commit_error_delete)
 
 	g_usleep(2*G_USEC_PER_SEC);
 	
-	if (system("rm -f data1/testdata"))
+	if (osync_system("rm -f data1/testdata"))
 		abort();
 	
 	fail_unless(!synchronize_once(engine, &error), NULL);
