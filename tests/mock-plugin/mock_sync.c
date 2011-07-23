@@ -602,6 +602,7 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 
 		const char *objtype = osync_objtype_sink_get_name(sink);
 		dir->res = osync_plugin_config_find_active_resource(config, objtype);
+		osync_plugin_resource_ref(dir->res);
 		dir->path = osync_plugin_resource_get_path(dir->res);
 		osync_assert(dir->path);
 
