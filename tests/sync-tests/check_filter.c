@@ -350,7 +350,7 @@ END_TEST
 START_TEST(filter_destobjtype_delete)
 {
 	/* Check if the destobjtype of the changes is being
-	 * set when the change type os DELETE */
+	 * set when the change type is DELETE */
 	char *testbed = setup_testbed("destobjtype_delete");
 	char *formatdir = g_strdup_printf("%s/formats",  testbed);
 	char *plugindir = g_strdup_printf("%s/plugins",  testbed);
