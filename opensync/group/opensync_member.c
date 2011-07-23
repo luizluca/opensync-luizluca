@@ -732,10 +732,11 @@ OSyncObjFormat *osync_member_support_targetformat(OSyncMember *member, OSyncForm
 
 			/** TODO error handling */
 			OSyncFormatConverterPath *path = osync_format_env_find_path(formatenv, sourceformat, targetformat, NULL);
-			/* unref right away, since only using pointer as
-			 * success flag */
-			osync_converter_path_unref(path);
 			if (path) {
+				/* unref right away, since only using pointer as
+				 * success flag */
+				osync_converter_path_unref(path);
+
 				osync_list_free(format_sinks);
 				return sourceformat;
 			}
