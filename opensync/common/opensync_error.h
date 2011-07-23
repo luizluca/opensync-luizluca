@@ -38,6 +38,7 @@ OPENSYNC_BEGIN_DECLS
  * @brief Defines the possible error types
  */
 typedef enum {
+
 	OSYNC_NO_ERROR = 0,
 	OSYNC_ERROR_GENERIC = 1,
 	OSYNC_ERROR_IO_ERROR = 2,
@@ -54,7 +55,11 @@ typedef enum {
 	OSYNC_ERROR_NO_CONNECTION = 13,
 	OSYNC_ERROR_TEMPORARY = 14,
 	OSYNC_ERROR_LOCKED = 15,
-	OSYNC_ERROR_PLUGIN_NOT_FOUND = 16
+	OSYNC_ERROR_PLUGIN_NOT_FOUND = 16,
+	/* This is useful for checking if an error type is in range */
+	/* Be sure to update this if you add more types. */
+	OSYNC_ERROR_MAX = 16
+
 } OSyncErrorType;
 
 /** @brief Increase the reference count of the error object 
