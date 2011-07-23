@@ -127,6 +127,38 @@ char *setup_testbed(const char *fkt_name)
 		if (system(command))
 			abort();
 		g_free(command);
+
+		/* special handling for the git repo, since git does not
+		 * support empty directories, check for a file named
+		 * "empty_dirs" and create every subdirectory listed
+		 * there that does not begin with a slash (relative dirs only)
+		 */
+		{
+			char *empty_name = NULL;
+			FILE *fh = NULL;
+
+			empty_name = g_strdup_printf("%s/empty_dirs", dirname);
+			if ((fh = fopen(empty_name, "r"))) {
+				char line[100], *s;
+				while ((s = fgets(line, sizeof(line), fh))) {
+					int len = strlen(s);
+					/* trim newline */
+					if (len && s[len-1] == '\n')
+						s[len-1] = 0;
+					/* only create relative paths */
+					if (len && s[0] != '/' && s[0] != '\\' && s[0] != '#') {
+						char *newdir = g_strdup_printf("%s/%s", testbed, s);
+						if (newdir) {
+							g_mkdir_with_parents(newdir, 0755);
+							g_free(newdir);
+						}
+					}
+				}
+				fclose(fh);
+			}
+			g_free(empty_name);
+		}
+
 		g_free(dirname);
 	}
 	
