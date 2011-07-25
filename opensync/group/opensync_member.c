@@ -744,6 +744,7 @@ OSyncObjFormat *osync_member_support_targetformat(OSyncMember *member, OSyncForm
 				/* TODO error handling */
 				/* log it for now? */
 				osync_trace(TRACE_ERROR, "%s", osync_error_print(&error));
+				osync_error_unref(&error);
 			}
 		}
 		osync_list_free(format_sinks);
