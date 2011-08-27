@@ -1,11 +1,11 @@
 #include "support.h"
 
-static osync_bool detect(const char *data, int size, void *userdata)
+static osync_bool detect(OSyncFormatConverter *conv, const char *data, int size, void *userdata)
 {
 	return TRUE;
 }
 
-static osync_bool detect_false(const char *data, int size, void *userdata)
+static osync_bool detect_false(OSyncFormatConverter *conv, const char *data, int size, void *userdata)
 {
 	return FALSE;
 }
@@ -34,7 +34,7 @@ START_TEST (detect_smart)
 	OSyncObjFormat *result = osync_format_env_detect_objformat(env, data);
 	fail_unless(result == format1);
 	fail_unless(osync_data_get_objformat(data) == format2);
-	
+
 	osync_data_unref(data);
 	osync_format_env_unref(env);
 }
@@ -65,7 +65,7 @@ START_TEST (detect_different_objtype)
 	OSyncObjFormat *result = osync_format_env_detect_objformat(env, data);
 	fail_unless(result == format1);
 	fail_unless(osync_data_get_objformat(data) == format2);
-	
+
 	osync_data_unref(data);
 	osync_format_env_unref(env);
 }
@@ -96,7 +96,7 @@ START_TEST (detect_smart_no)
 	OSyncObjFormat *result = osync_format_env_detect_objformat(env, data);
 	fail_unless(!result);
 	fail_unless(osync_data_get_objformat(data) == format2);
-	
+
 	osync_data_unref(data);
 	osync_format_env_unref(env);
 }
