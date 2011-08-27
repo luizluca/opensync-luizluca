@@ -25,6 +25,10 @@ API Removals:
 API Changes:
 ------------
 
+    - osync_plugin_set_initialize renamed to osync_plugin_set_initialize_func
+    - osync_plugin_set_finalize renamed to osync_plugin_set_finalize_func
+    - osync_plugin_set_discover renamed to osync_plugin_set_discover_func
+
 
 API Behavioural Changes:
 ------------------------
