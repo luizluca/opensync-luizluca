@@ -231,7 +231,7 @@ error:
 	return NULL;
 }
 
-static void finalize(void *data)
+static void finalize(OSyncPlugin *plugin, void *data)
 {
 	mock_env *env = data;
 	
@@ -573,7 +573,7 @@ error:
 	return NULL;
 }
 
-static void finalize_multi(void *data)
+static void finalize_multi(OSyncPlugin *plugin, void *data)
 {
 	mock_env *env = data;
 	
@@ -973,7 +973,7 @@ error:
 	return NULL;
 }
 
-static void finalize_order(void *data)
+static void finalize_order(OSyncPlugin *plugin, void *data)
 {
 	mock_env *env = data;
 	
@@ -1215,7 +1215,7 @@ error:
 	return NULL;
 }
 
-static void finalize_reuse(void *data)
+static void finalize_reuse(OSyncPlugin *plugin, void *data)
 {
 	mock_env *env = data;
 	
@@ -1491,7 +1491,7 @@ error:
 	return NULL;
 }
 
-static void finalize5(void *data)
+static void finalize5(OSyncPlugin *plugin, void *data)
 {
 	mock_env *env = data;
 	
@@ -1697,7 +1697,7 @@ error:
 	return NULL;
 }
 
-static void finalize6(void *data)
+static void finalize6(OSyncPlugin *plugin, void *data)
 {
 	mock_env *env = data;
 	
@@ -1901,7 +1901,7 @@ error:
 	return NULL;
 }
 
-static void finalize7(void *data)
+static void finalize7(OSyncPlugin *plugin, void *data)
 {
 	mock_env *env = data;
 	

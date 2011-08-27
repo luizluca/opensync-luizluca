@@ -698,7 +698,7 @@ static void *mock_initialize(OSyncPlugin *plugin, OSyncPluginInfo *info, OSyncEr
 	return (void *)env;
 }
 
-static void mock_finalize(void *data)
+static void mock_finalize(OSyncPlugin *plugin, void *data)
 {
 	mock_env *env = data;
 
@@ -721,7 +721,7 @@ static void mock_finalize(void *data)
 
 /* Here we actually tell opensync which sinks are available. For this plugin, we
  * go through the list of directories and enable all, since all have been configured */
-static osync_bool mock_discover(OSyncPluginInfo *info, void *data, OSyncError **error)
+static osync_bool mock_discover(OSyncPlugin *plugin, OSyncPluginInfo *info, void *data, OSyncError **error)
 {
 	osync_trace(TRACE_ENTRY, "%s(%p, %p, %p)", __func__, data, info, error);
 	
