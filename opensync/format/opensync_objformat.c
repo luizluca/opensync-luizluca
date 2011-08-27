@@ -100,7 +100,7 @@ osync_bool osync_objformat_initialize(OSyncObjFormat *format, OSyncError **error
 	/* Just return, if no initialize_func is registered */
 	osync_return_val_if_fail(format->initialize_func, TRUE);
 
-	format->user_data = format->initialize_func(error);
+	format->user_data = format->initialize_func(format, error);
 
 	if (osync_error_is_set(error))
 		return FALSE;
@@ -118,7 +118,7 @@ osync_bool osync_objformat_finalize(OSyncObjFormat *format, OSyncError **error)
 {
 	osync_return_val_if_fail(format, TRUE);
 	osync_return_val_if_fail(format->finalize_func, TRUE);
-	return format->finalize_func(format->user_data, error);
+	return format->finalize_func(format, format->user_data, error);
 }
 
 void osync_objformat_set_compare_func(OSyncObjFormat *format, OSyncFormatCompareFunc cmp_func)
@@ -131,7 +131,7 @@ OSyncConvCmpResult osync_objformat_compare(OSyncObjFormat *format, const char *l
 {
 	osync_return_val_if_fail(format, OSYNC_CONV_DATA_UNKNOWN);
 	osync_return_val_if_fail(format->cmp_func, OSYNC_CONV_DATA_UNKNOWN);
-	return format->cmp_func(leftdata, leftsize, rightdata, rightsize, format->user_data, error);
+	return format->cmp_func(format, leftdata, leftsize, rightdata, rightsize, format->user_data, error);
 }
 
 void osync_objformat_set_destroy_func(OSyncObjFormat *format, OSyncFormatDestroyFunc destroy_func)
@@ -149,7 +149,7 @@ osync_bool osync_objformat_destroy(OSyncObjFormat *format, char *data, unsigned 
 		return TRUE;
 	}
 	
-	return format->destroy_func(data, size, format->user_data, error);
+	return format->destroy_func(format, data, size, format->user_data, error);
 }
 
 void osync_objformat_set_copy_func(OSyncObjFormat *format, OSyncFormatCopyFunc copy_func)
@@ -173,7 +173,7 @@ osync_bool osync_objformat_copy(OSyncObjFormat *format, const char *indata, unsi
 		memcpy(*outdata, indata, insize);
 		*outsize = insize;
 	} else {
-		if (!format->copy_func(indata, insize, outdata, outsize, format->user_data, error)) {
+		if (!format->copy_func(format, indata, insize, outdata, outsize, format->user_data, error)) {
 			osync_error_set(error, OSYNC_ERROR_GENERIC, "Something went wrong during copying");
 			return FALSE;
 		}
@@ -196,7 +196,7 @@ osync_bool osync_objformat_duplicate(OSyncObjFormat *format, const char *uid, co
 		return FALSE;
 	}
 
-	return format->duplicate_func(uid, input, insize, newuid, output, outsize, dirty, format->user_data, error);
+	return format->duplicate_func(format, uid, input, insize, newuid, output, outsize, dirty, format->user_data, error);
 }
 
 void osync_objformat_set_create_func(OSyncObjFormat *format, OSyncFormatCreateFunc create_func)
@@ -210,7 +210,7 @@ osync_bool osync_objformat_create(OSyncObjFormat *format, char **data, unsigned 
 	osync_return_val_if_fail(format, TRUE);
 	osync_return_val_if_fail(format->create_func, TRUE);
 
-	return format->create_func(data, size, format->user_data, error);
+	return format->create_func(format, data, size, format->user_data, error);
 }
 
 void osync_objformat_set_print_func(OSyncObjFormat *format, OSyncFormatPrintFunc print_func)
@@ -228,7 +228,7 @@ char *osync_objformat_print(OSyncObjFormat *format, const char *data, unsigned i
 	if (!format->print_func)
 		return g_strndup(data, size);
 	
-	return format->print_func(data, size, format->user_data, error);
+	return format->print_func(format, data, size, format->user_data, error);
 }
 
 void osync_objformat_set_revision_func(OSyncObjFormat *format, OSyncFormatRevisionFunc revision_func)
@@ -247,7 +247,7 @@ time_t osync_objformat_get_revision(OSyncObjFormat *format, const char *data, un
 		return -1;
 	}
 	
-	return format->revision_func(data, size, format->user_data, error);
+	return format->revision_func(format, data, size, format->user_data, error);
 }
 
 void osync_objformat_set_marshal_func(OSyncObjFormat *format, OSyncFormatMarshalFunc marshal_func)
@@ -266,7 +266,7 @@ osync_bool osync_objformat_marshal(OSyncObjFormat *format, const char *input, un
 {
 	osync_assert(format);
 	osync_return_val_if_fail(format->marshal_func, TRUE);
-	return format->marshal_func(input, inpsize, marshal, format->user_data, error);
+	return format->marshal_func(format, input, inpsize, marshal, format->user_data, error);
 }
 
 void osync_objformat_set_demarshal_func(OSyncObjFormat *format, OSyncFormatDemarshalFunc demarshal_func)
@@ -279,7 +279,7 @@ osync_bool osync_objformat_demarshal(OSyncObjFormat *format, OSyncMarshal *marsh
 {
 	osync_assert(format);
 	osync_return_val_if_fail(format->demarshal_func, TRUE);
-	return format->demarshal_func(marshal, output, outpsize, format->user_data, error);
+	return format->demarshal_func(format, marshal, output, outpsize, format->user_data, error);
 }
 
 void osync_objformat_set_validate_func(OSyncObjFormat *format, OSyncFormatValidateFunc validate_func)
@@ -292,7 +292,7 @@ osync_bool osync_objformat_validate(OSyncObjFormat *format, const char *data, un
 {
 	osync_assert(format);
 	osync_return_val_if_fail(format->validate_func, TRUE);
-	return format->validate_func(data, size, format->user_data, error);
+	return format->validate_func(format, data, size, format->user_data, error);
 }
 
 osync_bool osync_objformat_must_validate(OSyncObjFormat *format)
