@@ -43,8 +43,8 @@ typedef enum {
 
 typedef osync_bool (* OSyncFormatDetectFunc) (OSyncFormatConverter *converter, const char *data, int size, void *userdata);
 typedef osync_bool (* OSyncFormatConvertFunc) (OSyncFormatConverter *converter, char *input, unsigned int inpsize, char **output, unsigned int *outpsize, osync_bool *free_input, const char *config, void *userdata, OSyncError **error);
-typedef void * (* OSyncFormatConverterInitializeFunc) (const char *config, OSyncError **error);
-typedef osync_bool (* OSyncFormatConverterFinalizeFunc) (void *userdata, OSyncError **error);
+typedef void * (* OSyncFormatConverterInitializeFunc) (OSyncFormatConverter *converter, const char *config, OSyncError **error);
+typedef osync_bool (* OSyncFormatConverterFinalizeFunc) (OSyncFormatConverter *converter, void *userdata, OSyncError **error);
 
 /**
  * @brief Creates a new converter
