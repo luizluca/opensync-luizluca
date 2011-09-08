@@ -342,7 +342,7 @@ void osync_converter_initialize(OSyncFormatConverter *converter, const char *con
 	osync_assert(converter);
 
 	if (converter->initialize_func) {
-		converter->userdata = converter->initialize_func(config, error);
+		converter->userdata = converter->initialize_func(converter, config, error);
 	}
 }
 
@@ -353,7 +353,7 @@ osync_bool osync_converter_finalize(OSyncFormatConverter *converter, OSyncError 
 	if (!converter->finalize_func)
 		return TRUE;
 
-	return converter->finalize_func(converter->userdata, error);
+	return converter->finalize_func(converter, converter->userdata, error);
 }
 
 OSyncList *osync_converter_path_get_edges(OSyncFormatConverterPath *path) {
