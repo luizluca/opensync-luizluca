@@ -207,7 +207,7 @@ osync_bool osync_plugin_initialize(OSyncPlugin *plugin, void **plugin_data, OSyn
 void osync_plugin_finalize(OSyncPlugin *plugin, void *data)
 {
 	osync_assert(plugin);
-	plugin->finalize(data);
+	plugin->finalize(plugin, data);
 }
 
 osync_bool osync_plugin_discover(OSyncPlugin *plugin, void *data, OSyncPluginInfo *info, OSyncError **error)
@@ -216,7 +216,7 @@ osync_bool osync_plugin_discover(OSyncPlugin *plugin, void *data, OSyncPluginInf
 	if (!plugin->discover)
 		return TRUE;
 		
-	return plugin->discover(info, data, error);
+	return plugin->discover(plugin, info, data, error);
 }
 
 osync_bool osync_plugin_is_usable(OSyncPlugin *plugin, OSyncError **error)

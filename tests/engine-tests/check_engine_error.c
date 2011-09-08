@@ -152,7 +152,7 @@ static void *initialize_connect_error(OSyncPlugin *plugin, OSyncPluginInfo *info
 	return (void *)env;
 }
 
-static void finalize(void *data)
+static void finalize(OSyncPlugin *plugin, void *data)
 {
 	mock_env *env = data;
 	
