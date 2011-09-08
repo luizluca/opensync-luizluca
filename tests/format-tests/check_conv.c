@@ -361,7 +361,7 @@ static OSyncChange *create_change(OSyncObjFormat *fmt, char *data, size_t datasi
 }
 #endif
 
-static osync_bool format_simple_destroy(char *data, unsigned int size, void *user_data, OSyncError **error)
+static osync_bool format_simple_destroy(OSyncObjFormat *format, char *data, unsigned int size, void *user_data, OSyncError **error)
 {
 	osync_assert(data);
 	if (size)
